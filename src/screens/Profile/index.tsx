@@ -9,12 +9,12 @@ import { AppPath } from 'routes/AppRoutes.types'
 
 const Profile = () => {
   const navigate = useNavigate()
-  const { user } = useUser()
+  const { user, isLoading: isUserLoading } = useUser()
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
 
-  const { mutateAsync, isLoading } = useMutation({
+  const { mutateAsync, isLoading: isMutating } = useMutation({
     mutationFn: updateUser,
   })
 
@@ -28,7 +28,7 @@ const Profile = () => {
   }
 
   return (
-    <div className='section pt-0'>
+    <div className="section pt-0">
       <Toolbar
         items={[
           <label
@@ -46,41 +46,55 @@ const Profile = () => {
           <label className="label">
             <span className="label-text text-xs">Email</span>
           </label>
-          <input
-            type="text"
-            className="input input-bordered w-full"
-            disabled
-            defaultValue={user?.email}
-          />
+          {isUserLoading ? (
+            <div className="skeleton h-[48px] w-full" />
+          ) : (
+            <input
+              type="text"
+              className="input input-bordered w-full"
+              disabled
+              defaultValue={user?.email}
+            />
+          )}
         </div>
         <div className="form-control w-full">
           <label className="label">
             <span className="label-text text-xs">First name</span>
           </label>
-          <input
-            type="text"
-            className="input input-bordered w-full"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
+          {isUserLoading ? (
+            <div className="skeleton h-[48px] w-full" />
+          ) : (
+            <input
+              type="text"
+              className="input input-bordered w-full"
+              disabled={isMutating}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          )}
         </div>
         <div className="form-control w-full">
           <label className="label">
             <span className="label-text text-xs">Last name</span>
           </label>
-          <input
-            type="text"
-            className="input input-bordered w-full"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
+          {isUserLoading ? (
+            <div className="skeleton h-[48px] w-full" />
+          ) : (
+            <input
+              type="text"
+              disabled={isMutating}
+              className="input input-bordered w-full"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          )}
         </div>
         <button
           className="btn btn-primary btn-active mt-4 w-auto"
-          disabled={isLoading}
+          disabled={isMutating}
           onClick={onSaveHandler}
         >
-          {isLoading && <span className="loading loading-spinner"></span>}
+          {isMutating && <span className="loading loading-spinner"></span>}
           Save
         </button>
       </div>

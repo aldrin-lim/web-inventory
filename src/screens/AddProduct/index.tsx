@@ -16,6 +16,7 @@ import {
   useAddProductContext,
 } from './contexts/AddProductContext'
 import { Field, FieldProps, Formik } from 'formik'
+import { useEffect } from 'react'
 
 const modalVariants: Variants = {
   hidden: {
@@ -32,6 +33,10 @@ const modalVariants: Variants = {
     opacity: 0,
     transition: { duration: 0.2, ease: 'backIn' }, // 200ms linear transition
   },
+}
+
+function calculateProfit(cost: number, price: number): number {
+  return price - cost;
 }
 
 const AddProductComponent = () => {
@@ -60,6 +65,12 @@ const AddProductComponent = () => {
       },
     })
   }
+
+  useEffect(() => {
+    if (productDetails.price && productDetails.cost) {
+      
+    }
+  }, [productDetails.price, productDetails.cost])
 
   return (
     <div className="section relative flex flex-col gap-4 pt-0">
