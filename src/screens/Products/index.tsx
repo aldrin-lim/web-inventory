@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const Products = () => {
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-4 pt-12 text-center">
+    <div className="section flex w-full flex-col items-center justify-center gap-4 text-center">
       <h1 className="text-xl font-bold">Welcom to Discarte, Juan</h1>
       <TagIcon className="w-24 text-purple-500" />
       <h2 className="text-lg font-bold">Add your first product</h2>

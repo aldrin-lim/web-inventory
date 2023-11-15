@@ -22,7 +22,7 @@ html, body {
 
 @layer components {
   .section {
-    @apply flex w-full flex-col items-start justify-start gap-4 text-center overflow-hidden;
+    @apply p-6
   }
 
   .form-control {

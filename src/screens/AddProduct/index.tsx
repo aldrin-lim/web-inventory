@@ -62,7 +62,7 @@ const AddProductComponent = () => {
   }
 
   return (
-    <div className="section">
+    <div className="section relative flex flex-col gap-4 pt-0">
       <Formik initialValues={productDetails} onSubmit={() => {}}>
         {({ setFieldValue }) => {
           return (
@@ -194,7 +194,7 @@ const AddProductComponent = () => {
       <AnimatePresence>
         <motion.div
           className={[
-            'section absolute top-0 h-full bg-base-100',
+            'absolute left-0 right-0 bg-base-100 h-full pt-0 section',
             activeModal === AddProductModal.None ? 'hidden' : '',
           ].join(' ')}
           variants={modalVariants}

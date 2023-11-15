@@ -42,7 +42,7 @@ const AddProductDetail = () => {
   }
 
   return (
-    <div className="section">
+    <div className="">
       <Formik
         initialValues={{
           category: productDetails.category || '',

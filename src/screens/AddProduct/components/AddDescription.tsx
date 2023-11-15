@@ -39,7 +39,7 @@ const AddDescription: React.FC = () => {
   }
 
   return (
-    <div className="AddDescription w-full">
+    <div className="">
       <Toolbar
         items={[
           <ToolbarButton key="cancel" label="Cancel" onClick={goBack} />,

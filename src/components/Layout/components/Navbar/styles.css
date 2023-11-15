@@ -8,7 +8,8 @@
     justify-evenly
     rounded-md
     bg-gray-100
-    py-2;
+    py-2
+    z-40;
 }
 
 .Navbar_ButtonContainer {
