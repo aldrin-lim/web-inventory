@@ -28,7 +28,7 @@ const Profile = () => {
   }
 
   return (
-    <div>
+    <div className='section pt-0'>
       <Toolbar
         items={[
           <label
