@@ -176,7 +176,7 @@ const AddProductComponent = () => {
                 onChange={(images) => setProductValue('images', images)}
               />
               <button
-                className="btn btn-primary btn-ghost btn-outline flex w-full flex-row justify-between"
+                className="btn btn-neutral btn-ghost btn-outline flex w-full flex-row justify-between"
                 onClick={() => setActiveModal(AddProductModal.Detail)}
               >
                 <div className="flex flex-row items-center gap-1">
