@@ -11,6 +11,7 @@ import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
 import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
+import MeasurementSelect from './MeasurementSelect'
 
 export const addProductDetailSchema = z.object({
   quantity: z
@@ -189,18 +190,14 @@ const AddProductDetail = () => {
                           </p>
                         </div>
                         <Field name="measurement">
-                          {({ field, meta }: FieldProps) => (
+                          {({ meta }: FieldProps) => (
                             <div className="w-full">
-                              <select
-                                {...field}
-                                className="select select-bordered w-full"
-                              >
-                                <option disabled selected value="">
-                                  Select measurement
-                                </option>
-                                <option>grams</option>
-                                <option>kilograms</option>
-                              </select>
+                              <MeasurementSelect
+                                onChange={(value) => {
+                                  setProductValue('measurement', value?.value)
+                                  setFieldValue('measurement', value?.value)
+                                }}
+                              />
                               <p className="form-control-error">
                                 {meta.error}&nbsp;
                               </p>
