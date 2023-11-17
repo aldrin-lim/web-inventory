@@ -35,9 +35,9 @@ const initialState: State = {
   activeModal: AddProductModal.None,
   productDetails: {
     name: '',
-    price: undefined,
-    cost: undefined,
-    profit: undefined,
+    price: 0,
+    cost: 0,
+    profit: 0,
     images: [],
     description: '',
     quantity: 0,

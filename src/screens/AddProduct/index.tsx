@@ -7,7 +7,9 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import { AnimatePresence, Variants, motion } from 'framer-motion'
-import AddProductDetail from './components/AddProductDetails'
+import AddProductDetail, {
+  addProductDetailSchema,
+} from './components/AddProductDetails'
 import {
   AddProductActionType,
   AddProductContextProvider,
@@ -16,7 +18,30 @@ import {
   useAddProductContext,
 } from './contexts/AddProductContext'
 import { Field, FieldProps, Formik } from 'formik'
-import { useEffect } from 'react'
+import { z } from 'zod'
+import { toFormikValidationSchema } from 'zod-formik-adapter'
+import { useCallback, useEffect } from 'react'
+
+const addProductSchema = z.object({
+  name: z.string({
+    required_error: 'Product name is required',
+    invalid_type_error: 'Name must be a string',
+  }),
+  description: z
+    .string({
+      invalid_type_error: 'Description must be a string',
+    })
+    .optional(),
+  cost: z.number({
+    required_error: 'Cost is required',
+    invalid_type_error: 'Cost must be a number',
+  }),
+  price: z.number({
+    required_error: 'Price is required',
+    invalid_type_error: 'Price must be a number',
+  }),
+  images: z.array(z.string()).optional(),
+})
 
 const modalVariants: Variants = {
   hidden: {
@@ -35,8 +60,14 @@ const modalVariants: Variants = {
   },
 }
 
-function calculateProfit(cost: number, price: number): number {
-  return price - cost
+const getProductDetailError = (productDetail: ProductDetails) => {
+  const validationResult = addProductDetailSchema.safeParse(productDetail)
+
+  if (!validationResult.success) {
+    return validationResult.error.issues[0].message
+  }
+
+  return ''
 }
 
 const AddProductComponent = () => {
@@ -56,20 +87,63 @@ const AddProductComponent = () => {
     })
   }
 
-  const setProductValue = (field: keyof ProductDetails, value: unknown) => {
-    dispatch({
-      type: AddProductActionType.UpdateProductDetail,
-      payload: {
-        field,
-        value,
-      },
-    })
+  const setProductValue = useCallback(
+    (field: keyof ProductDetails, value: unknown) => {
+      dispatch({
+        type: AddProductActionType.UpdateProductDetail,
+        payload: {
+          field,
+          value,
+        },
+      })
+    },
+    [dispatch],
+  )
+
+  const onSaveProductHanlder = () => {
+    const validation = addProductSchema
+      .and(addProductDetailSchema)
+      .and(
+        z.object({
+          profit: z.number({
+            required_error: 'Profit is required',
+            invalid_type_error: 'Profit must be a number',
+          }),
+        }),
+      )
+      .safeParse(productDetails)
+
+    if (!validation.success) {
+      const error = validation.error.issues[0].message
+      console.log(error)
+      return
+    }
+
+    const requestBody = validation.data
+
+    console.log(requestBody)
   }
+
+  useEffect(() => {
+    if (productDetails.price && productDetails.cost) {
+      setProductValue(
+        'profit',
+        Number(productDetails.price) - Number(productDetails.cost),
+      )
+    }
+  }, [productDetails.cost, productDetails.price, setProductValue])
+
+  const addProductDetailError = getProductDetailError(productDetails)
 
   return (
     <div className="section relative flex flex-col gap-4 pt-0">
-      <Formik initialValues={productDetails} onSubmit={() => {}}>
-        {({ setFieldValue, values }) => {
+      <Formik
+        initialValues={productDetails}
+        onSubmit={onSaveProductHanlder}
+        validationSchema={toFormikValidationSchema(addProductSchema)}
+        validateOnChange={false}
+      >
+        {({ setFieldValue, submitForm, errors }) => {
           return (
             <>
               <Toolbar
@@ -84,7 +158,11 @@ const AddProductComponent = () => {
                     title="Inactive"
                     description="Product"
                   />,
-                  <ToolbarButton key="save" label="Save" />,
+                  <ToolbarButton
+                    key="save"
+                    label="Save"
+                    onClick={submitForm}
+                  />,
                 ]}
               />
 
@@ -115,29 +193,8 @@ const AddProductComponent = () => {
                 <ChevronRightIcon className="col-span-1 w-5" />
               </button>
               <div className="grid w-full grid-cols-3 grid-rows-1 gap-4">
-                {/* <Field name="price">
-                  {({ field, meta }: FieldProps) => (
-                    <div className="form-control w-full">
-                      <label className="label">
-                        <span className="label-text text-xs">Price</span>
-                      </label>
-                      <input
-                        {...field}
-                        type="number"
-                        placeholder="Price"
-                        className="input input-bordered w-full"
-                        onChange={(e) => {
-                          setProductValue('price', e.target.value)
-                          setFieldValue('price', e.target.value)
-                        }}
-                      />
-                      <p className="form-control-error">{meta.error}&nbsp;</p>
-                    </div>
-                  )}
-                </Field> */}
-
                 <Field name="price">
-                  {({ field }: FieldProps) => (
+                  {({ field, meta }: FieldProps) => (
                     <div className="form-control w-full">
                       <label className="label">
                         <span className="label-text text-xs">Price</span>
@@ -154,17 +211,18 @@ const AddProductComponent = () => {
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Price"
                           onChange={(e) => {
-                            setProductValue('price', e.target.value)
-                            setFieldValue('price', e.target.value)
+                            setProductValue('price', +e.target.value)
+                            setFieldValue('price', +e.target.value)
                           }}
                         />
                       </div>
+                      <p className="form-control-error">{meta.error} &nbsp;</p>
                     </div>
                   )}
                 </Field>
 
                 <Field name="cost">
-                  {({ field }: FieldProps) => (
+                  {({ field, meta }: FieldProps) => (
                     <div className="form-control w-full">
                       <label className="label">
                         <span className="label-text text-xs">Cost</span>
@@ -181,44 +239,36 @@ const AddProductComponent = () => {
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Cost"
                           onChange={(e) => {
-                            setProductValue('cost', e.target.value)
-                            setFieldValue('cost', e.target.value)
+                            setProductValue('cost', +e.target.value)
+                            setFieldValue('cost', +e.target.value)
                           }}
                         />
                       </div>
+
+                      <p className="form-control-error">{meta.error} &nbsp;</p>
                     </div>
                   )}
                 </Field>
 
-                <Field name="profit">
-                  {({ field }: FieldProps) => (
-                    <div className="form-control w-full">
-                      <label className="label">
-                        <span className="label-text text-xs">Profit</span>
-                      </label>
-                      <div className="join">
-                        <div className="indicator">
-                          <button className="btn disabled join-item px-2 text-gray-500">
-                            ₱
-                          </button>
-                        </div>
-                        <input
-                          {...field}
-                          disabled
-                          type="number"
-                          className="input join-item input-bordered w-full pl-2"
-                          placeholder="Profit"
-                          defaultValue={0}
-                          value={
-                            values.price &&
-                            values.cost &&
-                            Number(values.price) - Number(values.cost)
-                          }
-                        />
-                      </div>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text text-xs">Profit</span>
+                  </label>
+                  <div className="join">
+                    <div className="indicator">
+                      <button className="btn disabled join-item px-2 text-gray-500">
+                        ₱
+                      </button>
                     </div>
-                  )}
-                </Field>
+                    <input
+                      disabled
+                      type="number"
+                      className="input join-item input-bordered w-full pl-2"
+                      placeholder="Profit"
+                      value={productDetails.profit || 0}
+                    />
+                  </div>
+                </div>
               </div>
 
               <ImageUpload
@@ -234,6 +284,12 @@ const AddProductComponent = () => {
                 </div>
                 <ChevronRightIcon className="w-5" />
               </button>
+              <p className="form-control-error">
+                {addProductDetailError} &nbsp;
+              </p>
+              <pre className="text-left text-xs">
+                {JSON.stringify(errors, null, 2)}
+              </pre>
             </>
           )
         }}

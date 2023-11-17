@@ -17,9 +17,18 @@ const AppRoutes = () => (
       <Route path={AppPath.Orders} element={<Orders />} />
       <Route path={AppPath.Products} element={<Products />} />
     </Route>
-    <Route path={AppPath.Profile} element={<ProtectedRoute element={<Profile />} />} />
-    <Route path={AppPath.Store} element={<ProtectedRoute element={<Store />}  />} />
-    <Route path={AppPath.AddProduct} element={<ProtectedRoute element={<AddProduct />} />} />
+    <Route
+      path={AppPath.Profile}
+      element={<ProtectedRoute element={<Profile />} />}
+    />
+    <Route
+      path={AppPath.Store}
+      element={<ProtectedRoute element={<Store />} />}
+    />
+    <Route
+      path={AppPath.AddProduct}
+      element={<ProtectedRoute element={<AddProduct />} />}
+    />
   </Routes>
 )
 

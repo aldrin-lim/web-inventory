@@ -6,7 +6,7 @@ import { AppPath } from 'routes/AppRoutes.types'
 const Store = () => {
   const navigate = useNavigate()
   return (
-    <div className='section pt-0'>
+    <div className="section pt-0">
       <Toolbar
         items={[
           <label

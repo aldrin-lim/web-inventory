@@ -9,6 +9,39 @@ import {
 } from '../contexts/AddProductContext'
 import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
+import { z } from 'zod'
+import { toFormikValidationSchema } from 'zod-formik-adapter'
+
+export const addProductDetailSchema = z.object({
+  quantity: z
+    .number({
+      required_error: 'Quantity is required',
+      invalid_type_error: 'Quantity must be a number',
+    })
+    .int(),
+  measurement: z
+    .string({
+      required_error: 'Measurement is required',
+      invalid_type_error: 'Measurement must be a string',
+    })
+    .min(1, 'Measurement must be at least 1 character long'),
+  category: z
+    .string({
+      invalid_type_error: 'Category must be a string',
+    })
+    .optional(),
+  allowBackOrder: z
+    .boolean({
+      invalid_type_error: 'Allow back order must be a boolean',
+    })
+    .optional(),
+  expiryDate: z
+    .date({
+      invalid_type_error: 'Expiry Date must be a date',
+    })
+    .nullable()
+    .optional(),
+})
 
 const AddProductDetail = () => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -51,6 +84,7 @@ const AddProductDetail = () => {
           measurement: productDetails.measurement || '',
           allowBackOrder: productDetails.allowBackOrder,
         }}
+        validationSchema={toFormikValidationSchema(addProductDetailSchema)}
         onSubmit={({
           category,
           expiryDate,
@@ -79,7 +113,7 @@ const AddProductDetail = () => {
           goBack()
         }}
       >
-        {({ submitForm, setFieldValue, values }) => {
+        {({ submitForm, setFieldValue, values, errors }) => {
           return (
             <>
               <Toolbar
@@ -191,14 +225,12 @@ const AddProductDetail = () => {
                       className="input input-bordered w-full "
                     />
 
-                    {meta.error && (
-                      <p className="form-control-error">{meta.error}</p>
-                    )}
+                    <p className="form-control-error">{meta.error}&nbsp;</p>
                   </div>
                 )}
               </Field>
               <Field name="expiryDate">
-                {({ field }: FieldProps) => (
+                {({ field, meta }: FieldProps) => (
                   <div className="form-control w-full">
                     <label className="label">
                       <span className="label-text text-xs">Expiry Date</span>
@@ -208,10 +240,18 @@ const AddProductDetail = () => {
                       type="date"
                       placeholder="Expiry date"
                       className="input input-bordered w-full"
+                      onChange={(e) => {
+                        setFieldValue('quantity', values.quantity + 1)
+                        setProductValue('quantity', new Date(e.target.value))
+                      }}
                     />
+                    <p className="form-control-error">{meta.error}&nbsp;</p>
                   </div>
                 )}
               </Field>
+              <pre className="text-left text-xs">
+                {JSON.stringify(errors, null, 2)}
+              </pre>
             </>
           )
         }}

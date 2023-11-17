@@ -20,7 +20,7 @@ const Products = () => {
         Add Product
       </Link>
       <div>
-        <button className="btn btn-primary btn-link p-0 normal-case no-underline">
+        <button className="btn btn-link btn-primary p-0 normal-case no-underline">
           Learn more
         </button>{' '}
         about adding products
