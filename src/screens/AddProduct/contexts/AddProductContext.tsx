@@ -20,7 +20,7 @@ export interface ProductDetails {
   images: string[]
   description: string
   quantity: number
-  allowPurchaseWhenOutOfStock: boolean
+  allowBackOrder: boolean
   measurement: string
   category?: string
   expiryDate?: Date
@@ -41,7 +41,7 @@ const initialState: State = {
     images: [],
     description: '',
     quantity: 0,
-    allowPurchaseWhenOutOfStock: false,
+    allowBackOrder: false,
     category: '',
     expiryDate: undefined,
     measurement: '',

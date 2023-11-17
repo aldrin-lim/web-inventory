@@ -49,15 +49,14 @@ const AddProductDetail = () => {
           expiryDate: productDetails.expiryDate || null,
           quantity: productDetails.quantity || 0,
           measurement: productDetails.measurement || '',
-          allowPurchaseWhenOutOfStock:
-            productDetails.allowPurchaseWhenOutOfStock,
+          allowBackOrder: productDetails.allowBackOrder,
         }}
         onSubmit={({
           category,
           expiryDate,
           quantity,
           measurement,
-          allowPurchaseWhenOutOfStock,
+          allowBackOrder,
         }) => {
           if (category) {
             setProductValue('category', category)
@@ -74,11 +73,8 @@ const AddProductDetail = () => {
           if (measurement) {
             setProductValue('measurement', measurement)
           }
-          if (allowPurchaseWhenOutOfStock) {
-            setProductValue(
-              'allowPurchaseWhenOutOfStock',
-              allowPurchaseWhenOutOfStock,
-            )
+          if (allowBackOrder) {
+            setProductValue('allowBackOrder', allowBackOrder)
           }
           goBack()
         }}
@@ -102,13 +98,13 @@ const AddProductDetail = () => {
                 ]}
               />
 
-              <Field name="allowPurchaseWhenOutOfStock">
+              <Field name="allowBackOrder">
                 {({ field }: FieldProps) => (
                   <div className="form-control flex w-full flex-row justify-between ">
                     <span>Allow purchase when out of stock</span>
                     <input
                       {...field}
-                      checked={values.allowPurchaseWhenOutOfStock}
+                      checked={values.allowBackOrder}
                       type="checkbox"
                       className="toggle toggle-primary"
                     />
