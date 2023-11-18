@@ -76,7 +76,7 @@ export const addProductSchema = z.object({
   images: z.array(z.string()).optional(),
 })
 
-const addProductRequestSchema = addProductSchema
+export const addProductRequestSchema = addProductSchema
   .and(addProductDetailSchema)
   .and(
     z.object({

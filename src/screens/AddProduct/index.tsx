@@ -18,7 +18,11 @@ import {
 import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { useCallback, useEffect } from 'react'
-import { addProductDetailSchema, addProductSchema } from 'types/product.types'
+import {
+  addProductDetailSchema,
+  addProductRequestSchema,
+  addProductSchema,
+} from 'types/product.types'
 
 const modalVariants: Variants = {
   hidden: {
@@ -78,7 +82,7 @@ const AddProductComponent = () => {
   )
 
   const onSaveProductHanlder = () => {
-    const validation = addProductDetailSchema.safeParse(productDetails)
+    const validation = addProductRequestSchema.safeParse(productDetails)
 
     if (!validation.success) {
       const error = validation.error.issues[0].message
@@ -110,7 +114,7 @@ const AddProductComponent = () => {
         validationSchema={toFormikValidationSchema(addProductSchema)}
         validateOnChange={false}
       >
-        {({ setFieldValue, submitForm }) => {
+        {({ setFieldValue, submitForm, setFieldTouched }) => {
           return (
             <>
               <Toolbar
@@ -174,12 +178,23 @@ const AddProductComponent = () => {
                         </div>
                         <input
                           {...field}
-                          type="number"
+                          type="text"
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Price"
+                          value={meta.touched ? field.value : ''}
+                          // This is to prevent input preppending 0 while typing
+                          onClick={() => setFieldTouched('price')}
                           onChange={(e) => {
-                            setProductValue('price', +e.target.value)
-                            setFieldValue('price', +e.target.value)
+                            const valueStr = e.target.value
+                            const value = parseFloat(valueStr)
+                            if (valueStr.trim() === '') {
+                              // Handle empty string, if necessary
+                              setProductValue('price', 0)
+                              setFieldValue('price', 0)
+                              return
+                            }
+                            setProductValue('price', value)
+                            setFieldValue('price', value)
                           }}
                         />
                       </div>
@@ -202,12 +217,23 @@ const AddProductComponent = () => {
                         </div>
                         <input
                           {...field}
-                          type="number"
+                          type="text"
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Cost"
+                          value={meta.touched ? field.value : ''}
+                          // This is to prevent input preppending 0 while typing
+                          onClick={() => setFieldTouched('cost')}
                           onChange={(e) => {
-                            setProductValue('cost', +e.target.value)
-                            setFieldValue('cost', +e.target.value)
+                            const valueStr = e.target.value
+                            const value = parseFloat(valueStr)
+                            if (valueStr.trim() === '') {
+                              // Handle empty string, if necessary
+                              setProductValue('cost', 0)
+                              setFieldValue('cost', 0)
+                              return
+                            }
+                            setProductValue('cost', value)
+                            setFieldValue('cost', value)
                           }}
                         />
                       </div>
