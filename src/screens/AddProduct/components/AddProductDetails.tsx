@@ -9,40 +9,9 @@ import {
 } from '../contexts/AddProductContext'
 import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
-import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import MeasurementSelect from './MeasurementSelect'
-
-export const addProductDetailSchema = z.object({
-  quantity: z
-    .number({
-      required_error: 'Quantity is required',
-      invalid_type_error: 'Quantity must be a number',
-    })
-    .int(),
-  measurement: z
-    .string({
-      required_error: 'Measurement is required',
-      invalid_type_error: 'Measurement must be a string',
-    })
-    .optional(),
-  category: z
-    .string({
-      invalid_type_error: 'Category must be a string',
-    })
-    .optional(),
-  allowBackOrder: z
-    .boolean({
-      invalid_type_error: 'Allow back order must be a boolean',
-    })
-    .optional(),
-  expiryDate: z
-    .date({
-      invalid_type_error: 'Expiry Date must be a date',
-    })
-    .nullable()
-    .optional(),
-})
+import { addProductDetailSchema } from 'types/product.types'
 
 const AddProductDetail = () => {
   const inputRef = useRef<HTMLInputElement>(null)

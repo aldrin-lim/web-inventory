@@ -7,9 +7,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import { AnimatePresence, Variants, motion } from 'framer-motion'
-import AddProductDetail, {
-  addProductDetailSchema,
-} from './components/AddProductDetails'
+import AddProductDetail from './components/AddProductDetails'
 import {
   AddProductActionType,
   AddProductContextProvider,
@@ -18,30 +16,9 @@ import {
   useAddProductContext,
 } from './contexts/AddProductContext'
 import { Field, FieldProps, Formik } from 'formik'
-import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { useCallback, useEffect } from 'react'
-
-const addProductSchema = z.object({
-  name: z.string({
-    required_error: 'Product name is required',
-    invalid_type_error: 'Name must be a string',
-  }),
-  description: z
-    .string({
-      invalid_type_error: 'Description must be a string',
-    })
-    .optional(),
-  cost: z.number({
-    required_error: 'Cost is required',
-    invalid_type_error: 'Cost must be a number',
-  }),
-  price: z.number({
-    required_error: 'Price is required',
-    invalid_type_error: 'Price must be a number',
-  }),
-  images: z.array(z.string()).optional(),
-})
+import { addProductDetailSchema, addProductSchema } from 'types/product.types'
 
 const modalVariants: Variants = {
   hidden: {
@@ -101,17 +78,7 @@ const AddProductComponent = () => {
   )
 
   const onSaveProductHanlder = () => {
-    const validation = addProductSchema
-      .and(addProductDetailSchema)
-      .and(
-        z.object({
-          profit: z.number({
-            required_error: 'Profit is required',
-            invalid_type_error: 'Profit must be a number',
-          }),
-        }),
-      )
-      .safeParse(productDetails)
+    const validation = addProductDetailSchema.safeParse(productDetails)
 
     if (!validation.success) {
       const error = validation.error.issues[0].message

@@ -41,7 +41,7 @@ const initialState: State = {
     images: [],
     description: '',
     quantity: 0,
-    allowBackOrder: false,
+    allowBackOrder: true,
     category: '',
     expiryDate: undefined,
     measurement: '',
