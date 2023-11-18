@@ -143,7 +143,7 @@ const AddProductComponent = () => {
         validationSchema={toFormikValidationSchema(addProductSchema)}
         validateOnChange={false}
       >
-        {({ setFieldValue, submitForm, errors }) => {
+        {({ setFieldValue, submitForm }) => {
           return (
             <>
               <Toolbar
@@ -287,9 +287,6 @@ const AddProductComponent = () => {
               <p className="form-control-error">
                 {addProductDetailError} &nbsp;
               </p>
-              <pre className="text-left text-xs">
-                {JSON.stringify(errors, null, 2)}
-              </pre>
             </>
           )
         }}

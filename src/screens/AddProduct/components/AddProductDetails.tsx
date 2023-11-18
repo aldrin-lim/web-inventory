@@ -25,7 +25,7 @@ export const addProductDetailSchema = z.object({
       required_error: 'Measurement is required',
       invalid_type_error: 'Measurement must be a string',
     })
-    .min(1, 'Measurement must be at least 1 character long'),
+    .optional(),
   category: z
     .string({
       invalid_type_error: 'Category must be a string',
