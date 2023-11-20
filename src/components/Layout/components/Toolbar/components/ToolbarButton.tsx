@@ -1,9 +1,14 @@
 type ToolbarButtonProps = {
-  label: string
+  label?: string
   onClick?: () => void
+  icon?: React.ReactNode
 }
 
-const ToolbarButton: React.FC<ToolbarButtonProps> = ({ label, onClick }) => {
+const ToolbarButton: React.FC<ToolbarButtonProps> = ({
+  label,
+  onClick,
+  icon,
+}) => {
   return (
     <button
       type="button"
@@ -11,6 +16,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ label, onClick }) => {
       className="btn btn-link px-0 normal-case text-blue-400 no-underline"
     >
       {label}
+      {icon}
     </button>
   )
 }

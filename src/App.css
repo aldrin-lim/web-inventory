@@ -25,6 +25,11 @@ html, body {
     @apply p-6
   }
 
+  .section:has(.Toolbar) {
+    @apply pt-0
+  }
+
+
   .form-control {
     @apply text-left
   }

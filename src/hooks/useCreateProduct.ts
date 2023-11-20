@@ -1,11 +1,11 @@
 import { useMutation } from '@tanstack/react-query'
 import { createProduct } from 'api/product.api'
 
-const useUser = () => {
+const useCreateProduct = () => {
   const {
     mutateAsync: createProductAsync,
     isLoading: isCreating,
-    error: createError,
+    error: createProductError,
   } = useMutation({
     mutationFn: createProduct,
     retry: 0,
@@ -14,8 +14,8 @@ const useUser = () => {
   return {
     createProduct: createProductAsync,
     isCreating,
-    createError,
+    createProductError,
   }
 }
 
-export default useUser
+export default useCreateProduct

@@ -84,8 +84,8 @@ const ImageUpload = (props: ImageUploadProps) => {
             className="btn btn-square mt-1 flex h-[150px] w-[150px] flex-col"
             onClick={onClick}
           >
-            <PhotoIcon className="w-14 text-gray-400" />
-            <span className="text-xs text-gray-400">Upload</span>
+            <PhotoIcon className="w-14 " />
+            <span className="text-xs ">Upload</span>
           </button>
         )}
       </div>

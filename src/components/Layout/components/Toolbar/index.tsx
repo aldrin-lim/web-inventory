@@ -6,7 +6,7 @@ type ToolbarProps = {
 
 const Toolbar: React.FC<ToolbarProps> = ({ items }) => {
   return (
-    <div className="relative flex w-full flex-row items-end justify-between">
+    <div className="Toolbar relative grid grid-cols-3 items-end [&>*:nth-child(1)]:justify-start [&>*:nth-child(3)]:justify-end">
       {items}
     </div>
   )

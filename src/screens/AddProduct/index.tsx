@@ -23,6 +23,7 @@ import {
   addProductRequestSchema,
   addProductSchema,
 } from 'types/product.types'
+import useCreateProduct from 'hooks/useCreateProduct'
 
 const modalVariants: Variants = {
   hidden: {
@@ -57,6 +58,8 @@ const AddProductComponent = () => {
     state: { activeModal, productDetails },
   } = useAddProductContext()
 
+  const { createProduct } = useCreateProduct()
+
   const { description } = productDetails
 
   const navigate = useNavigate()
@@ -81,7 +84,7 @@ const AddProductComponent = () => {
     [dispatch],
   )
 
-  const onSaveProductHanlder = () => {
+  const onSaveProductHanlder = async () => {
     const validation = addProductRequestSchema.safeParse(productDetails)
 
     if (!validation.success) {
@@ -92,7 +95,9 @@ const AddProductComponent = () => {
 
     const requestBody = validation.data
 
-    console.log(requestBody)
+    await createProduct(requestBody)
+
+    navigate(AppPath.ProductList)
   }
 
   useEffect(() => {
@@ -122,13 +127,9 @@ const AddProductComponent = () => {
                   <ToolbarButton
                     key="cancel"
                     label="Cancel"
-                    onClick={() => navigate(AppPath.Products)}
+                    onClick={() => navigate(AppPath.ProductList)}
                   />,
-                  <ToolbarTitle
-                    key="title"
-                    title="Inactive"
-                    description="Product"
-                  />,
+                  <ToolbarTitle key="title" title="Add Product" />,
                   <ToolbarButton
                     key="save"
                     label="Save"

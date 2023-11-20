@@ -26,13 +26,13 @@ const Layout = () => {
 
   return (
     <main>
-      <label
+      {/* <label
         key="12"
         htmlFor="my-drawer"
         className="btn btn-ghost drawer-button -mr-4"
       >
         <Bars3Icon className="h-6 w-6" />
-      </label>
+      </label> */}
       <div className="drawer z-50">
         <input
           ref={drawerToggle}
