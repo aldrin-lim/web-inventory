@@ -12,7 +12,7 @@ const useCreateProduct = () => {
     retry: 0,
     onError: () => {
       toast.error("We're sorry, we've encountered an issue. ", {
-        autoClose: 50000,
+        autoClose: 3000,
         theme: 'colored',
       })
     },
