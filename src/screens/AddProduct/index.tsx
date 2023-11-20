@@ -58,7 +58,7 @@ const AddProductComponent = () => {
     state: { activeModal, productDetails },
   } = useAddProductContext()
 
-  const { createProduct } = useCreateProduct()
+  const { createProduct, isCreating } = useCreateProduct()
 
   const { description } = productDetails
 
@@ -133,7 +133,8 @@ const AddProductComponent = () => {
                   <ToolbarButton
                     key="save"
                     label="Save"
-                    onClick={submitForm}
+                    onClick={!isCreating ? submitForm : undefined}
+                    disabled={isCreating}
                   />,
                 ]}
               />
@@ -150,6 +151,7 @@ const AddProductComponent = () => {
                         setProductValue('name', e.target.value)
                         setFieldValue('name', e.target.value)
                       }}
+                      disabled={isCreating}
                     />
                     <p className="form-control-error">{meta.error} &nbsp;</p>
                   </div>
@@ -197,6 +199,7 @@ const AddProductComponent = () => {
                             setProductValue('price', value)
                             setFieldValue('price', value)
                           }}
+                          disabled={isCreating}
                         />
                       </div>
                       <p className="form-control-error">{meta.error} &nbsp;</p>
@@ -236,6 +239,7 @@ const AddProductComponent = () => {
                             setProductValue('cost', value)
                             setFieldValue('cost', value)
                           }}
+                          disabled={isCreating}
                         />
                       </div>
 
@@ -271,6 +275,7 @@ const AddProductComponent = () => {
               <button
                 className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
                 onClick={() => setActiveModal(AddProductModal.Detail)}
+                disabled={isCreating}
               >
                 <div className="flex flex-row items-center gap-1">
                   <ArchiveBoxIcon className="w-5" />
