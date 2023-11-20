@@ -5,7 +5,9 @@ import { useEffect } from 'react'
 import { themeChange } from 'theme-change'
 
 import './App.css'
+import 'react-toastify/dist/ReactToastify.css'
 import AppRoutes from './routes/AppRoutes'
+import { ToastContainer, TypeOptions } from 'react-toastify'
 
 function App() {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()
@@ -22,6 +24,12 @@ function App() {
 
   return (
     <div className="App" data-theme="">
+      <ToastContainer
+        className={'!left-4 !top-2 !mx-auto !w-[90%] !rounded-md text-xs'}
+        toastClassName={'!rounded-md'}
+        closeButton={false}
+        closeOnClick
+      />
       <AppRoutes />
     </div>
   )

@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { createProduct } from 'api/product.api'
+import { toast } from 'react-toastify'
 
 const useCreateProduct = () => {
   const {
@@ -9,6 +10,12 @@ const useCreateProduct = () => {
   } = useMutation({
     mutationFn: createProduct,
     retry: 0,
+    onError: () => {
+      toast.error("We're sorry, we've encountered an issue. ", {
+        autoClose: 50000,
+        theme: 'colored',
+      })
+    },
   })
 
   return {
