@@ -57,6 +57,7 @@ const ProductList = () => {
           <div className="absolute flex flex-row gap-3 pr-6">
             {products.slice(0, 4).map((product) => (
               <ProductCard
+                image={product?.images?.[0] || ''}
                 name={product.name}
                 key={product.name}
                 quantity={product.quantity}

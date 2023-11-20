@@ -67,7 +67,6 @@ const ImageUpload = (props: ImageUploadProps) => {
           className="hidden"
           onChange={handleImageChange}
           id="fileInput"
-          multiple
           maxLength={5}
           disabled={images.length >= 5}
         />
