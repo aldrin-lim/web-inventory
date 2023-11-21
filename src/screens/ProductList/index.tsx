@@ -14,6 +14,7 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import { AppPath } from 'routes/AppRoutes.types'
 import { useNavigate } from 'react-router-dom'
+import MiddleTruncateText from 'components/MiddleTruncatedText'
 
 const ProductList = () => {
   const navigate = useNavigate()
@@ -86,7 +87,12 @@ const ProductList = () => {
                       iconClassName="w-6 text-gray-400"
                     />
                   </figure>
-                  <span>{items[index].name}</span>
+                  <span>
+                    <MiddleTruncateText
+                      text={items[index].name}
+                      maxLength={25}
+                    />
+                  </span>
                   <ChevronRightIcon className="ml-auto w-5" />
                 </button>
               </div>
