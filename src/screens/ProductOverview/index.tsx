@@ -60,7 +60,7 @@ const ProductOverview = () => {
       {/* Scrolls horizontally */}
       <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
         <div className="relative h-[230px] w-full">
-          <div className="absolute flex flex-row gap-3 pr-6">
+          <div className="absolute flex flex-row gap-3 ">
             {isLoading && (
               <>
                 <div className="skeleton h-[213px] w-[155px] rounded-md" />
