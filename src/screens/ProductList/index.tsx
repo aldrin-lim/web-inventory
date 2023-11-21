@@ -87,13 +87,26 @@ const ProductList = () => {
                       iconClassName="w-6 text-gray-400"
                     />
                   </figure>
-                  <span>
-                    <MiddleTruncateText
-                      text={items[index].name}
-                      maxLength={25}
-                    />
-                  </span>
-                  <ChevronRightIcon className="ml-auto w-5" />
+                  <div className="flex flex-row gap-2 text-left">
+                    <div>
+                      <p>
+                        <MiddleTruncateText
+                          text={items[index].name}
+                          maxLength={18}
+                        />
+                      </p>
+                      <p className="ml-auto text-xs font-normal">
+                        {product.quantity || 0} available
+                      </p>
+                    </div>
+                  </div>
+                  <div className="ml-auto">
+                    <div className="flex flex-row gap-3">
+                      <p>₱ {product.price}</p>
+
+                      <ChevronRightIcon className=" w-5" />
+                    </div>
+                  </div>
                 </button>
               </div>
             )
