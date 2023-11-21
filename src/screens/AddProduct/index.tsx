@@ -97,7 +97,7 @@ const AddProductComponent = () => {
 
     await createProduct(requestBody)
 
-    navigate(AppPath.ProductList)
+    navigate(AppPath.ProductOverview)
   }
 
   useEffect(() => {
@@ -127,7 +127,7 @@ const AddProductComponent = () => {
                   <ToolbarButton
                     key="cancel"
                     label="Cancel"
-                    onClick={() => navigate(AppPath.ProductList)}
+                    onClick={() => navigate(AppPath.ProductOverview)}
                   />,
                   <ToolbarTitle key="title" title="Add Product" />,
                   <ToolbarButton

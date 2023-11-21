@@ -10,14 +10,17 @@ import EmptyProducts from 'screens/ProductMenu/components/EmptyProduct'
 import ProductCard from 'screens/ProductMenu/components/ProductCard'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 
-const ProductList = () => {
+const ProductOverview = () => {
   const navigate = useNavigate()
 
   const { user, isLoading: isUserLoading } = useUser()
 
   const bussinessId = user?.businesses[0]?.id
 
-  const { products, isLoading: isProductsLoading } = useAllProducts(bussinessId)
+  const { products, isLoading: isProductsLoading } = useAllProducts(
+    bussinessId,
+    { limit: 4 },
+  )
 
   if (isUserLoading || isProductsLoading) {
     return <LoadingCover />
@@ -70,4 +73,4 @@ const ProductList = () => {
   )
 }
 
-export default ProductList
+export default ProductOverview
