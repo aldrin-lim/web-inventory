@@ -15,7 +15,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className="btn btn-link px-0 normal-case text-blue-400 no-underline"
+      className="btn btn-link px-0 normal-case text-blue-400 no-underline disabled:bg-transparent disabled:text-gray-400"
       disabled={disabled}
     >
       {label}
