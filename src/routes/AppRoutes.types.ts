@@ -5,6 +5,7 @@ export enum AppPath {
   Root = '/',
   AddProduct = '/products/add-product',
   ProductOverview = '/products/overview',
+  ProductList = '/products/list',
   Profile = '/profile',
   Store = '/store',
 }

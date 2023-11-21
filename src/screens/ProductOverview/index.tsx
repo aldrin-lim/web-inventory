@@ -50,7 +50,10 @@ const ProductOverview = () => {
       />
       <div className="flex w-full flex-row items-center justify-between">
         <h2 className="font-bold">Available</h2>
-        <a className="btn btn-ghost h-0 min-h-[20px] px-0 text-cyan-400">
+        <a
+          className="btn btn-ghost h-0 min-h-[20px] px-0 text-cyan-400"
+          onClick={() => navigate(AppPath.ProductList)}
+        >
           View all
         </a>
       </div>

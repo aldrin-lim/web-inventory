@@ -9,6 +9,7 @@ import Profile from 'screens/Profile'
 import Store from 'screens/Store'
 import AddProduct from 'screens/AddProduct'
 import ProductOverview from 'screens/ProductOverview'
+import ProductList from 'screens/ProductList'
 
 const AppRoutes = () => (
   <Routes>
@@ -34,6 +35,10 @@ const AppRoutes = () => (
     <Route
       path={AppPath.AddProduct}
       element={<ProtectedRoute element={<AddProduct />} />}
+    />
+    <Route
+      path={AppPath.ProductList}
+      element={<ProtectedRoute element={<ProductList />} />}
     />
   </Routes>
 )
