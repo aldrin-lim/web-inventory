@@ -19,7 +19,7 @@ import MiddleTruncateText from 'components/MiddleTruncatedText'
 const ProductList = () => {
   const navigate = useNavigate()
   const [page] = useState(0)
-  const { data } = useInfiniteQuery(
+  const { data, isLoading } = useInfiniteQuery(
     ['products'],
     ({ pageParam = 1 }) => getAllProducts({ limit: 100, page: pageParam }),
     {
@@ -52,7 +52,11 @@ const ProductList = () => {
       />
       <div className="form-control flex w-full flex-row justify-between ">
         <span>Restock Alert</span>
-        <input type="checkbox" className="toggle toggle-primary" />
+        <input
+          type="checkbox"
+          className="toggle toggle-primary"
+          disabled={isLoading}
+        />
       </div>
       <div className="join w-full border py-0">
         <button
@@ -64,54 +68,72 @@ const ProductList = () => {
         <input
           type="text"
           placeholder="Search"
-          className="input join-item w-full "
+          className="input join-item w-full"
+          disabled={isLoading}
         />
       </div>
       <div className="rounded-sm border border-gray-200 ">
-        <List
-          height={300} // adjust based on your layout
-          itemCount={items.length}
-          itemSize={47} // adjust based on your item size
-          width={'100%'} // adjust based on your layout
-          className="ProductList"
-        >
-          {({ index, style }) => {
-            const product = items[index]
-            const thumbnail = product.images && product.images[0]
-            return (
-              <div style={style} className="" key={product.name}>
-                <button className="rounded-row btn btn-ghost flex w-full flex-row justify-start rounded-none border-b-gray-200 bg-gray-100">
-                  <figure className="h-[24px] w-[24px]">
-                    <ImageLoader
-                      src={thumbnail}
-                      iconClassName="w-6 text-gray-400"
-                    />
-                  </figure>
-                  <div className="flex flex-row gap-2 text-left">
-                    <div>
-                      <p>
-                        <MiddleTruncateText
-                          text={items[index].name}
-                          maxLength={18}
-                        />
-                      </p>
-                      <p className="ml-auto text-xs font-normal">
-                        {product.quantity || 0} available
-                      </p>
+        {isLoading && (
+          <>
+            <div className="flex flex-col">
+              <div className="skeleton h-[47px] w-full rounded-none" />
+              <div className="skeleton h-[47px] w-full rounded-none" />
+              <div className="skeleton h-[47px] w-full rounded-none" />
+              <div className="skeleton h-[47px] w-full rounded-none" />
+              <div className="skeleton h-[47px] w-full rounded-none" />
+              <div className="skeleton h-[47px] w-full rounded-none" />
+              <div className="skeleton h-[47px] w-full rounded-none" />
+              <div className="skeleton h-[47px] w-full rounded-none" />
+              <div className="skeleton h-[47px] w-full rounded-none" />
+            </div>
+          </>
+        )}
+        {!isLoading && (
+          <List
+            height={400} // adjust based on your layout
+            itemCount={items.length}
+            itemSize={47} // adjust based on your item size
+            width={'100%'} // adjust based on your layout
+            className="ProductList"
+          >
+            {({ index, style }) => {
+              const product = items[index]
+              const thumbnail = product.images && product.images[0]
+              return (
+                <div style={style} className="" key={product.name}>
+                  <button className="rounded-row btn btn-ghost flex w-full flex-row justify-start rounded-none border-b-gray-200 bg-gray-100">
+                    <figure className="h-[24px] w-[24px]">
+                      <ImageLoader
+                        src={thumbnail}
+                        iconClassName="w-6 text-gray-400"
+                      />
+                    </figure>
+                    <div className="flex flex-row gap-2 text-left">
+                      <div>
+                        <p>
+                          <MiddleTruncateText
+                            text={items[index].name}
+                            maxLength={18}
+                          />
+                        </p>
+                        <p className="ml-auto text-xs font-normal">
+                          {product.quantity || 0} available
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="ml-auto">
-                    <div className="flex flex-row gap-3">
-                      <p>₱ {product.price}</p>
+                    <div className="ml-auto">
+                      <div className="flex flex-row gap-3">
+                        <p>₱ {product.price}</p>
 
-                      <ChevronRightIcon className=" w-5" />
+                        <ChevronRightIcon className=" w-5" />
+                      </div>
                     </div>
-                  </div>
-                </button>
-              </div>
-            )
-          }}
-        </List>
+                  </button>
+                </div>
+              )
+            }}
+          </List>
+        )}
       </div>
       {/* TODO: Implement once we change the response from get all products to have pagination info */}
       {/* {hasNextPage && (
