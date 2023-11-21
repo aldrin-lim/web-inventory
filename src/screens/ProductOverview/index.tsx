@@ -3,7 +3,7 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import useAllProducts from 'hooks/useAllProducts'
 import useUser from 'hooks/useUser'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import EmptyProducts from 'screens/ProductMenu/components/EmptyProduct'
 import ProductCard from 'screens/ProductMenu/components/ProductCard'
@@ -16,12 +16,17 @@ const ProductOverview = () => {
 
   const bussinessId = user?.businesses[0]?.id
 
-  const { products, isLoading: isProductsLoading } = useAllProducts(
-    bussinessId,
-    { limit: 4 },
-  )
+  const {
+    products,
+    isLoading: isProductsLoading,
+    error,
+  } = useAllProducts(bussinessId, { limit: 4 })
 
   const isLoading = isUserLoading || isProductsLoading
+
+  if (!isLoading && error) {
+    return <Navigate to={AppPath.Error} />
+  }
 
   if (!isLoading && products.length === 0) {
     return <EmptyProducts />

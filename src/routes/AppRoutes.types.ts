@@ -8,4 +8,5 @@ export enum AppPath {
   ProductList = '/products/list',
   Profile = '/profile',
   Store = '/store',
+  Error = '/error',
 }
