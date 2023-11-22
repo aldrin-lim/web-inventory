@@ -15,10 +15,17 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { AppPath } from 'routes/AppRoutes.types'
 import { useNavigate } from 'react-router-dom'
 import MiddleTruncateText from 'components/MiddleTruncatedText'
+import ProductListFilter from './components/ProductListFilter'
 
 const ProductList = () => {
   const navigate = useNavigate()
   const [page] = useState(0)
+
+  const [enableFilter, setEnableFilter] = useState(false)
+  const [outOfStockFilter, setOutOfStockFilter] = useState<
+    boolean | undefined
+  >()
+
   const { data, isLoading, error } = useInfiniteQuery(
     ['products'],
     ({ pageParam = 1 }) => getAllProducts({ limit: 100, page: pageParam }),
@@ -31,12 +38,17 @@ const ProductList = () => {
     },
   )
 
-  // const onNextPage = async () => {
-  //   setPage((prev) => prev + 1)
-  //   await fetchNextPage()
-  // }
+  let items = data?.pages.flatMap((page) => page) || []
 
-  const items = data?.pages.flatMap((page) => page) || []
+  if (enableFilter) {
+    if (typeof outOfStockFilter === 'boolean') {
+      if (outOfStockFilter === true) {
+        items = items.filter((item) => item.quantity === 0)
+      } else {
+        items = items.filter((item) => item.quantity > 0)
+      }
+    }
+  }
 
   return (
     <div className="section flex flex-col gap-4">
@@ -59,19 +71,27 @@ const ProductList = () => {
           disabled={isLoading}
         />
       </div>
-      <div className="join w-full border py-0">
-        <button
-          className="btn btn-ghost join-item !bg-transparent px-2 pr-1 !text-black"
-          disabled
-        >
-          <MagnifyingGlassIcon className="w-5" />
-        </button>
-        <input
-          type="text"
-          placeholder="Search"
-          className="input join-item w-full"
-          disabled={isLoading}
-        />
+      <div>
+        <div className="join w-full border py-0">
+          <button
+            className="btn btn-ghost join-item !bg-transparent px-2 pr-1 !text-black"
+            disabled
+          >
+            <MagnifyingGlassIcon className="w-5" />
+          </button>
+          <input
+            type="text"
+            placeholder="Search"
+            className="input join-item w-full"
+            disabled={isLoading}
+          />
+          <ProductListFilter
+            enabled={enableFilter}
+            onEnableFilter={(status) => setEnableFilter(status)}
+            outOfStock={outOfStockFilter}
+            onOutOfStockChange={(status) => setOutOfStockFilter(status)}
+          />
+        </div>
       </div>
       <div className="rounded-sm border border-gray-200 ">
         {!isLoading && Boolean(error) && (
