@@ -12,13 +12,13 @@ import {
   AddProductActionType,
   AddProductContextProvider,
   AddProductModal,
-  ProductDetails,
   useAddProductContext,
 } from './contexts/AddProductContext'
 import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { useCallback, useEffect } from 'react'
 import {
+  Product,
   addProductDetailSchema,
   addProductRequestSchema,
   addProductSchema,
@@ -42,7 +42,7 @@ const modalVariants: Variants = {
   },
 }
 
-const getProductDetailError = (productDetail: ProductDetails) => {
+const getProductDetailError = (productDetail: Product) => {
   const validationResult = addProductDetailSchema.safeParse(productDetail)
 
   if (!validationResult.success) {
@@ -52,11 +52,16 @@ const getProductDetailError = (productDetail: ProductDetails) => {
   return ''
 }
 
-export const AddProductComponent = () => {
+type AddProductComponentProps = {
+  mode?: 'edit' | 'add'
+}
+
+export const AddProductComponent = (props: AddProductComponentProps) => {
   const {
     dispatch,
     state: { activeModal, productDetails },
   } = useAddProductContext()
+  const { mode = 'add' } = props
 
   const { createProduct, isCreating } = useCreateProduct()
 
@@ -72,7 +77,7 @@ export const AddProductComponent = () => {
   }
 
   const setProductValue = useCallback(
-    (field: keyof ProductDetails, value: unknown) => {
+    (field: keyof Product, value: unknown) => {
       dispatch({
         type: AddProductActionType.UpdateProductDetail,
         payload: {
@@ -132,7 +137,7 @@ export const AddProductComponent = () => {
                   <ToolbarTitle key="title" title="Add Product" />,
                   <ToolbarButton
                     key="save"
-                    label="Save"
+                    label={mode === 'add' ? 'Save' : 'Update'}
                     onClick={!isCreating ? submitForm : undefined}
                     disabled={isCreating}
                   />,
@@ -269,6 +274,7 @@ export const AddProductComponent = () => {
 
               <ImageUpload
                 onChange={(images) => setProductValue('images', images)}
+                images={productDetails.images}
               />
               <button
                 className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"

@@ -1,5 +1,6 @@
 // AddProductContext.tsx
 import React, { createContext, useContext, useReducer, ReactNode } from 'react'
+import { Product } from 'types/product.types'
 
 export enum AddProductModal {
   None = '',
@@ -12,28 +13,15 @@ export enum AddProductActionType {
   UpdateProductDetail = 'UPDATE_PRODUCT_DETAIL',
 }
 
-export interface ProductDetails {
-  name: string
-  price?: number
-  cost?: number
-  profit?: number
-  images: string[]
-  description: string
-  quantity: number
-  allowBackOrder: boolean
-  measurement: string
-  category?: string
-  expiryDate?: Date
-}
-
 interface State {
   activeModal: AddProductModal
-  productDetails: ProductDetails
+  productDetails: Product
 }
 
 const initialState: State = {
   activeModal: AddProductModal.None,
   productDetails: {
+    id: '',
     name: '',
     price: 0,
     cost: 0,
@@ -52,7 +40,7 @@ type Action =
   | { type: AddProductActionType.SetActiveModal; payload: AddProductModal }
   | {
       type: AddProductActionType.UpdateProductDetail
-      payload: { field: keyof ProductDetails; value: unknown }
+      payload: { field: keyof Product; value: unknown }
     }
 
 function reducer(state: State, action: Action): State {
@@ -84,7 +72,7 @@ export const useAddProductContext = () => useContext(AddProductContext)
 
 interface AddProductContextProviderProps {
   children: ReactNode
-  productDetails?: Partial<ProductDetails>
+  productDetails?: Partial<Product>
 }
 
 export const AddProductContextProvider: React.FC<

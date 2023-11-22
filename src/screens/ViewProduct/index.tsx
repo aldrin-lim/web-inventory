@@ -1,5 +1,43 @@
+import Toolbar from 'components/Layout/components/Toolbar'
+import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
+import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
+import useGetProduct from 'hooks/useGetProduct'
+import { useParams } from 'react-router-dom'
+import { AddProductComponent } from 'screens/AddProduct'
+import { AddProductContextProvider } from 'screens/AddProduct/contexts/AddProductContext'
+
+const Skeleton = () => (
+  <div className="section relative flex flex-col gap-4 pt-0">
+    <Toolbar
+      items={[
+        <ToolbarButton key="cancel" label="Cancel" disabled />,
+        <ToolbarTitle key="title" title="View Product" />,
+        <ToolbarButton key="save" label="Save" disabled />,
+      ]}
+    />
+
+    <div className="skeleton h-[47px] w-full rounded-md" />
+    <div className="skeleton h-[24px] w-full rounded-md" />
+    <div className="skeleton h-[96px] w-full rounded-md" />
+    <div className="skeleton h-[154px] w-full rounded-md" />
+    <div className="skeleton h-[47px] w-full rounded-md" />
+  </div>
+)
+
 const ViewProduct = () => {
-  return <div className="section">View product</div>
+  const { id } = useParams<{ id: string }>()
+
+  const { product, isLoading } = useGetProduct(id)
+
+  if (isLoading) {
+    return <Skeleton />
+  }
+
+  return (
+    <AddProductContextProvider productDetails={product}>
+      <AddProductComponent mode="edit" />
+    </AddProductContextProvider>
+  )
 }
 
 export default ViewProduct
