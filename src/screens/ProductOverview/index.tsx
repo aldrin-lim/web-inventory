@@ -12,17 +12,26 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 const ProductOverview = () => {
   const navigate = useNavigate()
 
-  const { user, isLoading: isUserLoading } = useUser()
+  const { user, isLoading: isUserLoading, error: userError } = useUser()
 
   const bussinessId = user?.businesses[0]?.id
 
   const {
     products,
     isLoading: isProductsLoading,
-    error,
-  } = useAllProducts(bussinessId, { limit: 4 })
+    error: productError,
+  } = useAllProducts(bussinessId, { limit: 4, outOfStock: false })
 
-  const isLoading = isUserLoading || isProductsLoading
+  const {
+    products: outOfSotckProducts,
+    isLoading: isoutOfSotckProductsLoading,
+    error: outOfStouckProductError,
+  } = useAllProducts(bussinessId, { limit: 4, outOfStock: true })
+
+  const error = productError || outOfStouckProductError || userError
+
+  const isLoading =
+    isUserLoading || isProductsLoading || isoutOfSotckProductsLoading
 
   if (!isLoading && error) {
     return <Navigate to={AppPath.Error} />
@@ -33,7 +42,7 @@ const ProductOverview = () => {
   }
 
   return (
-    <div className="section flex flex-col gap-4 pt-0">
+    <div className="section z-30 flex flex-col gap-4 pb-24 pt-0">
       <Toolbar
         items={[
           <ToolbarButton
@@ -75,6 +84,42 @@ const ProductOverview = () => {
             )}
             {!isLoading &&
               products
+                .slice(0, 4)
+                .map((product) => (
+                  <ProductCard
+                    image={product?.images?.[0] || ''}
+                    name={product.name}
+                    key={product.name}
+                    quantity={product.quantity}
+                  />
+                ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex w-full flex-row items-center justify-between">
+        <h2 className="font-bold">Out of Stock</h2>
+        <button
+          className="btn btn-link h-0 min-h-[20px] px-0 text-cyan-400 no-underline disabled:bg-transparent disabled:text-gray-400"
+          onClick={() => navigate(AppPath.ProductList)}
+          disabled={isLoading}
+        >
+          View all
+        </button>
+      </div>
+      {/* Scrolls horizontally */}
+      <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
+        <div className="relative h-[230px] w-full">
+          <div className="absolute flex flex-row gap-3 ">
+            {isoutOfSotckProductsLoading && (
+              <>
+                <div className="skeleton h-[213px] w-[155px] rounded-md" />
+                <div className="skeleton h-[213px] w-[155px] rounded-md" />
+                <div className="skeleton h-[213px] w-[155px] rounded-md" />
+              </>
+            )}
+            {!isoutOfSotckProductsLoading &&
+              outOfSotckProducts
                 .slice(0, 4)
                 .map((product) => (
                   <ProductCard

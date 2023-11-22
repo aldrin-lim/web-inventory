@@ -7,12 +7,6 @@ export const paginationOptionsSchema = z.object({
     })
     .positive()
     .optional(),
-  skip: z
-    .number({
-      invalid_type_error: 'Limit must be a number',
-    })
-    .positive()
-    .optional(),
   page: z
     .number({
       invalid_type_error: 'Limit must be a number',

@@ -54,6 +54,7 @@ export const addProductDetailSchema = z.object({
     .nullable()
     .optional(),
 })
+export type AddProductResponseSchema = z.infer<typeof addProductRequestSchema>
 
 export const addProductSchema = z.object({
   name: z.string({
@@ -86,6 +87,7 @@ export const addProductRequestSchema = addProductSchema
       }),
     }),
   )
+export type AddProductRequestSchema = z.infer<typeof addProductRequestSchema>
 
 const getProductResponseSchema = z.object({
   name: z.string({
@@ -142,5 +144,10 @@ const getProductResponseSchema = z.object({
 
 export type GetAllProductSchema = z.infer<typeof getProductResponseSchema>
 
-export type AddProductRequestSchema = z.infer<typeof addProductRequestSchema>
-export type AddProductResponseSchema = z.infer<typeof addProductRequestSchema>
+export const getAllProductsFilterSchema = z.object({
+  outOfStock: z.boolean().optional(),
+})
+
+export type GetAllProductFilterSchema = z.infer<
+  typeof getAllProductsFilterSchema
+>

@@ -1,11 +1,7 @@
 import { AppPath } from 'routes/AppRoutes.types'
 import Navbar from './components/Navbar'
 import { Outlet, useNavigate } from 'react-router-dom'
-import {
-  Bars3Icon,
-  BuildingStorefrontIcon,
-  UserIcon,
-} from '@heroicons/react/24/solid'
+import { BuildingStorefrontIcon, UserIcon } from '@heroicons/react/24/solid'
 
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline'
 import { useAuth0 } from '@auth0/auth0-react'
@@ -26,14 +22,7 @@ const Layout = () => {
 
   return (
     <main>
-      {/* <label
-        key="12"
-        htmlFor="my-drawer"
-        className="btn btn-ghost drawer-button -mr-4"
-      >
-        <Bars3Icon className="h-6 w-6" />
-      </label> */}
-      <div className="drawer z-50">
+      <div className="drawer">
         <input
           ref={drawerToggle}
           id="my-drawer"

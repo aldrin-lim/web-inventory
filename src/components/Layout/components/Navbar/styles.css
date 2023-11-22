@@ -9,6 +9,8 @@
     rounded-md
     bg-gray-100
     py-2
+    border
+    border-gray-200 
     z-40;
 }
 

@@ -3,6 +3,7 @@ import { PaginationOptions } from 'types/api.types'
 import {
   AddProductRequestSchema,
   AddProductResponseSchema,
+  GetAllProductFilterSchema,
   GetAllProductSchema,
 } from 'types/product.types'
 import { httpClient } from 'util/http'
@@ -17,7 +18,9 @@ export const createProduct = async (param: AddProductRequestSchema) => {
   return result
 }
 
-export const getAllProducts = async (param?: PaginationOptions) => {
+export const getAllProducts = async (
+  param?: PaginationOptions & GetAllProductFilterSchema,
+) => {
   let url = '/products'
 
   if (param && Object.keys(param).length > 0) {

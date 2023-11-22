@@ -19,7 +19,7 @@ import MiddleTruncateText from 'components/MiddleTruncatedText'
 const ProductList = () => {
   const navigate = useNavigate()
   const [page] = useState(0)
-  const { data, isLoading } = useInfiniteQuery(
+  const { data, isLoading, error } = useInfiniteQuery(
     ['products'],
     ({ pageParam = 1 }) => getAllProducts({ limit: 100, page: pageParam }),
     {
@@ -27,6 +27,7 @@ const ProductList = () => {
         if (page > 1 && lastPage.length < 10) return undefined
         return pages.length + 1
       },
+      retry: 2,
     },
   )
 
@@ -73,6 +74,14 @@ const ProductList = () => {
         />
       </div>
       <div className="rounded-sm border border-gray-200 ">
+        {!isLoading && Boolean(error) && (
+          <div className="my-auto flex h-[400px] w-full items-center justify-center p-6 text-center">
+            <p className="text-center text-xs text-gray-400">
+              We&apos;re having a bit of trouble fetching your data. Hang tight,
+              we&apos;re on it
+            </p>
+          </div>
+        )}
         {isLoading && (
           <>
             <div className="flex flex-col">
@@ -88,7 +97,7 @@ const ProductList = () => {
             </div>
           </>
         )}
-        {!isLoading && (
+        {!error && !isLoading && (
           <List
             height={400} // adjust based on your layout
             itemCount={items.length}
