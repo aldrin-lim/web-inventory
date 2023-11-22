@@ -8,16 +8,19 @@ import {
 
 import './styles.css'
 import ImageLoader from 'components/ImageLoader'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import { AppPath } from 'routes/AppRoutes.types'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import MiddleTruncateText from 'components/MiddleTruncatedText'
 import ProductListFilter from './components/ProductListFilter'
+import { z } from 'zod'
+import { Product } from 'types/product.types'
 
 const ProductList = () => {
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [page] = useState(0)
 
@@ -25,6 +28,7 @@ const ProductList = () => {
   const [outOfStockFilter, setOutOfStockFilter] = useState<
     boolean | undefined
   >()
+  const [products, setProducts] = useState<Array<Product>>([])
 
   const { data, isLoading, error } = useInfiniteQuery(
     ['products'],
@@ -38,18 +42,39 @@ const ProductList = () => {
     },
   )
 
-  let items = data?.pages.flatMap((page) => page) || []
+  useMemo(() => {
+    let items = data?.pages.flatMap((page) => page) || []
 
-  if (enableFilter) {
-    if (typeof outOfStockFilter === 'boolean') {
-      if (outOfStockFilter === true) {
-        items = items.filter((item) => item.quantity === 0)
-      } else {
-        items = items.filter((item) => item.quantity > 0)
+    if (enableFilter) {
+      if (typeof outOfStockFilter === 'boolean') {
+        if (outOfStockFilter === true) {
+          items = items.filter((item) => item.quantity === 0)
+        } else {
+          items = items.filter((item) => item.quantity > 0)
+        }
       }
     }
-  }
+    setProducts(items)
+  }, [data?.pages, enableFilter, outOfStockFilter])
 
+  useEffect(() => {
+    const paramsObject = Object.fromEntries(searchParams) as {
+      outOfStock?: boolean
+    }
+
+    const queryParamsSchema = z.object({
+      outOfStock: z.enum(['true', 'false']),
+    })
+
+    const queryParamValidation = queryParamsSchema.safeParse(paramsObject)
+
+    if (queryParamValidation.success) {
+      setEnableFilter(true)
+      setOutOfStockFilter(
+        Boolean(queryParamValidation.data.outOfStock === 'true'),
+      )
+    }
+  }, [searchParams])
   return (
     <div className="section flex flex-col gap-4">
       <Toolbar
@@ -120,13 +145,13 @@ const ProductList = () => {
         {!error && !isLoading && (
           <List
             height={400} // adjust based on your layout
-            itemCount={items.length}
+            itemCount={products.length}
             itemSize={47} // adjust based on your item size
             width={'100%'} // adjust based on your layout
             className="ProductList"
           >
             {({ index, style }) => {
-              const product = items[index]
+              const product = products[index]
               const thumbnail = product.images && product.images[0]
               return (
                 <div style={style} className="" key={product.name}>
@@ -141,7 +166,7 @@ const ProductList = () => {
                       <div>
                         <p>
                           <MiddleTruncateText
-                            text={items[index].name}
+                            text={product.name}
                             maxLength={18}
                           />
                         </p>

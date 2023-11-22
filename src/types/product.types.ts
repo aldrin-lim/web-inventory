@@ -18,6 +18,7 @@ export type Product = {
   description?: string
   price: number
   cost: number
+  quantity: number
   profit: number
   images?: Array<string>
   options?: Array<VariantOptions>

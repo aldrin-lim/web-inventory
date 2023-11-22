@@ -1,5 +1,4 @@
 import { FunnelIcon } from '@heroicons/react/24/outline'
-import { useEffect, useState } from 'react'
 
 type ProductListFilterProps = {
   enabled?: boolean
@@ -9,23 +8,8 @@ type ProductListFilterProps = {
 }
 
 const ProductListFilter = (props: ProductListFilterProps) => {
-  const { onEnableFilter } = props
-  const [enabled, setEnabled] = useState(props.enabled ?? false)
-  const [outOfStock, setOutOfStock] = useState(props.outOfStock ?? false)
+  const { enabled, onEnableFilter, outOfStock, onOutOfStockChange } = props
 
-  useEffect(() => {
-    if (props.onEnableFilter) {
-      props.onEnableFilter(enabled)
-    }
-  }, [enabled, props])
-
-  useEffect(() => {
-    if (props.onOutOfStockChange) {
-      props.onOutOfStockChange(outOfStock)
-    }
-  }, [outOfStock, props])
-
-  useEffect(() => {}, [outOfStock])
   return (
     <details className="dropdown dropdown-end">
       <summary className="btn btn-ghost m-1">
@@ -39,7 +23,7 @@ const ProductListFilter = (props: ProductListFilterProps) => {
             className="toggle toggle-primary"
             onChange={() => {
               if (onEnableFilter) {
-                setEnabled(!enabled)
+                onEnableFilter(!enabled)
               }
             }}
             checked={enabled}
@@ -52,8 +36,8 @@ const ProductListFilter = (props: ProductListFilterProps) => {
             className="toggle toggle-primary"
             checked={outOfStock}
             onChange={() => {
-              if (onEnableFilter) {
-                setOutOfStock(!outOfStock)
+              if (onOutOfStockChange) {
+                onOutOfStockChange(!outOfStock)
               }
             }}
             disabled={!enabled}
