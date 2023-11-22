@@ -1,7 +1,10 @@
 import MiddleTruncatedText from 'components/MiddleTruncatedText'
 import ImageLoader from 'components/ImageLoader'
+import { useNavigate } from 'react-router-dom'
+import { AppPath } from 'routes/AppRoutes.types'
 
 type ProductCardProps = {
+  id: string
   name: string
   status?: string
   quantity: number
@@ -9,10 +12,18 @@ type ProductCardProps = {
 }
 
 const ProductCard = (props: ProductCardProps) => {
-  const { name, status, quantity, image } = props
+  const { name, status, quantity, image, id } = props
+  const navigate = useNavigate()
+
+  const onClick = (id: string) => {
+    navigate(`${AppPath.Products}/${id}`)
+  }
 
   return (
-    <div className="card card-compact w-[155px] border border-gray-300 bg-base-100">
+    <div
+      className="card card-compact w-[155px] cursor-pointer border border-gray-300 bg-base-100"
+      onClick={() => onClick(id)}
+    >
       <figure className="h-[155px] w-[155px] bg-gray-300">
         {/* Show image or PhotoIcon based on image load status */}
         <ImageLoader src={image} iconClassName="w-24 text-gray-400" />

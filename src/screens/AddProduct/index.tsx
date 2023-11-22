@@ -52,7 +52,7 @@ const getProductDetailError = (productDetail: ProductDetails) => {
   return ''
 }
 
-const AddProductComponent = () => {
+export const AddProductComponent = () => {
   const {
     dispatch,
     state: { activeModal, productDetails },

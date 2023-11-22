@@ -14,6 +14,7 @@ export type ProductVariant = {
 }
 
 export type Product = {
+  id: string
   name: string
   description?: string
   price: number
@@ -91,6 +92,7 @@ export const addProductRequestSchema = addProductSchema
 export type AddProductRequestSchema = z.infer<typeof addProductRequestSchema>
 
 const getProductResponseSchema = z.object({
+  id: z.string().optional(),
   name: z.string({
     required_error: 'Product name is required',
     invalid_type_error: 'Name must be a string',

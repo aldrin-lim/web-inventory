@@ -126,6 +126,7 @@ const ProductOverview = () => {
                 .slice(0, 4)
                 .map((product) => (
                   <ProductCard
+                    id={product.id as string}
                     image={product?.images?.[0] || ''}
                     name={product.name}
                     key={product.name}
@@ -163,6 +164,7 @@ const ProductOverview = () => {
                     .slice(0, 4)
                     .map((product) => (
                       <ProductCard
+                        id={product.id as string}
                         image={product?.images?.[0] || ''}
                         name={product.name}
                         key={product.name}
