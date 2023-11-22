@@ -184,7 +184,6 @@ const AddProductComponent = () => {
                           type="text"
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Price"
-                          value={meta.touched ? field.value : ''}
                           // This is to prevent input preppending 0 while typing
                           onClick={() => setFieldTouched('price')}
                           onChange={(e) => {
@@ -224,7 +223,6 @@ const AddProductComponent = () => {
                           type="text"
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Cost"
-                          value={meta.touched ? field.value : ''}
                           // This is to prevent input preppending 0 while typing
                           onClick={() => setFieldTouched('cost')}
                           onChange={(e) => {

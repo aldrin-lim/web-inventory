@@ -17,6 +17,7 @@ type MeasurementSelectProps = {
 const MeasurementSelect = (props: MeasurementSelectProps) => {
   return (
     <AutocompleteSelect
+      defaultValue={'pieces'}
       onChange={props.onChange}
       options={measurementOptions}
       className="measurement-selection"

@@ -84,12 +84,27 @@ export const useAddProductContext = () => useContext(AddProductContext)
 
 interface AddProductContextProviderProps {
   children: ReactNode
+  productDetails?: Partial<ProductDetails>
 }
 
 export const AddProductContextProvider: React.FC<
   AddProductContextProviderProps
-> = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState)
+> = ({ children, productDetails }) => {
+  let defaultState = initialState
+
+  if (productDetails) {
+    defaultState = {
+      ...initialState,
+      productDetails: {
+        ...initialState.productDetails,
+        ...productDetails,
+      },
+    }
+  }
+
+  console.log('defaultState', defaultState)
+
+  const [state, dispatch] = useReducer(reducer, defaultState)
 
   return (
     <AddProductContext.Provider value={{ state, dispatch }}>

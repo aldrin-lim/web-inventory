@@ -83,7 +83,7 @@ const AddProductDetail = () => {
           goBack()
         }}
       >
-        {({ submitForm, setFieldValue, values, errors }) => {
+        {({ submitForm, setFieldValue, values }) => {
           return (
             <>
               <Toolbar
@@ -215,9 +215,6 @@ const AddProductDetail = () => {
                   </div>
                 )}
               </Field>
-              <pre className="text-left text-xs">
-                {JSON.stringify(errors, null, 2)}
-              </pre>
             </>
           )
         }}
