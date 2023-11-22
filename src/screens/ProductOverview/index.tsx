@@ -49,7 +49,7 @@ const ProductOverview = () => {
         <Toolbar
           items={[
             <ToolbarButton
-              key="save"
+              key={1}
               icon={<ChevronLeftIcon className="w-6" />}
               onClick={() => navigate(AppPath.Products)}
               disabled={isLoading}
@@ -57,7 +57,7 @@ const ProductOverview = () => {
 
             <ToolbarTitle key="title" title="Products" />,
             <ToolbarButton
-              key="save"
+              key={2}
               label="Add"
               onClick={() => navigate(AppPath.AddProduct)}
               disabled={isLoading}
@@ -79,7 +79,7 @@ const ProductOverview = () => {
       <Toolbar
         items={[
           <ToolbarButton
-            key="save"
+            key={1}
             icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => navigate(AppPath.Products)}
             disabled={isLoading}
@@ -87,7 +87,7 @@ const ProductOverview = () => {
 
           <ToolbarTitle key="title" title="Products" />,
           <ToolbarButton
-            key="save"
+            key={2}
             label="Add"
             onClick={() => navigate(AppPath.AddProduct)}
             disabled={isLoading}
