@@ -17,7 +17,22 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import MiddleTruncateText from 'components/MiddleTruncatedText'
 import ProductListFilter from './components/ProductListFilter'
 import { z } from 'zod'
-import { Product } from 'types/product.types'
+
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [value, delay])
+
+  return debouncedValue
+}
 
 const ProductList = () => {
   const [searchParams] = useSearchParams()
@@ -28,7 +43,8 @@ const ProductList = () => {
   const [outOfStockFilter, setOutOfStockFilter] = useState<
     boolean | undefined
   >()
-  const [products, setProducts] = useState<Array<Product>>([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const debouncedSearchTerm = useDebounce(searchTerm, 100)
 
   const { data, isLoading, error } = useInfiniteQuery(
     ['products'],
@@ -42,20 +58,45 @@ const ProductList = () => {
     },
   )
 
-  useMemo(() => {
+  // useMemo(() => {
+  //   let items = data?.pages.flatMap((page) => page) || []
+
+  //   if (enableFilter) {
+  //     if (typeof outOfStockFilter === 'boolean') {
+  //       if (outOfStockFilter === true) {
+  //         items = items.filter((item) => item.quantity === 0)
+  //       } else {
+  //         items = items.filter((item) => item.quantity > 0)
+  //       }
+  //     }
+  //   }
+  //   items = items.filter((item) => {
+  //     return item.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+  //   })
+  //   setProducts(items)
+  // }, [data?.pages, debouncedSearchTerm, enableFilter, outOfStockFilter])
+
+  const filteredProducts = useMemo(() => {
     let items = data?.pages.flatMap((page) => page) || []
 
-    if (enableFilter) {
-      if (typeof outOfStockFilter === 'boolean') {
-        if (outOfStockFilter === true) {
-          items = items.filter((item) => item.quantity === 0)
-        } else {
-          items = items.filter((item) => item.quantity > 0)
-        }
-      }
+    // Apply out-of-stock filter
+    if (enableFilter && typeof outOfStockFilter === 'boolean') {
+      items = items.filter((item) =>
+        outOfStockFilter ? item.quantity === 0 : item.quantity > 0,
+      )
     }
-    setProducts(items)
-  }, [data?.pages, enableFilter, outOfStockFilter])
+
+    // Apply search filter
+    if (debouncedSearchTerm) {
+      items = items.filter((item) =>
+        item.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
+      )
+    }
+
+    return items
+  }, [data?.pages, enableFilter, outOfStockFilter, debouncedSearchTerm])
+
+  console.log(debouncedSearchTerm)
 
   useEffect(() => {
     const paramsObject = Object.fromEntries(searchParams) as {
@@ -75,6 +116,7 @@ const ProductList = () => {
       )
     }
   }, [searchParams])
+
   return (
     <div className="section flex flex-col gap-4">
       <Toolbar
@@ -109,6 +151,7 @@ const ProductList = () => {
             placeholder="Search"
             className="input join-item w-full"
             disabled={isLoading}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <ProductListFilter
             enabled={enableFilter}
@@ -145,17 +188,17 @@ const ProductList = () => {
         {!error && !isLoading && (
           <List
             height={400} // adjust based on your layout
-            itemCount={products.length}
+            itemCount={filteredProducts.length}
             itemSize={47} // adjust based on your item size
             width={'100%'} // adjust based on your layout
             className="ProductList"
           >
             {({ index, style }) => {
-              const product = products[index]
+              const product = filteredProducts[index]
               const thumbnail = product.images && product.images[0]
               return (
                 <div style={style} className="" key={product.name}>
-                  <button className="rounded-row btn btn-ghost flex w-full flex-row justify-start rounded-none border-b-gray-200 bg-gray-100">
+                  <button className="rounded-row btn btn-ghost no-animation flex w-full flex-row justify-start rounded-none border-b-gray-200 bg-gray-100">
                     <figure className="h-[24px] w-[24px]">
                       <ImageLoader
                         src={thumbnail}
