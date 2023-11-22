@@ -117,6 +117,10 @@ const ProductList = () => {
     }
   }, [searchParams])
 
+  const onClick = (id: string) => {
+    navigate(`${AppPath.Products}/${id}`)
+  }
+
   return (
     <div className="section flex flex-col gap-4">
       <Toolbar
@@ -198,7 +202,10 @@ const ProductList = () => {
               const thumbnail = product.images && product.images[0]
               return (
                 <div style={style} className="" key={product.name}>
-                  <button className="rounded-row btn btn-ghost no-animation flex w-full flex-row justify-start rounded-none border-b-gray-200 bg-gray-100">
+                  <button
+                    onClick={() => onClick(product.id as string)}
+                    className="rounded-row btn btn-ghost no-animation flex w-full flex-row justify-start rounded-none border-b-gray-200 bg-gray-100"
+                  >
                     <figure className="h-[24px] w-[24px]">
                       <ImageLoader
                         src={thumbnail}
