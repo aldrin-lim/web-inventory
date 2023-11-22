@@ -22,8 +22,10 @@ import {
   addProductDetailSchema,
   addProductRequestSchema,
   addProductSchema,
+  updateProductRequestSchema,
 } from 'types/product.types'
 import useCreateProduct from 'hooks/useCreateProduct'
+import useUpdateProduct from 'hooks/useUpdateProduct'
 
 const modalVariants: Variants = {
   hidden: {
@@ -64,6 +66,9 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
   const { mode = 'add' } = props
 
   const { createProduct, isCreating } = useCreateProduct()
+  const { updateProduct, isUpdating } = useUpdateProduct()
+
+  const isMutating = isUpdating || isCreating
 
   const { description } = productDetails
 
@@ -89,22 +94,6 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
     [dispatch],
   )
 
-  const onSaveProductHanlder = async () => {
-    const validation = addProductRequestSchema.safeParse(productDetails)
-
-    if (!validation.success) {
-      const error = validation.error.issues[0].message
-      console.log(error)
-      return
-    }
-
-    const requestBody = validation.data
-
-    await createProduct(requestBody)
-
-    navigate(AppPath.ProductOverview)
-  }
-
   useEffect(() => {
     if (productDetails.price && productDetails.cost) {
       setProductValue(
@@ -116,11 +105,41 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
 
   const addProductDetailError = getProductDetailError(productDetails)
 
+  const onProcessProduct = async () => {
+    if (mode === 'add') {
+      const validation = addProductRequestSchema.safeParse(productDetails)
+
+      if (!validation.success) {
+        const error = validation.error.issues[0].message
+        console.log(error)
+        return
+      }
+
+      const requestBody = validation.data
+
+      await createProduct(requestBody)
+    } else {
+      const validation = updateProductRequestSchema.safeParse(productDetails)
+
+      if (!validation.success) {
+        const error = validation.error.issues[0].message
+        console.log(error)
+        return
+      }
+
+      const requestBody = validation.data
+      console.log(requestBody)
+      await updateProduct({ id: requestBody.id, product: requestBody })
+    }
+
+    navigate(AppPath.ProductOverview)
+  }
+
   return (
     <div className="section relative flex flex-col gap-4 pt-0">
       <Formik
         initialValues={productDetails}
-        onSubmit={onSaveProductHanlder}
+        onSubmit={onProcessProduct}
         validationSchema={toFormikValidationSchema(addProductSchema)}
         validateOnChange={false}
       >
@@ -141,8 +160,8 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
                   <ToolbarButton
                     key="save"
                     label={mode === 'add' ? 'Save' : 'Update'}
-                    onClick={!isCreating ? submitForm : undefined}
-                    disabled={isCreating}
+                    onClick={!isMutating ? submitForm : undefined}
+                    disabled={isMutating}
                   />,
                 ]}
               />
@@ -159,7 +178,7 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
                         setProductValue('name', e.target.value)
                         setFieldValue('name', e.target.value)
                       }}
-                      disabled={isCreating}
+                      disabled={isMutating}
                     />
                     <p className="form-control-error">{meta.error} &nbsp;</p>
                   </div>
@@ -206,7 +225,7 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
                             setProductValue('price', value)
                             setFieldValue('price', value)
                           }}
-                          disabled={isCreating}
+                          disabled={isMutating}
                         />
                       </div>
                       <p className="form-control-error">{meta.error} &nbsp;</p>
@@ -245,7 +264,7 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
                             setProductValue('cost', value)
                             setFieldValue('cost', value)
                           }}
-                          disabled={isCreating}
+                          disabled={isMutating}
                         />
                       </div>
 
@@ -282,7 +301,7 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
               <button
                 className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
                 onClick={() => setActiveModal(AddProductModal.Detail)}
-                disabled={isCreating}
+                disabled={isMutating}
               >
                 <div className="flex flex-row items-center gap-1">
                   <ArchiveBoxIcon className="w-5" />

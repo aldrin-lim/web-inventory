@@ -1,9 +1,10 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateProductById } from 'api/product.api'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
 const useUpdateProduct = () => {
+  const queryClient = useQueryClient()
   const {
     mutateAsync: updateProduct,
     isLoading: isUpdating,
@@ -22,6 +23,9 @@ const useUpdateProduct = () => {
         autoClose: 3000,
         theme: 'colored',
       })
+    },
+    onSuccess: (_, param) => {
+      queryClient.invalidateQueries(['product', param.id])
     },
   })
 

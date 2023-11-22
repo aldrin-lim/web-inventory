@@ -3,7 +3,7 @@ import { getProductById } from 'api/product.api'
 
 const useGetProduct = (productId?: string) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['products', productId],
+    queryKey: ['product', productId],
     queryFn: () => getProductById(productId as string),
     retry: 0,
     enabled: Boolean(productId),
