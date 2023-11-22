@@ -142,7 +142,7 @@ const ProductOverview = () => {
             <h2 className="font-bold">Out of Stock</h2>
             <button
               className="btn btn-link h-0 min-h-[20px] px-0 text-cyan-400 no-underline disabled:bg-transparent disabled:text-gray-400"
-              onClick={() => navigate(AppPath.ProductList)}
+              onClick={() => navigate(AppPath.ProductList + '?outOfStock=true')}
               disabled={isLoading}
             >
               View all
