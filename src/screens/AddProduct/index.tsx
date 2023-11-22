@@ -134,7 +134,10 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
                     label="Cancel"
                     onClick={() => navigate(AppPath.ProductOverview)}
                   />,
-                  <ToolbarTitle key="title" title="Add Product" />,
+                  <ToolbarTitle
+                    key="title"
+                    title={mode === 'add' ? 'Add Product' : 'View Product'}
+                  />,
                   <ToolbarButton
                     key="save"
                     label={mode === 'add' ? 'Save' : 'Update'}
