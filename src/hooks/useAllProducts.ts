@@ -12,6 +12,7 @@ const useAllProducts = (
     queryFn: () => getAllProducts(param),
     retry: 0,
     enabled: Boolean(bussinessId),
+    refetchOnWindowFocus: false,
   })
 
   return {

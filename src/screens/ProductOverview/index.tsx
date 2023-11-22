@@ -41,8 +41,41 @@ const ProductOverview = () => {
     return <EmptyProducts />
   }
 
+  const showOutOfStock = outOfSotckProducts.length > 0
+
+  if (error) {
+    return (
+      <div className="section z-30 flex flex-col gap-4 pb-24 pt-0">
+        <Toolbar
+          items={[
+            <ToolbarButton
+              key="save"
+              icon={<ChevronLeftIcon className="w-6" />}
+              onClick={() => navigate(AppPath.Products)}
+              disabled={isLoading}
+            />,
+
+            <ToolbarTitle key="title" title="Products" />,
+            <ToolbarButton
+              key="save"
+              label="Add"
+              onClick={() => navigate(AppPath.AddProduct)}
+              disabled={isLoading}
+            />,
+          ]}
+        />
+        <div className="my-auto flex h-[400px] w-full items-center justify-center p-6 text-center">
+          <p className="text-center text-xs text-gray-400">
+            We&apos;re having a bit of trouble fetching your data. Hang tight,
+            we&apos;re on it
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="section z-30 flex flex-col gap-4 pb-24 pt-0">
+    <div className="section z-30 flex h-full flex-col gap-4 pb-24 pt-0">
       <Toolbar
         items={[
           <ToolbarButton
@@ -73,8 +106,14 @@ const ProductOverview = () => {
       </div>
       {/* Scrolls horizontally */}
       <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
-        <div className="relative h-[230px] w-full">
-          <div className="absolute flex flex-row gap-3 ">
+        <div
+          className={`relative w-full ${
+            showOutOfStock ? 'h-[230px]' : 'h-full'
+          }`}
+        >
+          <div
+            className={`flex flex-row gap-3 ${!showOutOfStock && 'flex-wrap '}`}
+          >
             {isLoading && (
               <>
                 <div className="skeleton h-[213px] w-[155px] rounded-md" />
@@ -97,41 +136,44 @@ const ProductOverview = () => {
         </div>
       </div>
 
-      <div className="flex w-full flex-row items-center justify-between">
-        <h2 className="font-bold">Out of Stock</h2>
-        <button
-          className="btn btn-link h-0 min-h-[20px] px-0 text-cyan-400 no-underline disabled:bg-transparent disabled:text-gray-400"
-          onClick={() => navigate(AppPath.ProductList)}
-          disabled={isLoading}
-        >
-          View all
-        </button>
-      </div>
-      {/* Scrolls horizontally */}
-      <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
-        <div className="relative h-[230px] w-full">
-          <div className="absolute flex flex-row gap-3 ">
-            {isoutOfSotckProductsLoading && (
-              <>
-                <div className="skeleton h-[213px] w-[155px] rounded-md" />
-                <div className="skeleton h-[213px] w-[155px] rounded-md" />
-                <div className="skeleton h-[213px] w-[155px] rounded-md" />
-              </>
-            )}
-            {!isoutOfSotckProductsLoading &&
-              outOfSotckProducts
-                .slice(0, 4)
-                .map((product) => (
-                  <ProductCard
-                    image={product?.images?.[0] || ''}
-                    name={product.name}
-                    key={product.name}
-                    quantity={product.quantity}
-                  />
-                ))}
+      {showOutOfStock && (
+        <>
+          <div className="flex w-full flex-row items-center justify-between">
+            <h2 className="font-bold">Out of Stock</h2>
+            <button
+              className="btn btn-link h-0 min-h-[20px] px-0 text-cyan-400 no-underline disabled:bg-transparent disabled:text-gray-400"
+              onClick={() => navigate(AppPath.ProductList)}
+              disabled={isLoading}
+            >
+              View all
+            </button>
           </div>
-        </div>
-      </div>
+          <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
+            <div className="relative h-[230px] w-full">
+              <div className="absolute flex flex-row gap-3 ">
+                {isoutOfSotckProductsLoading && (
+                  <>
+                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
+                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
+                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
+                  </>
+                )}
+                {!isoutOfSotckProductsLoading &&
+                  outOfSotckProducts
+                    .slice(0, 4)
+                    .map((product) => (
+                      <ProductCard
+                        image={product?.images?.[0] || ''}
+                        name={product.name}
+                        key={product.name}
+                        quantity={product.quantity}
+                      />
+                    ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

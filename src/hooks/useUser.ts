@@ -12,6 +12,7 @@ const useUser = () => {
     queryFn: async () => getUser(email),
     retry: 0,
     enabled: Boolean(email),
+    refetchOnWindowFocus: false,
   })
 
   useEffect(() => {
