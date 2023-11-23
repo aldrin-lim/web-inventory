@@ -7,7 +7,7 @@ import { Formik, Field, FieldProps } from 'formik'
 import { Variants, AnimatePresence, motion } from 'framer-motion'
 import useCreateProduct from 'hooks/useCreateProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import AddDescription from 'screens/Product/ProductDetail/components/AddDescription'
@@ -26,6 +26,7 @@ import {
   AddProductActionType,
 } from '../contexts/ProductDetailContext'
 import UpdateActionMenu from './components/UpdateActionMenu'
+import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
 
 const modalVariants: Variants = {
   hidden: {
@@ -64,6 +65,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
     state: { activeModal, productDetails },
   } = useProductDetail()
   const { mode = 'add' } = props
+
+  const modalDialogRef = useRef<HTMLDialogElement>(null)
 
   const { createProduct, isCreating } = useCreateProduct()
   const { updateProduct, isUpdating } = useUpdateProduct()
@@ -145,13 +148,22 @@ export const ProductDetail = (props: ProductDetailProps) => {
       )
     } else {
       return (
-        <UpdateActionMenu isLoading={isMutating} onSave={callback} key={1} />
+        <UpdateActionMenu
+          isLoading={isMutating}
+          onDelete={() => modalDialogRef.current?.showModal()}
+          onSave={callback}
+          key={1}
+        />
       )
     }
   }
 
   return (
     <div className="section relative flex flex-col gap-4 pt-0">
+      <ConfirmDeleteDialog
+        productName={productDetails.name}
+        ref={modalDialogRef}
+      />
       <Formik
         initialValues={productDetails}
         onSubmit={onProcessProduct}
