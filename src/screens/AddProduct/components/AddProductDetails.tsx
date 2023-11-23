@@ -5,13 +5,12 @@ import {
   useProductDetail,
   AddProductActionType,
   AddProductModal,
-  ProductDetails,
 } from '../../Product/contexts/ProductDetailContext'
 import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import MeasurementSelect from './MeasurementSelect'
-import { addProductDetailSchema } from 'types/product.types'
+import { Product, addProductDetailSchema } from 'types/product.types'
 
 const AddProductDetail = () => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -28,7 +27,7 @@ const AddProductDetail = () => {
     })
   }
 
-  const setProductValue = (field: keyof ProductDetails, value: unknown) => {
+  const setProductValue = (field: keyof Product, value: unknown) => {
     dispatch({
       type: AddProductActionType.UpdateProductDetail,
       payload: {
