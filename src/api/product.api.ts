@@ -56,3 +56,13 @@ export const updateProductById = async (param: {
     .then((res) => res.data)
   return result || []
 }
+
+export const deleteProductById = async (param: { id: string }) => {
+  const { id } = param
+  const url = `/products/${id}`
+
+  const result = await httpClient
+    .delete<unknown, AxiosResponse<Product>>(url)
+    .then((res) => res.data)
+  return result || []
+}

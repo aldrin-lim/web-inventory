@@ -12,14 +12,15 @@ const ConfirmDeleteDialog = forwardRef(
     const onDelete = async () => {
       try {
         setIsDeleting(true)
-        // Close the dialog
-        if (ref && typeof ref === 'object' && ref.current) {
-          ref.current.close()
-        }
 
         // Call the onClose prop function if it exists
         if (props.onDelete) {
-          props.onDelete()
+          await props.onDelete()
+        }
+
+        // Close the dialog
+        if (ref && typeof ref === 'object' && ref.current) {
+          ref.current.close()
         }
       } finally {
         setIsDeleting(false)

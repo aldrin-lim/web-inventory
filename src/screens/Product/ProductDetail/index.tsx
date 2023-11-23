@@ -27,6 +27,7 @@ import {
 } from '../contexts/ProductDetailContext'
 import UpdateActionMenu from './components/UpdateActionMenu'
 import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
+import useDeleteProduct from 'hooks/useDeleteProduct'
 
 const modalVariants: Variants = {
   hidden: {
@@ -70,8 +71,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const { createProduct, isCreating } = useCreateProduct()
   const { updateProduct, isUpdating } = useUpdateProduct()
+  const { deleteProduct, isDeleting } = useDeleteProduct()
 
-  const isMutating = isUpdating || isCreating
+  const isMutating = isUpdating || isCreating || isDeleting
 
   const { description } = productDetails
 
@@ -137,6 +139,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
     navigate(AppPath.ProductOverview)
   }
 
+  const onDeleteProduct = useCallback(async () => {
+    if (productDetails.id) {
+      await deleteProduct({ id: productDetails.id })
+      navigate(AppPath.ProductOverview)
+    } else {
+      // track why id isnt being provided
+    }
+  }, [deleteProduct, navigate, productDetails.id])
+
   const renderAction = (callback: () => void) => {
     if (mode === 'add') {
       return (
@@ -161,8 +172,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
   return (
     <div className="section relative flex flex-col gap-4 pt-0">
       <ConfirmDeleteDialog
-        productName={productDetails.name}
         ref={modalDialogRef}
+        productName={productDetails.name}
+        onDelete={onDeleteProduct}
       />
       <Formik
         initialValues={productDetails}
