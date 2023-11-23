@@ -157,6 +157,7 @@ const ProductOverview = () => {
                     <div className="skeleton h-[213px] w-[155px] rounded-md" />
                     <div className="skeleton h-[213px] w-[155px] rounded-md" />
                     <div className="skeleton h-[213px] w-[155px] rounded-md" />
+                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
                   </>
                 )}
                 {!isoutOfSotckProductsLoading &&
