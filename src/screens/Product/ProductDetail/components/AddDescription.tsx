@@ -6,7 +6,7 @@ import {
   AddProductActionType,
   AddProductModal,
   useProductDetail,
-} from '../../Product/contexts/ProductDetailContext'
+} from '../../contexts/ProductDetailContext'
 
 const AddDescription: React.FC = () => {
   const {

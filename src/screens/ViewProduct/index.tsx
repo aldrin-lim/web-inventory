@@ -3,7 +3,7 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import useGetProduct from 'hooks/useGetProduct'
 import { useParams } from 'react-router-dom'
-import { AddProductComponent } from 'screens/AddProduct'
+import ProductDetail from 'screens/Product/ProductDetail'
 import { ProductDetailProvider } from 'screens/Product/contexts/ProductDetailContext'
 
 const Skeleton = () => (
@@ -35,7 +35,7 @@ const ViewProduct = () => {
 
   return (
     <ProductDetailProvider productDetails={product}>
-      <AddProductComponent mode="edit" />
+      <ProductDetail mode="edit" />
     </ProductDetailProvider>
   )
 }

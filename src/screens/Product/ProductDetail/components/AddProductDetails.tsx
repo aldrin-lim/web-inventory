@@ -5,7 +5,7 @@ import {
   useProductDetail,
   AddProductActionType,
   AddProductModal,
-} from '../../Product/contexts/ProductDetailContext'
+} from '../../contexts/ProductDetailContext'
 import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
