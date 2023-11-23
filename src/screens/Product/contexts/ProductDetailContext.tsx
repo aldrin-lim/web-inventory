@@ -1,4 +1,4 @@
-// AddProductContext.tsx
+// ProductDetail.tsx
 import React, { createContext, useContext, useReducer, ReactNode } from 'react'
 import { Product } from 'types/product.types'
 
@@ -60,7 +60,7 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-const AddProductContext = createContext<{
+const ProductDetail = createContext<{
   state: State
   dispatch: React.Dispatch<Action>
 }>({
@@ -68,16 +68,17 @@ const AddProductContext = createContext<{
   dispatch: () => {},
 })
 
-export const useAddProductContext = () => useContext(AddProductContext)
+export const useProductDetail = () => useContext(ProductDetail)
 
-interface AddProductContextProviderProps {
+interface ProductDetailProviderProps {
   children: ReactNode
   productDetails?: Partial<Product>
 }
 
-export const AddProductContextProvider: React.FC<
-  AddProductContextProviderProps
-> = ({ children, productDetails }) => {
+export const ProductDetailProvider: React.FC<ProductDetailProviderProps> = ({
+  children,
+  productDetails,
+}) => {
   let defaultState = initialState
 
   if (productDetails) {
@@ -95,8 +96,8 @@ export const AddProductContextProvider: React.FC<
   const [state, dispatch] = useReducer(reducer, defaultState)
 
   return (
-    <AddProductContext.Provider value={{ state, dispatch }}>
+    <ProductDetail.Provider value={{ state, dispatch }}>
       {children}
-    </AddProductContext.Provider>
+    </ProductDetail.Provider>
   )
 }

@@ -96,8 +96,6 @@ const ProductList = () => {
     return items
   }, [data?.pages, enableFilter, outOfStockFilter, debouncedSearchTerm])
 
-  console.log(debouncedSearchTerm)
-
   useEffect(() => {
     const paramsObject = Object.fromEntries(searchParams) as {
       outOfStock?: boolean

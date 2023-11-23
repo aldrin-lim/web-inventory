@@ -4,7 +4,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import useGetProduct from 'hooks/useGetProduct'
 import { useParams } from 'react-router-dom'
 import { AddProductComponent } from 'screens/AddProduct'
-import { AddProductContextProvider } from 'screens/AddProduct/contexts/AddProductContext'
+import { ProductDetailProvider } from 'screens/Product/contexts/ProductDetailContext'
 
 const Skeleton = () => (
   <div className="section relative flex flex-col gap-4 pt-0">
@@ -34,9 +34,9 @@ const ViewProduct = () => {
   }
 
   return (
-    <AddProductContextProvider productDetails={product}>
+    <ProductDetailProvider productDetails={product}>
       <AddProductComponent mode="edit" />
-    </AddProductContextProvider>
+    </ProductDetailProvider>
   )
 }
 

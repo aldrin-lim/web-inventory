@@ -2,11 +2,11 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import {
-  useAddProductContext,
+  useProductDetail,
   AddProductActionType,
   AddProductModal,
   ProductDetails,
-} from '../contexts/AddProductContext'
+} from '../../Product/contexts/ProductDetailContext'
 import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
@@ -19,7 +19,7 @@ const AddProductDetail = () => {
   const {
     dispatch,
     state: { productDetails },
-  } = useAddProductContext()
+  } = useProductDetail()
 
   const goBack = () => {
     dispatch({

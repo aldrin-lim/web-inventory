@@ -5,14 +5,14 @@ import { useEffect, useState } from 'react'
 import {
   AddProductActionType,
   AddProductModal,
-  useAddProductContext,
-} from '../contexts/AddProductContext'
+  useProductDetail,
+} from '../../Product/contexts/ProductDetailContext'
 
 const AddDescription: React.FC = () => {
   const {
     dispatch,
     state: { productDetails },
-  } = useAddProductContext()
+  } = useProductDetail()
 
   const [description, setDescription] = useState('')
 

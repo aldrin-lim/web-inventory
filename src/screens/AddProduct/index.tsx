@@ -10,10 +10,10 @@ import { AnimatePresence, Variants, motion } from 'framer-motion'
 import AddProductDetail from './components/AddProductDetails'
 import {
   AddProductActionType,
-  AddProductContextProvider,
+  ProductDetailProvider,
   AddProductModal,
-  useAddProductContext,
-} from './contexts/AddProductContext'
+  useProductDetail,
+} from '../Product/contexts/ProductDetailContext'
 import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { useCallback, useEffect } from 'react'
@@ -62,7 +62,7 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
   const {
     dispatch,
     state: { activeModal, productDetails },
-  } = useAddProductContext()
+  } = useProductDetail()
   const { mode = 'add' } = props
 
   const { createProduct, isCreating } = useCreateProduct()
@@ -128,7 +128,6 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
       }
 
       const requestBody = validation.data
-      console.log(requestBody)
       await updateProduct({ id: requestBody.id, product: requestBody })
     }
 
@@ -341,9 +340,9 @@ export const AddProductComponent = (props: AddProductComponentProps) => {
 
 const AddProduct = () => {
   return (
-    <AddProductContextProvider>
+    <ProductDetailProvider>
       <AddProductComponent />
-    </AddProductContextProvider>
+    </ProductDetailProvider>
   )
 }
 
