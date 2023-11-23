@@ -25,6 +25,7 @@ import {
   AddProductModal,
   AddProductActionType,
 } from '../contexts/ProductDetailContext'
+import UpdateActionMenu from './components/UpdateActionMenu'
 
 const modalVariants: Variants = {
   hidden: {
@@ -133,6 +134,22 @@ export const ProductDetail = (props: ProductDetailProps) => {
     navigate(AppPath.ProductOverview)
   }
 
+  const renderAction = (callback: () => void) => {
+    if (mode === 'add') {
+      return (
+        <ToolbarButton
+          label={mode === 'add' ? 'Save' : 'Update'}
+          onClick={!isMutating ? callback : undefined}
+          disabled={isMutating}
+        />
+      )
+    } else {
+      return (
+        <UpdateActionMenu isLoading={isMutating} onSave={callback} key={1} />
+      )
+    }
+  }
+
   return (
     <div className="section relative flex flex-col gap-4 pt-0">
       <Formik
@@ -155,12 +172,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     key="title"
                     title={mode === 'add' ? 'Add Product' : 'View Product'}
                   />,
-                  <ToolbarButton
-                    key="save"
-                    label={mode === 'add' ? 'Save' : 'Update'}
-                    onClick={!isMutating ? submitForm : undefined}
-                    disabled={isMutating}
-                  />,
+                  renderAction(submitForm),
                 ]}
               />
 
