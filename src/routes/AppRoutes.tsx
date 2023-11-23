@@ -7,11 +7,11 @@ import ProductMenu from 'screens/ProductMenu'
 import ProtectedRoute from './ProtectedRoutes'
 import Profile from 'screens/Profile'
 import Store from 'screens/Store'
-import AddProduct from 'screens/AddProduct'
+import AddProduct from 'screens/Product/AddProduct'
 import ProductOverview from 'screens/ProductOverview'
 import ProductList from 'screens/ProductList'
 import Error from 'screens/Error'
-import ViewProduct from 'screens/ViewProduct'
+import ViewProduct from 'screens/Product/ViewProduct'
 
 const AppRoutes = () => (
   <Routes>
