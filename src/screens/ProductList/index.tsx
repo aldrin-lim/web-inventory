@@ -15,7 +15,6 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { AppPath } from 'routes/AppRoutes.types'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import MiddleTruncateText from 'components/MiddleTruncatedText'
-import ProductListFilter from './components/ProductListFilter'
 import { z } from 'zod'
 
 function useDebounce(value: string, delay: number) {
@@ -57,24 +56,6 @@ const ProductList = () => {
       retry: 2,
     },
   )
-
-  // useMemo(() => {
-  //   let items = data?.pages.flatMap((page) => page) || []
-
-  //   if (enableFilter) {
-  //     if (typeof outOfStockFilter === 'boolean') {
-  //       if (outOfStockFilter === true) {
-  //         items = items.filter((item) => item.quantity === 0)
-  //       } else {
-  //         items = items.filter((item) => item.quantity > 0)
-  //       }
-  //     }
-  //   }
-  //   items = items.filter((item) => {
-  //     return item.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-  //   })
-  //   setProducts(items)
-  // }, [data?.pages, debouncedSearchTerm, enableFilter, outOfStockFilter])
 
   const filteredProducts = useMemo(() => {
     let items = data?.pages.flatMap((page) => page) || []
@@ -154,12 +135,6 @@ const ProductList = () => {
             className="input join-item w-full"
             disabled={isLoading}
             onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <ProductListFilter
-            enabled={enableFilter}
-            onEnableFilter={(status) => setEnableFilter(status)}
-            outOfStock={outOfStockFilter}
-            onOutOfStockChange={(status) => setOutOfStockFilter(status)}
           />
         </div>
       </div>
