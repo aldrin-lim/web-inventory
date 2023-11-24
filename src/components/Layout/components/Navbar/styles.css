@@ -13,15 +13,14 @@
     max-w-md;
   transform: translateX(-50%);
   left: 50%;
-
 }
 
 .Navbar_ButtonContainer {
-  @apply flex w-[90px] flex-col;
+  @apply flex w-[90px] flex-col ;
 }
 
 .Navbar_Button {
-  @apply flex flex-col  gap-1;
+  @apply flex flex-col  gap-1 shadow-none;
 }
 
 .Navbar_Button___active {

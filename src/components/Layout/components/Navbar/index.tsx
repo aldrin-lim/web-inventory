@@ -2,20 +2,23 @@ import {
   ClipboardDocumentIcon,
   HomeIcon,
   TagIcon,
+  Bars3Icon,
 } from '@heroicons/react/24/solid'
 import { useState } from 'react'
 
 import './styles.css'
 import { AppPath } from 'routes/AppRoutes.types'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 enum MenuType {
   Home = 'Home',
   Orders = 'Orders',
   Products = 'Products',
+  Settings = 'Settings',
 }
 
 const Navbar = () => {
+  const location = useLocation()
   const buttons = [
     {
       name: MenuType.Home,
@@ -32,9 +35,18 @@ const Navbar = () => {
       icon: <TagIcon className="Navbar_ButtonIcon" />,
       path: AppPath.Products,
     },
+    {
+      name: MenuType.Settings,
+      icon: <Bars3Icon className="Navbar_ButtonIcon" />,
+      path: AppPath.Settings,
+    },
   ]
 
-  const [activeButton, setActiveButton] = useState(MenuType.Products)
+  const defaultActiveButton =
+    buttons.find((button) => button.path === location.pathname)?.name ??
+    MenuType.Products
+
+  const [activeButton, setActiveButton] = useState(defaultActiveButton)
 
   return (
     <nav className="Navbar">

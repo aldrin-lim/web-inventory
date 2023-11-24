@@ -12,6 +12,7 @@ import ProductOverview from 'screens/ProductOverview'
 import ProductList from 'screens/ProductList'
 import Error from 'screens/Error'
 import ViewProduct from 'screens/Product/ViewProduct'
+import Settings from 'screens/Settings'
 
 const AppRoutes = () => (
   <Routes>
@@ -23,6 +24,10 @@ const AppRoutes = () => (
       <Route
         path={AppPath.ProductOverview}
         element={<ProtectedRoute element={<ProductOverview />} />}
+      />
+      <Route
+        path={AppPath.Settings}
+        element={<ProtectedRoute element={<Settings />} />}
       />
     </Route>
     {/* <Route path={AppPath.Products} element={<Products />} /> */}
@@ -46,6 +51,7 @@ const AppRoutes = () => (
       path={AppPath.ViewProduct}
       element={<ProtectedRoute element={<ViewProduct />} />}
     />
+
     <Route
       path={AppPath.Error}
       element={<ProtectedRoute element={<Error />} />}
