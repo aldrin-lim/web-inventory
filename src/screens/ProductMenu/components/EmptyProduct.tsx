@@ -22,7 +22,7 @@ const EmptyProducts = () => {
           ]}
         />
       </div>
-      <h1 className="text-xl font-bold">Welcom to Discarte, Juan</h1>
+      <h1 className="text-xl font-bold">Welcom to Qrafter, Juan</h1>
       <TagIcon className="w-24 text-purple-500" />
       <h2 className="text-lg font-bold">Add your first product</h2>
       <p>

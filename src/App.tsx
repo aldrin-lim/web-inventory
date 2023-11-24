@@ -23,7 +23,10 @@ function App() {
   }, [getAccessTokenSilently, isAuthenticated])
 
   return (
-    <div className="App" data-theme="">
+    <div
+      className="App mx-auto max-w-md overflow-x-hidden border border-b-gray-400"
+      data-theme=""
+    >
       <ToastContainer
         className={'!left-4 !top-2 !mx-auto !w-[90%] !rounded-md text-xs'}
         toastClassName={'!rounded-md'}
