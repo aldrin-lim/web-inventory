@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react'
 import {
   UserIcon,
   BuildingStorefrontIcon,
@@ -11,6 +12,7 @@ import { AppPath } from 'routes/AppRoutes.types'
 
 const Settings = () => {
   const navigate = useNavigate()
+  const { logout } = useAuth0()
   return (
     <div className="section flex h-full flex-grow flex-col gap-4">
       <Toolbar
@@ -34,7 +36,7 @@ const Settings = () => {
         <li className="flex-grow">
           <button
             className="btn btn-ghost w-full justify-start px-1"
-            onClick={() => navigate(AppPath.Profile)}
+            onClick={() => navigate(AppPath.Store)}
           >
             <BuildingStorefrontIcon className="h-6 w-6" />
             Store
@@ -44,7 +46,9 @@ const Settings = () => {
         <li>
           <button
             className="btn btn-ghost mb-20 mt-auto w-full justify-start px-1"
-            onClick={() => navigate(AppPath.Profile)}
+            onClick={async () => {
+              await logout()
+            }}
           >
             <ArrowLeftOnRectangleIcon className="h-6 w-6" />
             Sign Out

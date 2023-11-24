@@ -12,7 +12,7 @@ const Store = () => {
           <label
             key="12"
             className="btn btn-square btn-ghost drawer-button -ml-4"
-            onClick={() => navigate(AppPath.Root)}
+            onClick={() => navigate(AppPath.Settings)}
           >
             <ArrowSmallLeftIcon className="w-6 text-blue-400" />
           </label>,

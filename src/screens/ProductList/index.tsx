@@ -101,7 +101,7 @@ const ProductList = () => {
   }
 
   return (
-    <div className="section flex flex-col gap-4">
+    <div className="section flex w-full flex-col gap-4">
       <Toolbar
         items={[
           <ToolbarButton
