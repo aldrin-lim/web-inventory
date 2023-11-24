@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios'
+import { Business, UpdateUserBussinessSchema } from 'types/business.type'
 import { User } from 'types/user.type'
 import { httpClient } from 'util/http'
 
@@ -17,6 +18,17 @@ export type UpdateUserRequestParam = {
 export const updateUser = async (param: UpdateUserRequestParam) => {
   const result = await httpClient
     .patch(`/users/me`, param)
+    .then((res) => res.data)
+  return result
+}
+
+export const updateUserBussiness = async (param: UpdateUserBussinessSchema) => {
+  const { id, description, name } = param
+  const result = await httpClient
+    .patch<Partial<Business>, AxiosResponse<Business>>(
+      `/users/me/businesses/${id}`,
+      { description, name },
+    )
     .then((res) => res.data)
   return result
 }
