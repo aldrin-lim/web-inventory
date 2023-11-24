@@ -9,6 +9,40 @@ import EmptyProducts from 'screens/ProductMenu/components/EmptyProduct'
 import ProductCard from 'screens/ProductMenu/components/ProductCard'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 
+const Skeleton = () => {
+  const navigate = useNavigate()
+  return (
+    <div className="section z-30 flex h-full flex-col gap-4 pb-24 pt-0">
+      <Toolbar
+        items={[
+          <ToolbarButton
+            key={1}
+            icon={<ChevronLeftIcon className="w-6" />}
+            onClick={() => navigate(AppPath.Products)}
+          />,
+
+          <ToolbarTitle key="title" title="Products" />,
+          <div key={1} />,
+        ]}
+      />
+      <div className="flex w-full flex-row items-center justify-between">
+        <div className="skeleton h-[24px] w-[69px] rounded-md" />
+        <div className="skeleton h-[24px] w-[53px] rounded-md" />
+      </div>
+      <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
+        <div className={`relative h-full w-full`}>
+          <div className={`flex flex-row flex-wrap gap-3`}>
+            <div className="skeleton h-[213px] w-[155px] rounded-md" />
+            <div className="skeleton h-[213px] w-[155px] rounded-md" />
+            <div className="skeleton h-[213px] w-[155px] rounded-md" />
+            <div className="skeleton h-[213px] w-[155px] rounded-md" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const ProductOverview = () => {
   const navigate = useNavigate()
 
@@ -32,6 +66,10 @@ const ProductOverview = () => {
 
   const isLoading =
     isUserLoading || isProductsLoading || isoutOfSotckProductsLoading
+
+  if (isLoading) {
+    return <Skeleton />
+  }
 
   if (!isLoading && error) {
     return <Navigate to={AppPath.Error} />
