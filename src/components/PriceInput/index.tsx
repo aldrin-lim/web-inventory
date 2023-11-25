@@ -43,7 +43,6 @@ const PriceInput: React.FC<PriceInputProps> = (props) => {
       inputMode="decimal"
       value={inputValue}
       onChange={handleChange}
-      placeholder="Enter price"
     />
   )
 }
