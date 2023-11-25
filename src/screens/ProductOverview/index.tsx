@@ -8,6 +8,7 @@ import { AppPath } from 'routes/AppRoutes.types'
 import EmptyProducts from 'screens/ProductMenu/components/EmptyProduct'
 import ProductCard from 'screens/ProductMenu/components/ProductCard'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
+import GetStarted from 'screens/ProductMenu/components/GetStarted'
 
 const Skeleton = () => {
   const navigate = useNavigate()
@@ -75,7 +76,21 @@ const ProductOverview = () => {
     return <Navigate to={AppPath.Error} />
   }
 
-  if (!isLoading && products.length === 0 && outOfSotckProducts.length === 0) {
+  if (
+    !isLoading &&
+    products.length === 0 &&
+    outOfSotckProducts.length === 0 &&
+    localStorage.getItem('onboarded') === null
+  ) {
+    return <GetStarted />
+  }
+
+  if (
+    !isLoading &&
+    products.length === 0 &&
+    outOfSotckProducts.length === 0 &&
+    localStorage.getItem('onboarded') === 'true'
+  ) {
     return <EmptyProducts />
   }
 
