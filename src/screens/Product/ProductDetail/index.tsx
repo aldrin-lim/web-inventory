@@ -28,6 +28,7 @@ import {
 import UpdateActionMenu from './components/UpdateActionMenu'
 import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
 import useDeleteProduct from 'hooks/useDeleteProduct'
+import PriceInput from 'components/PriceInput'
 
 const modalVariants: Variants = {
   hidden: {
@@ -182,7 +183,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
         validationSchema={toFormikValidationSchema(addProductSchema)}
         validateOnChange={false}
       >
-        {({ setFieldValue, submitForm, setFieldTouched }) => {
+        {({ setFieldValue, submitForm }) => {
           return (
             <>
               <Toolbar
@@ -240,22 +241,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
                             ₱
                           </button>
                         </div>
-                        <input
+                        <PriceInput
                           {...field}
-                          type="text"
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Price"
-                          // This is to prevent input preppending 0 while typing
-                          onClick={() => setFieldTouched('price')}
-                          onChange={(e) => {
-                            const valueStr = e.target.value
-                            const value = parseFloat(valueStr)
-                            if (valueStr.trim() === '') {
-                              // Handle empty string, if necessary
-                              setProductValue('price', 0)
-                              setFieldValue('price', 0)
-                              return
-                            }
+                          onChange={(value) => {
                             setProductValue('price', value)
                             setFieldValue('price', value)
                           }}
@@ -279,22 +269,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
                             ₱
                           </button>
                         </div>
-                        <input
+                        <PriceInput
                           {...field}
-                          type="text"
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Cost"
-                          // This is to prevent input preppending 0 while typing
-                          onClick={() => setFieldTouched('cost')}
-                          onChange={(e) => {
-                            const valueStr = e.target.value
-                            const value = parseFloat(valueStr)
-                            if (valueStr.trim() === '') {
-                              // Handle empty string, if necessary
-                              setProductValue('cost', 0)
-                              setFieldValue('cost', 0)
-                              return
-                            }
+                          onChange={(value) => {
                             setProductValue('cost', value)
                             setFieldValue('cost', value)
                           }}

@@ -91,8 +91,6 @@ export const ProductDetailProvider: React.FC<ProductDetailProviderProps> = ({
     }
   }
 
-  console.log('defaultState', defaultState)
-
   const [state, dispatch] = useReducer(reducer, defaultState)
 
   return (
