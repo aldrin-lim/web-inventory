@@ -1,4 +1,8 @@
-import { ChevronRightIcon, ArchiveBoxIcon } from '@heroicons/react/24/solid'
+import {
+  ChevronRightIcon,
+  ArchiveBoxIcon,
+  ChevronLeftIcon,
+} from '@heroicons/react/24/solid'
 import ImageUpload from 'components/ImageUpload'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
@@ -136,8 +140,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
       const requestBody = validation.data
       await updateProduct({ id: requestBody.id, product: requestBody })
     }
-
-    navigate(AppPath.ProductOverview)
   }
 
   const onDeleteProduct = useCallback(async () => {
@@ -189,8 +191,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <Toolbar
                 items={[
                   <ToolbarButton
-                    key="cancel"
-                    label="Cancel"
+                    key={1}
+                    icon={<ChevronLeftIcon className="w-6" />}
                     onClick={() => navigate(AppPath.ProductOverview)}
                   />,
                   <ToolbarTitle
@@ -334,7 +336,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
       <AnimatePresence>
         <motion.div
           className={[
-            'section absolute left-0 right-0 h-full bg-base-100 pt-0',
+            'section absolute left-0 right-0 z-10 h-full bg-base-100 pt-0',
             activeModal === AddProductModal.None ? 'hidden' : '',
           ].join(' ')}
           variants={modalVariants}

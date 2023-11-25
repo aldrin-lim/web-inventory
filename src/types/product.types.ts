@@ -14,6 +14,7 @@ export type ProductVariant = {
 }
 
 export const addProductDetailSchema = z.object({
+  id: z.string(),
   quantity: z
     .number({
       required_error: 'Quantity is required',

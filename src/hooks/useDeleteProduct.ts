@@ -23,6 +23,12 @@ const useDeleteProduct = () => {
         theme: 'colored',
       })
     },
+    onSuccess: () => {
+      toast.success('Product successfully deleted ', {
+        autoClose: 2000,
+        theme: 'colored',
+      })
+    },
   })
 
   return {

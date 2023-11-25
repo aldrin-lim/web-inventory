@@ -25,6 +25,10 @@ const useUpdateProduct = () => {
       })
     },
     onSuccess: (_, param) => {
+      toast.success('Product successfully updated! ', {
+        autoClose: 2000,
+        theme: 'colored',
+      })
       queryClient.invalidateQueries(['product', param.id])
     },
   })

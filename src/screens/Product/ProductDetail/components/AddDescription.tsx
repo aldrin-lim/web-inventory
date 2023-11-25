@@ -39,7 +39,7 @@ const AddDescription: React.FC = () => {
   }
 
   return (
-    <div className="h-[85vh]">
+    <div className="h-[90vh]">
       <Toolbar
         items={[
           <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
