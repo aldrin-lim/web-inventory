@@ -14,7 +14,7 @@ export type ProductVariant = {
 }
 
 export const addProductDetailSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   quantity: z
     .number({
       required_error: 'Quantity is required',
@@ -38,12 +38,7 @@ export const addProductDetailSchema = z.object({
       invalid_type_error: 'Allow back order must be a boolean',
     })
     .optional(),
-  expiryDate: z
-    .date({
-      invalid_type_error: 'Expiry Date must be a date',
-    })
-    .nullable()
-    .optional(),
+  expiryDate: z.coerce.date().nullable().optional(),
 })
 export type AddProductResponseSchema = z.infer<typeof addProductRequestSchema>
 
@@ -122,12 +117,7 @@ const getProductResponseSchema = z.object({
       invalid_type_error: 'Allow back order must be a boolean',
     })
     .optional(),
-  expiryDate: z
-    .date({
-      invalid_type_error: 'Expiry Date must be a date',
-    })
-    .nullable()
-    .optional(),
+  expiryDate: z.coerce.date().nullable().optional(),
   profit: z.number({
     required_error: 'Profit is required',
     invalid_type_error: 'Profit must be a number',
@@ -186,12 +176,7 @@ const productSchema = z.object({
       invalid_type_error: 'Allow back order must be a boolean',
     })
     .optional(),
-  expiryDate: z
-    .date({
-      invalid_type_error: 'Expiry Date must be a date',
-    })
-    .nullable()
-    .optional(),
+  expiryDate: z.coerce.date().nullable().optional(),
   profit: z.number({
     required_error: 'Profit is required',
     invalid_type_error: 'Profit must be a number',
@@ -256,12 +241,7 @@ export const updateProductRequestSchema = z.object({
       invalid_type_error: 'Allow back order must be a boolean',
     })
     .optional(),
-  expiryDate: z
-    .date({
-      invalid_type_error: 'Expiry Date must be a date',
-    })
-    .nullable()
-    .optional(),
+  expiryDate: z.coerce.date().nullable().optional(),
 })
 
 export type UpdateProductRequestScheam = z.infer<

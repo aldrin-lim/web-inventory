@@ -157,7 +157,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     } else {
       // track why id isnt being provided
     }
-  }, [navigate, productDetails])
+  }, [createProduct, productDetails])
 
   const renderAction = (callback: () => void) => {
     if (mode === 'add') {
@@ -200,7 +200,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <Toolbar
                 items={[
                   <ToolbarButton
-                    key={1}
+                    key={2}
                     icon={<ChevronLeftIcon className="w-6" />}
                     onClick={() => navigate(AppPath.ProductOverview)}
                   />,

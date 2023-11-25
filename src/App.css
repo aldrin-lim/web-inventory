@@ -20,6 +20,12 @@ html, body {
   @apply h-full min-h-fit w-full bg-base-100;
 }
 
+@layer base {
+  .DatePicker {
+    -webkit-min-logical-width: calc(100% - 16px)
+  }
+}
+
 @layer components {
   .section {
     @apply p-6

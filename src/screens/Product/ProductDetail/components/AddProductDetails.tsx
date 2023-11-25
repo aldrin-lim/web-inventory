@@ -188,7 +188,7 @@ const AddProductDetail = () => {
               </Field>
               <Field name="expiryDate">
                 {({ field, meta }: FieldProps) => (
-                  <div className="form-control w-full">
+                  <div className="form-control relative w-full">
                     <label className="label">
                       <span className="label-text text-xs">Expiry Date</span>
                     </label>
@@ -196,11 +196,19 @@ const AddProductDetail = () => {
                       {...field}
                       type="date"
                       placeholder="Expiry date"
-                      className="input input-bordered w-full"
+                      className="DatePicker input input-bordered text-left "
                       onChange={(e) => {
-                        setFieldValue('quantity', values.quantity + 1)
-                        setProductValue('quantity', new Date(e.target.value))
+                        console.log(new Date(e.target.value))
+                        setFieldValue('expiryDate', new Date(e.target.value))
+                        setProductValue('expiryDate', new Date(e.target.value))
                       }}
+                      value={
+                        values.expiryDate
+                          ? new Date(values.expiryDate)
+                              .toISOString()
+                              .split('T')[0]
+                          : ''
+                      }
                     />
                     <p className="form-control-error">{meta.error}&nbsp;</p>
                   </div>
