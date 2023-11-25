@@ -5,26 +5,26 @@ type MeasurementUnit = {
 
 export const measurementUnits: MeasurementUnit[] = [
   // Solid Food Measurements
-  { abbreviation: 'g', description: 'Grams' },
-  { abbreviation: 'kg', description: 'Kilograms' },
-  { abbreviation: 'oz', description: 'Ounces' },
-  { abbreviation: 'lb', description: 'Pounds' },
-  // Volume (for loose items)
-  { abbreviation: 'ml', description: 'Milliliters' },
-  { abbreviation: 'l', description: 'Liters' },
-  { abbreviation: 'cup', description: 'Cups' },
-  { abbreviation: 'tsp', description: 'Teaspoons' },
-  { abbreviation: 'tbsp', description: 'Tablespoons' },
-  // Unit Counts
-  { abbreviation: 'pcs', description: 'Pieces' },
-  { abbreviation: 'dz', description: 'Dozens' },
+  { abbreviation: 'g', description: 'grams' },
+  { abbreviation: 'kg', description: 'kilograms' },
+  { abbreviation: 'oz', description: 'ounces' },
+  { abbreviation: 'lb', description: 'pounds' },
+  // volume (for loose items)
+  { abbreviation: 'ml', description: 'milliliters' },
+  { abbreviation: 'l', description: 'liters' },
+  { abbreviation: 'cup', description: 'cups' },
+  { abbreviation: 'tsp', description: 'teaspoons' },
+  { abbreviation: 'tbsp', description: 'tablespoons' },
+  // unit counts
+  { abbreviation: 'pcs', description: 'pieces' },
+  { abbreviation: 'dz', description: 'dozens' },
 
-  // Liquid Beverage Measurements
-  { abbreviation: 'fl oz', description: 'Fluid Ounces' },
-  { abbreviation: 'pt', description: 'Pints' },
-  { abbreviation: 'qt', description: 'Quarts' },
-  { abbreviation: 'gal', description: 'Gallons' },
-  // Specific to Alcoholic Beverages
-  { abbreviation: 'proof', description: 'Proof' },
-  { abbreviation: 'std', description: 'Standard Drink Units' },
+  // liquid beverage measurements
+  { abbreviation: 'fl oz', description: 'fluid ounces' },
+  { abbreviation: 'pt', description: 'pints' },
+  { abbreviation: 'qt', description: 'quarts' },
+  { abbreviation: 'gal', description: 'gallons' },
+  // specific to alcoholic beverages
+  { abbreviation: 'proof', description: 'proof' },
+  { abbreviation: 'std', description: 'standard drink units' },
 ]
