@@ -56,6 +56,7 @@ const AutocompleteSelect = (props: AutoCompleteProps) => {
 
   return (
     <Select
+      isClearable
       minMenuHeight={40}
       value={selectedOption}
       onChange={handleChange}
