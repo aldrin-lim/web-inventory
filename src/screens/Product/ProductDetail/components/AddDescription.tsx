@@ -52,6 +52,7 @@ const AddDescription: React.FC = () => {
         value={description || productDetails.description}
         className="textarea textarea-bordered w-full text-base"
         placeholder="Add description"
+        rows={15}
         autoFocus
       />
     </div>
