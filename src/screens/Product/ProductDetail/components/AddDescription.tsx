@@ -39,7 +39,7 @@ const AddDescription: React.FC = () => {
   }
 
   return (
-    <div className="">
+    <div className="h-[85vh]">
       <Toolbar
         items={[
           <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
@@ -50,9 +50,8 @@ const AddDescription: React.FC = () => {
       <textarea
         onChange={(e) => setDescription(e.target.value)}
         value={description || productDetails.description}
-        className="textarea textarea-bordered w-full text-base"
+        className="textarea textarea-bordered h-full w-full text-base"
         placeholder="Add description"
-        rows={15}
         autoFocus
       />
     </div>
