@@ -92,7 +92,7 @@ const AddProductDetail = () => {
                     label="Cancel"
                     onClick={goBack}
                   />,
-                  <ToolbarTitle key="title" title="Description" />,
+                  <ToolbarTitle key={2} title="Inventory" />,
                   <ToolbarButton
                     key="save"
                     label="Save"
