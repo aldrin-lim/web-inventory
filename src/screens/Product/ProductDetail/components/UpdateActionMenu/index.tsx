@@ -20,31 +20,39 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
   const [open, setOpen] = useState(false)
 
   const onSave = async () => {
-    setAction('save')
-    if (props.onSave) {
-      await props.onSave()
+    try {
+      setAction('save')
+      if (props.onSave) {
+        await props.onSave()
+      }
+    } finally {
+      setOpen((prev) => !prev)
+      setAction('')
     }
-    setOpen((prev) => !prev)
-    setAction('')
   }
 
   const onClone = async () => {
-    setAction('clone')
-    if (props.onClone) {
-      await props.onClone()
+    try {
+      setAction('clone')
+      if (props.onClone) {
+        await props.onClone()
+      }
+    } finally {
+      setOpen((prev) => !prev)
+      setAction('')
     }
-    setOpen((prev) => !prev)
-
-    setAction('')
   }
 
   const onDelete = async () => {
-    setAction('delete')
-    if (props.onDelete) {
-      await props.onDelete()
+    try {
+      setAction('delete')
+      if (props.onDelete) {
+        await props.onDelete()
+      }
+    } finally {
+      setOpen((prev) => !prev)
+      setAction('')
     }
-    setOpen((prev) => !prev)
-    setAction('')
   }
 
   return (

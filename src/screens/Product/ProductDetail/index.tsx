@@ -151,6 +151,14 @@ export const ProductDetail = (props: ProductDetailProps) => {
     }
   }, [deleteProduct, navigate, productDetails.id])
 
+  const onClone = useCallback(async () => {
+    if (productDetails.id) {
+      await createProduct(productDetails)
+    } else {
+      // track why id isnt being provided
+    }
+  }, [navigate, productDetails])
+
   const renderAction = (callback: () => void) => {
     if (mode === 'add') {
       return (
@@ -166,6 +174,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           isLoading={isMutating}
           onDelete={() => modalDialogRef.current?.showModal()}
           onSave={callback}
+          onClone={onClone}
           key={1}
         />
       )
