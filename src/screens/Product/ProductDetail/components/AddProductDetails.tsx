@@ -118,12 +118,14 @@ const AddProductDetail = () => {
                         <div>
                           <div className="join flex border border-gray-300">
                             <button
-                              className="btn  join-item"
+                              className="join-itm  btn"
                               onClick={() => {
-                                setFieldValue('quantity', values.quantity + 1)
+                                if (values.quantity > 0) {
+                                  setFieldValue('quantity', values.quantity - 1)
+                                }
                               }}
                             >
-                              +
+                              -
                             </button>
                             <input
                               {...field}
@@ -135,14 +137,12 @@ const AddProductDetail = () => {
                               value={values.quantity}
                             />
                             <button
-                              className="join-itm  btn"
+                              className="btn  join-item"
                               onClick={() => {
-                                if (values.quantity > 0) {
-                                  setFieldValue('quantity', values.quantity - 1)
-                                }
+                                setFieldValue('quantity', values.quantity + 1)
                               }}
                             >
-                              -
+                              +
                             </button>
                           </div>
                           <p className="form-control-error">
