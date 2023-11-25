@@ -42,9 +42,9 @@ const AddDescription: React.FC = () => {
     <div className="">
       <Toolbar
         items={[
-          <ToolbarButton key="cancel" label="Cancel" onClick={goBack} />,
-          <ToolbarTitle key="title" title="Description" />,
-          <ToolbarButton key="save" label="Save" onClick={onSave} />,
+          <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
+          <ToolbarTitle key={2} title="Description" />,
+          <ToolbarButton key={3} label="Done" onClick={onSave} />,
         ]}
       />
       <textarea

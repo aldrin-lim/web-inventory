@@ -87,17 +87,9 @@ const AddProductDetail = () => {
             <>
               <Toolbar
                 items={[
-                  <ToolbarButton
-                    key="cancel"
-                    label="Cancel"
-                    onClick={goBack}
-                  />,
+                  <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
                   <ToolbarTitle key={2} title="Inventory" />,
-                  <ToolbarButton
-                    key="save"
-                    label="Save"
-                    onClick={submitForm}
-                  />,
+                  <ToolbarButton key={3} label="Done" onClick={submitForm} />,
                 ]}
               />
 
