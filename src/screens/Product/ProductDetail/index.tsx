@@ -301,7 +301,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       type="number"
                       className="input join-item input-bordered w-full pl-2"
                       placeholder="Profit"
-                      value={productDetails.profit || 0}
+                      value={productDetails.profit.toFixed(2) || 0}
                     />
                   </div>
                 </div>

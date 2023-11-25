@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 type PriceInputProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -9,17 +9,24 @@ type PriceInputProps = React.DetailedHTMLProps<
 }
 
 const PriceInput: React.FC<PriceInputProps> = (props) => {
-  const { value = 0, onChange } = props
-  const [inputValue, setInputValue] = useState<string>(value.toString())
+  const { value = 0, onChange, ...rest } = props
+  // Initialize the state with the formatted value if it's not zero, else with an empty string
+  const [inputValue, setInputValue] = useState<string>(
+    value === 0 ? '' : value.toFixed(2),
+  )
 
   useEffect(() => {
-    // Update inputValue when value prop changes
-    setInputValue(value === 0 ? '' : value.toString())
+    // Update inputValue when value prop changes, format if it's not zero
+    // setInputValue(value === 0 ? '' : value.toFixed(2))
   }, [value])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value.replace(/[^0-9.]/g, '') // Remove non-numeric characters
-    setInputValue(newValue)
+
+    // Allow natural editing without premature formatting
+    if (!newValue.includes('.') || newValue.split('.')[1].length <= 2) {
+      setInputValue(newValue)
+    }
 
     const numericValue = parseFloat(newValue)
     if (!isNaN(numericValue)) {
@@ -31,11 +38,12 @@ const PriceInput: React.FC<PriceInputProps> = (props) => {
 
   return (
     <input
-      {...props}
+      {...rest}
       type="text"
       inputMode="decimal"
       value={inputValue}
       onChange={handleChange}
+      placeholder="Enter price"
     />
   )
 }
