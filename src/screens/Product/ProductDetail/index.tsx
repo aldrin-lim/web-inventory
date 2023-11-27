@@ -153,7 +153,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const onClone = useCallback(async () => {
     if (productDetails.id) {
-      await createProduct(productDetails)
+      const newProductName = `copy of ${productDetails.name}`
+      await createProduct({
+        ...productDetails,
+        name: newProductName,
+      })
     } else {
       // track why id isnt being provided
     }

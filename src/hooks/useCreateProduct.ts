@@ -32,7 +32,7 @@ const useCreateProduct = () => {
         autoClose: 2000,
         theme: 'colored',
       })
-      await queryClient.setQueryData(['product', data.id], data)
+      await queryClient.invalidateQueries(['product', data.id])
       navigate(`${AppPath.Products}/${data.id}`)
     },
   })
