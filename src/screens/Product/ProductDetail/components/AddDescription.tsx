@@ -50,9 +50,10 @@ const AddDescription: React.FC = () => {
       <textarea
         onChange={(e) => setDescription(e.target.value)}
         value={description || productDetails.description}
-        className="textarea textarea-bordered h-full w-full text-base"
+        className="textarea textarea-bordered h-auto w-full text-base"
         placeholder="Add description"
         autoFocus
+        rows={5}
       />
     </div>
   )
