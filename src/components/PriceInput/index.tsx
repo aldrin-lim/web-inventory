@@ -11,9 +11,7 @@ type PriceInputProps = React.DetailedHTMLProps<
 const PriceInput: React.FC<PriceInputProps> = (props) => {
   const { value = 0, onChange, ...rest } = props
   // Initialize the state with the formatted value if it's not zero, else with an empty string
-  const [inputValue, setInputValue] = useState<string>(
-    value === 0 ? '' : value.toFixed(2),
-  )
+  const [inputValue, setInputValue] = useState<string>(value.toFixed(2))
 
   useEffect(() => {
     // Update inputValue when value prop changes, format if it's not zero
