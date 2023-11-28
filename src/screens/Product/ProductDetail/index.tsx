@@ -7,11 +7,11 @@ import ImageUpload from 'components/ImageUpload'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import { Formik, Field, FieldProps } from 'formik'
+import { Formik, Field, FieldProps, FormikProps } from 'formik'
 import { Variants, AnimatePresence, motion } from 'framer-motion'
 import useCreateProduct from 'hooks/useCreateProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import AddDescription from 'screens/Product/ProductDetail/components/AddDescription'
@@ -73,6 +73,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const { mode = 'add' } = props
 
   const modalDialogRef = useRef<HTMLDialogElement>(null)
+  const formikRef = useRef<FormikProps<Product>>(null)
 
   const { createProduct, isCreating } = useCreateProduct()
   const { updateProduct, isUpdating } = useUpdateProduct()
@@ -103,15 +104,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
     },
     [dispatch],
   )
-
-  useEffect(() => {
-    if (productDetails.price && productDetails.cost) {
-      setProductValue(
-        'profit',
-        Number(productDetails.price) - Number(productDetails.cost),
-      )
-    }
-  }, [productDetails.cost, productDetails.price, setProductValue])
 
   const addProductDetailError = getProductDetailError(productDetails)
 
@@ -167,6 +159,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     if (mode === 'add') {
       return (
         <ToolbarButton
+          key={'add'}
           label={mode === 'add' ? 'Save' : 'Update'}
           onClick={!isMutating ? callback : undefined}
           disabled={isMutating}
@@ -179,7 +172,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           onDelete={() => modalDialogRef.current?.showModal()}
           onSave={callback}
           onClone={onClone}
-          key={1}
+          key={'updateAction'}
         />
       )
     }
@@ -197,8 +190,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
         onSubmit={onProcessProduct}
         validationSchema={toFormikValidationSchema(addProductSchema)}
         validateOnChange={false}
+        innerRef={formikRef}
       >
-        {({ setFieldValue, submitForm }) => {
+        {({ setFieldValue, submitForm, values }) => {
           return (
             <>
               <Toolbar
@@ -263,6 +257,13 @@ export const ProductDetail = (props: ProductDetailProps) => {
                           onChange={(value) => {
                             setProductValue('price', value)
                             setFieldValue('price', value)
+                            const isProfitTouched =
+                              formikRef.current?.getFieldMeta('profit').touched
+                            if (!isProfitTouched) {
+                              // console.log('isProfitTouched', isProfitTouched)
+                              setFieldValue('profit', +value - values.cost)
+                              setProductValue('profit', +value - values.cost)
+                            }
                           }}
                           disabled={isMutating}
                         />
@@ -301,25 +302,42 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   )}
                 </Field>
 
-                <div className="form-control w-full">
-                  <label className="label">
-                    <span className="label-text text-xs">Profit</span>
-                  </label>
-                  <div className="join">
-                    <div className="indicator">
-                      <button className="btn disabled join-item px-2 text-gray-500">
-                        ₱
-                      </button>
+                <Field name="profit">
+                  {({ field, meta }: FieldProps) => (
+                    <div className="form-control w-full">
+                      <label className="label">
+                        <span className="label-text text-xs">Profit</span>
+                      </label>
+                      <div className="join">
+                        <div className="indicator">
+                          <button className="btn disabled join-item px-2 text-gray-500">
+                            ₱
+                          </button>
+                        </div>
+                        <PriceInput
+                          {...field}
+                          className="input join-item input-bordered w-full pl-2"
+                          placeholder="Profit"
+                          value={field.value}
+                          onChange={(value) => {
+                            setProductValue('profit', value)
+                            setFieldValue('profit', value)
+                            const isPricedTouched =
+                              formikRef.current?.getFieldMeta('price').touched
+                            if (!isPricedTouched) {
+                              // console.log('isProfitTouched', isProfitTouched)
+                              setFieldValue('price', +value + values.cost)
+                              setProductValue('price', +value + values.cost)
+                            }
+                          }}
+                          disabled={isMutating}
+                        />
+                      </div>
+
+                      <p className="form-control-error">{meta.error} &nbsp;</p>
                     </div>
-                    <input
-                      disabled
-                      type="number"
-                      className="input join-item input-bordered w-full pl-2"
-                      placeholder="Profit"
-                      value={productDetails.profit.toFixed(2) || 0}
-                    />
-                  </div>
-                </div>
+                  )}
+                </Field>
               </div>
 
               <ImageUpload

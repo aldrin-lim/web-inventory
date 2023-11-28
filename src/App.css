@@ -28,7 +28,7 @@ html, body {
 
 @layer components {
   .section {
-    @apply p-6
+    @apply p-6 w-full
   }
 
   .section:has(.Toolbar) {
