@@ -17,13 +17,13 @@ const Skeleton = () => {
       <Toolbar
         items={[
           <ToolbarButton
-            key={1}
+            key={'back'}
             icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => navigate(AppPath.Products)}
           />,
 
           <ToolbarTitle key="title" title="Products" />,
-          <div key={1} />,
+          <div key={null} />,
         ]}
       />
       <div className="flex w-full flex-row items-center justify-between">

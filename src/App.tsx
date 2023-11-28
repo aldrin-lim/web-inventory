@@ -24,7 +24,7 @@ function App() {
 
   return (
     <div
-      className="App mx-auto flex max-w-md overflow-x-hidden border border-b-gray-400"
+      className="App mx-auto flex  overflow-x-hidden border border-b-gray-400"
       data-theme=""
     >
       <ToastContainer
