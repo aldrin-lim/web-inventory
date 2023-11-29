@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAllProducts } from 'api/product.api'
+import { GetAllProductFilterSchema } from 'api/product/getAllProducts'
 import { PaginationOptions } from 'types/api.types'
-import { GetAllProductFilterSchema } from 'types/product.types'
+import * as API from 'api/product'
 
 const useAllProducts = (
   bussinessId?: string,
@@ -13,7 +13,7 @@ const useAllProducts = (
     error,
   } = useQuery({
     queryKey: ['products', bussinessId, param],
-    queryFn: () => getAllProducts(param),
+    queryFn: () => API.getAllProducts(param),
     retry: 0,
     enabled: Boolean(bussinessId),
     refetchOnWindowFocus: false,

@@ -1,7 +1,17 @@
 import { AxiosResponse } from 'axios'
-
 import { httpClient } from 'util/http'
 import { z } from 'zod'
+
+export default async (param: AddProductSchema) => {
+  const result = await httpClient
+    .post<AddProductSchema, AxiosResponse<AddProductSchema>>(`/products`, param)
+    .then((res) => res.data)
+  return result
+}
+
+// Schema and Types
+type AddProductSchema = z.infer<typeof AddProductSchema>
+
 const AddProductSchema = z.object({
   id: z.string().optional(),
   name: z.string({
@@ -27,12 +37,3 @@ const AddProductSchema = z.object({
   }),
   images: z.array(z.string()).optional(),
 })
-
-type AddProductSchema = z.infer<typeof AddProductSchema>
-
-export default async (param: AddProductSchema) => {
-  const result = await httpClient
-    .post<AddProductSchema, AxiosResponse<AddProductSchema>>(`/products`, param)
-    .then((res) => res.data)
-  return result
-}
