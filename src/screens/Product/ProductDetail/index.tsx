@@ -3,7 +3,7 @@ import {
   ArchiveBoxIcon,
   ChevronLeftIcon,
 } from '@heroicons/react/24/solid'
-import ImageUpload from 'components/ImageUpload'
+import ProductImages from 'screens/Product/ProductDetail/components/ProductImages'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
@@ -135,7 +135,7 @@ export const ProductDetail = () => {
         disabled={isMutating}
       />
 
-      <ImageUpload />
+      <ProductImages />
 
       <button
         className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"

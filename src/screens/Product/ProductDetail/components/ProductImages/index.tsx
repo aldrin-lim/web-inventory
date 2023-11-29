@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { PhotoIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'
+import { PhotoIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
 import {
   AddProductActionType,
   useProductDetail,
 } from 'screens/Product/contexts/ProductDetailContext'
 import { Product } from 'types/product.types'
 
-const ImageUpload = () => {
+const ProductImages = () => {
   const [images, setImages] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -115,9 +115,9 @@ const ImageUpload = () => {
             </div>
             <button
               onClick={() => deleteImage(index)}
-              className="btn btn-circle btn-outline btn-xs absolute right-2 top-2 "
+              className="btn btn-circle btn-ghost btn-xs absolute right-2 top-2 bg-purple-300"
             >
-              <XMarkIcon className="w-4 " />
+              <TrashIcon className="w-4 text-white" />
             </button>
           </div>
         ))}
@@ -126,4 +126,4 @@ const ImageUpload = () => {
   )
 }
 
-export default ImageUpload
+export default ProductImages
