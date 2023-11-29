@@ -16,6 +16,7 @@ export enum AddProductActionType {
 interface State {
   activeModal: AddProductModal
   productDetails: Product
+  mode: 'add' | 'edit'
 }
 
 const initialState: State = {
@@ -34,6 +35,7 @@ const initialState: State = {
     expiryDate: undefined,
     measurement: '',
   },
+  mode: 'add',
 }
 
 type Action =
@@ -73,11 +75,13 @@ export const useProductDetail = () => useContext(ProductDetail)
 interface ProductDetailProviderProps {
   children: ReactNode
   productDetails?: Partial<Product>
+  mode: 'edit' | 'add'
 }
 
 export const ProductDetailProvider: React.FC<ProductDetailProviderProps> = ({
   children,
   productDetails,
+  mode = 'add',
 }) => {
   let defaultState = initialState
 
@@ -88,6 +92,13 @@ export const ProductDetailProvider: React.FC<ProductDetailProviderProps> = ({
         ...initialState.productDetails,
         ...productDetails,
       },
+    }
+  }
+
+  if (mode === 'edit') {
+    defaultState = {
+      ...defaultState,
+      mode: 'edit',
     }
   }
 

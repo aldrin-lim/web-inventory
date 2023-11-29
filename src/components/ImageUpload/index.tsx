@@ -1,15 +1,36 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { PhotoIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/solid'
+import {
+  AddProductActionType,
+  useProductDetail,
+} from 'screens/Product/contexts/ProductDetailContext'
+import { Product } from 'types/product.types'
 
-type ImageUploadProps = {
-  onChange?: (images: string[]) => void
-  images?: Array<string>
-}
-
-const ImageUpload = (props: ImageUploadProps) => {
-  const { onChange } = props
+const ImageUpload = () => {
   const [images, setImages] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement | null>(null)
+
+  const {
+    dispatch,
+    state: { productDetails },
+  } = useProductDetail()
+
+  const setProductValue = useCallback(
+    (field: keyof Product, value: unknown) => {
+      dispatch({
+        type: AddProductActionType.UpdateProductDetail,
+        payload: {
+          field,
+          value,
+        },
+      })
+    },
+    [dispatch],
+  )
+
+  const onChange = (images: string[]) => {
+    setProductValue('images', images)
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -21,9 +42,7 @@ const ImageUpload = (props: ImageUploadProps) => {
           newImageSrcs.push(reader.result as string)
           if (newImageSrcs.length === files.length) {
             setImages((prev) => {
-              if (onChange) {
-                onChange([...prev, ...newImageSrcs])
-              }
+              onChange([...prev, ...newImageSrcs])
               return [...prev, ...newImageSrcs]
             })
           }
@@ -52,10 +71,10 @@ const ImageUpload = (props: ImageUploadProps) => {
   const showInitialImageButton = images.length === 0
 
   useEffect(() => {
-    if (props.images) {
-      setImages(props.images)
+    if (productDetails.images) {
+      setImages(productDetails.images)
     }
-  }, [props.images])
+  }, [productDetails.images])
 
   return (
     <div className="flex w-full max-w-xs flex-row gap-5 ">

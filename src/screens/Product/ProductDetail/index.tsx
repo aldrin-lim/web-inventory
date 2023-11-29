@@ -7,70 +7,29 @@ import ImageUpload from 'components/ImageUpload'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import { Formik, Field, FieldProps, FormikProps } from 'formik'
-import { Variants, AnimatePresence, motion } from 'framer-motion'
+import { FormikProps } from 'formik'
 import useCreateProduct from 'hooks/useCreateProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
 import { useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
-import AddDescription from 'screens/Product/ProductDetail/components/AddDescription'
-import AddProductDetail from 'screens/Product/ProductDetail/components/AddProductDetails'
-import {
-  Product,
-  addProductDetailSchema,
-  addProductRequestSchema,
-  updateProductRequestSchema,
-  addProductSchema,
-} from 'types/product.types'
-import { toFormikValidationSchema } from 'zod-formik-adapter'
+import { Product } from 'types/product.types'
 import {
   useProductDetail,
   AddProductModal,
   AddProductActionType,
 } from '../contexts/ProductDetailContext'
-import UpdateActionMenu from './components/UpdateActionMenu'
 import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
 import useDeleteProduct from 'hooks/useDeleteProduct'
-import PriceInput from 'components/PriceInput'
+import ProductDetailModalManager from './components/ProductDetailModalManager'
+import PrimaryAction from './components/ProductDetailPrimaryAction'
+import ProductDetailForm from './components/ProductDetailForm'
 
-const modalVariants: Variants = {
-  hidden: {
-    x: '100vw', // Start off-screen to the right
-    opacity: 0,
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 0.2, ease: 'backIn' }, // 200ms linear transition
-  },
-  exit: {
-    x: '100vw',
-    opacity: 0,
-    transition: { duration: 0.2, ease: 'backIn' }, // 200ms linear transition
-  },
-}
-
-const getProductDetailError = (productDetail: Product) => {
-  const validationResult = addProductDetailSchema.safeParse(productDetail)
-
-  if (!validationResult.success) {
-    return validationResult.error.issues[0].message
-  }
-
-  return ''
-}
-
-type ProductDetailProps = {
-  mode?: 'edit' | 'add'
-}
-
-export const ProductDetail = (props: ProductDetailProps) => {
+export const ProductDetail = () => {
   const {
     dispatch,
-    state: { activeModal, productDetails },
+    state: { activeModal, productDetails, mode },
   } = useProductDetail()
-  const { mode = 'add' } = props
 
   const modalDialogRef = useRef<HTMLDialogElement>(null)
   const formikRef = useRef<FormikProps<Product>>(null)
@@ -80,8 +39,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const { deleteProduct, isDeleting } = useDeleteProduct()
 
   const isMutating = isUpdating || isCreating || isDeleting
-
-  const { description } = productDetails
 
   const navigate = useNavigate()
 
@@ -105,32 +62,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
     [dispatch],
   )
 
-  const addProductDetailError = getProductDetailError(productDetails)
-
-  const onProcessProduct = async () => {
+  const submitForm = async () => {
+    formikRef.current?.submitForm
     if (mode === 'add') {
-      const validation = addProductRequestSchema.safeParse(productDetails)
-
-      if (!validation.success) {
-        const error = validation.error.issues[0].message
-        console.log(error)
-        return
-      }
-
-      const requestBody = validation.data
-
-      await createProduct(requestBody)
+      await createProduct(productDetails)
     } else {
-      const validation = updateProductRequestSchema.safeParse(productDetails)
-
-      if (!validation.success) {
-        const error = validation.error.issues[0].message
-        console.log(error)
-        return
-      }
-
-      const requestBody = validation.data
-      await updateProduct({ id: requestBody.id, product: requestBody })
+      await updateProduct(productDetails)
     }
   }
 
@@ -155,27 +92,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
     }
   }, [createProduct, productDetails])
 
-  const renderAction = (callback: () => void) => {
-    if (mode === 'add') {
-      return (
-        <ToolbarButton
-          key={'add'}
-          label={mode === 'add' ? 'Save' : 'Update'}
-          onClick={!isMutating ? callback : undefined}
-          disabled={isMutating}
-        />
-      )
-    } else {
-      return (
-        <UpdateActionMenu
-          isLoading={isMutating}
-          onDelete={() => modalDialogRef.current?.showModal()}
-          onSave={callback}
-          onClone={onClone}
-          key={'updateAction'}
-        />
-      )
-    }
+  const setFieldValue = (field: keyof Product, value: unknown) => {
+    formikRef.current?.setFieldValue(field, value)
+    setProductValue(field, value)
   }
 
   return (
@@ -185,202 +104,52 @@ export const ProductDetail = (props: ProductDetailProps) => {
         productName={productDetails.name}
         onDelete={onDeleteProduct}
       />
-      <Formik
-        initialValues={productDetails}
-        onSubmit={onProcessProduct}
-        validationSchema={toFormikValidationSchema(addProductSchema)}
-        validateOnChange={false}
-        innerRef={formikRef}
+
+      <Toolbar
+        items={[
+          <ToolbarButton
+            key={2}
+            icon={<ChevronLeftIcon className="w-6" />}
+            onClick={() => navigate(AppPath.ProductOverview)}
+          />,
+          <ToolbarTitle
+            key="title"
+            title={mode === 'add' ? 'Add Product' : 'View Product'}
+          />,
+          <PrimaryAction
+            key="primaryAction"
+            isLoading={isMutating}
+            onClone={onClone}
+            onCreate={submitForm}
+            onDelete={onDeleteProduct}
+            onSave={submitForm}
+          />,
+        ]}
+      />
+
+      <ProductDetailForm
+        intialValues={productDetails}
+        onSubmit={submitForm}
+        setFieldValue={setFieldValue}
+        ref={formikRef}
+        disabled={isMutating}
+      />
+
+      <ImageUpload />
+
+      <button
+        className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
+        onClick={() => setActiveModal(AddProductModal.Detail)}
+        disabled={isMutating}
       >
-        {({ setFieldValue, submitForm, values }) => {
-          return (
-            <>
-              <Toolbar
-                items={[
-                  <ToolbarButton
-                    key={2}
-                    icon={<ChevronLeftIcon className="w-6" />}
-                    onClick={() => navigate(AppPath.ProductOverview)}
-                  />,
-                  <ToolbarTitle
-                    key="title"
-                    title={mode === 'add' ? 'Add Product' : 'View Product'}
-                  />,
-                  renderAction(submitForm),
-                ]}
-              />
+        <div className="flex flex-row items-center gap-1">
+          <ArchiveBoxIcon className="w-5" />
+          Manage Inventory
+        </div>
+        <ChevronRightIcon className="w-5" />
+      </button>
 
-              <Field name="name">
-                {({ field, meta }: FieldProps) => (
-                  <div className="form-control w-full">
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="Product Name"
-                      className="input input-bordered w-full"
-                      onChange={(e) => {
-                        setProductValue('name', e.target.value)
-                        setFieldValue('name', e.target.value)
-                      }}
-                      disabled={isMutating}
-                    />
-                    <p className="form-control-error">{meta.error} &nbsp;</p>
-                  </div>
-                )}
-              </Field>
-              <button
-                onClick={() => setActiveModal(AddProductModal.Description)}
-                className="btn btn-ghost btn-primary btn-xs -mt-[10px]  flex w-full flex-row justify-between p-0 normal-case"
-              >
-                <span className="col-span-11 w-4/5 truncate overflow-ellipsis text-left text-gray-400">
-                  {description || 'Add Description'}
-                </span>
-                <ChevronRightIcon className="col-span-1 w-5" />
-              </button>
-              <div className="grid w-full grid-cols-3 grid-rows-1 gap-4">
-                <Field name="price">
-                  {({ field, meta }: FieldProps) => (
-                    <div className="form-control w-full">
-                      <label className="label">
-                        <span className="label-text text-xs">Price</span>
-                      </label>
-                      <div className="join">
-                        <div className="indicator">
-                          <button className="btn disabled join-item px-2 text-gray-500">
-                            ₱
-                          </button>
-                        </div>
-                        <PriceInput
-                          {...field}
-                          className="input join-item input-bordered w-full pl-2"
-                          placeholder="Price"
-                          onChange={(value) => {
-                            setProductValue('price', value)
-                            setFieldValue('price', value)
-                            const isProfitTouched =
-                              formikRef.current?.getFieldMeta('profit').touched
-                            if (!isProfitTouched) {
-                              // console.log('isProfitTouched', isProfitTouched)
-                              setFieldValue('profit', +value - values.cost)
-                              setProductValue('profit', +value - values.cost)
-                            }
-                          }}
-                          disabled={isMutating}
-                        />
-                      </div>
-                      <p className="form-control-error">{meta.error} &nbsp;</p>
-                    </div>
-                  )}
-                </Field>
-
-                <Field name="cost">
-                  {({ field, meta }: FieldProps) => (
-                    <div className="form-control w-full">
-                      <label className="label">
-                        <span className="label-text text-xs">Cost</span>
-                      </label>
-                      <div className="join">
-                        <div className="indicator">
-                          <button className="btn disabled join-item px-2 text-gray-500">
-                            ₱
-                          </button>
-                        </div>
-                        <PriceInput
-                          {...field}
-                          className="input join-item input-bordered w-full pl-2"
-                          placeholder="Cost"
-                          onChange={(value) => {
-                            setProductValue('cost', value)
-                            setFieldValue('cost', value)
-                          }}
-                          disabled={isMutating}
-                        />
-                      </div>
-
-                      <p className="form-control-error">{meta.error} &nbsp;</p>
-                    </div>
-                  )}
-                </Field>
-
-                <Field name="profit">
-                  {({ field, meta }: FieldProps) => (
-                    <div className="form-control w-full">
-                      <label className="label">
-                        <span className="label-text text-xs">Profit</span>
-                      </label>
-                      <div className="join">
-                        <div className="indicator">
-                          <button className="btn disabled join-item px-2 text-gray-500">
-                            ₱
-                          </button>
-                        </div>
-                        <PriceInput
-                          {...field}
-                          className="input join-item input-bordered w-full pl-2"
-                          placeholder="Profit"
-                          value={field.value}
-                          onChange={(value) => {
-                            setProductValue('profit', value)
-                            setFieldValue('profit', value)
-                            const isPricedTouched =
-                              formikRef.current?.getFieldMeta('price').touched
-                            if (!isPricedTouched) {
-                              // console.log('isProfitTouched', isProfitTouched)
-                              setFieldValue('price', +value + values.cost)
-                              setProductValue('price', +value + values.cost)
-                            }
-                          }}
-                          disabled={isMutating}
-                        />
-                      </div>
-
-                      <p className="form-control-error">{meta.error} &nbsp;</p>
-                    </div>
-                  )}
-                </Field>
-              </div>
-
-              <ImageUpload
-                onChange={(images) => setProductValue('images', images)}
-                images={productDetails.images}
-              />
-              <button
-                className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
-                onClick={() => setActiveModal(AddProductModal.Detail)}
-                disabled={isMutating}
-              >
-                <div className="flex flex-row items-center gap-1">
-                  <ArchiveBoxIcon className="w-5" />
-                  Manage Inventory
-                </div>
-                <ChevronRightIcon className="w-5" />
-              </button>
-              <p className="form-control-error">
-                {addProductDetailError} &nbsp;
-              </p>
-            </>
-          )
-        }}
-      </Formik>
-
-      {/* MODALS */}
-      <AnimatePresence>
-        <motion.div
-          className={[
-            'section absolute left-0 right-0 z-10 h-full bg-base-100 pt-0',
-            activeModal === AddProductModal.None ? 'hidden' : '',
-          ].join(' ')}
-          variants={modalVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          key={activeModal}
-        >
-          {activeModal === AddProductModal.Description && <AddDescription />}
-
-          {activeModal === AddProductModal.Detail && <AddProductDetail />}
-        </motion.div>
-      </AnimatePresence>
+      <ProductDetailModalManager activeModal={activeModal} />
     </div>
   )
 }

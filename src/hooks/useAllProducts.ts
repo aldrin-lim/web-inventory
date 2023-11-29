@@ -7,7 +7,11 @@ const useAllProducts = (
   bussinessId?: string,
   param?: PaginationOptions & GetAllProductFilterSchema,
 ) => {
-  const { data, isLoading, error } = useQuery({
+  const {
+    data,
+    isFetching: isLoading,
+    error,
+  } = useQuery({
     queryKey: ['products', bussinessId, param],
     queryFn: () => getAllProducts(param),
     retry: 0,

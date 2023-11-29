@@ -3,8 +3,8 @@ import ProductDetail from 'screens/Product/ProductDetail'
 
 const AddProduct = () => {
   return (
-    <ProductDetailProvider>
-      <ProductDetail mode="add" />
+    <ProductDetailProvider mode="add">
+      <ProductDetail />
     </ProductDetailProvider>
   )
 }

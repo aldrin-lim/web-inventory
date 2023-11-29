@@ -7,7 +7,11 @@ const useUser = () => {
   const { isLoading: isAuth0Loading, isAuthenticated, user } = useAuth0()
   const [email, setEmail] = useState<string>('')
 
-  const { data, isLoading, error } = useQuery({
+  const {
+    data,
+    isFetching: isLoading,
+    error,
+  } = useQuery({
     queryKey: ['User', email],
     queryFn: async () => getUser(email),
     retry: 0,
