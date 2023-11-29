@@ -9,11 +9,43 @@ import EmptyProducts from 'screens/ProductMenu/components/EmptyProduct'
 import ProductCard from 'screens/ProductMenu/components/ProductCard'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 import GetStarted from 'screens/ProductMenu/components/GetStarted'
+import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
+
+import './styles.css'
+
+const getSkeletonNumber = (size: ScreenSize) => {
+  switch (size) {
+    case 'xs':
+    case 'sm':
+      return 4
+    case 'md':
+    case 'lg':
+      return 8
+    default:
+      return 10
+  }
+}
+
+const getProductCardNumber = (size: ScreenSize) => {
+  switch (size) {
+    case 'xs':
+    case 'sm':
+      return 4
+    case 'md':
+    case 'lg':
+      return 8
+    default:
+      return 10
+  }
+}
 
 const Skeleton = () => {
   const navigate = useNavigate()
+  const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
+
+  const skeletonNumber = getSkeletonNumber(currentBreakpoint)
   return (
-    <div className="section z-30 flex h-full flex-col gap-4 pb-24 pt-0">
+    <div className="ProductOverview section">
       <Toolbar
         items={[
           <ToolbarButton
@@ -33,10 +65,12 @@ const Skeleton = () => {
       <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
         <div className={`relative h-full w-full`}>
           <div className={`flex flex-row flex-wrap gap-3`}>
-            <div className="skeleton h-[213px] w-[155px] rounded-md" />
-            <div className="skeleton h-[213px] w-[155px] rounded-md" />
-            <div className="skeleton h-[213px] w-[155px] rounded-md" />
-            <div className="skeleton h-[213px] w-[155px] rounded-md" />
+            {Array.from({ length: skeletonNumber }).map((_, index) => (
+              <div
+                key={index}
+                className="skeleton h-[213px] w-[155px] rounded-md"
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -50,18 +84,27 @@ const ProductOverview = () => {
   const { user, isLoading: isUserLoading, error: userError } = useUser()
 
   const bussinessId = user?.businesses[0]?.id
+  const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
+
+  const productCardNumber = getProductCardNumber(currentBreakpoint)
 
   const {
     products,
     isLoading: isProductsLoading,
     error: productError,
-  } = useAllProducts(bussinessId, { limit: 4, outOfStock: false })
+  } = useAllProducts(bussinessId, {
+    limit: productCardNumber,
+    outOfStock: false,
+  })
 
   const {
     products: outOfSotckProducts,
     isLoading: isoutOfSotckProductsLoading,
     error: outOfStouckProductError,
-  } = useAllProducts(bussinessId, { limit: 4, outOfStock: true })
+  } = useAllProducts(bussinessId, {
+    limit: productCardNumber,
+    outOfStock: true,
+  })
 
   const error = productError || outOfStouckProductError || userError
 
@@ -98,7 +141,7 @@ const ProductOverview = () => {
 
   if (error) {
     return (
-      <div className="section z-30 flex flex-col gap-4 pb-24 pt-0">
+      <div className="ProductOverview section ">
         <Toolbar
           items={[
             <ToolbarButton
@@ -128,7 +171,7 @@ const ProductOverview = () => {
   }
 
   return (
-    <div className="section z-30 flex h-full flex-col gap-4 pb-24 pt-0">
+    <div className="ProductOverview section">
       <Toolbar
         items={[
           <ToolbarButton
@@ -178,17 +221,15 @@ const ProductOverview = () => {
                   </>
                 )}
                 {!isLoading &&
-                  products
-                    .slice(0, 4)
-                    .map((product) => (
-                      <ProductCard
-                        id={product.id as string}
-                        image={product?.images?.[0] || ''}
-                        name={product.name}
-                        key={product.name}
-                        quantity={product.quantity}
-                      />
-                    ))}
+                  products.map((product) => (
+                    <ProductCard
+                      id={product.id as string}
+                      image={product?.images?.[0] || ''}
+                      name={product.name}
+                      key={product.name}
+                      quantity={product.quantity}
+                    />
+                  ))}
               </div>
             </div>
           </div>
@@ -219,17 +260,15 @@ const ProductOverview = () => {
                   </>
                 )}
                 {!isoutOfSotckProductsLoading &&
-                  outOfSotckProducts
-                    .slice(0, 4)
-                    .map((product) => (
-                      <ProductCard
-                        id={product.id as string}
-                        image={product?.images?.[0] || ''}
-                        name={product.name}
-                        key={product.name}
-                        quantity={product.quantity}
-                      />
-                    ))}
+                  outOfSotckProducts.map((product) => (
+                    <ProductCard
+                      id={product.id as string}
+                      image={product?.images?.[0] || ''}
+                      name={product.name}
+                      key={product.name}
+                      quantity={product.quantity}
+                    />
+                  ))}
               </div>
             </div>
           </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 // Adding 'xs' to the SCREEN_SIZES array
 const SCREEN_SIZES = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const
-type ScreenSize = (typeof SCREEN_SIZES)[number]
+export type ScreenSize = (typeof SCREEN_SIZES)[number]
 
 // Updating the Breakpoint type to include 'xs'
 type Breakpoint = {
