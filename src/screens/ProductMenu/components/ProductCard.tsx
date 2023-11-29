@@ -30,11 +30,14 @@ const ProductCard = (props: ProductCardProps) => {
       </figure>
       <div className="card-body flex flex-col gap-0 !py-2 text-left">
         <h2 className="card-title text-sm">
-          <MiddleTruncatedText text={name} maxLength={15} />
+          <MiddleTruncatedText text={name} maxLength={18} />
         </h2>
 
-        <div className="flex flex-row gap-1 text-xs">
-          <span>{status || 'Active'}</span> • <span>{quantity} available</span>
+        <div className="flex flex-row gap-1  text-xs">
+          <span>{status || 'Active'}</span> •{' '}
+          <span className="overflow-hidden truncate text-ellipsis">
+            {quantity} available
+          </span>
         </div>
       </div>
     </div>
