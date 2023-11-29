@@ -16,6 +16,22 @@ import { AppPath } from 'routes/AppRoutes.types'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import MiddleTruncateText from 'components/MiddleTruncatedText'
 import { z } from 'zod'
+import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
+
+const getTruncateSize = (size: ScreenSize) => {
+  switch (size) {
+    case 'xs':
+      return 10
+    case 'sm':
+      return 25
+    case 'md':
+      return 200
+    case 'lg':
+      return 200
+    default:
+      return 500
+  }
+}
 
 function useDebounce(value: string, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value)
@@ -37,6 +53,8 @@ const ProductList = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [page] = useState(0)
+
+  const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
 
   const [enableFilter, setEnableFilter] = useState(false)
   const [outOfStockFilter, setOutOfStockFilter] = useState<
@@ -190,7 +208,7 @@ const ProductList = () => {
                         <p>
                           <MiddleTruncateText
                             text={product.name}
-                            maxLength={18}
+                            maxLength={getTruncateSize(currentBreakpoint)}
                           />
                         </p>
                         <p className="ml-auto text-xs font-normal">
