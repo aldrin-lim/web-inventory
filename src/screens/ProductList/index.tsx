@@ -1,6 +1,5 @@
 import { FixedSizeList as List } from 'react-window'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { getAllProducts } from 'api/product.api'
 import {
   ChevronRightIcon,
   MagnifyingGlassIcon,
@@ -17,6 +16,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import MiddleTruncateText from 'components/MiddleTruncatedText'
 import { z } from 'zod'
 import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
+import * as API from 'api/product'
 
 const getTruncateSize = (size: ScreenSize) => {
   switch (size) {
@@ -65,7 +65,7 @@ const ProductList = () => {
 
   const { data, isLoading, error } = useInfiniteQuery(
     ['products'],
-    ({ pageParam = 1 }) => getAllProducts({ limit: 100, page: pageParam }),
+    ({ pageParam = 1 }) => API.getAllProducts({ limit: 100, page: pageParam }),
     {
       getNextPageParam: (lastPage, pages) => {
         if (page > 1 && lastPage.length < 10) return undefined

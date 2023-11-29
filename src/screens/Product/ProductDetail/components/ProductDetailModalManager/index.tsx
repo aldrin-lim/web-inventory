@@ -2,6 +2,7 @@ import { Variants, AnimatePresence, motion } from 'framer-motion'
 import { AddProductModal } from 'screens/Product/contexts/ProductDetailContext'
 import AddDescription from '../AddDescription'
 import AddProductDetail from '../AddProductDetails'
+import AddProductVariant from '../AddProductVariants'
 
 const animationVariants: Variants = {
   hidden: {
@@ -42,6 +43,8 @@ const ProductDetailModalManager = (props: ProductDetailModalManagerProps) => {
         {activeModal === AddProductModal.Description && <AddDescription />}
 
         {activeModal === AddProductModal.Detail && <AddProductDetail />}
+
+        {activeModal === AddProductModal.Variants && <AddProductVariant />}
       </motion.div>
     </AnimatePresence>
   )

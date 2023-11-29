@@ -10,7 +10,8 @@ import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import MeasurementSelect from './MeasurementSelect'
-import { Product, addProductDetailSchema } from 'types/product.types'
+import { Product } from 'types/product.types'
+import { AddProductSchema } from 'api/product/createProduct'
 
 const AddProductDetail = () => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -53,7 +54,7 @@ const AddProductDetail = () => {
           measurement: productDetails.measurement || '',
           allowBackOrder: productDetails.allowBackOrder,
         }}
-        validationSchema={toFormikValidationSchema(addProductDetailSchema)}
+        validationSchema={toFormikValidationSchema(AddProductSchema)}
         onSubmit={({
           category,
           expiryDate,

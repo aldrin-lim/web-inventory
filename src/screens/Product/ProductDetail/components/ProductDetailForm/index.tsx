@@ -1,9 +1,10 @@
 import PriceInput from 'components/PriceInput'
 import { Formik, Field, FieldProps, FormikProps } from 'formik'
 import { Ref, forwardRef } from 'react'
-import { Product, addProductSchema } from 'types/product.types'
+import { Product } from 'types/product.types'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import AddProductDescriptionButton from '../AddProductDescriptionButton'
+import { AddProductSchema } from 'api/product/createProduct'
 
 type ProductDetailFormProps = {
   onSubmit: () => void
@@ -20,7 +21,7 @@ const ProductDetailForm = forwardRef(
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
-        validationSchema={toFormikValidationSchema(addProductSchema)}
+        validationSchema={toFormikValidationSchema(AddProductSchema)}
         validateOnChange={false}
         innerRef={ref}
       >

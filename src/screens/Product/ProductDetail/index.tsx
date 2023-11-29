@@ -149,6 +149,15 @@ export const ProductDetail = () => {
         <ChevronRightIcon className="w-5" />
       </button>
 
+      <h1 className="font-bold">Variants</h1>
+      <button
+        className="btn btn-ghost btn-outline btn-primary  text-center"
+        onClick={() => setActiveModal(AddProductModal.Variants)}
+        disabled={isMutating}
+      >
+        Add Variants
+      </button>
+
       <ProductDetailModalManager activeModal={activeModal} />
     </div>
   )

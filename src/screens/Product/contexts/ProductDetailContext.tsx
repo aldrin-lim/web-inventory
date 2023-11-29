@@ -6,6 +6,7 @@ export enum AddProductModal {
   None = '',
   Detail = 'detail',
   Description = 'description',
+  Variants = 'variants',
 }
 
 export enum AddProductActionType {
