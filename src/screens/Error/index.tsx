@@ -1,4 +1,6 @@
 import { FaceFrownIcon } from '@heroicons/react/24/outline'
+import { ArrowPathIcon } from '@heroicons/react/24/solid'
+import { Link } from 'react-router-dom'
 
 const Error = () => {
   return (
@@ -20,6 +22,13 @@ const Error = () => {
           support@qrafter.io
         </a>
       </p>
+
+      <div className="mt-10">
+        <Link className="btn flex flex-row gap-2 " to="/">
+          <ArrowPathIcon className="w-6" />
+          Refresh page
+        </Link>
+      </div>
     </div>
   )
 }
