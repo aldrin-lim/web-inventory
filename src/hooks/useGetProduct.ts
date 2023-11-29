@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
-import { getProductById } from 'api/product.api'
+import * as API from 'api/product'
 
 const useGetProduct = (productId?: string) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['product', productId],
-    queryFn: () => getProductById(productId as string),
+    queryFn: () => API.getProductById(productId as string),
     retry: 0,
     enabled: Boolean(productId),
     refetchOnWindowFocus: false,
