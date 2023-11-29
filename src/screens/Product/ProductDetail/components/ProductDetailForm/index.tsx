@@ -7,18 +7,18 @@ import AddProductDescriptionButton from '../AddProductDescriptionButton'
 
 type ProductDetailFormProps = {
   onSubmit: () => void
-  intialValues: Product
+  initialValues: Product
   disabled?: boolean
   setFieldValue: (field: keyof Product, value: unknown) => void
 }
 
 const ProductDetailForm = forwardRef(
   (props: ProductDetailFormProps, ref: Ref<FormikProps<Product>>) => {
-    const { intialValues, onSubmit, disabled = false, setFieldValue } = props
+    const { initialValues, onSubmit, disabled = false, setFieldValue } = props
 
     return (
       <Formik
-        initialValues={intialValues}
+        initialValues={initialValues}
         onSubmit={onSubmit}
         validationSchema={toFormikValidationSchema(addProductSchema)}
         validateOnChange={false}

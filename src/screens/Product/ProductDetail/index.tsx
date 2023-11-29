@@ -128,7 +128,7 @@ export const ProductDetail = () => {
       />
 
       <ProductDetailForm
-        intialValues={productDetails}
+        initialValues={productDetails}
         onSubmit={submitForm}
         setFieldValue={setFieldValue}
         ref={formikRef}
