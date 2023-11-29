@@ -12,7 +12,7 @@ export default async (param: AddProductSchema) => {
 // Schema and Types
 type AddProductSchema = z.infer<typeof AddProductSchema>
 
-const AddProductSchema = z.object({
+export const AddProductSchema = z.object({
   id: z.string().optional(),
   name: z.string({
     required_error: 'Product name is required',

@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import * as API from 'api/product'
+import { AddProductSchema } from 'api/product/createProduct'
 import axios from 'axios'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { AppPath } from 'routes/AppRoutes.types'
-import { Product, addProductRequestSchema } from 'types/product.types'
+import { Product } from 'types/product.types'
 
 const useCreateProduct = () => {
   const navigate = useNavigate()
@@ -39,7 +40,7 @@ const useCreateProduct = () => {
   })
 
   const createProduct = async (param: Product) => {
-    const validation = addProductRequestSchema.safeParse(param)
+    const validation = AddProductSchema.safeParse(param)
 
     if (!validation.success) {
       const error = validation.error.issues[0].message
