@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import * as API from 'api/product.api'
+import * as API from 'api/product'
+import { UpdateProductSchema } from 'api/product/updateProductById'
 import axios from 'axios'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { Product, updateProductRequestSchema } from 'types/product.types'
+import { Product } from 'types/product.types'
 
 const useUpdateProduct = () => {
   const queryClient = useQueryClient()
@@ -35,7 +36,7 @@ const useUpdateProduct = () => {
   })
 
   const updateProduct = async (param: Product) => {
-    const validation = updateProductRequestSchema.safeParse(param)
+    const validation = UpdateProductSchema.safeParse(param)
 
     if (!validation.success) {
       const error = validation.error.issues[0].message

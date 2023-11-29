@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { deleteProductById } from 'api/product.api'
+import * as API from 'api/product'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
@@ -9,7 +9,7 @@ const useDeleteProduct = () => {
     isLoading: isDeleting,
     error: deleteProductError,
   } = useMutation({
-    mutationFn: deleteProductById,
+    mutationFn: API.deleteProductById,
     retry: 0,
     onError: (error) => {
       let errorMessage = "We're sorry, we've encountered an issue. "
