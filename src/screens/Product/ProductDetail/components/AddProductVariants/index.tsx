@@ -36,7 +36,7 @@ const AddProductVariant = () => {
   console.log(generateProductVariants(variantsOptionsInput, productDetails))
 
   return (
-    <div className="h-[90vh]">
+    <div className="flex h-[90vh] flex-col gap-4">
       <Toolbar
         items={[
           <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
@@ -44,7 +44,8 @@ const AddProductVariant = () => {
           <ToolbarButton key={3} label="Done" />,
         ]}
       />
-      <VariantAttributeItem />
+      <h1 className="font-bold">Options</h1>
+      <VariantAttributeItem onChange={() => {}} />
     </div>
   )
 }

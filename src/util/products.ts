@@ -1,9 +1,8 @@
-import { Product, ProductVariant } from 'types/product.types'
-
-export type ProductVariantAttribute = {
-  option: string
-  values: Array<string>
-}
+import {
+  Product,
+  ProductVariant,
+  ProductVariantAttribute,
+} from 'types/product.types'
 
 export const uniqueVariantCombinations = (
   variants?: Array<ProductVariant>,

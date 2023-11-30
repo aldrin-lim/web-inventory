@@ -1,6 +1,11 @@
 import { uniqueVariantCombinations } from 'util/products'
 import { z } from 'zod'
 
+export type ProductVariantAttribute = {
+  option: string
+  values: Array<string>
+}
+
 export const VariantOptionsSchema = z.object({
   option: z.string({
     required_error: 'Variant Option name is required',

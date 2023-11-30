@@ -1,15 +1,24 @@
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import OptionValueItem from './components/OptionValueItem'
+import { ProductVariantAttribute } from 'types/product.types'
 
-const VariantAttributeItem = () => {
+type VariantAttributeItemProps = {
+  onChange: (variantAttribute?: ProductVariantAttribute) => void
+}
+
+const VariantAttributeItem = (props: VariantAttributeItemProps) => {
+  const { onChange } = props
   const [option, setOption] = useState('')
   const [optionValues, setOptionValues] = useState<Array<string>>([])
   const [newOptionValue, setNewOptionValue] = useState('')
   const [optionValueError, setOptionValueError] = useState('')
 
   const addOptionValue = () => {
-    setOptionValueError('')
+    if (newOptionValue === '') {
+      return
+    }
+
     setOptionValues((prev) => {
       if (prev.includes(newOptionValue)) {
         setOptionValueError(`Duplicate value`)
@@ -21,6 +30,7 @@ const VariantAttributeItem = () => {
   }
 
   const removeOptionValue = (index: number) => {
+    setOptionValueError('')
     setOptionValues((prev) => prev.filter((_, i) => i !== index))
   }
 
@@ -37,6 +47,17 @@ const VariantAttributeItem = () => {
       }),
     )
   }
+
+  useEffect(() => {
+    if (option && optionValues.length > 0) {
+      onChange({
+        option,
+        values: optionValues,
+      })
+    } else {
+      onChange(undefined)
+    }
+  }, [onChange, option, optionValues])
 
   return (
     <div className="flex flex-col gap-4 rounded-sm bg-gray-200 p-4 pr-2 ">
@@ -71,7 +92,7 @@ const VariantAttributeItem = () => {
       </div>
       {optionValues.map((value, index) => (
         <OptionValueItem
-          key={index}
+          key={value}
           value={value}
           allValues={optionValues}
           onUpdate={(newValue) => updateOptionValue(index, newValue)}
