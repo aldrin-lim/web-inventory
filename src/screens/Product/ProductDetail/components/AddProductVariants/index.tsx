@@ -7,8 +7,8 @@ import {
   useProductDetail,
 } from 'screens/Product/contexts/ProductDetailContext'
 import { generateProductVariants } from 'util/products'
-import VariantAttributeItem from './components/VariantAttributeItem'
 import VariantAttributeManager from './components/VariantAttributeManager'
+import { ProductVariantAttribute } from 'types/product.types'
 
 const variantsOptionsInput = [
   {
@@ -36,6 +36,12 @@ const AddProductVariant = () => {
 
   console.log(generateProductVariants(variantsOptionsInput, productDetails))
 
+  const handleVariantAttributeManagerChange = (
+    variantAttribute: Array<ProductVariantAttribute>,
+  ) => {
+    console.log(JSON.stringify(variantAttribute, null, 2))
+  }
+
   return (
     <div className="flex h-[90vh] flex-col gap-4">
       <Toolbar
@@ -46,7 +52,7 @@ const AddProductVariant = () => {
         ]}
       />
       <h1 className="font-bold">Options</h1>
-      <VariantAttributeManager />
+      <VariantAttributeManager onChange={handleVariantAttributeManagerChange} />
     </div>
   )
 }

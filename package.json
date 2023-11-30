@@ -27,6 +27,7 @@
     "react-window": "^1.8.9",
     "sort-by": "^1.2.0",
     "theme-change": "^2.5.0",
+    "uuid": "^9.0.1",
     "zod": "^3.22.4",
     "zod-formik-adapter": "^1.2.0"
   },

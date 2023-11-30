@@ -1,26 +1,28 @@
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import OptionValueItem from './components/OptionValueItem'
 import { ProductVariantAttribute } from 'types/product.types'
 
 type VariantAttributeItemProps = {
-  onChange: (variantAttribute?: ProductVariantAttribute) => void
   onRemove: () => void
-  initialOption?: ProductVariantAttribute['option']
-  initialOptionValues?: ProductVariantAttribute['values']
+  option: ProductVariantAttribute['option']
+  optionValues: ProductVariantAttribute['values']
+  onOptionChange: (option?: ProductVariantAttribute['option']) => void
+  onOptionValuesChange: (
+    optionValues: ProductVariantAttribute['values'],
+  ) => void
 }
 
 const VariantAttributeItem = (props: VariantAttributeItemProps) => {
-  const {
-    onChange,
-    onRemove,
-    initialOption = '',
-    initialOptionValues = [],
-  } = props
-  const [option, setOption] = useState(initialOption)
-  const [optionValues, setOptionValues] = useState(initialOptionValues)
+  const { onOptionChange, onRemove } = props
+  const [option, setOption] = useState<ProductVariantAttribute['option']>()
+  const [optionValues, setOptionValues] = useState<
+    ProductVariantAttribute['values']
+  >([])
   const [newOptionValue, setNewOptionValue] = useState('')
   const [optionValueError, setOptionValueError] = useState('')
+
+  const newOptionValueRef = useRef<HTMLInputElement>(null)
 
   const addOptionValue = () => {
     if (newOptionValue === '') {
@@ -33,13 +35,20 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
         return prev
       }
       setNewOptionValue('')
-      return prev.concat(newOptionValue)
+      const newValue = prev.concat(newOptionValue)
+      props.onOptionValuesChange(newValue)
+      return newValue
     })
+    newOptionValueRef.current?.focus()
   }
 
   const removeOptionValue = (index: number) => {
     setOptionValueError('')
-    setOptionValues((prev) => prev.filter((_, i) => i !== index))
+    setOptionValues((prev) => {
+      const newValue = prev.filter((_, i) => i !== index)
+      props.onOptionValuesChange(newValue)
+      return newValue
+    })
   }
 
   const updateOptionValue = (index: number, newValue: string) => {
@@ -49,19 +58,19 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
       return
     }
 
-    setOptionValues((prevValues) =>
-      prevValues.map((value, i) => {
+    setOptionValues((prevValues) => {
+      const updatedValues = prevValues.map((value, i) => {
         return i === index ? newValue : value
-      }),
-    )
+      })
+      props.onOptionValuesChange(updatedValues)
+      return updatedValues
+    })
   }
 
   useEffect(() => {
-    onChange({
-      option,
-      values: optionValues,
-    })
-  }, [option, optionValues])
+    setOption(props.option)
+    setOptionValues(props.optionValues)
+  }, [props.option, props.optionValues])
 
   return (
     <div className="flex flex-col gap-4 rounded-sm bg-gray-200 p-4 pr-2 ">
@@ -71,7 +80,10 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
             className="input w-full !text-base"
             placeholder="Option (Ex. Size, Color, etc.)"
             value={option}
-            onChange={(e) => setOption(e.target.value)}
+            onChange={(e) => {
+              setOption(e.target.value)
+              onOptionChange(e.target.value)
+            }}
           />
           <button onClick={onRemove} className="btn btn-ghost btn-sm">
             <TrashIcon className="w-6 text-red-400" />
@@ -84,6 +96,7 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
             className="input w-full !text-base"
             placeholder="Option Value (Ex. sm, red, etc.)"
             value={newOptionValue}
+            ref={newOptionValueRef}
             onChange={(e) => {
               setNewOptionValue(e.target.value)
             }}
@@ -94,15 +107,17 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
         </div>
         <p className="mt-1 text-xs text-red-400">{optionValueError}</p>
       </div>
-      {optionValues.map((value, index) => (
-        <OptionValueItem
-          key={value}
-          value={value}
-          allValues={optionValues}
-          onUpdate={(newValue) => updateOptionValue(index, newValue)}
-          onRemove={() => removeOptionValue(index)}
-        />
-      ))}
+      <div className="flex flex-col-reverse gap-4">
+        {optionValues.map((value, index) => (
+          <OptionValueItem
+            key={value}
+            value={value}
+            allValues={optionValues}
+            onUpdate={(newValue) => updateOptionValue(index, newValue)}
+            onRemove={() => removeOptionValue(index)}
+          />
+        ))}
+      </div>
     </div>
   )
 }

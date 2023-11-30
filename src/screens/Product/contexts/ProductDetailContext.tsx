@@ -1,7 +1,7 @@
 // ProductDetail.tsx
 import React, { createContext, useContext, useReducer, ReactNode } from 'react'
-import { Product } from 'types/product.types'
-import { ProductVariantAttribute, generateProductVariants } from 'util/products'
+import { Product, ProductVariantAttribute } from 'types/product.types'
+import { generateProductVariants } from 'util/products'
 
 export enum AddProductModal {
   None = '',

@@ -1,18 +1,19 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ProductVariantAttribute } from 'types/product.types'
 import VariantAttributeItem from '../VariantAttributeItem'
 
-const VariantAttributeManager = () => {
+type VariantAttributeManagerProps = {
+  onChange?: (variantAttribute: Array<ProductVariantAttribute>) => void
+}
+
+const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
+  const { onChange } = props
   const [variantAttributes, setVariantAttributes] = useState<
     Array<ProductVariantAttribute>
   >([
     {
       option: '',
       values: [],
-    },
-    {
-      option: 'sizes',
-      values: ['medium', 'large'],
     },
   ])
 
@@ -25,16 +26,25 @@ const VariantAttributeManager = () => {
     )
   }
 
-  const removeVariantAttribute = (index: number) => {
+  const removeVariantAttribute = (variantOption: string) => {
+    const index = variantAttributes.findIndex(
+      (variantAttribute) => variantAttribute.option === variantOption,
+    )
     setVariantAttributes((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const onVariantAttributeItemChange = useCallback(
-    (index: number, newValue?: ProductVariantAttribute) => {
+  const onVariantAttributeOptionChange = useCallback(
+    (index: number, newValue?: ProductVariantAttribute['option']) => {
       if (newValue) {
         setVariantAttributes((prevValues) =>
           prevValues.map((value, i) => {
-            return i === index ? newValue : value
+            if (index !== i) {
+              return value
+            }
+            return {
+              ...value,
+              option: newValue,
+            }
           }),
         )
       }
@@ -42,18 +52,46 @@ const VariantAttributeManager = () => {
     [setVariantAttributes],
   )
 
+  const onVariantAttributeOptionValuesChange = useCallback(
+    (index: number, newValue: ProductVariantAttribute['values']) => {
+      setVariantAttributes((prevValues) =>
+        prevValues.map((value, i) => {
+          if (index !== i) {
+            return value
+          }
+          return {
+            ...value,
+            values: newValue,
+          }
+        }),
+      )
+    },
+    [setVariantAttributes],
+  )
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(variantAttributes)
+    }
+  }, [variantAttributes, onChange])
+
   return (
     <div className="flex flex-col gap-4">
       {variantAttributes.map((variantAttribute, index) => (
-        <VariantAttributeItem
-          key={index}
-          onRemove={() => removeVariantAttribute(index)}
-          initialOption={variantAttribute.option}
-          initialOptionValues={variantAttribute.values}
-          onChange={(variantAttribute) =>
-            onVariantAttributeItemChange(index, variantAttribute)
-          }
-        />
+        <>
+          <VariantAttributeItem
+            key={index}
+            onRemove={() => removeVariantAttribute(variantAttribute.option)}
+            option={variantAttribute.option}
+            optionValues={variantAttribute.values}
+            onOptionChange={(option) =>
+              onVariantAttributeOptionChange(index, option)
+            }
+            onOptionValuesChange={(optionValues) =>
+              onVariantAttributeOptionValuesChange(index, optionValues)
+            }
+          />
+        </>
       ))}
       <button
         onClick={addVariantAttribute}
