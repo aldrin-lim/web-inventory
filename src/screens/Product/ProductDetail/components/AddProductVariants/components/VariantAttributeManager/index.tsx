@@ -78,20 +78,18 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
   return (
     <div className="flex flex-col gap-4">
       {variantAttributes.map((variantAttribute, index) => (
-        <>
-          <VariantAttributeItem
-            key={index}
-            onRemove={() => removeVariantAttribute(variantAttribute.option)}
-            option={variantAttribute.option}
-            optionValues={variantAttribute.values}
-            onOptionChange={(option) =>
-              onVariantAttributeOptionChange(index, option)
-            }
-            onOptionValuesChange={(optionValues) =>
-              onVariantAttributeOptionValuesChange(index, optionValues)
-            }
-          />
-        </>
+        <VariantAttributeItem
+          key={index}
+          onRemove={() => removeVariantAttribute(variantAttribute.option)}
+          option={variantAttribute.option}
+          optionValues={variantAttribute.values}
+          onOptionChange={(option) =>
+            onVariantAttributeOptionChange(index, option)
+          }
+          onOptionValuesChange={(optionValues) =>
+            onVariantAttributeOptionValuesChange(index, optionValues)
+          }
+        />
       ))}
       <button
         onClick={addVariantAttribute}

@@ -79,9 +79,8 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
           <input
             className="input w-full !text-base"
             placeholder="Option (Ex. Size, Color, etc.)"
-            value={option}
+            value={option || props.option}
             onChange={(e) => {
-              setOption(e.target.value)
               onOptionChange(e.target.value)
             }}
           />
