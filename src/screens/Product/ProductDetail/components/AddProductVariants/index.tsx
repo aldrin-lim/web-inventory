@@ -8,6 +8,7 @@ import {
 } from 'screens/Product/contexts/ProductDetailContext'
 import { generateProductVariants } from 'util/products'
 import VariantAttributeItem from './components/VariantAttributeItem'
+import VariantAttributeManager from './components/VariantAttributeManager'
 
 const variantsOptionsInput = [
   {
@@ -45,7 +46,7 @@ const AddProductVariant = () => {
         ]}
       />
       <h1 className="font-bold">Options</h1>
-      <VariantAttributeItem onChange={() => {}} />
+      <VariantAttributeManager />
     </div>
   )
 }

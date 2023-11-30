@@ -5,12 +5,20 @@ import { ProductVariantAttribute } from 'types/product.types'
 
 type VariantAttributeItemProps = {
   onChange: (variantAttribute?: ProductVariantAttribute) => void
+  onRemove: () => void
+  initialOption?: ProductVariantAttribute['option']
+  initialOptionValues?: ProductVariantAttribute['values']
 }
 
 const VariantAttributeItem = (props: VariantAttributeItemProps) => {
-  const { onChange } = props
-  const [option, setOption] = useState('')
-  const [optionValues, setOptionValues] = useState<Array<string>>([])
+  const {
+    onChange,
+    onRemove,
+    initialOption = '',
+    initialOptionValues = [],
+  } = props
+  const [option, setOption] = useState(initialOption)
+  const [optionValues, setOptionValues] = useState(initialOptionValues)
   const [newOptionValue, setNewOptionValue] = useState('')
   const [optionValueError, setOptionValueError] = useState('')
 
@@ -49,15 +57,11 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
   }
 
   useEffect(() => {
-    if (option && optionValues.length > 0) {
-      onChange({
-        option,
-        values: optionValues,
-      })
-    } else {
-      onChange(undefined)
-    }
-  }, [onChange, option, optionValues])
+    onChange({
+      option,
+      values: optionValues,
+    })
+  }, [option, optionValues])
 
   return (
     <div className="flex flex-col gap-4 rounded-sm bg-gray-200 p-4 pr-2 ">
@@ -69,7 +73,7 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
             value={option}
             onChange={(e) => setOption(e.target.value)}
           />
-          <button className="btn btn-ghost btn-sm">
+          <button onClick={onRemove} className="btn btn-ghost btn-sm">
             <TrashIcon className="w-6 text-red-400" />
           </button>
         </div>
