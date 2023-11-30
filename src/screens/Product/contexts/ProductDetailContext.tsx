@@ -1,6 +1,7 @@
 // ProductDetail.tsx
 import React, { createContext, useContext, useReducer, ReactNode } from 'react'
 import { Product } from 'types/product.types'
+import { ProductVariantAttribute, generateProductVariants } from 'util/products'
 
 export enum AddProductModal {
   None = '',
@@ -12,12 +13,15 @@ export enum AddProductModal {
 export enum AddProductActionType {
   SetActiveModal = 'SET_ACTIVE_MODAL',
   UpdateProductDetail = 'UPDATE_PRODUCT_DETAIL',
+  AddVariantAttribute = 'ADD_VARIANT_ATTRIBUTE',
+  RemoveVariantAttribute = 'REMOVE_VARIANT_ATTRIBUTE',
 }
 
 interface State {
   activeModal: AddProductModal
   productDetails: Product
   mode: 'add' | 'edit'
+  variantAttributes: Array<ProductVariantAttribute>
 }
 
 const initialState: State = {
@@ -37,6 +41,7 @@ const initialState: State = {
     measurement: '',
   },
   mode: 'add',
+  variantAttributes: [],
 }
 
 type Action =
@@ -44,6 +49,14 @@ type Action =
   | {
       type: AddProductActionType.UpdateProductDetail
       payload: { field: keyof Product; value: unknown }
+    }
+  | {
+      type: AddProductActionType.AddVariantAttribute
+      payload: ProductVariantAttribute
+    }
+  | {
+      type: AddProductActionType.RemoveVariantAttribute
+      payload: number // index of the variant attribute to remove
     }
 
 function reducer(state: State, action: Action): State {
@@ -58,6 +71,33 @@ function reducer(state: State, action: Action): State {
           [action.payload.field]: action.payload.value,
         },
       }
+    case AddProductActionType.AddVariantAttribute: {
+      const updatedVariantAttributes = [
+        ...state.variantAttributes,
+        action.payload,
+      ]
+      return {
+        ...state,
+        variantAttributes: updatedVariantAttributes,
+        productDetails: generateProductVariants(
+          updatedVariantAttributes,
+          state.productDetails,
+        ),
+      }
+    }
+    case AddProductActionType.RemoveVariantAttribute: {
+      const updatedVariantAttributes = state.variantAttributes.filter(
+        (_, index) => index !== action.payload,
+      )
+      return {
+        ...state,
+        variantAttributes: updatedVariantAttributes,
+        productDetails: generateProductVariants(
+          updatedVariantAttributes,
+          state.productDetails,
+        ),
+      }
+    }
     default:
       return state
   }

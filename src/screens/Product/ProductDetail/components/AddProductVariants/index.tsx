@@ -7,6 +7,7 @@ import {
   useProductDetail,
 } from 'screens/Product/contexts/ProductDetailContext'
 import { generateProductVariants } from 'util/products'
+import VariantAttribute from './components/VariantAttribute'
 
 const variantsOptionsInput = [
   {
@@ -43,7 +44,7 @@ const AddProductVariant = () => {
           <ToolbarButton key={3} label="Done" />,
         ]}
       />
-      <pre>{JSON.stringify(productDetails, null, 2)}</pre>
+      <VariantAttribute />
     </div>
   )
 }

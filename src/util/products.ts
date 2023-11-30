@@ -1,6 +1,6 @@
 import { Product, ProductVariant } from 'types/product.types'
 
-type ProductVariantAttribute = {
+export type ProductVariantAttribute = {
   option: string
   values: Array<string>
 }
