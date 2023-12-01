@@ -22,10 +22,14 @@ import {
 } from '../contexts/ProductDetailContext'
 import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
 import useDeleteProduct from 'hooks/useDeleteProduct'
-import ProductDetailModalManager from './components/ProductDetailModalManager'
 import PrimaryAction from './components/ProductDetailPrimaryAction'
 import ProductDetailForm from './components/ProductDetailForm'
 import ProductVariantList from './components/ProductVariantList'
+import { AnimatePresence, motion } from 'framer-motion'
+import AddDescription from './components/AddDescription'
+import AddProductDetail from './components/AddProductDetails'
+import AddProductVariant from './components/AddProductVariants'
+import { subscreenAnimation } from 'constants/animation'
 
 export const ProductDetail = () => {
   const {
@@ -97,6 +101,22 @@ export const ProductDetail = () => {
   const setFieldValue = (field: keyof Product, value: unknown) => {
     formikRef.current?.setFieldValue(field, value)
     setProductValue(field, value)
+  }
+
+  const closeSubscreens = () =>
+    dispatch({
+      type: ProductDetailActionType.SetActiveModal,
+      payload: ProductDetailActionModal.None,
+    })
+
+  const saveDescription = (description: string) => {
+    dispatch({
+      type: ProductDetailActionType.UpdateProductDetail,
+      payload: {
+        field: 'description',
+        value: description,
+      },
+    })
   }
 
   return (
@@ -181,7 +201,35 @@ export const ProductDetail = () => {
         <ProductVariantList variants={productDetails.variants} />
       </div>
 
-      <ProductDetailModalManager activeModal={activeModal} />
+      <AnimatePresence>
+        <motion.div
+          className={[
+            'section absolute left-0 right-0 z-10 h-full bg-base-100 pt-0',
+            activeModal === ProductDetailActionModal.None ? 'hidden' : '',
+          ].join(' ')}
+          variants={subscreenAnimation}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          key={activeModal}
+        >
+          {activeModal === ProductDetailActionModal.Description && (
+            <AddDescription
+              onBack={closeSubscreens}
+              onSave={saveDescription}
+              description={productDetails?.description}
+            />
+          )}
+
+          {activeModal === ProductDetailActionModal.Detail && (
+            <AddProductDetail />
+          )}
+
+          {activeModal === ProductDetailActionModal.Variants && (
+            <AddProductVariant />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   )
 }

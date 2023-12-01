@@ -2,40 +2,27 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import { useEffect, useState } from 'react'
-import {
-  ProductDetailActionType,
-  ProductDetailActionModal,
-  useProductDetail,
-} from '../../contexts/ProductDetailContext'
 
-const AddDescription: React.FC = () => {
-  const {
-    dispatch,
-    state: { productDetails },
-  } = useProductDetail()
+type AddDescriptionProps = {
+  onBack: () => void
+  onSave: (description: string) => void
+  description?: string
+}
 
-  const [description, setDescription] = useState('')
+const AddDescription = (props: AddDescriptionProps) => {
+  const [description, setDescription] = useState(props.description || '')
 
   useEffect(() => {
     scrollTo({ top: 0, behavior: 'instant' })
   }, [])
 
   const onSave = () => {
-    dispatch({
-      type: ProductDetailActionType.UpdateProductDetail,
-      payload: {
-        field: 'description',
-        value: description,
-      },
-    })
-    goBack()
+    props.onSave(description)
+    props.onBack()
   }
 
   const goBack = () => {
-    dispatch({
-      type: ProductDetailActionType.SetActiveModal,
-      payload: ProductDetailActionModal.None,
-    })
+    props.onBack()
   }
 
   return (
@@ -49,7 +36,7 @@ const AddDescription: React.FC = () => {
       />
       <textarea
         onChange={(e) => setDescription(e.target.value)}
-        value={description || productDetails.description}
+        value={description}
         className="textarea textarea-bordered h-auto w-full text-base"
         placeholder="Add description"
         autoFocus
