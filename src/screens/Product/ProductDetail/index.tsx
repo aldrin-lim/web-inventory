@@ -36,22 +36,6 @@ import { z } from 'zod'
 import { ProductVariantDetailProvider } from '../contexts/ProductVariantDetailContext'
 import ProductVariantDetail from './components/ProductVariantDetail'
 
-const variant = {
-  name: 'Valid Test Product223',
-  description: 'A product with valid variants',
-  cost: 20,
-  profit: 10,
-  price: 30,
-  quantity: 200,
-  measurement: 'pcs',
-  images: [],
-  category: 'Valid Test Category',
-  allowBackOrder: true,
-  expiryDate: new Date(),
-  variantOptions: [],
-  id: '',
-}
-
 export const ProductDetail = () => {
   const {
     dispatch,
@@ -176,10 +160,12 @@ export const ProductDetail = () => {
   }
 
   const onProductVariantClick = (index: number) => {
-    setCurrentVariant({
-      variantIndex: index,
-      variant,
-    })
+    if (productDetails.variants && productDetails.variants[index]) {
+      setCurrentVariant({
+        variantIndex: index,
+        variant: productDetails.variants[index],
+      })
+    }
   }
 
   return (
@@ -323,7 +309,16 @@ export const ProductDetail = () => {
         <ProductVariantDetailProvider productDetails={currentVariant.variant}>
           <ProductVariantDetail
             onClose={() => setCurrentVariant(null)}
-            onSave={() => {}}
+            onSave={(variant) => {
+              dispatch({
+                type: ProductDetailActionType.UpdateProductVariant,
+                payload: {
+                  variantIndex: currentVariant.variantIndex,
+                  updatedVariant: variant,
+                },
+              })
+              setCurrentVariant(null)
+            }}
           />
         </ProductVariantDetailProvider>
       )}
