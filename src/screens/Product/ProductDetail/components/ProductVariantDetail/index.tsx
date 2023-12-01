@@ -9,8 +9,6 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import { FormikProps } from 'formik'
 import { useCallback, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { AppPath } from 'routes/AppRoutes.types'
 import { Product, ProductVariant } from 'types/product.types'
 import { z } from 'zod'
 import { subscreenAnimation } from 'constants/animation'
@@ -33,12 +31,10 @@ type ProductVariantDetailProps = {
 export const ProductVariantDetail = (props: ProductVariantDetailProps) => {
   const {
     dispatch,
-    state: { activeModal, productDetails, mode },
+    state: { activeModal, productDetails },
   } = useProductVariantDetail()
 
   const formikRef = useRef<FormikProps<ProductVariant | Product>>(null)
-
-  const navigate = useNavigate()
 
   const setActiveModal = (modal: ProductVariantDetailActionModal) => {
     dispatch({
@@ -122,12 +118,9 @@ export const ProductVariantDetail = (props: ProductVariantDetailProps) => {
           <ToolbarButton
             key={1}
             icon={<ChevronLeftIcon className="w-6" />}
-            onClick={() => navigate(AppPath.ProductOverview)}
+            onClick={props.onClose}
           />,
-          <ToolbarTitle
-            key="title"
-            title={mode === 'add' ? 'Add Product' : 'View Product'}
-          />,
+          <ToolbarTitle key="title" title={'Variant'} />,
           <ToolbarButton
             key={3}
             label="Done"

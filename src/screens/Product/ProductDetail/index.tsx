@@ -11,7 +11,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { FormikProps } from 'formik'
 import useCreateProduct from 'hooks/useCreateProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import { Product, ProductVariant } from 'types/product.types'
@@ -33,6 +33,8 @@ import AddProductDetail, {
 import AddProductVariant from './components/AddProductVariants'
 import { subscreenAnimation } from 'constants/animation'
 import { z } from 'zod'
+import { ProductVariantDetailProvider } from '../contexts/ProductVariantDetailContext'
+import ProductVariantDetail from './components/ProductVariantDetail'
 
 const variant = {
   name: 'Valid Test Product223',
@@ -45,7 +47,9 @@ const variant = {
   images: [],
   category: 'Valid Test Category',
   allowBackOrder: true,
-  expiryDate: '2024-01-01',
+  expiryDate: new Date(),
+  variantOptions: [],
+  id: '',
 }
 
 export const ProductDetail = () => {
@@ -53,6 +57,11 @@ export const ProductDetail = () => {
     dispatch,
     state: { activeModal, productDetails, mode },
   } = useProductDetail()
+
+  const [currentVariant, setCurrentVariant] = useState<{
+    variant: ProductVariant
+    variantIndex: number
+  } | null>(null)
 
   const modalDialogRef = useRef<HTMLDialogElement>(null)
   const formikRef = useRef<FormikProps<Product | ProductVariant>>(null)
@@ -166,133 +175,159 @@ export const ProductDetail = () => {
     setProductValue('images', images)
   }
 
-  return (
-    <div className="section relative flex flex-col gap-4  pt-0">
-      <ConfirmDeleteDialog
-        ref={modalDialogRef}
-        productName={productDetails.name}
-        onDelete={onDeleteProduct}
-      />
+  const onProductVariantClick = (index: number) => {
+    setCurrentVariant({
+      variantIndex: index,
+      variant,
+    })
+  }
 
-      <Toolbar
-        items={[
-          <ToolbarButton
-            key={2}
-            icon={<ChevronLeftIcon className="w-6" />}
-            onClick={() => navigate(AppPath.ProductOverview)}
-          />,
-          <ToolbarTitle
-            key="title"
-            title={mode === 'add' ? 'Add Product' : 'View Product'}
-          />,
-          <PrimaryAction
-            mode={mode}
-            key="primaryAction"
-            isLoading={isMutating}
-            onClone={onClone}
-            onCreate={submitForm}
-            onDelete={onDeleteProduct}
-            onSave={submitForm}
-          />,
-        ]}
-      />
+  return (
+    <>
       <div
-        className={`inline-flex flex-grow flex-col gap-4 ${
-          activeModal !== ProductDetailActionModal.None // Prevent overlapping content to appear on other subscreen
-            ? 'h-0 overflow-hidden'
-            : 'h-full'
+        className={`section relative flex-col gap-4 pt-0 ${
+          currentVariant ? 'hidden' : 'flex'
         }`}
       >
-        <ProductDetailForm
-          initialValues={productDetails}
-          onSubmit={submitForm}
-          setFieldValue={setFieldValue}
-          ref={formikRef}
-          disabled={isMutating}
-          onDescriptionButtonClick={onDescriptionButtonClick}
+        <ConfirmDeleteDialog
+          ref={modalDialogRef}
+          productName={productDetails.name}
+          onDelete={onDeleteProduct}
         />
 
-        <ProductImages
-          onImagesChange={onProductImagesChange}
-          images={productDetails?.images || []}
+        <Toolbar
+          items={[
+            <ToolbarButton
+              key={2}
+              icon={<ChevronLeftIcon className="w-6" />}
+              onClick={() => navigate(AppPath.ProductOverview)}
+            />,
+            <ToolbarTitle
+              key="title"
+              title={mode === 'add' ? 'Add Product' : 'View Product'}
+            />,
+            <PrimaryAction
+              mode={mode}
+              key="primaryAction"
+              isLoading={isMutating}
+              onClone={onClone}
+              onCreate={submitForm}
+              onDelete={onDeleteProduct}
+              onSave={submitForm}
+            />,
+          ]}
         />
-
-        <button
-          className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
-          onClick={() => setActiveModal(ProductDetailActionModal.Detail)}
-          disabled={isMutating}
+        <div
+          className={`inline-flex flex-grow flex-col gap-4 ${
+            activeModal !== ProductDetailActionModal.None // Prevent overlapping content to appear on other subscreen
+              ? 'h-0 overflow-hidden'
+              : 'h-full'
+          }`}
         >
-          <div className="flex flex-row items-center gap-1">
-            <ArchiveBoxIcon className="w-5" />
-            Manage Inventory
-          </div>
-          <ChevronRightIcon className="w-5" />
-        </button>
+          <ProductDetailForm
+            initialValues={productDetails}
+            onSubmit={submitForm}
+            setFieldValue={setFieldValue}
+            ref={formikRef}
+            disabled={isMutating}
+            onDescriptionButtonClick={onDescriptionButtonClick}
+          />
 
-        <div className="flex w-full flex-row items-center justify-between">
-          <h1 className="font-bold">Variants</h1>
-          {productDetails.variants && productDetails.variants.length > 0 && (
+          <ProductImages
+            onImagesChange={onProductImagesChange}
+            images={productDetails?.images || []}
+          />
+
+          <button
+            className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
+            onClick={() => setActiveModal(ProductDetailActionModal.Detail)}
+            disabled={isMutating}
+          >
+            <div className="flex flex-row items-center gap-1">
+              <ArchiveBoxIcon className="w-5" />
+              Manage Inventory
+            </div>
+            <ChevronRightIcon className="w-5" />
+          </button>
+
+          <div className="flex w-full flex-row items-center justify-between">
+            <h1 className="font-bold">Variants</h1>
+            {productDetails.variants && productDetails.variants.length > 0 && (
+              <button
+                onClick={() =>
+                  setActiveModal(ProductDetailActionModal.Variants)
+                }
+                className="btn btn-ghost btn-sm"
+              >
+                <PlusIcon className="w-5 text-blue-400" />
+              </button>
+            )}
+          </div>
+          {!(productDetails.variants && productDetails.variants.length > 0) && (
             <button
+              className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
               onClick={() => setActiveModal(ProductDetailActionModal.Variants)}
-              className="btn btn-ghost btn-sm"
+              disabled={isMutating || productDetails.name.length < 1}
             >
-              <PlusIcon className="w-5 text-blue-400" />
+              Add Variants
             </button>
           )}
+
+          <ProductVariantList
+            onItemClick={onProductVariantClick}
+            variants={productDetails.variants}
+          />
         </div>
-        {!(productDetails.variants && productDetails.variants.length > 0) && (
-          <button
-            className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
-            onClick={() => setActiveModal(ProductDetailActionModal.Variants)}
-            disabled={isMutating || productDetails.name.length < 1}
+
+        <AnimatePresence>
+          <motion.div
+            className={[
+              'section absolute left-0 right-0 z-10 h-full bg-base-100 pt-0',
+              activeModal === ProductDetailActionModal.None ? 'hidden' : '',
+            ].join(' ')}
+            variants={subscreenAnimation}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            key={activeModal}
           >
-            Add Variants
-          </button>
-        )}
+            {activeModal === ProductDetailActionModal.Description && (
+              <AddDescription
+                onBack={closeSubscreens}
+                onSave={saveDescription}
+                description={productDetails?.description}
+              />
+            )}
 
-        <ProductVariantList variants={productDetails.variants} />
+            {activeModal === ProductDetailActionModal.Detail && (
+              <AddProductDetail
+                values={{
+                  category: productDetails.category || '',
+                  expiryDate: productDetails.expiryDate || null,
+                  quantity: productDetails.quantity || 0,
+                  measurement: productDetails.measurement || 'pieces',
+                  allowBackOrder: productDetails.allowBackOrder,
+                }}
+                onSave={onSaveDetails}
+                onClose={closeSubscreens}
+              />
+            )}
+
+            {activeModal === ProductDetailActionModal.Variants && (
+              <AddProductVariant />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
-
-      <AnimatePresence>
-        <motion.div
-          className={[
-            'section absolute left-0 right-0 z-10 h-full bg-base-100 pt-0',
-            activeModal === ProductDetailActionModal.None ? 'hidden' : '',
-          ].join(' ')}
-          variants={subscreenAnimation}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          key={activeModal}
-        >
-          {activeModal === ProductDetailActionModal.Description && (
-            <AddDescription
-              onBack={closeSubscreens}
-              onSave={saveDescription}
-              description={productDetails?.description}
-            />
-          )}
-
-          {activeModal === ProductDetailActionModal.Detail && (
-            <AddProductDetail
-              values={{
-                category: productDetails.category || '',
-                expiryDate: productDetails.expiryDate || null,
-                quantity: productDetails.quantity || 0,
-                measurement: productDetails.measurement || 'pieces',
-                allowBackOrder: productDetails.allowBackOrder,
-              }}
-              onSave={onSaveDetails}
-              onClose={closeSubscreens}
-            />
-          )}
-
-          {activeModal === ProductDetailActionModal.Variants && (
-            <AddProductVariant />
-          )}
-        </motion.div>
-      </AnimatePresence>
-    </div>
+      {currentVariant && (
+        <ProductVariantDetailProvider productDetails={currentVariant.variant}>
+          <ProductVariantDetail
+            onClose={() => setCurrentVariant(null)}
+            onSave={() => {}}
+          />
+        </ProductVariantDetailProvider>
+      )}
+    </>
   )
 }
 

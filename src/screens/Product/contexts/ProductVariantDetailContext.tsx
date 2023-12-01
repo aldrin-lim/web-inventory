@@ -104,12 +104,11 @@ export const useProductVariantDetail = () => useContext(ProductVariantDetail)
 interface ProductDetailProviderProps {
   children: ReactNode
   productDetails?: Partial<Product>
-  mode: 'edit' | 'add'
 }
 
 export const ProductVariantDetailProvider: React.FC<
   ProductDetailProviderProps
-> = ({ children, productDetails, mode = 'add' }) => {
+> = ({ children, productDetails }) => {
   let defaultState = initialState
 
   if (productDetails) {
@@ -119,13 +118,6 @@ export const ProductVariantDetailProvider: React.FC<
         ...initialState.productDetails,
         ...productDetails,
       },
-    }
-  }
-
-  if (mode === 'edit') {
-    defaultState = {
-      ...defaultState,
-      mode: 'edit',
     }
   }
 
