@@ -1,5 +1,5 @@
 import { Variants, AnimatePresence, motion } from 'framer-motion'
-import { AddProductModal } from 'screens/Product/contexts/ProductDetailContext'
+import { ProductDetailActionModal } from 'screens/Product/contexts/ProductDetailContext'
 import AddDescription from '../AddDescription'
 import AddProductDetail from '../AddProductDetails'
 import AddProductVariant from '../AddProductVariants'
@@ -22,7 +22,7 @@ const animationVariants: Variants = {
 }
 
 type ProductDetailModalManagerProps = {
-  activeModal: AddProductModal
+  activeModal: ProductDetailActionModal
 }
 
 const ProductDetailModalManager = (props: ProductDetailModalManagerProps) => {
@@ -32,7 +32,7 @@ const ProductDetailModalManager = (props: ProductDetailModalManagerProps) => {
       <motion.div
         className={[
           'section absolute left-0 right-0 z-10 h-full bg-base-100 pt-0',
-          activeModal === AddProductModal.None ? 'hidden' : '',
+          activeModal === ProductDetailActionModal.None ? 'hidden' : '',
         ].join(' ')}
         variants={animationVariants}
         initial="hidden"
@@ -40,11 +40,17 @@ const ProductDetailModalManager = (props: ProductDetailModalManagerProps) => {
         exit="exit"
         key={activeModal}
       >
-        {activeModal === AddProductModal.Description && <AddDescription />}
+        {activeModal === ProductDetailActionModal.Description && (
+          <AddDescription />
+        )}
 
-        {activeModal === AddProductModal.Detail && <AddProductDetail />}
+        {activeModal === ProductDetailActionModal.Detail && (
+          <AddProductDetail />
+        )}
 
-        {activeModal === AddProductModal.Variants && <AddProductVariant />}
+        {activeModal === ProductDetailActionModal.Variants && (
+          <AddProductVariant />
+        )}
       </motion.div>
     </AnimatePresence>
   )

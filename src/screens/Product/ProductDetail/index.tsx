@@ -16,7 +16,7 @@ import { AppPath } from 'routes/AppRoutes.types'
 import { Product } from 'types/product.types'
 import {
   useProductDetail,
-  AddProductModal,
+  ProductDetailActionModal,
   AddProductActionType,
 } from '../contexts/ProductDetailContext'
 import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
@@ -42,7 +42,7 @@ export const ProductDetail = () => {
 
   const navigate = useNavigate()
 
-  const setActiveModal = (modal: AddProductModal) => {
+  const setActiveModal = (modal: ProductDetailActionModal) => {
     dispatch({
       type: AddProductActionType.SetActiveModal,
       payload: modal,
@@ -128,7 +128,7 @@ export const ProductDetail = () => {
       />
       <div
         className={`flex flex-col gap-4 ${
-          activeModal !== AddProductModal.None // Prevent overlapping content to appear on other subscreen
+          activeModal !== ProductDetailActionModal.None // Prevent overlapping content to appear on other subscreen
             ? 'h-0 overflow-hidden'
             : 'h-full'
         }`}
@@ -145,7 +145,7 @@ export const ProductDetail = () => {
 
         <button
           className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
-          onClick={() => setActiveModal(AddProductModal.Detail)}
+          onClick={() => setActiveModal(ProductDetailActionModal.Detail)}
           disabled={isMutating}
         >
           <div className="flex flex-row items-center gap-1">
@@ -158,7 +158,7 @@ export const ProductDetail = () => {
         <h1 className="font-bold">Variants</h1>
         <button
           className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
-          onClick={() => setActiveModal(AddProductModal.Variants)}
+          onClick={() => setActiveModal(ProductDetailActionModal.Variants)}
           disabled={isMutating}
         >
           Add Variants

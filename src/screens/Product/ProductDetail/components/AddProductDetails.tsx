@@ -4,7 +4,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import {
   useProductDetail,
   AddProductActionType,
-  AddProductModal,
+  ProductDetailActionModal,
 } from '../../contexts/ProductDetailContext'
 import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
@@ -24,7 +24,7 @@ const AddProductDetail = () => {
   const goBack = () => {
     dispatch({
       type: AddProductActionType.SetActiveModal,
-      payload: AddProductModal.None,
+      payload: ProductDetailActionModal.None,
     })
   }
 

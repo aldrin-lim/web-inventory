@@ -7,7 +7,7 @@ import {
 } from 'types/product.types'
 import { generateProductVariants } from 'util/products'
 
-export enum AddProductModal {
+export enum ProductDetailActionModal {
   None = '',
   Detail = 'detail',
   Description = 'description',
@@ -24,14 +24,14 @@ export enum AddProductActionType {
 }
 
 interface State {
-  activeModal: AddProductModal
+  activeModal: ProductDetailActionModal
   productDetails: Product
   mode: 'add' | 'edit'
   variantAttributes: Array<ProductVariantAttribute>
 }
 
 const initialState: State = {
-  activeModal: AddProductModal.None,
+  activeModal: ProductDetailActionModal.None,
   productDetails: {
     id: '',
     name: '',
@@ -52,7 +52,10 @@ const initialState: State = {
 }
 
 type Action =
-  | { type: AddProductActionType.SetActiveModal; payload: AddProductModal }
+  | {
+      type: AddProductActionType.SetActiveModal
+      payload: ProductDetailActionModal
+    }
   | {
       type: AddProductActionType.UpdateProductDetail
       payload: { field: keyof Product; value: unknown }

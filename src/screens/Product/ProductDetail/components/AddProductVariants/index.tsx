@@ -3,7 +3,7 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import {
   AddProductActionType,
-  AddProductModal,
+  ProductDetailActionModal,
   useProductDetail,
 } from 'screens/Product/contexts/ProductDetailContext'
 import { generateProductVariants } from 'util/products'
@@ -29,7 +29,7 @@ const AddProductVariant = () => {
   const goBack = () => {
     dispatch({
       type: AddProductActionType.SetActiveModal,
-      payload: AddProductModal.None,
+      payload: ProductDetailActionModal.None,
     })
   }
 

@@ -4,7 +4,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { useEffect, useState } from 'react'
 import {
   AddProductActionType,
-  AddProductModal,
+  ProductDetailActionModal,
   useProductDetail,
 } from '../../contexts/ProductDetailContext'
 
@@ -34,7 +34,7 @@ const AddDescription: React.FC = () => {
   const goBack = () => {
     dispatch({
       type: AddProductActionType.SetActiveModal,
-      payload: AddProductModal.None,
+      payload: ProductDetailActionModal.None,
     })
   }
 
