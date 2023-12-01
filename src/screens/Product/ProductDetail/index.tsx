@@ -168,13 +168,16 @@ export const ProductDetail = () => {
             </button>
           )}
         </div>
-        <button
-          className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
-          onClick={() => setActiveModal(ProductDetailActionModal.Variants)}
-          disabled={isMutating || productDetails.name.length < 1}
-        >
-          Add Variants
-        </button>
+        {!(productDetails.variants && productDetails.variants.length > 0) && (
+          <button
+            className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
+            onClick={() => setActiveModal(ProductDetailActionModal.Variants)}
+            disabled={isMutating}
+          >
+            Add Variants
+          </button>
+        )}
+
         <ProductVariantList variants={productDetails.variants} />
       </div>
 
