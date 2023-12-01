@@ -1,5 +1,6 @@
 import AutocompleteSelect, {
   AutoCompleteProps,
+  OptionsValue,
 } from 'components/AutocompleteSelect'
 import { measurementUnits } from 'util/measurement'
 
@@ -12,12 +13,13 @@ const measurementOptions = measurementUnits.map((item) => ({
 
 type MeasurementSelectProps = {
   onChange?: AutoCompleteProps['onChange']
+  value: OptionsValue
 }
 
 const MeasurementSelect = (props: MeasurementSelectProps) => {
   return (
     <AutocompleteSelect
-      defaultValue={'pieces'}
+      value={props.value}
       onChange={props.onChange}
       options={measurementOptions}
       className="measurement-selection"

@@ -51,10 +51,18 @@ const AddProductDetail = () => {
           category: productDetails.category || '',
           expiryDate: productDetails.expiryDate || null,
           quantity: productDetails.quantity || 0,
-          measurement: productDetails.measurement || '',
+          measurement: productDetails.measurement || 'pieces',
           allowBackOrder: productDetails.allowBackOrder,
         }}
-        validationSchema={toFormikValidationSchema(AddProductSchema)}
+        validationSchema={toFormikValidationSchema(
+          AddProductSchema.pick({
+            category: true,
+            expiryDate: true,
+            quantity: true,
+            measurement: true,
+            allowBackOrder: true,
+          }),
+        )}
         onSubmit={({
           category,
           expiryDate,
@@ -151,9 +159,10 @@ const AddProductDetail = () => {
                           </p>
                         </div>
                         <Field name="measurement">
-                          {({ meta }: FieldProps) => (
+                          {({ field, meta }: FieldProps) => (
                             <div className="w-full">
                               <MeasurementSelect
+                                value={field.value}
                                 onChange={(value) => {
                                   setProductValue('measurement', value?.value)
                                   setFieldValue('measurement', value?.value)

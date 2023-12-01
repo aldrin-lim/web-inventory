@@ -97,6 +97,8 @@ export const ProductDetail = () => {
     setProductValue(field, value)
   }
 
+  console.log('activeModal', activeModal)
+
   return (
     <div className="section relative flex flex-col gap-4 pt-0">
       <ConfirmDeleteDialog

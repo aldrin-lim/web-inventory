@@ -12,10 +12,11 @@ export type AutoCompleteProps = {
   maxMenuHeight?: number
   className?: string
   onChange?: (value: OptionsValue | null) => void
+  value: string | OptionsValue
 }
 
 const AutocompleteSelect = (props: AutoCompleteProps) => {
-  const { options, defaultValue, maxMenuHeight = 120 } = props
+  const { options, defaultValue, value, maxMenuHeight = 120 } = props
 
   // Function to transform a string or OptionsValue to the required format
   const transformOption = (option: string | OptionsValue) => {
@@ -38,6 +39,13 @@ const AutocompleteSelect = (props: AutoCompleteProps) => {
       setSelectedOption(transformOption(defaultValue))
     }
   }, [defaultValue])
+
+  useEffect(() => {
+    // Update the state if the value prop changes
+    if (value) {
+      setSelectedOption(transformOption(value))
+    }
+  }, [value])
 
   const handleChange = (newValue: OptionsValue | null) => {
     setSelectedOption(newValue)
