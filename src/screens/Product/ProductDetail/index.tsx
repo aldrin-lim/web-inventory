@@ -170,6 +170,40 @@ export const ProductDetail = () => {
 
   return (
     <>
+      <AnimatePresence>
+        <motion.div
+          className={[
+            'section absolute z-30 flex min-h-screen flex-col gap-4 bg-base-100  pt-0',
+            currentVariant ? '' : 'hidden',
+          ].join(' ')}
+          variants={subscreenAnimation}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          key={JSON.stringify(currentVariant) ?? 0}
+        >
+          {currentVariant && (
+            <ProductVariantDetailProvider
+              productDetails={currentVariant.variant}
+            >
+              <ProductVariantDetail
+                onClose={() => setCurrentVariant(null)}
+                onSave={(variant) => {
+                  dispatch({
+                    type: ProductDetailActionType.UpdateProductVariant,
+                    payload: {
+                      variantIndex: currentVariant.variantIndex,
+                      updatedVariant: variant,
+                    },
+                  })
+                  // setCurrentVariant(null)
+                }}
+              />
+            </ProductVariantDetailProvider>
+          )}
+          {!currentVariant && <div>asdads</div>}
+        </motion.div>
+      </AnimatePresence>
       <div
         className={`section relative flex-col gap-4 pt-0 ${
           currentVariant ? 'hidden' : 'flex'
@@ -224,17 +258,20 @@ export const ProductDetail = () => {
             images={productDetails?.images || []}
           />
 
-          <button
-            className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
-            onClick={() => setActiveModal(ProductDetailActionModal.Detail)}
-            disabled={isMutating}
-          >
-            <div className="flex flex-row items-center gap-1">
-              <ArchiveBoxIcon className="w-5" />
-              Manage Inventory
-            </div>
-            <ChevronRightIcon className="w-5" />
-          </button>
+          {!productDetails.variants ||
+            (productDetails.variants?.length === 0 && (
+              <button
+                className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
+                onClick={() => setActiveModal(ProductDetailActionModal.Detail)}
+                disabled={isMutating}
+              >
+                <div className="flex flex-row items-center gap-1">
+                  <ArchiveBoxIcon className="w-5" />
+                  Manage Inventory
+                </div>
+                <ChevronRightIcon className="w-5" />
+              </button>
+            ))}
 
           <div className="flex w-full flex-row items-center justify-between">
             <h1 className="font-bold">Variants</h1>
@@ -305,23 +342,6 @@ export const ProductDetail = () => {
           </motion.div>
         </AnimatePresence>
       </div>
-      {currentVariant && (
-        <ProductVariantDetailProvider productDetails={currentVariant.variant}>
-          <ProductVariantDetail
-            onClose={() => setCurrentVariant(null)}
-            onSave={(variant) => {
-              dispatch({
-                type: ProductDetailActionType.UpdateProductVariant,
-                payload: {
-                  variantIndex: currentVariant.variantIndex,
-                  updatedVariant: variant,
-                },
-              })
-              setCurrentVariant(null)
-            }}
-          />
-        </ProductVariantDetailProvider>
-      )}
     </>
   )
 }

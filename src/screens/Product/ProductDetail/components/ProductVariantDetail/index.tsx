@@ -112,7 +112,7 @@ export const ProductVariantDetail = (props: ProductVariantDetailProps) => {
   }
 
   return (
-    <div className="section relative flex flex-col gap-4  pt-0">
+    <>
       <Toolbar
         items={[
           <ToolbarButton
@@ -201,7 +201,7 @@ export const ProductVariantDetail = (props: ProductVariantDetailProps) => {
           )}
         </motion.div>
       </AnimatePresence>
-    </div>
+    </>
   )
 }
 

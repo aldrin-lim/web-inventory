@@ -91,13 +91,27 @@ function reducer(state: State, action: Action): State {
       }
     case ProductDetailActionType.UpdateVariantAttribute: {
       const sanitizedProductDetails = { ...state.productDetails, variants: [] }
+      const existingVariants = state.productDetails
+        .variants as Array<ProductVariant>
+      const newGeneratedVariants = generateProductVariants(
+        action.payload,
+        sanitizedProductDetails,
+      ).variants as Array<ProductVariant>
+
+      const variants = [
+        ...existingVariants,
+        ...newGeneratedVariants.splice(
+          existingVariants.length,
+          newGeneratedVariants.length - existingVariants.length,
+        ),
+      ]
       return {
         ...state,
         variantAttributes: action.payload,
-        productDetails: generateProductVariants(
-          action.payload,
-          sanitizedProductDetails,
-        ),
+        productDetails: {
+          ...state.productDetails,
+          variants,
+        },
       }
     }
     case ProductDetailActionType.AddVariantAttribute: {
