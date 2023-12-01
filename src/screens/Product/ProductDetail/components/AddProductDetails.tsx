@@ -1,42 +1,30 @@
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import {
-  useProductDetail,
-  ProductDetailActionType,
-  ProductDetailActionModal,
-} from '../../contexts/ProductDetailContext'
 import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import MeasurementSelect from './MeasurementSelect'
-import { Product } from 'types/product.types'
 import { AddProductSchema } from 'api/product/createProduct'
+import { z } from 'zod'
 
-const AddProductDetail = () => {
+export const AddProductDetailSchema = AddProductSchema.pick({
+  category: true,
+  expiryDate: true,
+  quantity: true,
+  measurement: true,
+  allowBackOrder: true,
+})
+
+type AddProductDetailProps = {
+  onSave: (data: z.infer<typeof AddProductDetailSchema>) => void
+  onClose: () => void
+  values: z.infer<typeof AddProductDetailSchema>
+}
+
+const AddProductDetail = (props: AddProductDetailProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-
-  const {
-    dispatch,
-    state: { productDetails },
-  } = useProductDetail()
-
-  const goBack = () => {
-    dispatch({
-      type: ProductDetailActionType.SetActiveModal,
-      payload: ProductDetailActionModal.None,
-    })
-  }
-
-  const setProductValue = (field: keyof Product, value: unknown) => {
-    dispatch({
-      type: ProductDetailActionType.UpdateProductDetail,
-      payload: {
-        field,
-        value,
-      },
-    })
-  }
+  const { onSave, onClose, values } = props
 
   const onFocus = () => {
     if (inputRef.current) {
@@ -48,47 +36,16 @@ const AddProductDetail = () => {
     <div className="">
       <Formik
         initialValues={{
-          category: productDetails.category || '',
-          expiryDate: productDetails.expiryDate || null,
-          quantity: productDetails.quantity || 0,
-          measurement: productDetails.measurement || 'pieces',
-          allowBackOrder: productDetails.allowBackOrder,
+          category: values.category || '',
+          expiryDate: values.expiryDate || null,
+          quantity: values.quantity || 0,
+          measurement: values.measurement || 'pieces',
+          allowBackOrder: values.allowBackOrder,
         }}
-        validationSchema={toFormikValidationSchema(
-          AddProductSchema.pick({
-            category: true,
-            expiryDate: true,
-            quantity: true,
-            measurement: true,
-            allowBackOrder: true,
-          }),
-        )}
-        onSubmit={({
-          category,
-          expiryDate,
-          quantity,
-          measurement,
-          allowBackOrder,
-        }) => {
-          if (category) {
-            setProductValue('category', category)
-          }
-
-          if (expiryDate) {
-            setProductValue('expiryDate', expiryDate)
-          }
-
-          if (quantity !== undefined || quantity !== null) {
-            setProductValue('quantity', quantity)
-          }
-
-          if (measurement) {
-            setProductValue('measurement', measurement)
-          }
-          if (allowBackOrder) {
-            setProductValue('allowBackOrder', allowBackOrder)
-          }
-          goBack()
+        validationSchema={toFormikValidationSchema(AddProductDetailSchema)}
+        onSubmit={(data) => {
+          onSave(data)
+          onClose()
         }}
       >
         {({ submitForm, setFieldValue, values }) => {
@@ -96,7 +53,7 @@ const AddProductDetail = () => {
             <>
               <Toolbar
                 items={[
-                  <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
+                  <ToolbarButton key={1} label="Cancel" onClick={onClose} />,
                   <ToolbarTitle key={2} title="Inventory" />,
                   <ToolbarButton key={3} label="Done" onClick={submitForm} />,
                 ]}
@@ -164,7 +121,6 @@ const AddProductDetail = () => {
                               <MeasurementSelect
                                 value={field.value}
                                 onChange={(value) => {
-                                  setProductValue('measurement', value?.value)
                                   setFieldValue('measurement', value?.value)
                                 }}
                               />
@@ -209,7 +165,6 @@ const AddProductDetail = () => {
                       className="DatePicker input input-bordered text-left "
                       onChange={(e) => {
                         setFieldValue('expiryDate', new Date(e.target.value))
-                        setProductValue('expiryDate', new Date(e.target.value))
                       }}
                       value={
                         values.expiryDate

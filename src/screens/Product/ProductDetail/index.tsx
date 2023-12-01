@@ -27,9 +27,12 @@ import ProductDetailForm from './components/ProductDetailForm'
 import ProductVariantList from './components/ProductVariantList'
 import { AnimatePresence, motion } from 'framer-motion'
 import AddDescription from './components/AddDescription'
-import AddProductDetail from './components/AddProductDetails'
+import AddProductDetail, {
+  AddProductDetailSchema,
+} from './components/AddProductDetails'
 import AddProductVariant from './components/AddProductVariants'
 import { subscreenAnimation } from 'constants/animation'
+import { z } from 'zod'
 
 export const ProductDetail = () => {
   const {
@@ -117,6 +120,28 @@ export const ProductDetail = () => {
         value: description,
       },
     })
+  }
+
+  const onSaveDetails = (data: z.infer<typeof AddProductDetailSchema>) => {
+    const { category, expiryDate, quantity, measurement, allowBackOrder } = data
+    if (category) {
+      setProductValue('category', category)
+    }
+
+    if (expiryDate) {
+      setProductValue('expiryDate', expiryDate)
+    }
+
+    if (quantity !== undefined || quantity !== null) {
+      setProductValue('quantity', quantity)
+    }
+
+    if (measurement) {
+      setProductValue('measurement', measurement)
+    }
+    if (allowBackOrder) {
+      setProductValue('allowBackOrder', allowBackOrder)
+    }
   }
 
   return (
@@ -222,7 +247,17 @@ export const ProductDetail = () => {
           )}
 
           {activeModal === ProductDetailActionModal.Detail && (
-            <AddProductDetail />
+            <AddProductDetail
+              values={{
+                category: productDetails.category || '',
+                expiryDate: productDetails.expiryDate || null,
+                quantity: productDetails.quantity || 0,
+                measurement: productDetails.measurement || 'pieces',
+                allowBackOrder: productDetails.allowBackOrder,
+              }}
+              onSave={onSaveDetails}
+              onClose={closeSubscreens}
+            />
           )}
 
           {activeModal === ProductDetailActionModal.Variants && (
