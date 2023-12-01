@@ -172,7 +172,7 @@ export const ProductDetail = () => {
           <button
             className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
             onClick={() => setActiveModal(ProductDetailActionModal.Variants)}
-            disabled={isMutating}
+            disabled={isMutating || productDetails.name.length < 1}
           >
             Add Variants
           </button>
