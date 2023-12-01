@@ -168,6 +168,7 @@ export const ProductDetail = () => {
             title={mode === 'add' ? 'Add Product' : 'View Product'}
           />,
           <PrimaryAction
+            mode={mode}
             key="primaryAction"
             isLoading={isMutating}
             onClone={onClone}

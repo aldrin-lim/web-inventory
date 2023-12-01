@@ -1,5 +1,4 @@
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
-import { useProductDetail } from 'screens/Product/contexts/ProductDetailContext'
 import UpdateActionMenu from '../UpdateActionMenu'
 
 type PrimaryActionProps = {
@@ -9,6 +8,7 @@ type PrimaryActionProps = {
   onDelete: () => void
   onSave: () => void
   onClone: () => void
+  mode: 'add' | 'edit'
 }
 
 const PrimaryAction = (props: PrimaryActionProps) => {
@@ -19,10 +19,8 @@ const PrimaryAction = (props: PrimaryActionProps) => {
     onCreate,
     onDelete,
     onSave,
+    mode,
   } = props
-  const {
-    state: { mode },
-  } = useProductDetail()
   if (mode === 'add') {
     return (
       <ToolbarButton
