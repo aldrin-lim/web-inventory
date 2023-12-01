@@ -2,6 +2,7 @@ import {
   ChevronRightIcon,
   ArchiveBoxIcon,
   ChevronLeftIcon,
+  PlusIcon,
 } from '@heroicons/react/24/solid'
 import ProductImages from 'screens/Product/ProductDetail/components/ProductImages'
 import Toolbar from 'components/Layout/components/Toolbar'
@@ -29,7 +30,7 @@ import ProductVariantList from './components/ProductVariantList'
 export const ProductDetail = () => {
   const {
     dispatch,
-    state: { activeModal, productDetails, mode, variantAttributes },
+    state: { activeModal, productDetails, mode },
   } = useProductDetail()
 
   const modalDialogRef = useRef<HTMLDialogElement>(null)
@@ -99,7 +100,7 @@ export const ProductDetail = () => {
   }
 
   return (
-    <div className="section relative flex flex-col gap-4 pt-0">
+    <div className="section relative flex flex-col gap-4  pt-0">
       <ConfirmDeleteDialog
         ref={modalDialogRef}
         productName={productDetails.name}
@@ -128,7 +129,7 @@ export const ProductDetail = () => {
         ]}
       />
       <div
-        className={`flex flex-col gap-4 ${
+        className={`inline-flex flex-grow flex-col gap-4 ${
           activeModal !== ProductDetailActionModal.None // Prevent overlapping content to appear on other subscreen
             ? 'h-0 overflow-hidden'
             : 'h-full'
@@ -156,7 +157,17 @@ export const ProductDetail = () => {
           <ChevronRightIcon className="w-5" />
         </button>
 
-        <h1 className="font-bold">Variants</h1>
+        <div className="flex w-full flex-row items-center justify-between">
+          <h1 className="font-bold">Variants</h1>
+          {productDetails.variants && productDetails.variants.length > 0 && (
+            <button
+              onClick={() => setActiveModal(ProductDetailActionModal.Variants)}
+              className="btn btn-ghost btn-sm"
+            >
+              <PlusIcon className="w-5 text-blue-400" />
+            </button>
+          )}
+        </div>
         <button
           className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
           onClick={() => setActiveModal(ProductDetailActionModal.Variants)}

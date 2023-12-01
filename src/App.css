@@ -17,7 +17,7 @@ html, body {
 }
 
 .App {
-  @apply h-full min-h-fit w-full bg-base-100;
+  @apply w-full bg-base-100;
 }
 
 @layer base {

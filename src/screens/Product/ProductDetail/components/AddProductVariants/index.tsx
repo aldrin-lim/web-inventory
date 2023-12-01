@@ -6,25 +6,12 @@ import {
   ProductDetailActionModal,
   useProductDetail,
 } from 'screens/Product/contexts/ProductDetailContext'
-import { generateProductVariants } from 'util/products'
 import VariantAttributeManager from './components/VariantAttributeManager'
 import { ProductVariantAttribute } from 'types/product.types'
 import { useEffect, useState } from 'react'
 
-const variantsOptionsInput = [
-  {
-    option: 'sizes',
-    values: ['small', 'medium'],
-  },
-  {
-    option: 'color',
-    values: ['red', 'blue'],
-  },
-]
-
 const AddProductVariant = () => {
   const { dispatch, state } = useProductDetail()
-  const { productDetails } = state
 
   const goBack = () => {
     dispatch({
