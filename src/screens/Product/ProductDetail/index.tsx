@@ -144,6 +144,10 @@ export const ProductDetail = () => {
     }
   }
 
+  const onDescriptionButtonClick = () => {
+    setActiveModal(ProductDetailActionModal.Description)
+  }
+
   return (
     <div className="section relative flex flex-col gap-4  pt-0">
       <ConfirmDeleteDialog
@@ -186,6 +190,7 @@ export const ProductDetail = () => {
           setFieldValue={setFieldValue}
           ref={formikRef}
           disabled={isMutating}
+          onDescriptionButtonClick={onDescriptionButtonClick}
         />
 
         <ProductImages />

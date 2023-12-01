@@ -11,11 +11,18 @@ type ProductDetailFormProps = {
   initialValues: Product
   disabled?: boolean
   setFieldValue: (field: keyof Product, value: unknown) => void
+  onDescriptionButtonClick: () => void
 }
 
 const ProductDetailForm = forwardRef(
   (props: ProductDetailFormProps, ref: Ref<FormikProps<Product>>) => {
-    const { initialValues, onSubmit, disabled = false, setFieldValue } = props
+    const {
+      initialValues,
+      onSubmit,
+      disabled = false,
+      setFieldValue,
+      onDescriptionButtonClick,
+    } = props
 
     return (
       <Formik
@@ -45,7 +52,10 @@ const ProductDetailForm = forwardRef(
                   </div>
                 )}
               </Field>
-              <AddProductDescriptionButton />
+              <AddProductDescriptionButton
+                onClick={onDescriptionButtonClick}
+                description={initialValues.description}
+              />
               <div className="grid w-full grid-cols-3 grid-rows-1 gap-4">
                 <Field name="price">
                   {({ field, meta }: FieldProps) => (

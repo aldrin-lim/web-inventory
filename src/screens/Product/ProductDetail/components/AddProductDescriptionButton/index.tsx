@@ -1,27 +1,15 @@
 import { ChevronRightIcon } from '@heroicons/react/24/solid'
-import {
-  ProductDetailActionType,
-  ProductDetailActionModal,
-  useProductDetail,
-} from 'screens/Product/contexts/ProductDetailContext'
+type AddProductDescriptionButton = {
+  description?: string
+  onClick: () => void
+}
 
-const AddProductDescriptionButton = () => {
-  const {
-    dispatch,
-    state: { productDetails },
-  } = useProductDetail()
-  const { description } = productDetails
-
-  const setActiveModal = (modal: ProductDetailActionModal) => {
-    dispatch({
-      type: ProductDetailActionType.SetActiveModal,
-      payload: modal,
-    })
-  }
+const AddProductDescriptionButton = (props: AddProductDescriptionButton) => {
+  const { onClick, description } = props
 
   return (
     <button
-      onClick={() => setActiveModal(ProductDetailActionModal.Description)}
+      onClick={onClick}
       className="btn btn-ghost btn-primary btn-xs -mt-[10px]  flex w-full flex-row justify-between p-0 normal-case"
     >
       <span className="col-span-11 w-4/5 truncate overflow-ellipsis text-left text-gray-400">
