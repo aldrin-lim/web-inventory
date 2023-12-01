@@ -80,7 +80,7 @@ export const ProductVariantDetailProvider: React.FC<
   //     // Assuming you have a way to find the index of the variant
   //     const variantIndex = 1 /* logic to find variantIndex */
   //     productDetailDispatch({
-  //       type: AddProductActionType.UpdateProductVariant,
+  //       type: ProductDetailActionType.UpdateProductVariant,
   //       payload: { variantIndex, updatedVariant: action.payload },
   //     })
   //   }

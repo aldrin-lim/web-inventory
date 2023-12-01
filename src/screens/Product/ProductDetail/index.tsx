@@ -17,7 +17,7 @@ import { Product } from 'types/product.types'
 import {
   useProductDetail,
   ProductDetailActionModal,
-  AddProductActionType,
+  ProductDetailActionType,
 } from '../contexts/ProductDetailContext'
 import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
 import useDeleteProduct from 'hooks/useDeleteProduct'
@@ -44,7 +44,7 @@ export const ProductDetail = () => {
 
   const setActiveModal = (modal: ProductDetailActionModal) => {
     dispatch({
-      type: AddProductActionType.SetActiveModal,
+      type: ProductDetailActionType.SetActiveModal,
       payload: modal,
     })
   }
@@ -52,7 +52,7 @@ export const ProductDetail = () => {
   const setProductValue = useCallback(
     (field: keyof Product, value: unknown) => {
       dispatch({
-        type: AddProductActionType.UpdateProductDetail,
+        type: ProductDetailActionType.UpdateProductDetail,
         payload: {
           field,
           value,

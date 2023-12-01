@@ -1,6 +1,6 @@
 import { ChevronRightIcon } from '@heroicons/react/24/solid'
 import {
-  AddProductActionType,
+  ProductDetailActionType,
   ProductDetailActionModal,
   useProductDetail,
 } from 'screens/Product/contexts/ProductDetailContext'
@@ -14,7 +14,7 @@ const AddProductDescriptionButton = () => {
 
   const setActiveModal = (modal: ProductDetailActionModal) => {
     dispatch({
-      type: AddProductActionType.SetActiveModal,
+      type: ProductDetailActionType.SetActiveModal,
       payload: modal,
     })
   }

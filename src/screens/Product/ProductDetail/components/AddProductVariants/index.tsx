@@ -2,7 +2,7 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import {
-  AddProductActionType,
+  ProductDetailActionType,
   ProductDetailActionModal,
   useProductDetail,
 } from 'screens/Product/contexts/ProductDetailContext'
@@ -28,7 +28,7 @@ const AddProductVariant = () => {
 
   const goBack = () => {
     dispatch({
-      type: AddProductActionType.SetActiveModal,
+      type: ProductDetailActionType.SetActiveModal,
       payload: ProductDetailActionModal.None,
     })
   }
@@ -54,7 +54,7 @@ const AddProductVariant = () => {
       },
     )
     dispatch({
-      type: AddProductActionType.UpdateVariantAttribute,
+      type: ProductDetailActionType.UpdateVariantAttribute,
       payload: sanitizedVariantAttributes,
     })
     goBack()

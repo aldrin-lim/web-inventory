@@ -14,7 +14,7 @@ export enum ProductDetailActionModal {
   Variants = 'variants',
 }
 
-export enum AddProductActionType {
+export enum ProductDetailActionType {
   SetActiveModal = 'SET_ACTIVE_MODAL',
   UpdateProductDetail = 'UPDATE_PRODUCT_DETAIL',
   UpdateVariantAttribute = 'UPDATE_VARIANT_ATTRIBUTE',
@@ -53,35 +53,35 @@ const initialState: State = {
 
 type Action =
   | {
-      type: AddProductActionType.SetActiveModal
+      type: ProductDetailActionType.SetActiveModal
       payload: ProductDetailActionModal
     }
   | {
-      type: AddProductActionType.UpdateProductDetail
+      type: ProductDetailActionType.UpdateProductDetail
       payload: { field: keyof Product; value: unknown }
     }
   | {
-      type: AddProductActionType.UpdateVariantAttribute
+      type: ProductDetailActionType.UpdateVariantAttribute
       payload: Array<ProductVariantAttribute> // index of the variant attribute to remove
     }
   | {
-      type: AddProductActionType.AddVariantAttribute
+      type: ProductDetailActionType.AddVariantAttribute
       payload: ProductVariantAttribute
     }
   | {
-      type: AddProductActionType.RemoveVariantAttribute
+      type: ProductDetailActionType.RemoveVariantAttribute
       payload: number // index of the variant attribute to remove
     }
   | {
-      type: AddProductActionType.UpdateProductVariant
+      type: ProductDetailActionType.UpdateProductVariant
       payload: { variantIndex: number; updatedVariant: ProductVariant }
     }
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case AddProductActionType.SetActiveModal:
+    case ProductDetailActionType.SetActiveModal:
       return { ...state, activeModal: action.payload }
-    case AddProductActionType.UpdateProductDetail:
+    case ProductDetailActionType.UpdateProductDetail:
       return {
         ...state,
         productDetails: {
@@ -89,7 +89,7 @@ function reducer(state: State, action: Action): State {
           [action.payload.field]: action.payload.value,
         },
       }
-    case AddProductActionType.UpdateVariantAttribute: {
+    case ProductDetailActionType.UpdateVariantAttribute: {
       return {
         ...state,
         variantAttributes: action.payload,
@@ -99,7 +99,7 @@ function reducer(state: State, action: Action): State {
         ),
       }
     }
-    case AddProductActionType.AddVariantAttribute: {
+    case ProductDetailActionType.AddVariantAttribute: {
       const updatedVariantAttributes = [
         ...state.variantAttributes,
         action.payload,
@@ -113,7 +113,7 @@ function reducer(state: State, action: Action): State {
         ),
       }
     }
-    case AddProductActionType.RemoveVariantAttribute: {
+    case ProductDetailActionType.RemoveVariantAttribute: {
       const updatedVariantAttributes = state.variantAttributes.filter(
         (_, index) => index !== action.payload,
       )
@@ -126,7 +126,7 @@ function reducer(state: State, action: Action): State {
         ),
       }
     }
-    case AddProductActionType.UpdateProductVariant: {
+    case ProductDetailActionType.UpdateProductVariant: {
       const updatedVariants = [
         ...(state.productDetails.variants as ProductVariant[]),
       ]

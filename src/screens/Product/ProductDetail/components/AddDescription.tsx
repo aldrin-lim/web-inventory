@@ -3,7 +3,7 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import { useEffect, useState } from 'react'
 import {
-  AddProductActionType,
+  ProductDetailActionType,
   ProductDetailActionModal,
   useProductDetail,
 } from '../../contexts/ProductDetailContext'
@@ -22,7 +22,7 @@ const AddDescription: React.FC = () => {
 
   const onSave = () => {
     dispatch({
-      type: AddProductActionType.UpdateProductDetail,
+      type: ProductDetailActionType.UpdateProductDetail,
       payload: {
         field: 'description',
         value: description,
@@ -33,7 +33,7 @@ const AddDescription: React.FC = () => {
 
   const goBack = () => {
     dispatch({
-      type: AddProductActionType.SetActiveModal,
+      type: ProductDetailActionType.SetActiveModal,
       payload: ProductDetailActionModal.None,
     })
   }

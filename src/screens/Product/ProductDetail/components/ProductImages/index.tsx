@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { PhotoIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
 import {
-  AddProductActionType,
+  ProductDetailActionType,
   useProductDetail,
 } from 'screens/Product/contexts/ProductDetailContext'
 import { Product } from 'types/product.types'
@@ -18,7 +18,7 @@ const ProductImages = () => {
   const setProductValue = useCallback(
     (field: keyof Product, value: unknown) => {
       dispatch({
-        type: AddProductActionType.UpdateProductDetail,
+        type: ProductDetailActionType.UpdateProductDetail,
         payload: {
           field,
           value,

@@ -3,7 +3,7 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import {
   useProductDetail,
-  AddProductActionType,
+  ProductDetailActionType,
   ProductDetailActionModal,
 } from '../../contexts/ProductDetailContext'
 import { useRef } from 'react'
@@ -23,14 +23,14 @@ const AddProductDetail = () => {
 
   const goBack = () => {
     dispatch({
-      type: AddProductActionType.SetActiveModal,
+      type: ProductDetailActionType.SetActiveModal,
       payload: ProductDetailActionModal.None,
     })
   }
 
   const setProductValue = (field: keyof Product, value: unknown) => {
     dispatch({
-      type: AddProductActionType.UpdateProductDetail,
+      type: ProductDetailActionType.UpdateProductDetail,
       payload: {
         field,
         value,
