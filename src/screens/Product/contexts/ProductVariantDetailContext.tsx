@@ -1,14 +1,36 @@
-// ProductVariantDetailContext.tsx
-import React, { createContext, useContext, useReducer } from 'react'
-import { ProductVariant } from 'types/product.types'
+// ProductDetail.tsx
+import React, { createContext, useContext, useReducer, ReactNode } from 'react'
+import {
+  Product,
+  ProductVariant,
+  ProductVariantAttribute,
+} from 'types/product.types'
 
-// Define the state and actions for the context
-interface VariantState {
-  variant: ProductVariant
+export enum ProductVariantDetailActionModal {
+  None = '',
+  Detail = 'detail',
+  Description = 'description',
+  Variants = 'variants',
 }
 
-const initialVariantState: VariantState = {
-  variant: {
+export enum ProductVariantDetailActionType {
+  SetActiveModal = 'SET_ACTIVE_MODAL',
+  UpdateProductDetail = 'UPDATE_PRODUCT_DETAIL',
+  UpdateVariantAttribute = 'UPDATE_VARIANT_ATTRIBUTE',
+  AddVariantAttribute = 'ADD_VARIANT_ATTRIBUTE',
+  RemoveVariantAttribute = 'REMOVE_VARIANT_ATTRIBUTE',
+  UpdateProductVariant = 'UPDATE_PRODUCT_VARIANT',
+}
+
+interface State {
+  activeModal: ProductVariantDetailActionModal
+  productDetails: ProductVariant
+  mode: 'add' | 'edit'
+}
+
+const initialState: State = {
+  activeModal: ProductVariantDetailActionModal.None,
+  productDetails: {
     id: '',
     name: '',
     price: 0,
@@ -23,68 +45,92 @@ const initialVariantState: VariantState = {
     measurement: '',
     variantOptions: [],
   },
+  mode: 'add',
 }
 
-export enum VariantActionType {
-  UpdateVariant = 'UPDATE_VARIANT',
-}
+type Action =
+  | {
+      type: ProductVariantDetailActionType.SetActiveModal
+      payload: ProductVariantDetailActionModal
+    }
+  | {
+      type: ProductVariantDetailActionType.UpdateProductDetail
+      payload: { field: keyof Product; value: unknown }
+    }
+  | {
+      type: ProductVariantDetailActionType.UpdateVariantAttribute
+      payload: Array<ProductVariantAttribute> // index of the variant attribute to remove
+    }
+  | {
+      type: ProductVariantDetailActionType.AddVariantAttribute
+      payload: ProductVariantAttribute
+    }
+  | {
+      type: ProductVariantDetailActionType.RemoveVariantAttribute
+      payload: number // index of the variant attribute to remove
+    }
+  | {
+      type: ProductVariantDetailActionType.UpdateProductVariant
+      payload: { variantIndex: number; updatedVariant: ProductVariant }
+    }
 
-type VariantAction = {
-  type: VariantActionType.UpdateVariant
-  payload: ProductVariant
-}
-
-function variantReducer(
-  state: VariantState,
-  action: VariantAction,
-): VariantState {
+function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case VariantActionType.UpdateVariant:
-      return { ...state, variant: action.payload }
+    case ProductVariantDetailActionType.SetActiveModal:
+      return { ...state, activeModal: action.payload }
+    case ProductVariantDetailActionType.UpdateProductDetail:
+      return {
+        ...state,
+        productDetails: {
+          ...state.productDetails,
+          [action.payload.field]: action.payload.value,
+        },
+      }
     default:
       return state
   }
 }
 
 const ProductVariantDetail = createContext<{
-  state: VariantState
-  dispatch: React.Dispatch<VariantAction>
+  state: State
+  dispatch: React.Dispatch<Action>
 }>({
-  state: initialVariantState,
+  state: initialState,
   dispatch: () => {},
 })
 
 export const useProductVariantDetail = () => useContext(ProductVariantDetail)
 
-// Define the provider component
-interface ProductVariantDetailProviderProps {
-  children: React.ReactNode
-  initialVariant: ProductVariant
+interface ProductDetailProviderProps {
+  children: ReactNode
+  productDetails?: Partial<Product>
+  mode: 'edit' | 'add'
 }
 
 export const ProductVariantDetailProvider: React.FC<
-  ProductVariantDetailProviderProps
-> = ({ children, initialVariant }) => {
-  // const { dispatch: productDetailDispatch } = useProductDetail()
+  ProductDetailProviderProps
+> = ({ children, productDetails, mode = 'add' }) => {
+  let defaultState = initialState
 
-  const [state, dispatch] = useReducer(variantReducer, {
-    ...initialVariantState,
-    variant: initialVariant,
-  })
+  if (productDetails) {
+    defaultState = {
+      ...initialState,
+      productDetails: {
+        ...initialState.productDetails,
+        ...productDetails,
+      },
+    }
+  }
 
-  // Wrapped dispatch function that also updates the ProductDetailContext
-  // const wrappedDispatch = (action: VariantAction) => {
-  //   dispatch(action)
+  if (mode === 'edit') {
+    defaultState = {
+      ...defaultState,
+      mode: 'edit',
+    }
+  }
 
-  //   if (action.type === VariantActionType.UpdateVariant) {
-  //     // Assuming you have a way to find the index of the variant
-  //     const variantIndex = 1 /* logic to find variantIndex */
-  //     productDetailDispatch({
-  //       type: ProductDetailActionType.UpdateProductVariant,
-  //       payload: { variantIndex, updatedVariant: action.payload },
-  //     })
-  //   }
-  // }
+  const [state, dispatch] = useReducer(reducer, defaultState)
+
   return (
     <ProductVariantDetail.Provider value={{ state, dispatch }}>
       {children}

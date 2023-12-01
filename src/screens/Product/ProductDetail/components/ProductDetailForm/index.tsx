@@ -1,21 +1,24 @@
 import PriceInput from 'components/PriceInput'
 import { Formik, Field, FieldProps, FormikProps } from 'formik'
 import { Ref, forwardRef } from 'react'
-import { Product } from 'types/product.types'
+import { Product, ProductVariant } from 'types/product.types'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import AddProductDescriptionButton from '../AddProductDescriptionButton'
 import { AddProductSchema } from 'api/product/createProduct'
 
 type ProductDetailFormProps = {
   onSubmit: () => void
-  initialValues: Product
+  initialValues: Product | ProductVariant
   disabled?: boolean
   setFieldValue: (field: keyof Product, value: unknown) => void
   onDescriptionButtonClick: () => void
 }
 
 const ProductDetailForm = forwardRef(
-  (props: ProductDetailFormProps, ref: Ref<FormikProps<Product>>) => {
+  (
+    props: ProductDetailFormProps,
+    ref: Ref<FormikProps<Product | ProductVariant>>,
+  ) => {
     const {
       initialValues,
       onSubmit,

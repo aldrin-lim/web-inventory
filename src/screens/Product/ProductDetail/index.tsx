@@ -14,7 +14,7 @@ import useUpdateProduct from 'hooks/useUpdateProduct'
 import { useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
-import { Product } from 'types/product.types'
+import { Product, ProductVariant } from 'types/product.types'
 import {
   useProductDetail,
   ProductDetailActionModal,
@@ -34,6 +34,20 @@ import AddProductVariant from './components/AddProductVariants'
 import { subscreenAnimation } from 'constants/animation'
 import { z } from 'zod'
 
+const variant = {
+  name: 'Valid Test Product223',
+  description: 'A product with valid variants',
+  cost: 20,
+  profit: 10,
+  price: 30,
+  quantity: 200,
+  measurement: 'pcs',
+  images: [],
+  category: 'Valid Test Category',
+  allowBackOrder: true,
+  expiryDate: '2024-01-01',
+}
+
 export const ProductDetail = () => {
   const {
     dispatch,
@@ -41,7 +55,7 @@ export const ProductDetail = () => {
   } = useProductDetail()
 
   const modalDialogRef = useRef<HTMLDialogElement>(null)
-  const formikRef = useRef<FormikProps<Product>>(null)
+  const formikRef = useRef<FormikProps<Product | ProductVariant>>(null)
 
   const { createProduct, isCreating } = useCreateProduct()
   const { updateProduct, isUpdating } = useUpdateProduct()

@@ -6,6 +6,7 @@ import { ProductVariant } from 'types/product.types'
 
 type ProductVariantListProps = {
   variants?: Array<ProductVariant>
+  onItemClick: (index: number) => void
 }
 
 const getTruncateSize = (size: ScreenSize) => {
@@ -29,7 +30,7 @@ const ProductVariantList = (props: ProductVariantListProps) => {
   const { variants = [] } = props
   return (
     <div>
-      {variants.map((product) => {
+      {variants.map((product, index) => {
         const thumbnail = product.images && product.images[0]
         // const variant = `${pro}`
         const variant = product.variantOptions
@@ -39,6 +40,7 @@ const ProductVariantList = (props: ProductVariantListProps) => {
           <div className="" key={product.name}>
             <button
               // onClick={() => onClick(product.id as string)}
+              onClick={() => props.onItemClick(index)}
               className="rounded-row btn btn-ghost no-animation flex w-full flex-row justify-start rounded-none border-b-gray-200 bg-gray-100"
             >
               <figure className="h-[24px] w-[24px]">
