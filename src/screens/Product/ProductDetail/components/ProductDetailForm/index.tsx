@@ -129,7 +129,6 @@ const ProductDetailForm = forwardRef(
                             const isPricedTouched =
                               getFieldMeta('price').touched
                             if (!isPricedTouched) {
-                              // console.log('isProfitTouched', isProfitTouched)
                               setFieldValue('price', +value + values.cost)
                             }
                           }}

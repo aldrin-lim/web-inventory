@@ -37,8 +37,6 @@ const AddProductVariant = () => {
     Array<ProductVariantAttribute>
   >([])
 
-  console.log(generateProductVariants(variantsOptionsInput, productDetails))
-
   const handleVariantAttributeManagerChange = (
     variantAttribute: Array<ProductVariantAttribute>,
   ) => {

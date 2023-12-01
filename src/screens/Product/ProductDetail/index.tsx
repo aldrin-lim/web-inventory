@@ -24,6 +24,7 @@ import useDeleteProduct from 'hooks/useDeleteProduct'
 import ProductDetailModalManager from './components/ProductDetailModalManager'
 import PrimaryAction from './components/ProductDetailPrimaryAction'
 import ProductDetailForm from './components/ProductDetailForm'
+import ProductVariantList from './components/ProductVariantList'
 
 export const ProductDetail = () => {
   const {
@@ -159,10 +160,11 @@ export const ProductDetail = () => {
         <button
           className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
           onClick={() => setActiveModal(ProductDetailActionModal.Variants)}
-          disabled={isMutating}
+          disabled={isMutating || productDetails.name.length < 1}
         >
           Add Variants
         </button>
+        <ProductVariantList variants={productDetails.variants} />
       </div>
 
       <ProductDetailModalManager activeModal={activeModal} />

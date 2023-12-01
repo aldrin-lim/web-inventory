@@ -208,7 +208,6 @@ const AddProductDetail = () => {
                       placeholder="Expiry date"
                       className="DatePicker input input-bordered text-left "
                       onChange={(e) => {
-                        console.log(new Date(e.target.value))
                         setFieldValue('expiryDate', new Date(e.target.value))
                         setProductValue('expiryDate', new Date(e.target.value))
                       }}

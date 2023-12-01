@@ -36,24 +36,22 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
   }
 
   const onVariantAttributeOptionChange = useCallback(
-    (index: number, newValue?: ProductVariantAttribute['option']) => {
-      if (newValue) {
-        setVariantAttributes((prevValues) => {
-          const newValues = prevValues.map((value, i) => {
-            if (index !== i) {
-              return value
-            }
-            return {
-              ...value,
-              option: newValue,
-            }
-          })
-          if (onChange) {
-            onChange(newValues)
+    (index: number, newValue: ProductVariantAttribute['option']) => {
+      setVariantAttributes((prevValues) => {
+        const newValues = prevValues.map((value, i) => {
+          if (index !== i) {
+            return value
           }
-          return newValues
+          return {
+            ...value,
+            option: newValue,
+          }
         })
-      }
+        if (onChange) {
+          onChange(newValues)
+        }
+        return newValues
+      })
     },
     [setVariantAttributes, onChange],
   )
