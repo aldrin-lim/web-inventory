@@ -17,6 +17,7 @@ export enum AddProductModal {
 export enum AddProductActionType {
   SetActiveModal = 'SET_ACTIVE_MODAL',
   UpdateProductDetail = 'UPDATE_PRODUCT_DETAIL',
+  UpdateVariantAttribute = 'UPDATE_VARIANT_ATTRIBUTE',
   AddVariantAttribute = 'ADD_VARIANT_ATTRIBUTE',
   RemoveVariantAttribute = 'REMOVE_VARIANT_ATTRIBUTE',
   UpdateProductVariant = 'UPDATE_PRODUCT_VARIANT',
@@ -57,6 +58,10 @@ type Action =
       payload: { field: keyof Product; value: unknown }
     }
   | {
+      type: AddProductActionType.UpdateVariantAttribute
+      payload: Array<ProductVariantAttribute> // index of the variant attribute to remove
+    }
+  | {
       type: AddProductActionType.AddVariantAttribute
       payload: ProductVariantAttribute
     }
@@ -81,6 +86,16 @@ function reducer(state: State, action: Action): State {
           [action.payload.field]: action.payload.value,
         },
       }
+    case AddProductActionType.UpdateVariantAttribute: {
+      return {
+        ...state,
+        variantAttributes: action.payload,
+        productDetails: generateProductVariants(
+          action.payload,
+          state.productDetails,
+        ),
+      }
+    }
     case AddProductActionType.AddVariantAttribute: {
       const updatedVariantAttributes = [
         ...state.variantAttributes,

@@ -28,7 +28,7 @@ import ProductDetailForm from './components/ProductDetailForm'
 export const ProductDetail = () => {
   const {
     dispatch,
-    state: { activeModal, productDetails, mode },
+    state: { activeModal, productDetails, mode, variantAttributes },
   } = useProductDetail()
 
   const modalDialogRef = useRef<HTMLDialogElement>(null)
@@ -97,8 +97,6 @@ export const ProductDetail = () => {
     setProductValue(field, value)
   }
 
-  console.log('activeModal', activeModal)
-
   return (
     <div className="section relative flex flex-col gap-4 pt-0">
       <ConfirmDeleteDialog
@@ -128,37 +126,44 @@ export const ProductDetail = () => {
           />,
         ]}
       />
-
-      <ProductDetailForm
-        initialValues={productDetails}
-        onSubmit={submitForm}
-        setFieldValue={setFieldValue}
-        ref={formikRef}
-        disabled={isMutating}
-      />
-
-      <ProductImages />
-
-      <button
-        className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
-        onClick={() => setActiveModal(AddProductModal.Detail)}
-        disabled={isMutating}
+      <div
+        className={`flex flex-col gap-4 ${
+          activeModal !== AddProductModal.None // Prevent overlapping content to appear on other subscreen
+            ? 'h-0 overflow-hidden'
+            : 'h-full'
+        }`}
       >
-        <div className="flex flex-row items-center gap-1">
-          <ArchiveBoxIcon className="w-5" />
-          Manage Inventory
-        </div>
-        <ChevronRightIcon className="w-5" />
-      </button>
+        <ProductDetailForm
+          initialValues={productDetails}
+          onSubmit={submitForm}
+          setFieldValue={setFieldValue}
+          ref={formikRef}
+          disabled={isMutating}
+        />
 
-      <h1 className="font-bold">Variants</h1>
-      <button
-        className="btn btn-ghost btn-outline btn-primary  text-center"
-        onClick={() => setActiveModal(AddProductModal.Variants)}
-        disabled={isMutating}
-      >
-        Add Variants
-      </button>
+        <ProductImages />
+
+        <button
+          className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
+          onClick={() => setActiveModal(AddProductModal.Detail)}
+          disabled={isMutating}
+        >
+          <div className="flex flex-row items-center gap-1">
+            <ArchiveBoxIcon className="w-5" />
+            Manage Inventory
+          </div>
+          <ChevronRightIcon className="w-5" />
+        </button>
+
+        <h1 className="font-bold">Variants</h1>
+        <button
+          className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
+          onClick={() => setActiveModal(AddProductModal.Variants)}
+          disabled={isMutating}
+        >
+          Add Variants
+        </button>
+      </div>
 
       <ProductDetailModalManager activeModal={activeModal} />
     </div>

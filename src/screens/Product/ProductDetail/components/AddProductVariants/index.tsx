@@ -9,6 +9,7 @@ import {
 import { generateProductVariants } from 'util/products'
 import VariantAttributeManager from './components/VariantAttributeManager'
 import { ProductVariantAttribute } from 'types/product.types'
+import { useEffect, useState } from 'react'
 
 const variantsOptionsInput = [
   {
@@ -22,10 +23,8 @@ const variantsOptionsInput = [
 ]
 
 const AddProductVariant = () => {
-  const {
-    dispatch,
-    state: { productDetails },
-  } = useProductDetail()
+  const { dispatch, state } = useProductDetail()
+  const { productDetails } = state
 
   const goBack = () => {
     dispatch({
@@ -34,13 +33,36 @@ const AddProductVariant = () => {
     })
   }
 
+  const [variantAttributes, setVariantAttributes] = useState<
+    Array<ProductVariantAttribute>
+  >([])
+
   console.log(generateProductVariants(variantsOptionsInput, productDetails))
 
   const handleVariantAttributeManagerChange = (
     variantAttribute: Array<ProductVariantAttribute>,
   ) => {
-    console.log(JSON.stringify(variantAttribute, null, 2))
+    setVariantAttributes(variantAttribute)
   }
+
+  const onDone = () => {
+    const sanitizedVariantAttributes = variantAttributes.filter(
+      (variantAttribute) => {
+        const hasOption = variantAttribute.option.length > 0
+        const hasOptionValues = variantAttribute.values.length > 0
+        return hasOption && hasOptionValues
+      },
+    )
+    dispatch({
+      type: AddProductActionType.UpdateVariantAttribute,
+      payload: sanitizedVariantAttributes,
+    })
+    goBack()
+  }
+
+  useEffect(() => {
+    setVariantAttributes(state.variantAttributes)
+  }, [state.variantAttributes])
 
   return (
     <div className="flex h-[90vh] flex-col gap-4">
@@ -48,11 +70,14 @@ const AddProductVariant = () => {
         items={[
           <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
           <ToolbarTitle key={2} title="Variants" />,
-          <ToolbarButton key={3} label="Done" />,
+          <ToolbarButton key={3} label="Done" onClick={onDone} />,
         ]}
       />
       <h1 className="font-bold">Options</h1>
-      <VariantAttributeManager onChange={handleVariantAttributeManagerChange} />
+      <VariantAttributeManager
+        values={variantAttributes}
+        onChange={handleVariantAttributeManagerChange}
+      />
     </div>
   )
 }

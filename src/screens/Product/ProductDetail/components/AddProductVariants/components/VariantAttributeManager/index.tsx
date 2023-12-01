@@ -4,37 +4,42 @@ import VariantAttributeItem from '../VariantAttributeItem'
 
 type VariantAttributeManagerProps = {
   onChange?: (variantAttribute: Array<ProductVariantAttribute>) => void
+  values: Array<ProductVariantAttribute>
 }
 
 const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
-  const { onChange } = props
-  const [variantAttributes, setVariantAttributes] = useState<
-    Array<ProductVariantAttribute>
-  >([
-    {
-      option: '',
-      values: [],
-    },
-  ])
+  const { onChange, values = [] } = props
+  const [variantAttributes, setVariantAttributes] =
+    useState<Array<ProductVariantAttribute>>(values)
 
   const addVariantAttribute = () => {
-    setVariantAttributes((prev) =>
-      prev.concat({
+    setVariantAttributes((prev) => {
+      const newValues = prev.concat({
         option: '',
         values: [],
-      }),
-    )
+      })
+      if (onChange) {
+        onChange(newValues)
+      }
+      return newValues
+    })
   }
 
   const removeVariantAttribute = (index: number) => {
-    setVariantAttributes((prev) => prev.filter((_, i) => i !== index))
+    setVariantAttributes((prev) => {
+      const newValues = prev.filter((_, i) => i !== index)
+      if (onChange) {
+        onChange(newValues)
+      }
+      return newValues
+    })
   }
 
   const onVariantAttributeOptionChange = useCallback(
     (index: number, newValue?: ProductVariantAttribute['option']) => {
       if (newValue) {
-        setVariantAttributes((prevValues) =>
-          prevValues.map((value, i) => {
+        setVariantAttributes((prevValues) => {
+          const newValues = prevValues.map((value, i) => {
             if (index !== i) {
               return value
             }
@@ -42,17 +47,21 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
               ...value,
               option: newValue,
             }
-          }),
-        )
+          })
+          if (onChange) {
+            onChange(newValues)
+          }
+          return newValues
+        })
       }
     },
-    [setVariantAttributes],
+    [setVariantAttributes, onChange],
   )
 
   const onVariantAttributeOptionValuesChange = useCallback(
     (index: number, newValue: ProductVariantAttribute['values']) => {
-      setVariantAttributes((prevValues) =>
-        prevValues.map((value, i) => {
+      setVariantAttributes((prevValues) => {
+        const newValues = prevValues.map((value, i) => {
           if (index !== i) {
             return value
           }
@@ -60,17 +69,30 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
             ...value,
             values: newValue,
           }
-        }),
-      )
+        })
+        if (onChange) {
+          onChange(newValues)
+        }
+        return newValues
+      })
     },
-    [setVariantAttributes],
+    [setVariantAttributes, onChange],
   )
 
   useEffect(() => {
-    if (onChange) {
-      onChange(variantAttributes)
+    setVariantAttributes(values)
+  }, [values])
+
+  useEffect(() => {
+    if (variantAttributes.length === 0) {
+      setVariantAttributes([
+        {
+          option: '',
+          values: [],
+        },
+      ])
     }
-  }, [variantAttributes, onChange])
+  }, [variantAttributes])
 
   return (
     <div className="flex flex-col gap-4">
