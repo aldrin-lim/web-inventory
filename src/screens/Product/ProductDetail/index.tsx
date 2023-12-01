@@ -148,6 +148,10 @@ export const ProductDetail = () => {
     setActiveModal(ProductDetailActionModal.Description)
   }
 
+  const onProductImagesChange = (images: Array<string>) => {
+    setProductValue('images', images)
+  }
+
   return (
     <div className="section relative flex flex-col gap-4  pt-0">
       <ConfirmDeleteDialog
@@ -194,7 +198,10 @@ export const ProductDetail = () => {
           onDescriptionButtonClick={onDescriptionButtonClick}
         />
 
-        <ProductImages />
+        <ProductImages
+          onImagesChange={onProductImagesChange}
+          images={productDetails?.images || []}
+        />
 
         <button
           className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"

@@ -1,35 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { PhotoIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
-import {
-  ProductDetailActionType,
-  useProductDetail,
-} from 'screens/Product/contexts/ProductDetailContext'
-import { Product } from 'types/product.types'
 
-const ProductImages = () => {
+type ProductImagesProps = {
+  images: Array<string>
+  onImagesChange: (images: Array<string>) => void
+}
+
+const ProductImages = (props: ProductImagesProps) => {
   const [images, setImages] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const {
-    dispatch,
-    state: { productDetails },
-  } = useProductDetail()
-
-  const setProductValue = useCallback(
-    (field: keyof Product, value: unknown) => {
-      dispatch({
-        type: ProductDetailActionType.UpdateProductDetail,
-        payload: {
-          field,
-          value,
-        },
-      })
-    },
-    [dispatch],
-  )
-
   const onChange = (images: string[]) => {
-    setProductValue('images', images)
+    props.onImagesChange(images)
   }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,10 +53,10 @@ const ProductImages = () => {
   const showInitialImageButton = images.length === 0
 
   useEffect(() => {
-    if (productDetails.images) {
-      setImages(productDetails.images)
+    if (props.images) {
+      setImages(props.images)
     }
-  }, [productDetails.images])
+  }, [props.images])
 
   return (
     <div className="flex w-full max-w-xs flex-row gap-5 ">
