@@ -7,7 +7,6 @@ const axiosInstance = axios.create({
 export const attachToken = async (getTokenSilently: () => Promise<string>) => {
   try {
     const token = await getTokenSilently()
-    console.log(token)
     axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`
   } catch (e) {
     console.error('Failed to retrieve token', e)

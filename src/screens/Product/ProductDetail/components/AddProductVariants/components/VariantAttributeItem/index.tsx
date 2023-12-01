@@ -68,7 +68,6 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
   }
 
   useEffect(() => {
-    console.log(props.option)
     setOption(props.option)
     setOptionValues(props.optionValues)
   }, [props.option, props.optionValues])

@@ -90,7 +90,6 @@ function reducer(state: State, action: Action): State {
         },
       }
     case ProductDetailActionType.UpdateVariantAttribute: {
-      console.log('xxx', action.payload)
       const sanitizedProductDetails = { ...state.productDetails, variants: [] }
       return {
         ...state,
