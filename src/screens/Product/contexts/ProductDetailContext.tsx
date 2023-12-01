@@ -1,6 +1,10 @@
 // ProductDetail.tsx
 import React, { createContext, useContext, useReducer, ReactNode } from 'react'
-import { Product, ProductVariantAttribute } from 'types/product.types'
+import {
+  Product,
+  ProductVariant,
+  ProductVariantAttribute,
+} from 'types/product.types'
 import { generateProductVariants } from 'util/products'
 
 export enum AddProductModal {
@@ -15,6 +19,7 @@ export enum AddProductActionType {
   UpdateProductDetail = 'UPDATE_PRODUCT_DETAIL',
   AddVariantAttribute = 'ADD_VARIANT_ATTRIBUTE',
   RemoveVariantAttribute = 'REMOVE_VARIANT_ATTRIBUTE',
+  UpdateProductVariant = 'UPDATE_PRODUCT_VARIANT',
 }
 
 interface State {
@@ -39,6 +44,7 @@ const initialState: State = {
     category: '',
     expiryDate: undefined,
     measurement: '',
+    variants: [],
   },
   mode: 'add',
   variantAttributes: [],
@@ -57,6 +63,10 @@ type Action =
   | {
       type: AddProductActionType.RemoveVariantAttribute
       payload: number // index of the variant attribute to remove
+    }
+  | {
+      type: AddProductActionType.UpdateProductVariant
+      payload: { variantIndex: number; updatedVariant: ProductVariant }
     }
 
 function reducer(state: State, action: Action): State {
@@ -96,6 +106,21 @@ function reducer(state: State, action: Action): State {
           updatedVariantAttributes,
           state.productDetails,
         ),
+      }
+    }
+    case AddProductActionType.UpdateProductVariant: {
+      const updatedVariants = [
+        ...(state.productDetails.variants as ProductVariant[]),
+      ]
+      updatedVariants[action.payload.variantIndex] =
+        action.payload.updatedVariant
+
+      return {
+        ...state,
+        productDetails: {
+          ...state.productDetails,
+          variants: updatedVariants,
+        },
       }
     }
     default:

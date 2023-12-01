@@ -26,10 +26,7 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
     )
   }
 
-  const removeVariantAttribute = (variantOption: string) => {
-    const index = variantAttributes.findIndex(
-      (variantAttribute) => variantAttribute.option === variantOption,
-    )
+  const removeVariantAttribute = (index: number) => {
     setVariantAttributes((prev) => prev.filter((_, i) => i !== index))
   }
 
@@ -80,7 +77,7 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
       {variantAttributes.map((variantAttribute, index) => (
         <VariantAttributeItem
           key={index}
-          onRemove={() => removeVariantAttribute(variantAttribute.option)}
+          onRemove={() => removeVariantAttribute(index)}
           option={variantAttribute.option}
           optionValues={variantAttribute.values}
           onOptionChange={(option) =>

@@ -18,6 +18,7 @@ export const VariantOptionsSchema = z.object({
 })
 
 const ProductVariantSchema = z.object({
+  id: z.string().optional(),
   name: z.string({
     required_error: 'Name is required',
     invalid_type_error: 'Name must be a string',
