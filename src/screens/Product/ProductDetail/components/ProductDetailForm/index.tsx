@@ -14,6 +14,16 @@ type ProductDetailFormProps = {
   onDescriptionButtonClick: () => void
 }
 
+const getVariantName = (options: ProductVariant['variantOptions']) => {
+  return options.map((variant) => variant.value).join('/')
+}
+
+const isProductVariant = (
+  detail: Product | ProductVariant,
+): detail is ProductVariant => {
+  return (detail as ProductVariant).variantOptions !== undefined
+}
+
 const ProductDetailForm = forwardRef(
   (
     props: ProductDetailFormProps,
@@ -38,23 +48,32 @@ const ProductDetailForm = forwardRef(
         {({ values }) => {
           return (
             <>
-              <Field name="name">
-                {({ field, meta }: FieldProps) => (
-                  <div className="form-control w-full">
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="Product Name"
-                      className="input input-bordered w-full"
-                      onChange={(e) => {
-                        setFieldValue('name', e.target.value)
-                      }}
-                      disabled={disabled}
-                    />
-                    <p className="form-control-error">{meta.error} &nbsp;</p>
-                  </div>
-                )}
-              </Field>
+              {!isProductVariant(values) ? (
+                <Field name="name">
+                  {({ field, meta }: FieldProps) => (
+                    <div className="form-control w-full">
+                      <input
+                        {...field}
+                        type="text"
+                        placeholder="Product Name"
+                        className="input input-bordered w-full"
+                        onChange={(e) => {
+                          setFieldValue('name', e.target.value)
+                        }}
+                        disabled={disabled}
+                      />
+                      <p className="form-control-error">{meta.error} &nbsp;</p>
+                    </div>
+                  )}
+                </Field>
+              ) : (
+                <div className="flex flex-row items-end gap-1">
+                  <h1 className="text-lg font-bold">
+                    {getVariantName(values.variantOptions)}
+                  </h1>
+                  <span className="mb-1 text-xs">variant</span>
+                </div>
+              )}
               <AddProductDescriptionButton
                 onClick={onDescriptionButtonClick}
                 description={initialValues.description}

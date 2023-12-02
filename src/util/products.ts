@@ -47,8 +47,17 @@ export function generateProductVariants(
     (combination) => {
       const variantName = combination.join('/')
       return {
-        ...product,
         name: `${product.name} (${variantName})`,
+        cost: 0,
+        price: 0,
+        profit: 0,
+        measurement: 'pieces',
+        quantity: 0,
+        allowBackOrder: true,
+        category: '',
+        description: '',
+        expiryDate: null,
+        images: [],
         variantOptions: combination.map((value, index) => ({
           option: variantOptionsInput[index].option,
           value: value,

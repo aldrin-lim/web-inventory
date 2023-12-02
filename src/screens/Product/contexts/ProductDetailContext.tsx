@@ -91,27 +91,28 @@ function reducer(state: State, action: Action): State {
       }
     case ProductDetailActionType.UpdateVariantAttribute: {
       const sanitizedProductDetails = { ...state.productDetails, variants: [] }
-      const existingVariants = state.productDetails
-        .variants as Array<ProductVariant>
-      const newGeneratedVariants = generateProductVariants(
-        action.payload,
-        sanitizedProductDetails,
-      ).variants as Array<ProductVariant>
+      // TODO: Find a way to update product variant attributes without regenerating all variants
+      // const existingVariants = state.productDetails
+      //   .variants as Array<ProductVariant>
+      // const newGeneratedVariants = generateProductVariants(
+      //   action.payload,
+      //   sanitizedProductDetails,
+      // ).variants as Array<ProductVariant>
 
-      const variants = [
-        ...existingVariants,
-        ...newGeneratedVariants.splice(
-          existingVariants.length,
-          newGeneratedVariants.length - existingVariants.length,
-        ),
-      ]
+      // const variants = [
+      //   ...existingVariants,
+      //   ...newGeneratedVariants.splice(
+      //     existingVariants.length,
+      //     newGeneratedVariants.length - existingVariants.length,
+      //   ),
+      // ]
       return {
         ...state,
         variantAttributes: action.payload,
-        productDetails: {
-          ...state.productDetails,
-          variants,
-        },
+        productDetails: generateProductVariants(
+          action.payload,
+          sanitizedProductDetails,
+        ),
       }
     }
     case ProductDetailActionType.AddVariantAttribute: {
