@@ -196,7 +196,7 @@ export const ProductDetail = () => {
                       updatedVariant: variant,
                     },
                   })
-                  // setCurrentVariant(null)
+                  setCurrentVariant(null)
                 }}
               />
             </ProductVariantDetailProvider>
