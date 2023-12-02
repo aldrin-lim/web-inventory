@@ -101,7 +101,7 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
           option={variantAttribute.option}
           optionValues={variantAttribute.values}
           onOptionChange={(option) =>
-            onVariantAttributeOptionChange(index, option)
+            onVariantAttributeOptionChange(index, option || '')
           }
           onOptionValuesChange={(optionValues) =>
             onVariantAttributeOptionValuesChange(index, optionValues)
@@ -112,7 +112,7 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
         onClick={addVariantAttribute}
         className="btn btn-ghost btn-outline btn-primary  text-center"
       >
-        Add Variant
+        Edit Variant Info (e.g, Price, Qty, etc.)
       </button>
     </div>
   )

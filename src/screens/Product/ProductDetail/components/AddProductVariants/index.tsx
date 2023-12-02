@@ -50,12 +50,12 @@ const AddProductVariant = () => {
   }, [state.variantAttributes])
 
   return (
-    <div className="flex h-[90vh] flex-col gap-4">
+    <div className="flex flex-col gap-4 pb-4">
       <Toolbar
         items={[
           <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
           <ToolbarTitle key={2} title="Variants" />,
-          <ToolbarButton key={3} label="Done" onClick={onDone} />,
+          <ToolbarButton key={3} label="Next" onClick={onDone} />,
         ]}
       />
       <h1 className="font-bold">Options</h1>
