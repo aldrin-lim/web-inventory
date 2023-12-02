@@ -1,6 +1,6 @@
 import PriceInput from 'components/PriceInput'
 import { Formik, Field, FieldProps, FormikProps } from 'formik'
-import { Ref, forwardRef } from 'react'
+import { Ref, forwardRef, useEffect } from 'react'
 import { Product, ProductVariant } from 'types/product.types'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import AddProductDescriptionButton from '../AddProductDescriptionButton'
@@ -77,12 +77,9 @@ const ProductDetailForm = forwardRef(
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Price"
                           onChange={(value) => {
+                            const profit = +value - values.cost
+                            setFieldValue('profit', profit)
                             setFieldValue('price', value)
-                            const isProfitTouched =
-                              getFieldMeta('profit').touched
-                            if (!isProfitTouched) {
-                              setFieldValue('profit', +value - values.cost)
-                            }
                           }}
                           disabled={disabled}
                         />
@@ -109,6 +106,8 @@ const ProductDetailForm = forwardRef(
                           className="input join-item input-bordered w-full pl-2"
                           placeholder="Cost"
                           onChange={(value) => {
+                            const profit = values.price - +value
+                            setFieldValue('profit', profit)
                             setFieldValue('cost', value)
                           }}
                           disabled={disabled}
@@ -120,39 +119,15 @@ const ProductDetailForm = forwardRef(
                   )}
                 </Field>
 
-                <Field name="profit">
-                  {({ field, meta }: FieldProps) => (
-                    <div className="form-control w-full">
-                      <label className="label">
-                        <span className="label-text text-xs">Profit</span>
-                      </label>
-                      <div className="join">
-                        <div className="indicator">
-                          <button className="btn disabled join-item px-2 text-gray-500">
-                            ₱
-                          </button>
-                        </div>
-                        <PriceInput
-                          {...field}
-                          className="input join-item input-bordered w-full pl-2"
-                          placeholder="Profit"
-                          value={field.value}
-                          onChange={(value) => {
-                            setFieldValue('profit', value)
-                            const isPricedTouched =
-                              getFieldMeta('price').touched
-                            if (!isPricedTouched) {
-                              setFieldValue('price', +value + values.cost)
-                            }
-                          }}
-                          disabled={disabled}
-                        />
-                      </div>
-
-                      <p className="form-control-error">{meta.error} &nbsp;</p>
-                    </div>
-                  )}
-                </Field>
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text text-xs">Profit</span>
+                  </label>
+                  <div className="flex h-[48px] flex-row items-center gap-2">
+                    <p>₱</p>
+                    <p>{values.profit}</p>
+                  </div>
+                </div>
               </div>
             </>
           )
