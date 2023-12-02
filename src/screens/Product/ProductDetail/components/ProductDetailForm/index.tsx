@@ -1,6 +1,6 @@
 import PriceInput from 'components/PriceInput'
 import { Formik, Field, FieldProps, FormikProps } from 'formik'
-import { Ref, forwardRef, useEffect } from 'react'
+import { Ref, forwardRef } from 'react'
 import { Product, ProductVariant } from 'types/product.types'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import AddProductDescriptionButton from '../AddProductDescriptionButton'
@@ -35,7 +35,7 @@ const ProductDetailForm = forwardRef(
         validateOnChange={false}
         innerRef={ref}
       >
-        {({ values, getFieldMeta }) => {
+        {({ values }) => {
           return (
             <>
               <Field name="name">
