@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ProductVariantAttribute } from 'types/product.types'
 import VariantAttributeItem from '../VariantAttributeItem'
+import { PlusIcon } from '@heroicons/react/24/solid'
 
 type VariantAttributeManagerProps = {
   onChange?: (variantAttribute: Array<ProductVariantAttribute>) => void
@@ -93,28 +94,40 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
   }, [variantAttributes])
 
   return (
-    <div className="flex flex-col gap-4">
-      {variantAttributes.map((variantAttribute, index) => (
-        <VariantAttributeItem
-          key={index}
-          onRemove={() => removeVariantAttribute(index)}
-          option={variantAttribute.option}
-          optionValues={variantAttribute.values}
-          onOptionChange={(option) =>
-            onVariantAttributeOptionChange(index, option || '')
-          }
-          onOptionValuesChange={(optionValues) =>
-            onVariantAttributeOptionValuesChange(index, optionValues)
-          }
-        />
-      ))}
-      <button
-        onClick={addVariantAttribute}
-        className="btn btn-ghost btn-outline btn-primary  text-center"
-      >
-        Edit Variant Info (e.g, Price, Qty, etc.)
-      </button>
-    </div>
+    <>
+      <div className="flex flex-row items-center justify-between ">
+        <h1 className="font-bold">Options</h1>
+        <button
+          onClick={addVariantAttribute}
+          className="btn btn-ghost btn-sm text-blue-400"
+        >
+          <PlusIcon className="w-5 " />
+          Add
+        </button>
+      </div>
+      <div className="flex flex-col gap-4">
+        {variantAttributes.map((variantAttribute, index) => (
+          <VariantAttributeItem
+            key={index}
+            onRemove={() => removeVariantAttribute(index)}
+            option={variantAttribute.option}
+            optionValues={variantAttribute.values}
+            onOptionChange={(option) =>
+              onVariantAttributeOptionChange(index, option || '')
+            }
+            onOptionValuesChange={(optionValues) =>
+              onVariantAttributeOptionValuesChange(index, optionValues)
+            }
+          />
+        ))}
+        <button
+          onClick={addVariantAttribute}
+          className="btn btn-ghost btn-outline btn-primary  text-center"
+        >
+          Edit Variant Info (e.g, Price, Qty, etc.)
+        </button>
+      </div>
+    </>
   )
 }
 

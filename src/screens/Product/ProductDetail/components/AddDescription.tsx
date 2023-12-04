@@ -26,7 +26,7 @@ const AddDescription = (props: AddDescriptionProps) => {
   }
 
   return (
-    <div className="h-[90vh]">
+    <div>
       <Toolbar
         items={[
           <ToolbarButton key={1} label="Cancel" onClick={goBack} />,

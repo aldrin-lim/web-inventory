@@ -42,7 +42,10 @@ const AddProductVariant = () => {
       type: ProductDetailActionType.UpdateVariantAttribute,
       payload: sanitizedVariantAttributes,
     })
-    goBack()
+    dispatch({
+      type: ProductDetailActionType.SetActiveModal,
+      payload: ProductDetailActionModal.VariantsInfo,
+    })
   }
 
   useEffect(() => {
@@ -58,7 +61,6 @@ const AddProductVariant = () => {
           <ToolbarButton key={3} label="Next" onClick={onDone} />,
         ]}
       />
-      <h1 className="font-bold">Options</h1>
       <VariantAttributeManager
         values={variantAttributes}
         onChange={handleVariantAttributeManagerChange}

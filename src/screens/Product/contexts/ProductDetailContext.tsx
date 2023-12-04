@@ -12,6 +12,7 @@ export enum ProductDetailActionModal {
   Detail = 'detail',
   Description = 'description',
   Variants = 'variants',
+  VariantsInfo = 'variantsInfo',
 }
 
 export enum ProductDetailActionType {

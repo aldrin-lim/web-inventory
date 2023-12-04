@@ -1,5 +1,7 @@
 import { AxiosResponse } from 'axios'
+import { ProductVariantSchema } from 'types/product.types'
 import { httpClient } from 'util/http'
+import { uniqueVariantCombinations } from 'util/products'
 import { z } from 'zod'
 
 export default async (param: AddProductSchema) => {
@@ -58,4 +60,11 @@ export const AddProductSchema = z.object({
     })
     .optional(),
   expiryDate: z.coerce.date().nullable().optional(),
+  variants: z
+    .array(ProductVariantSchema)
+    .optional()
+    .refine(uniqueVariantCombinations, {
+      message:
+        'Product variants must have unique combinations of options and values',
+    }),
 })

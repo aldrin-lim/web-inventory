@@ -35,6 +35,7 @@ import { subscreenAnimation } from 'constants/animation'
 import { z } from 'zod'
 import { ProductVariantDetailProvider } from '../contexts/ProductVariantDetailContext'
 import ProductVariantDetail from './components/ProductVariantDetail'
+import VariantOptionForm from './components/VariantOptionForm'
 
 export const ProductDetail = () => {
   const {
@@ -166,6 +167,17 @@ export const ProductDetail = () => {
         variant: productDetails.variants[index],
       })
     }
+  }
+
+  const onVariantInfoSave = (variants: Array<ProductVariant>) => {
+    dispatch({
+      type: ProductDetailActionType.UpdateProductDetail,
+      payload: {
+        field: 'variants',
+        value: variants,
+      },
+    })
+    closeSubscreens()
   }
 
   return (
@@ -338,6 +350,14 @@ export const ProductDetail = () => {
 
             {activeModal === ProductDetailActionModal.Variants && (
               <AddProductVariant />
+            )}
+
+            {activeModal === ProductDetailActionModal.VariantsInfo && (
+              <VariantOptionForm
+                onClose={closeSubscreens}
+                onSave={onVariantInfoSave}
+                variants={productDetails.variants || []}
+              />
             )}
           </motion.div>
         </AnimatePresence>
