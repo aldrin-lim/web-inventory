@@ -38,6 +38,32 @@ export function cartesianProduct(
   )
 }
 
+export function getVariantOptionsFromProduct(
+  product: Product,
+): Array<ProductVariantAttribute> {
+  const variantOptionsMap = new Map<string, Set<string>>()
+
+  product.variants?.forEach((variant) => {
+    variant.variantOptions.forEach(({ option, value }) => {
+      if (!variantOptionsMap.has(option)) {
+        variantOptionsMap.set(option, new Set())
+      }
+      variantOptionsMap.get(option)?.add(value)
+    })
+  })
+
+  const variantOptions: Array<ProductVariantAttribute> = []
+
+  variantOptionsMap.forEach((values, option) => {
+    variantOptions.push({
+      option,
+      values: Array.from(values),
+    })
+  })
+
+  return variantOptions
+}
+
 export function generateProductVariants(
   variantOptionsInput: Array<ProductVariantAttribute>,
   product: Product,
@@ -46,6 +72,30 @@ export function generateProductVariants(
   const variants: Product['variants'] = variantCombinations.map(
     (combination) => {
       const variantName = combination.join('/')
+
+      if (
+        variantOptionsInput.length ===
+        getVariantOptionsFromProduct(product).length
+      ) {
+        const newVariantOptions = combination.map((value, index) => ({
+          option: variantOptionsInput[index].option,
+          value: value,
+        }))
+
+        const existingVariant = product.variants?.find((variant) =>
+          variant.variantOptions.every((opt, idx) => {
+            return (
+              opt.value === newVariantOptions[idx].value &&
+              opt.option === newVariantOptions[idx].option
+            )
+          }),
+        )
+
+        if (existingVariant) {
+          return existingVariant
+        }
+      }
+
       return {
         name: `${product.name} (${variantName})`,
         cost: 0,

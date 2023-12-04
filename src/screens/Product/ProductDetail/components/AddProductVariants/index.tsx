@@ -38,20 +38,13 @@ const AddProductVariant = () => {
         return hasOption && hasOptionValues
       },
     )
-
-    if (
-      JSON.stringify(state.variantAttributes) !==
-      JSON.stringify(variantAttributes)
-    ) {
-      dispatch({
-        type: ProductDetailActionType.UpdateVariantAttribute,
-        payload: sanitizedVariantAttributes,
-      })
-    }
-
+    dispatch({
+      type: ProductDetailActionType.UpdateVariantAttribute,
+      payload: sanitizedVariantAttributes,
+    })
     dispatch({
       type: ProductDetailActionType.SetActiveModal,
-      payload: ProductDetailActionModal.VariantsInfo,
+      payload: ProductDetailActionModal.None,
     })
   }
 
