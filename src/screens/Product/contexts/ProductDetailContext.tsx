@@ -94,6 +94,17 @@ function reducer(state: State, action: Action): State {
         },
       }
     case ProductDetailActionType.UpdateVariantAttribute: {
+      if (action.payload.length === 0) {
+        return {
+          ...state,
+          variantAttributes: [],
+          productDetails: {
+            ...state.productDetails,
+            variants: undefined,
+          },
+        }
+      }
+
       return {
         ...state,
         variantAttributes: action.payload,

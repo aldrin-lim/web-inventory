@@ -38,13 +38,17 @@ const AddProductVariant = () => {
         return hasOption && hasOptionValues
       },
     )
+
     dispatch({
       type: ProductDetailActionType.UpdateVariantAttribute,
       payload: sanitizedVariantAttributes,
     })
     dispatch({
       type: ProductDetailActionType.SetActiveModal,
-      payload: ProductDetailActionModal.VariantsInfo,
+      payload:
+        variantAttributes.length > 0
+          ? ProductDetailActionModal.VariantsInfo
+          : ProductDetailActionModal.None,
     })
   }
 
@@ -64,6 +68,7 @@ const AddProductVariant = () => {
       <VariantAttributeManager
         values={variantAttributes}
         onChange={handleVariantAttributeManagerChange}
+        onEdit={onDone}
       />
     </div>
   )

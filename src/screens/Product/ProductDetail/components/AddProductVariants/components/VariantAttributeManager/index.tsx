@@ -6,6 +6,7 @@ import { PlusIcon } from '@heroicons/react/24/solid'
 type VariantAttributeManagerProps = {
   onChange?: (variantAttribute: Array<ProductVariantAttribute>) => void
   values: Array<ProductVariantAttribute>
+  onEdit: () => void
 }
 
 const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
@@ -82,17 +83,6 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
     setVariantAttributes(values)
   }, [values])
 
-  useEffect(() => {
-    if (variantAttributes.length === 0) {
-      setVariantAttributes([
-        {
-          option: '',
-          values: [],
-        },
-      ])
-    }
-  }, [variantAttributes])
-
   return (
     <>
       <div className="flex flex-row items-center justify-between ">
@@ -120,12 +110,22 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
             }
           />
         ))}
-        <button
-          onClick={addVariantAttribute}
-          className="btn btn-ghost btn-outline btn-primary  text-center"
-        >
-          Edit Variant Info (e.g, Price, Qty, etc.)
-        </button>
+        {variantAttributes.length > 0 && (
+          <button
+            onClick={props.onEdit}
+            className="btn btn-ghost btn-outline btn-primary  text-center"
+          >
+            Edit Variant Info (e.g, Price, Qty, etc.)
+          </button>
+        )}
+        {variantAttributes.length < 1 && (
+          <button
+            onClick={addVariantAttribute}
+            className="btn btn-ghost btn-outline btn-primary  text-center"
+          >
+            Add Variant
+          </button>
+        )}
       </div>
     </>
   )
