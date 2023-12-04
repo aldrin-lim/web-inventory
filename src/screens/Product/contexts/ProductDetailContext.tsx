@@ -5,7 +5,10 @@ import {
   ProductVariant,
   ProductVariantAttribute,
 } from 'types/product.types'
-import { generateProductVariants } from 'util/products'
+import {
+  generateProductVariants,
+  getVariantOptionsFromProduct,
+} from 'util/products'
 
 export enum ProductDetailActionModal {
   None = '',
@@ -177,6 +180,10 @@ export const ProductDetailProvider: React.FC<ProductDetailProviderProps> = ({
         ...initialState.productDetails,
         ...productDetails,
       },
+      variantAttributes:
+        productDetails.variants && Array.isArray(productDetails.variants)
+          ? getVariantOptionsFromProduct(productDetails as Product)
+          : [],
     }
   }
 
@@ -186,6 +193,20 @@ export const ProductDetailProvider: React.FC<ProductDetailProviderProps> = ({
       mode: 'edit',
     }
   }
+
+  // if (
+  //   defaultState.productDetails &&
+  //   defaultState.productDetails.variants &&
+  //   Array.isArray(defaultState.productDetails.variants) &&
+  //   defaultState.productDetails.variants.length > 0
+  // ) {
+  //   defaultState = {
+  //     ...defaultState,
+  //     variantAttributes: getVariantOptionsFromProduct(
+  //       defaultState.productDetails.variants,
+  //     ),
+  //   }
+  // }
 
   const [state, dispatch] = useReducer(reducer, defaultState)
 

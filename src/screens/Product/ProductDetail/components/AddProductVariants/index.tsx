@@ -44,7 +44,7 @@ const AddProductVariant = () => {
     })
     dispatch({
       type: ProductDetailActionType.SetActiveModal,
-      payload: ProductDetailActionModal.None,
+      payload: ProductDetailActionModal.VariantsInfo,
     })
   }
 
