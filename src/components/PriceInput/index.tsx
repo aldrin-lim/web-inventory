@@ -11,12 +11,18 @@ type PriceInputProps = React.DetailedHTMLProps<
 const PriceInput: React.FC<PriceInputProps> = (props) => {
   const { value = 0, onChange, ...rest } = props
   // Initialize the state with the value if it's not zero, else with an empty string
-  const [inputValue, setInputValue] = useState<string>(value.toString())
+  const [inputValue, setInputValue] = useState<string>(
+    value.toFixed(2).toString(),
+  )
 
   useEffect(() => {
     // Update the inputValue only when the value prop changes externally
     setInputValue(value.toString())
   }, [value])
+
+  useEffect(() => {
+    setInputValue(value.toFixed(2).toString())
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newValue = e.target.value.replace(/[^0-9.]/g, '') // Remove non-numeric characters
