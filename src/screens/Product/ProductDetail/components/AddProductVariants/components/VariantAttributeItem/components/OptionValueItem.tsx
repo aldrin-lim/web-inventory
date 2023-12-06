@@ -50,7 +50,11 @@ const OptionValueItem = (props: OptionValueItemProps) => {
             onChange={(e) => setEditedValue(e.target.value)}
           />
         ) : (
-          <input className="input w-full !text-base" disabled value={value} />
+          <input
+            className="input w-full !text-base disabled:bg-gray-50 disabled:text-black"
+            disabled
+            value={value}
+          />
         )}
 
         {isEditing ? (
