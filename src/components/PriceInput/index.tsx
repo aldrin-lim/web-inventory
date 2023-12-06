@@ -12,7 +12,7 @@ const PriceInput: React.FC<PriceInputProps> = (props) => {
   const { value = 0, onChange, ...rest } = props
   // Initialize the state with the value if it's not zero, else with an empty string
   const [inputValue, setInputValue] = useState<string>(
-    value.toFixed(2).toString(),
+    value === 0 ? '' : value.toFixed(2).toString(),
   )
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const PriceInput: React.FC<PriceInputProps> = (props) => {
   }, [value])
 
   useEffect(() => {
-    setInputValue(value.toFixed(2).toString())
+    setInputValue(value === 0 ? '0' : value.toFixed(2).toString())
   }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
