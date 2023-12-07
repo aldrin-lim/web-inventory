@@ -63,6 +63,21 @@ const AddProductVariant = () => {
     })
   }
 
+  const saveEmptyVariants = () => {
+    dispatch({
+      type: ProductDetailActionType.UpdateProductDetail,
+      payload: {
+        field: 'variants',
+        value: undefined,
+      },
+    })
+    dispatch({
+      type: ProductDetailActionType.UpdateVariantAttribute,
+      payload: [],
+    })
+    closeSubscreens()
+  }
+
   useEffect(() => {
     if (state.variantAttributes.length === 0) {
       setVariantAttributes([
@@ -93,6 +108,24 @@ const AddProductVariant = () => {
     closeSubscreens()
   }
 
+  const renderPrimarAction = () => {
+    if (
+      variantAttributes.length > 0 &&
+      sanitizedVariantAttributes.length === 0
+    ) {
+      return <ToolbarButton key={3} label="Save" onClick={closeSubscreens} />
+    }
+
+    if (
+      variantAttributes.length === 0 &&
+      sanitizedVariantAttributes.length === 0
+    ) {
+      return <ToolbarButton key={3} label="Save" onClick={saveEmptyVariants} />
+    }
+
+    return <ToolbarButton key={3} label="Next" onClick={onDone} />
+  }
+
   return (
     <>
       <AnimatePresence>
@@ -113,12 +146,7 @@ const AddProductVariant = () => {
                 items={[
                   <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
                   <ToolbarTitle key={2} title="Variants" />,
-                  <ToolbarButton
-                    key={3}
-                    label="Next"
-                    disabled={sanitizedVariantAttributes.length === 0}
-                    onClick={onDone}
-                  />,
+                  renderPrimarAction(),
                 ]}
               />
               <VariantAttributeManager

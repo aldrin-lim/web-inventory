@@ -83,6 +83,14 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
     setVariantAttributes(values)
   }, [values])
 
+  const sanitizedVariantAttributes = variantAttributes.filter(
+    (variantAttribute) => {
+      const hasOption = variantAttribute.option.length > 0
+      const hasOptionValues = variantAttribute.values.length > 0
+      return hasOption && hasOptionValues
+    },
+  )
+
   return (
     <>
       <div className="flex flex-row items-center justify-between ">
@@ -110,20 +118,12 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
             }
           />
         ))}
-        {variantAttributes.length > 0 && (
+        {sanitizedVariantAttributes.length > 0 && (
           <button
             onClick={props.onEdit}
             className="btn btn-ghost btn-outline btn-primary  text-center"
           >
-            Edit Variant Info (e.g, Price, Qty, etc.)
-          </button>
-        )}
-        {variantAttributes.length < 1 && (
-          <button
-            onClick={addVariantAttribute}
-            className="btn btn-ghost btn-outline btn-primary  text-center"
-          >
-            Add Variant
+            Set Variant Info (e.g, Price, Qty, etc.)
           </button>
         )}
       </div>
