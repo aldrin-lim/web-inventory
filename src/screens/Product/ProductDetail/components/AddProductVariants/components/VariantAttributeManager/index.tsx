@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { ProductVariantAttribute } from 'types/product.types'
 import VariantAttributeItem from '../VariantAttributeItem'
 import { PlusIcon } from '@heroicons/react/24/solid'
+import { useProductDetail } from 'screens/Product/contexts/ProductDetailContext'
+import ConfirmDialog from 'components/ConfirmDialog'
 
 type VariantAttributeManagerProps = {
   onChange?: (variantAttribute: Array<ProductVariantAttribute>) => void
@@ -13,6 +15,16 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
   const { onChange, values = [] } = props
   const [variantAttributes, setVariantAttributes] =
     useState<Array<ProductVariantAttribute>>(values)
+  const { state } = useProductDetail()
+  const [openDialog, setOpenDialog] = useState(false)
+
+  const onAddVariantClick = () => {
+    if (state.variantAttributes.length > 0) {
+      setOpenDialog(true)
+    } else {
+      addVariantAttribute()
+    }
+  }
 
   const addVariantAttribute = () => {
     setVariantAttributes((prev) => {
@@ -73,6 +85,7 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
         if (onChange) {
           onChange(newValues)
         }
+
         return newValues
       })
     },
@@ -93,10 +106,17 @@ const VariantAttributeManager = (props: VariantAttributeManagerProps) => {
 
   return (
     <>
+      <ConfirmDialog
+        title="Add Variant"
+        message="Saving a new variant will reset the existing variants to their default settings."
+        onConfirm={addVariantAttribute}
+        onCancel={() => setOpenDialog(false)}
+        isOpen={openDialog}
+      />
       <div className="flex flex-row items-center justify-between ">
         <h1 className="font-bold">Options</h1>
         <button
-          onClick={addVariantAttribute}
+          onClick={onAddVariantClick}
           className="btn btn-ghost btn-sm text-blue-400"
         >
           <PlusIcon className="w-5 " />

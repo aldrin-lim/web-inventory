@@ -2,6 +2,7 @@ import { PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
 import { useEffect, useRef, useState } from 'react'
 import OptionValueItem from './components/OptionValueItem'
 import { ProductVariantAttribute } from 'types/product.types'
+import ConfirmDialog from 'components/ConfirmDialog'
 
 type VariantAttributeItemProps = {
   onRemove: () => void
@@ -21,6 +22,7 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
   >([])
   const [newOptionValue, setNewOptionValue] = useState('')
   const [optionValueError, setOptionValueError] = useState('')
+  const [openDialog, setOpenDialog] = useState(false)
 
   const newOptionValueRef = useRef<HTMLInputElement>(null)
 
@@ -72,52 +74,68 @@ const VariantAttributeItem = (props: VariantAttributeItemProps) => {
     setOptionValues(props.optionValues)
   }, [props.option, props.optionValues])
 
+  const onDeleteClick = () => {
+    setOpenDialog(true)
+  }
+
   return (
-    <div className="flex flex-col gap-4 rounded-sm bg-gray-200 p-4 pr-2 ">
-      <div className="form-control ">
-        <div className="flex w-full flex-row items-center justify-center gap-1">
-          <input
-            className="input w-full !text-base"
-            placeholder="Option (Ex. Size, Color, etc.)"
-            value={option}
-            onChange={(e) => {
-              onOptionChange(e.target.value)
-            }}
-          />
-          <button onClick={onRemove} className="btn btn-ghost btn-sm">
-            <TrashIcon className="w-6 text-red-400" />
-          </button>
+    <>
+      <ConfirmDialog
+        title="Delete variant"
+        message="Deleting variant will reset the existing variants to their default settings."
+        onConfirm={() => {
+          onRemove()
+          setOpenDialog(false)
+        }}
+        onCancel={() => setOpenDialog(false)}
+        isOpen={openDialog}
+      />
+      <div className="flex flex-col gap-4 rounded-sm bg-gray-200 p-4 pr-2 ">
+        <div className="form-control ">
+          <div className="flex w-full flex-row items-center justify-center gap-1">
+            <input
+              className="input w-full !text-base"
+              placeholder="Option (Ex. Size, Color, etc.)"
+              value={option}
+              onChange={(e) => {
+                onOptionChange(e.target.value)
+              }}
+            />
+            <button onClick={onDeleteClick} className="btn btn-ghost btn-sm">
+              <TrashIcon className="w-6 text-red-400" />
+            </button>
+          </div>
+        </div>
+        <div className="form-control ">
+          <div className="flex w-full flex-row items-center justify-center gap-1">
+            <input
+              className="input w-full !text-base"
+              placeholder="Option Value (Ex. sm, red, etc.)"
+              value={newOptionValue}
+              ref={newOptionValueRef}
+              onChange={(e) => {
+                setNewOptionValue(e.target.value)
+              }}
+            />
+            <button onClick={addOptionValue} className="btn btn-ghost btn-sm">
+              <PlusIcon className="w-6" />
+            </button>
+          </div>
+          <p className="mt-1 text-xs text-red-400">{optionValueError}</p>
+        </div>
+        <div className="flex flex-col-reverse gap-4">
+          {optionValues.map((value, index) => (
+            <OptionValueItem
+              key={value}
+              value={value}
+              allValues={optionValues}
+              onUpdate={(newValue) => updateOptionValue(index, newValue)}
+              onRemove={() => removeOptionValue(index)}
+            />
+          ))}
         </div>
       </div>
-      <div className="form-control ">
-        <div className="flex w-full flex-row items-center justify-center gap-1">
-          <input
-            className="input w-full !text-base"
-            placeholder="Option Value (Ex. sm, red, etc.)"
-            value={newOptionValue}
-            ref={newOptionValueRef}
-            onChange={(e) => {
-              setNewOptionValue(e.target.value)
-            }}
-          />
-          <button onClick={addOptionValue} className="btn btn-ghost btn-sm">
-            <PlusIcon className="w-6" />
-          </button>
-        </div>
-        <p className="mt-1 text-xs text-red-400">{optionValueError}</p>
-      </div>
-      <div className="flex flex-col-reverse gap-4">
-        {optionValues.map((value, index) => (
-          <OptionValueItem
-            key={value}
-            value={value}
-            allValues={optionValues}
-            onUpdate={(newValue) => updateOptionValue(index, newValue)}
-            onRemove={() => removeOptionValue(index)}
-          />
-        ))}
-      </div>
-    </div>
+    </>
   )
 }
 

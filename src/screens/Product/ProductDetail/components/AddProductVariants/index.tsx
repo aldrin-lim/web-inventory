@@ -105,6 +105,10 @@ const AddProductVariant = () => {
         value: variants,
       },
     })
+    dispatch({
+      type: ProductDetailActionType.UpdateVariantAttribute,
+      payload: sanitizedVariantAttributes,
+    })
     closeSubscreens()
   }
 
@@ -141,7 +145,7 @@ const AddProductVariant = () => {
           key={activeModal}
         >
           {activeModal === ProductDetailActionModal.Variants && (
-            <div className="flex flex-col gap-4 pb-4">
+            <div className="relative flex flex-col gap-4 pb-4">
               <Toolbar
                 items={[
                   <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
