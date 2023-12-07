@@ -16,7 +16,7 @@ import Settings from 'screens/Settings'
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/inventory" element={<ProtectedRoute element={<Layout />} />}>
+    <Route path="/" element={<ProtectedRoute element={<Layout />} />}>
       <Route index element={<ProductMenu />} />
       <Route path={AppPath.Home} element={<Home />} />
       <Route path={AppPath.Orders} element={<Orders />} />
