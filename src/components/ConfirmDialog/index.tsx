@@ -26,7 +26,7 @@ const ConfirmDialog = ({
         <h3 className="text-lg font-bold">{title}</h3>
         <p className="py-4">{message}</p>
         <p className="py-4">
-          Click <strong>Confirm</strong> if you continue.
+          Click <strong>Confirm</strong> to continue.
         </p>
         <div className="flex w-full flex-col gap-3">
           <button
