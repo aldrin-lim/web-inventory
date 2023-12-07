@@ -11,11 +11,8 @@ import { FormikProps } from 'formik'
 import { useCallback, useRef } from 'react'
 import { Product, ProductVariant } from 'types/product.types'
 import { z } from 'zod'
-import { subscreenAnimation } from 'constants/animation'
-import { AnimatePresence, motion } from 'framer-motion'
 import AddDescription from '../AddDescription'
 import AddProductDetail, { AddProductDetailSchema } from '../AddProductDetails'
-import AddProductVariant from '../AddProductVariants'
 import ProductDetailForm from '../ProductDetailForm'
 import {
   ProductVariantDetailActionModal,
@@ -129,7 +126,7 @@ export const ProductVariantDetail = (props: ProductVariantDetailProps) => {
         ]}
       />
       <div
-        className={`inline-flex flex-grow flex-col gap-4 ${
+        className={`inline-flex h-screen flex-grow flex-col gap-4 bg-base-100 ${
           activeModal !== ProductVariantDetailActionModal.None // Prevent overlapping content to appear on other subscreen
             ? 'h-0 overflow-hidden'
             : 'h-full'
@@ -160,20 +157,8 @@ export const ProductVariantDetail = (props: ProductVariantDetailProps) => {
         </button>
       </div>
 
-      <AnimatePresence>
-        <motion.div
-          className={[
-            'section absolute left-0 right-0 z-10 h-full bg-base-100 pt-0',
-            activeModal === ProductVariantDetailActionModal.None
-              ? 'hidden'
-              : '',
-          ].join(' ')}
-          variants={subscreenAnimation}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          key={activeModal}
-        >
+      {activeModal && (
+        <div className="section absolute left-0 right-0 top-0 z-10 min-h-screen bg-base-100 pt-0">
           {activeModal === ProductVariantDetailActionModal.Description && (
             <AddDescription
               onBack={closeSubscreens}
@@ -195,12 +180,8 @@ export const ProductVariantDetail = (props: ProductVariantDetailProps) => {
               onClose={closeSubscreens}
             />
           )}
-
-          {activeModal === ProductVariantDetailActionModal.Variants && (
-            <AddProductVariant />
-          )}
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      )}
     </>
   )
 }

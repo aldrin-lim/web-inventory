@@ -202,7 +202,7 @@ export const ProductDetail = () => {
               />
             </ProductVariantDetailProvider>
           )}
-          {!currentVariant && <div>asdads</div>}
+          {!currentVariant && <div />}
         </motion.div>
       </AnimatePresence>
       <div
