@@ -32,6 +32,8 @@ const VariantOptionItem = ({
               placeholder="Price"
               value={variant.price}
               onChange={(newValue) => {
+                const profit = +newValue - variant.cost
+                onVariantChange && onVariantChange('profit', profit)
                 onVariantChange && onVariantChange('price', newValue)
               }}
             />
@@ -46,6 +48,8 @@ const VariantOptionItem = ({
               placeholder="Cost"
               value={variant.cost}
               onChange={(newValue) => {
+                const profit = variant.price - +newValue
+                onVariantChange && onVariantChange('profit', profit)
                 onVariantChange && onVariantChange('cost', newValue)
               }}
             />

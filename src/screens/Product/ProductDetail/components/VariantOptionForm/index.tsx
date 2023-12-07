@@ -1,7 +1,7 @@
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Product, ProductVariant } from 'types/product.types'
 import VariantOptionItem from './components/VariantOptionItem'
 import { ProductVariantDetailProvider } from 'screens/Product/contexts/ProductVariantDetailContext'
@@ -31,11 +31,12 @@ const VariantOptionForm = (props: VariantOptionFormProps) => {
   ) => {
     setVariants((prev) => {
       if (prev[index]) {
-        prev[index] = {
+        const newValue = [...prev]
+        newValue[index] = {
           ...prev[index],
           [key]: value,
         }
-        return prev
+        return newValue
       }
       return prev
     })
@@ -44,6 +45,10 @@ const VariantOptionForm = (props: VariantOptionFormProps) => {
   const onSave = () => {
     props.onSave(variants)
   }
+
+  useEffect(() => {
+    console.log(JSON.stringify(variants, null, 2))
+  }, [variants])
 
   return (
     <>
