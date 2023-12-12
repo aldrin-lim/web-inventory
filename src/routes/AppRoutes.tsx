@@ -13,6 +13,7 @@ import ProductList from 'screens/Product/ProductList'
 import Error from 'screens/Error'
 import ViewProduct from 'screens/Product/ViewProduct'
 import Settings from 'screens/Settings'
+import RecipeOverview from 'screens/Product/RecipeOverview'
 
 const AppRoutes = () => (
   <Routes>
@@ -27,7 +28,7 @@ const AppRoutes = () => (
       />
       <Route
         path={AppPath.RecipeOverview}
-        element={<ProtectedRoute element={<ProductOverview />} />}
+        element={<ProtectedRoute element={<RecipeOverview />} />}
       />
       <Route
         path={AppPath.Settings}

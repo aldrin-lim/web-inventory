@@ -5,7 +5,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 
-const RecipeOverview = () => {
+const GetStarted = () => {
   const navigate = useNavigate()
   return (
     <div className="section flex w-full flex-col items-center justify-center gap-4 text-center">
@@ -17,7 +17,7 @@ const RecipeOverview = () => {
               icon={<ChevronLeftIcon className="w-6" />}
               onClick={() => navigate(AppPath.Products)}
             />,
-            <ToolbarTitle key={1} title="Products" />,
+            <ToolbarTitle key={1} title="Recipe" />,
             <div key={2} />,
           ]}
         />
@@ -25,7 +25,7 @@ const RecipeOverview = () => {
       <h1 className="text-xl font-bold">Welcome to Qrafter, Juan</h1>
       <TagIcon className="w-24 text-purple-500" />
       <h2 className="text-lg font-bold">Craft your first recipe</h2>
-      <p>Craft your awesome recipe. It&apos;s super easy! 😊</p>
+      <p>Craft your awesome recipe. It&apos;s super easy! </p>
       <button className="btn btn-success text-white" color="green">
         Start Crafting
       </button>
@@ -39,4 +39,4 @@ const RecipeOverview = () => {
   )
 }
 
-export default RecipeOverview
+export default GetStarted

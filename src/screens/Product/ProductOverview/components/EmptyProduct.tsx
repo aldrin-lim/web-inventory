@@ -8,7 +8,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 const EmptyProducts = () => {
   const navigate = useNavigate()
   const onAddProduct = () => {
-    localStorage.setItem('onboarded', 'true')
+    localStorage.setItem('productAdded', 'true')
     navigate(AppPath.AddProduct)
   }
   return (

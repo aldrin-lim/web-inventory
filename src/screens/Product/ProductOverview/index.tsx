@@ -72,7 +72,7 @@ const ProductOverview = () => {
     !isLoading &&
     products.length === 0 &&
     outOfSotckProducts.length === 0 &&
-    localStorage.getItem('onboarded') === null
+    localStorage.getItem('productAdded') === null
   ) {
     return <GetStarted />
   }
@@ -81,7 +81,7 @@ const ProductOverview = () => {
     !isLoading &&
     products.length === 0 &&
     outOfSotckProducts.length === 0 &&
-    localStorage.getItem('onboarded') === 'true'
+    localStorage.getItem('productAdded') === 'true'
   ) {
     return <EmptyProducts />
   }
