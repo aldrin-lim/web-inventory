@@ -5,26 +5,14 @@ import useAllProducts from 'hooks/useAllProducts'
 import useUser from 'hooks/useUser'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
-import EmptyProducts from 'screens/Product/ProductMenu/components/EmptyProduct'
-import ProductCard from 'screens/Product/ProductMenu/components/ProductCard'
+import EmptyProducts from 'screens/Product/ProductOverview/components/EmptyProduct'
+import ProductCard from 'screens/Product/ProductOverview/components/ProductCard'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
-import GetStarted from 'screens/Product/ProductMenu/components/GetStarted'
+import GetStarted from 'screens/Product/ProductOverview/components/GetStarted'
 import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
 
 import './styles.css'
-
-const getSkeletonNumber = (size: ScreenSize) => {
-  switch (size) {
-    case 'xs':
-    case 'sm':
-      return 4
-    case 'md':
-    case 'lg':
-      return 8
-    default:
-      return 10
-  }
-}
+import Skeleton from './components/Skeleton'
 
 const getProductCardNumber = (size: ScreenSize) => {
   switch (size) {
@@ -37,45 +25,6 @@ const getProductCardNumber = (size: ScreenSize) => {
     default:
       return 10
   }
-}
-
-const Skeleton = () => {
-  const navigate = useNavigate()
-  const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
-
-  const skeletonNumber = getSkeletonNumber(currentBreakpoint)
-  return (
-    <div className="ProductOverview section">
-      <Toolbar
-        items={[
-          <ToolbarButton
-            key={'back'}
-            icon={<ChevronLeftIcon className="w-6" />}
-            onClick={() => navigate(AppPath.Products)}
-          />,
-
-          <ToolbarTitle key="title" title="Products" />,
-          <div key={null} />,
-        ]}
-      />
-      <div className="flex w-full flex-row items-center justify-between">
-        <div className="skeleton h-[24px] w-[69px] rounded-md" />
-        <div className="skeleton h-[24px] w-[53px] rounded-md" />
-      </div>
-      <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
-        <div className={`relative h-full w-full`}>
-          <div className={`flex flex-row flex-wrap gap-3`}>
-            {Array.from({ length: skeletonNumber }).map((_, index) => (
-              <div
-                key={index}
-                className="skeleton h-[213px] w-[155px] rounded-md"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
 }
 
 const ProductOverview = () => {

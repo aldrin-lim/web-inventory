@@ -33,10 +33,6 @@ const AppRoutes = () => (
         path={AppPath.Settings}
         element={<ProtectedRoute element={<Settings />} />}
       />
-      <Route
-        path={AppPath.ProductOverview}
-        element={<ProtectedRoute element={<ProductOverview />} />}
-      />
     </Route>
     {/* <Route path={AppPath.Products} element={<Products />} /> */}
     <Route
