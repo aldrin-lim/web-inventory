@@ -171,6 +171,12 @@ export const ProductDetail = () => {
 
   return (
     <>
+      <ConfirmDeleteDialog
+        ref={modalDialogRef}
+        productName={productDetails.name}
+        onDelete={onDeleteProduct}
+      />
+
       <AnimatePresence>
         <motion.div
           className={[
@@ -210,12 +216,6 @@ export const ProductDetail = () => {
           currentVariant ? 'hidden' : 'flex'
         }`}
       >
-        <ConfirmDeleteDialog
-          ref={modalDialogRef}
-          productName={productDetails.name}
-          onDelete={onDeleteProduct}
-        />
-
         <Toolbar
           items={[
             <ToolbarButton
