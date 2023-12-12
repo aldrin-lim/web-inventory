@@ -86,7 +86,7 @@ function reducer(state: State, action: Action): State {
         action.payload,
       ]
       const cost = updatedMaterials.reduce(
-        (prev, curr) => prev + curr.product.cost,
+        (prev, curr) => prev + curr.product.cost * curr.quantity,
         0,
       )
 
@@ -110,7 +110,7 @@ function reducer(state: State, action: Action): State {
         return material
       })
       const cost = state.recipeDetails.materials.reduce(
-        (prev, curr) => prev + curr.product.cost,
+        (prev, curr) => prev + curr.product.cost * curr.quantity,
         0,
       )
       return {
@@ -128,7 +128,7 @@ function reducer(state: State, action: Action): State {
         (material) => material.product.id !== action.payload.productId,
       )
       const cost = updatedMaterials.reduce(
-        (prev, curr) => prev + curr.product.cost,
+        (prev, curr) => prev + curr.product.cost * curr.quantity,
         0,
       )
       return {
