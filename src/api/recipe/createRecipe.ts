@@ -23,11 +23,19 @@ type CreateRecipeResponseSchema = z.infer<typeof CreateRecipeResponseSchema>
 
 export const CreateRecipeRequestSchema = z.object({
   name: z.string({
-    required_error: 'recipe name is required',
-    invalid_type_error: 'recipe name is must be a string',
+    required_error: 'Recipe name is required',
+    invalid_type_error: 'Recipe name is must be a string',
   }),
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
+  unit: z.string({
+    required_error: 'Unit is required',
+    invalid_type_error: 'Unit is must but a string',
+  }),
+  cost: z.number({
+    required_error: 'Cost is required',
+    invalid_type_error: 'Cost is must be a number',
+  }),
   materials: z
     .array(
       z.object({

@@ -59,7 +59,7 @@ const ProductImages = (props: ProductImagesProps) => {
   }, [props.images])
 
   return (
-    <div className="flex w-full max-w-xs flex-row gap-5 ">
+    <div className="flex w-full flex-row gap-5 ">
       <div>
         <input
           ref={inputRef}

@@ -5,6 +5,7 @@ export enum AppPath {
   Settings = '/settings',
   Root = '/',
   AddProduct = '/products/add-product',
+  AddRecipe = '/products/add-recipe',
   ProductOverview = '/products/overview',
   ProductList = '/products/list',
   ViewProduct = '/products/:id',

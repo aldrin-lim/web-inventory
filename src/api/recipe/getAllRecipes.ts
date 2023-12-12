@@ -31,6 +31,7 @@ const GetAllRecipeResponseSchema = z.array(
     description: z.string().optional(),
     images: z.array(z.string()).optional(),
     unit: z.string(),
+    cost: z.number(),
     materials: z
       .array(
         z.object({
