@@ -62,7 +62,7 @@ const AddProductDetail = (props: AddProductDetailProps) => {
               <Field name="allowBackOrder">
                 {({ field }: FieldProps) => (
                   <div className="form-control flex w-full flex-row justify-between ">
-                    <span>Allow purchase when out of stock</span>
+                    <span>Allow selling when out of stock</span>
                     <input
                       {...field}
                       checked={values.allowBackOrder}
