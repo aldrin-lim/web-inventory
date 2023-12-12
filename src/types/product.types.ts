@@ -67,7 +67,7 @@ export const ProductVariantSchema = z.object({
   variantOptions: z.array(VariantOptionsSchema),
 })
 
-const ProductSchema = z.object({
+export const ProductSchema = z.object({
   id: z.string(),
   name: z.string({
     required_error: 'Product name is required',
