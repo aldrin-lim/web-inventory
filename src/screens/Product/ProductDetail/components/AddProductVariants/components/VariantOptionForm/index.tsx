@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Product, ProductVariant } from 'types/product.types'
 import VariantOptionItem from './components/VariantOptionItem'
 import { ProductVariantDetailProvider } from 'screens/Product/contexts/ProductVariantDetailContext'
-import ProductVariantDetail from '../ProductVariantDetail'
+import ProductVariantDetail from '../../../ProductVariantDetail'
 
 type VariantOptionFormProps = {
   variants: NonNullable<Product['variants']>

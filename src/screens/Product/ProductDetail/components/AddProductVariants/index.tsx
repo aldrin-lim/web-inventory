@@ -11,7 +11,7 @@ import { ProductVariant, ProductVariantAttribute } from 'types/product.types'
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { subscreenAnimation } from 'constants/animation'
-import VariantOptionForm from '../VariantOptionForm'
+import VariantOptionForm from './components/VariantOptionForm'
 import { generateProductVariants } from 'util/products'
 
 const AddProductVariant = () => {

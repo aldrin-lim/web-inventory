@@ -4,9 +4,9 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { useRef } from 'react'
 import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
-import MeasurementSelect from './MeasurementSelect'
 import { AddProductSchema } from 'api/product/createProduct'
 import { z } from 'zod'
+import MeasurementSelect from '../MeasurementSelect'
 
 export const AddProductDetailSchema = AddProductSchema.pick({
   category: true,

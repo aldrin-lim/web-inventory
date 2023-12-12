@@ -10,9 +10,9 @@ import ProductCard from 'screens/Product/ProductOverview/components/ProductCard'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 import GetStarted from 'screens/Product/ProductOverview/components/GetStarted'
 import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
+import Skeleton from './components/Skeleton'
 
 import './styles.css'
-import Skeleton from './components/Skeleton'
 
 const getProductCardNumber = (size: ScreenSize) => {
   switch (size) {
