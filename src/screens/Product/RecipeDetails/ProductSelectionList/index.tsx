@@ -10,12 +10,16 @@ import { useEffect, useMemo, useState } from 'react'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import { AppPath } from 'routes/AppRoutes.types'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import MiddleTruncateText from 'components/MiddleTruncatedText'
 import { z } from 'zod'
 import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
 import * as API from 'api/product'
+import {
+  RecipeDetailActionType,
+  useRecipeDetail,
+} from 'screens/Product/contexts/RecipeDetailContext'
+import { Product } from 'types/product.types'
 
 const getTruncateSize = (size: ScreenSize) => {
   switch (size) {
@@ -49,15 +53,21 @@ function useDebounce(value: string, delay: number) {
 }
 
 type ProductSelectionListProps = {
-  onClose?: () => void
+  onClose: () => void
 }
 
 const ProductSelectionList = (props: ProductSelectionListProps) => {
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
   const [page] = useState(0)
 
   const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
+
+  const {
+    dispatch,
+    state: {
+      recipeDetails: { materials },
+    },
+  } = useRecipeDetail()
 
   const [enableFilter, setEnableFilter] = useState(false)
   const [outOfStockFilter, setOutOfStockFilter] = useState<
@@ -117,8 +127,22 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
     }
   }, [searchParams])
 
-  const onClick = (id: string) => {
-    navigate(`${AppPath.Products}/${id}`)
+  const onClick = (product: Product) => {
+    const isMaterialExisting = materials.find(
+      (m) => m.product.id === product.id,
+    )
+    if (!isMaterialExisting) {
+      dispatch({
+        type: RecipeDetailActionType.AddMaterial,
+        payload: {
+          quantity: 0,
+          product,
+          unit: product.measurement || 'pieces',
+        },
+      })
+    }
+
+    props.onClose()
   }
 
   return (
@@ -193,7 +217,7 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
               return (
                 <div style={style} className="" key={product.name}>
                   <button
-                    onClick={() => onClick(product.id as string)}
+                    onClick={() => onClick(product as Product)}
                     className="rounded-row btn btn-ghost no-animation flex w-full flex-row justify-start rounded-none border-b-gray-200 bg-gray-100"
                   >
                     <figure className="h-[24px] w-[24px]">

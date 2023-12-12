@@ -8,7 +8,7 @@ export default async (
 ): Promise<CreateRecipeResponseSchema> => {
   const result = await httpClient
     .post<CreateRecipeRequestSchema, AxiosResponse<CreateRecipeResponseSchema>>(
-      `/recipe`,
+      `/recipes`,
       param,
     )
     .then((res) => res.data)
@@ -40,16 +40,21 @@ export const CreateRecipeRequestSchema = z.object({
     .array(
       z.object({
         quantity: z.number({
-          required_error: 'materials quantity is required',
+          required_error: 'Quantity is required',
         }),
+        unit: z
+          .string({
+            required_error: 'Measurement is required',
+          })
+          .min(1),
         product: z.object({
           id: z.string({
-            required_error: 'material product is required',
+            required_error: 'Product is required',
           }),
         }),
       }),
     )
-    .min(1, 'Material array must have at least 1 item'),
+    .min(1, 'Materials must have at least 1 item'),
 })
 
 export const CreateRecipeResponseSchema = z.object({

@@ -1,9 +1,12 @@
 import RecipeDetails from '../RecipeDetails'
+import { RecipeDetailContextProvider } from '../contexts/RecipeDetailContext'
 
 const AddRecipe = () => {
   return (
     <>
-      <RecipeDetails />
+      <RecipeDetailContextProvider>
+        <RecipeDetails />
+      </RecipeDetailContextProvider>
     </>
   )
 }

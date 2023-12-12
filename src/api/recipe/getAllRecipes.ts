@@ -39,6 +39,6 @@ const GetAllRecipeResponseSchema = z.array(
           product: ProductSchema,
         }),
       )
-      .min(1, 'Material array must have at least 1 item'),
+      .min(1, 'Materials must have at least 1 item'),
   }),
 )

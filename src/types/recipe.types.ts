@@ -3,9 +3,14 @@ import { ProductSchema } from './product.types'
 
 const MaterialSchema = z.object({
   quantity: z.number({
-    required_error: 'materials quantity is required',
+    required_error: 'Quantity is required',
   }),
   product: ProductSchema,
+  unit: z
+    .string({
+      required_error: 'Measurement is required',
+    })
+    .min(1),
 })
 export type Material = z.infer<typeof MaterialSchema>
 
@@ -21,7 +26,7 @@ const RecipeSchema = z.object({
   cost: z.number(),
   materials: z
     .array(MaterialSchema)
-    .min(1, 'Material array must have at least 1 item'),
+    .min(1, 'Materials must have at least 1 item'),
 })
 
 export type Recipe = z.infer<typeof RecipeSchema>

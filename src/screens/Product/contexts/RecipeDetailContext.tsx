@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useReducer } from 'react'
+import { ReactNode, createContext, useContext, useReducer } from 'react'
 import { Product } from 'types/product.types'
 import { Material, Recipe } from 'types/recipe.types'
 
@@ -44,6 +44,7 @@ type Action =
       payload: {
         quantity: number
         product: Product
+        unit: string
       }
     }
   | {
@@ -109,7 +110,7 @@ function reducer(state: State, action: Action): State {
         }
         return material
       })
-      const cost = state.recipeDetails.materials.reduce(
+      const cost = updatedMaterials.reduce(
         (prev, curr) => prev + curr.product.cost * curr.quantity,
         0,
       )
@@ -153,14 +154,16 @@ const RecipeDetailContext = createContext<{
   dispatch: () => {},
 })
 
-type RecipeDetailProviderProps = State & {
+export const useRecipeDetail = () => useContext(RecipeDetailContext)
+
+type RecipeDetailContextProviderProps = {
+  recipeDetails?: Recipe
   children: ReactNode
 }
 
-export const ProductDetailProvider: React.FC<RecipeDetailProviderProps> = ({
-  children,
-  recipeDetails,
-}) => {
+export const RecipeDetailContextProvider: React.FC<
+  RecipeDetailContextProviderProps
+> = ({ children, recipeDetails }) => {
   let defaultState = initialState
 
   if (recipeDetails) {

@@ -121,7 +121,7 @@ const AddProductDetail = (props: AddProductDetailProps) => {
                               <MeasurementSelect
                                 value={field.value}
                                 onChange={(value) => {
-                                  setFieldValue('measurement', value?.value)
+                                  setFieldValue('measurement', value?.label)
                                 }}
                               />
                               <p className="form-control-error">
