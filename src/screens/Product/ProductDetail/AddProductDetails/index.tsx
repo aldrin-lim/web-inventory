@@ -6,7 +6,7 @@ import { Field, FieldProps, Formik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { AddProductSchema } from 'api/product/createProduct'
 import { z } from 'zod'
-import MeasurementSelect from '../MeasurementSelect'
+import MeasurementSelect from '../components/MeasurementSelect'
 
 export const AddProductDetailSchema = AddProductSchema.pick({
   category: true,

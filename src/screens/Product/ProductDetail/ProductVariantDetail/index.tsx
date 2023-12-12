@@ -13,7 +13,7 @@ import { Product, ProductVariant } from 'types/product.types'
 import { z } from 'zod'
 import AddDescription from '../AddDescription'
 import AddProductDetail, { AddProductDetailSchema } from '../AddProductDetails'
-import ProductDetailForm from '../ProductDetailForm'
+import ProductDetailForm from '../components/ProductDetailForm'
 import {
   ProductVariantDetailActionModal,
   ProductVariantDetailActionType,

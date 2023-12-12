@@ -26,15 +26,13 @@ import PrimaryAction from './components/ProductDetailPrimaryAction'
 import ProductDetailForm from './components/ProductDetailForm'
 import ProductVariantList from './components/ProductVariantList'
 import { AnimatePresence, motion } from 'framer-motion'
-import AddDescription from './components/AddDescription'
-import AddProductDetail, {
-  AddProductDetailSchema,
-} from './components/AddProductDetails'
-import AddProductVariant from './components/AddProductVariants'
+import AddDescription from './AddDescription'
+import AddProductDetail, { AddProductDetailSchema } from './AddProductDetails'
+import AddProductVariant from './AddProductVariants'
 import { subscreenAnimation } from 'constants/animation'
 import { z } from 'zod'
 import { ProductVariantDetailProvider } from '../contexts/ProductVariantDetailContext'
-import ProductVariantDetail from './components/ProductVariantDetail'
+import ProductVariantDetail from './ProductVariantDetail'
 
 export const ProductDetail = () => {
   const {
