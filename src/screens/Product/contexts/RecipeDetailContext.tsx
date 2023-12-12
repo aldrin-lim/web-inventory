@@ -2,8 +2,13 @@ import { ReactNode, createContext, useReducer } from 'react'
 import { Product } from 'types/product.types'
 import { Material, Recipe } from 'types/recipe.types'
 
+export enum RecipeDetailActiveScreen {
+  None = '',
+  ProductSelection = 'productSelection',
+}
 interface State {
   recipeDetails: Recipe
+  activeScreen: RecipeDetailActiveScreen
 }
 
 const initialState: State = {
@@ -15,9 +20,11 @@ const initialState: State = {
     images: [],
     materials: [],
   },
+  activeScreen: RecipeDetailActiveScreen.None,
 }
 
 export enum RecipeDetailActionType {
+  UpdateActiveScreen = 'UPDATE_ACTIVE_SCREEN',
   AddMaterial = 'ADD_MATERIAL',
   RemoveMaterial = 'REMOVE_MATERIAL',
   UpdateMaterial = 'UPDATE_MATERIAL',
@@ -25,6 +32,12 @@ export enum RecipeDetailActionType {
 }
 
 type Action =
+  | {
+      type: RecipeDetailActionType.UpdateActiveScreen
+      payload: {
+        screen: RecipeDetailActiveScreen
+      }
+    }
   | {
       type: RecipeDetailActionType.AddMaterial
       payload: {
@@ -53,6 +66,11 @@ type Action =
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
+    case RecipeDetailActionType.UpdateActiveScreen:
+      return {
+        ...state,
+        activeScreen: action.payload.screen,
+      }
     case RecipeDetailActionType.UpdateRecipeDetail:
       return {
         ...state,
