@@ -17,7 +17,8 @@ const RecipeSchema = z.object({
   }),
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
-  units: z.string(),
+  unit: z.string(),
+  cost: z.number(),
   materials: z
     .array(MaterialSchema)
     .min(1, 'Material array must have at least 1 item'),

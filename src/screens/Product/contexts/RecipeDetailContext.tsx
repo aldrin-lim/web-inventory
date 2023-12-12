@@ -15,7 +15,8 @@ const initialState: State = {
   recipeDetails: {
     id: '',
     name: '',
-    units: 'pieces',
+    cost: 0,
+    unit: 'pieces',
     description: '',
     images: [],
     materials: [],
@@ -79,14 +80,25 @@ function reducer(state: State, action: Action): State {
           [action.payload.field]: action.payload.value,
         },
       }
-    case RecipeDetailActionType.AddMaterial:
+    case RecipeDetailActionType.AddMaterial: {
+      const updatedMaterials = [
+        ...state.recipeDetails.materials,
+        action.payload,
+      ]
+      const cost = updatedMaterials.reduce(
+        (prev, curr) => prev + curr.product.cost,
+        0,
+      )
+
       return {
         ...state,
         recipeDetails: {
           ...state.recipeDetails,
-          materials: [...state.recipeDetails.materials, action.payload],
+          cost,
+          materials: updatedMaterials,
         },
       }
+    }
     case RecipeDetailActionType.UpdateMaterial: {
       const updatedMaterials = state.recipeDetails.materials.map((material) => {
         if (material.product.id === action.payload.productId) {
@@ -97,24 +109,34 @@ function reducer(state: State, action: Action): State {
         }
         return material
       })
+      const cost = state.recipeDetails.materials.reduce(
+        (prev, curr) => prev + curr.product.cost,
+        0,
+      )
       return {
         ...state,
         recipeDetails: {
           ...state.recipeDetails,
+          cost,
           materials: updatedMaterials,
         },
       }
     }
 
     case RecipeDetailActionType.RemoveMaterial: {
-      const updateMaterials = state.recipeDetails.materials.filter(
+      const updatedMaterials = state.recipeDetails.materials.filter(
         (material) => material.product.id !== action.payload.productId,
+      )
+      const cost = updatedMaterials.reduce(
+        (prev, curr) => prev + curr.product.cost,
+        0,
       )
       return {
         ...state,
         recipeDetails: {
           ...state.recipeDetails,
-          materials: updateMaterials,
+          cost,
+          materials: updatedMaterials,
         },
       }
     }
