@@ -26,17 +26,32 @@ export type GetAllRecipeResponseSchema = z.infer<
 
 const GetAllRecipeResponseSchema = z.array(
   z.object({
-    id: z.string(),
-    name: z.string(),
+    id: z.string({
+      required_error: 'Id is required',
+    }),
+    name: z.string({
+      required_error: 'Name is required',
+    }),
     description: z.string().optional(),
     images: z.array(z.string()).optional().nullable(),
-    measurement: z.string(),
-    cost: z.number(),
+    measurement: z.string({
+      required_error: 'Measurement is required',
+    }),
+    cost: z.number({
+      required_error: 'Cost is required',
+    }),
+    quantity: z.number({
+      required_error: 'Quantity is required',
+    }),
     materials: z
       .array(
         z.object({
-          measurement: z.string(),
-          quantity: z.number(),
+          measurement: z.string({
+            required_error: 'Measurement is required',
+          }),
+          quantity: z.number({
+            required_error: 'Quantity is required',
+          }),
           product: ProductSchema,
         }),
       )

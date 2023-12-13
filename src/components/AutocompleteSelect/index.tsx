@@ -71,6 +71,7 @@ const AutocompleteSelect = (props: AutoCompleteProps) => {
       options={transformedOptions}
       styles={customStyles as object}
       className={props.className}
+      getOptionValue={(option) => option.label}
       classNamePrefix="select"
       placeholder="Select "
       isSearchable

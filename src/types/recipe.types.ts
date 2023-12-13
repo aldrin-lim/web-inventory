@@ -20,6 +20,9 @@ const RecipeSchema = z.object({
     required_error: 'recipe name is required',
     invalid_type_error: 'recipe name is must be a string',
   }),
+  quantity: z.number({
+    required_error: 'Quantity is required',
+  }),
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
   measurement: z.string(),

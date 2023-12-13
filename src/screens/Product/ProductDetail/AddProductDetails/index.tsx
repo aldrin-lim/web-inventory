@@ -7,6 +7,7 @@ import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { AddProductSchema } from 'api/product/createProduct'
 import { z } from 'zod'
 import MeasurementSelect from '../components/MeasurementSelect'
+import { measurementOptions } from 'util/measurement'
 
 export const AddProductDetailSchema = AddProductSchema.pick({
   category: true,
@@ -119,9 +120,15 @@ const AddProductDetail = (props: AddProductDetailProps) => {
                           {({ field, meta }: FieldProps) => (
                             <div className="w-full">
                               <MeasurementSelect
-                                value={field.value}
+                                value={{
+                                  label:
+                                    measurementOptions.find(
+                                      (option) => option.value === field.value,
+                                    )?.label || '',
+                                  value: field.value,
+                                }}
                                 onChange={(value) => {
-                                  setFieldValue('measurement', value?.label)
+                                  setFieldValue('measurement', value?.value)
                                 }}
                               />
                               <p className="form-control-error">

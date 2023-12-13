@@ -2,14 +2,9 @@ import AutocompleteSelect, {
   AutoCompleteProps,
   OptionsValue,
 } from 'components/AutocompleteSelect'
-import { measurementUnits } from 'util/measurement'
 
 import './styles.css'
-
-const measurementOptions = measurementUnits.map((item) => ({
-  label: item.description,
-  value: item.abbreviation,
-}))
+import { measurementOptions } from 'util/measurement'
 
 type MeasurementSelectProps = {
   onChange?: AutoCompleteProps['onChange']

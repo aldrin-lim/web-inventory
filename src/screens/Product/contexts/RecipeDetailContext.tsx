@@ -20,6 +20,7 @@ const initialState: State = {
     description: '',
     images: [],
     materials: [],
+    quantity: 0,
   },
   activeScreen: RecipeDetailActiveScreen.None,
 }

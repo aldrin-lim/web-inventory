@@ -102,7 +102,7 @@ export const ProductSchema = z.object({
       required_error: 'Measurement is required',
       invalid_type_error: 'Measurement must be a string',
     })
-    .optional(),
+    .default('pieces'),
   category: z
     .string({
       invalid_type_error: 'Category must be a string',

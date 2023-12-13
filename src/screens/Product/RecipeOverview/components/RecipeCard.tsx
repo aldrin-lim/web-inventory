@@ -7,13 +7,14 @@ import {
   useRecipeDetail,
 } from 'screens/Product/contexts/RecipeDetailContext'
 import { Material } from 'types/recipe.types'
+import { measurementOptions } from 'util/measurement'
 
 type RecipeMaterialCardProps = {
   material: Material
   error?: FormikErrors<Material>
 }
 
-const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
+const RecipeCard = (props: RecipeMaterialCardProps) => {
   const { material } = props
   const {
     product: { id, name },
@@ -87,7 +88,10 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
                 updateMaterial('measurement', option?.value)
               }}
               value={{
-                label: material.measurement,
+                label:
+                  measurementOptions.find(
+                    (option) => option.value === material.measurement,
+                  )?.label || '',
                 value: material.measurement,
               }}
             />
@@ -107,4 +111,4 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
   )
 }
 
-export default RecipeMaterialCard
+export default RecipeCard

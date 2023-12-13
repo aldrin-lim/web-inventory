@@ -36,6 +36,9 @@ export const CreateRecipeRequestSchema = z.object({
     required_error: 'Cost is required',
     invalid_type_error: 'Cost is must be a number',
   }),
+  quantity: z.number({
+    required_error: 'Quantity is required',
+  }),
   materials: z
     .array(
       z.object({
