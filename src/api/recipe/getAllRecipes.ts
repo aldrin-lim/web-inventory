@@ -29,12 +29,13 @@ const GetAllRecipeResponseSchema = z.array(
     id: z.string(),
     name: z.string(),
     description: z.string().optional(),
-    images: z.array(z.string()).optional(),
-    unit: z.string(),
+    images: z.array(z.string()).optional().nullable(),
+    measurement: z.string(),
     cost: z.number(),
     materials: z
       .array(
         z.object({
+          measurement: z.string(),
           quantity: z.number(),
           product: ProductSchema,
         }),

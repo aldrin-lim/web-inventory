@@ -16,7 +16,7 @@ const initialState: State = {
     id: '',
     name: '',
     cost: 0,
-    unit: 'pieces',
+    measurement: 'pieces',
     description: '',
     images: [],
     materials: [],
@@ -44,7 +44,7 @@ type Action =
       payload: {
         quantity: number
         product: Product
-        unit: string
+        measurement: string
       }
     }
   | {

@@ -137,7 +137,7 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
         payload: {
           quantity: 0,
           product,
-          unit: product.measurement || 'pieces',
+          measurement: product.measurement || 'pieces',
         },
       })
     }

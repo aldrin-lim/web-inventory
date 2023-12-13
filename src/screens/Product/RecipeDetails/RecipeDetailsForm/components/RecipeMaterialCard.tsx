@@ -84,15 +84,15 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
           <div>
             <MeasurementSelect
               onChange={(option) => {
-                updateMaterial('unit', option?.label)
+                updateMaterial('measurement', option?.label)
               }}
               value={{
-                label: material.unit,
-                value: material.unit,
+                label: material.measurement,
+                value: material.measurement,
               }}
             />
             <p className="form-control-error">
-              {props.error && props.error?.unit}&nbsp;
+              {props.error && props.error?.measurement}&nbsp;
             </p>
           </div>
         </div>

@@ -6,7 +6,7 @@ const MaterialSchema = z.object({
     required_error: 'Quantity is required',
   }),
   product: ProductSchema,
-  unit: z
+  measurement: z
     .string({
       required_error: 'Measurement is required',
     })
@@ -22,7 +22,7 @@ const RecipeSchema = z.object({
   }),
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
-  unit: z.string(),
+  measurement: z.string(),
   cost: z.number(),
   materials: z
     .array(MaterialSchema)

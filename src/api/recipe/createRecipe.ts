@@ -28,9 +28,9 @@ export const CreateRecipeRequestSchema = z.object({
   }),
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
-  unit: z.string({
-    required_error: 'Unit is required',
-    invalid_type_error: 'Unit is must but a string',
+  measurement: z.string({
+    required_error: 'Measurement is required',
+    invalid_type_error: 'Measurement is must but a string',
   }),
   cost: z.number({
     required_error: 'Cost is required',
@@ -42,7 +42,7 @@ export const CreateRecipeRequestSchema = z.object({
         quantity: z.number({
           required_error: 'Quantity is required',
         }),
-        unit: z
+        measurement: z
           .string({
             required_error: 'Measurement is required',
           })

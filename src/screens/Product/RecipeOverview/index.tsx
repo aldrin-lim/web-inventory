@@ -1,11 +1,14 @@
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
+import useAllRecipes from 'hooks/useAllRecipes'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 
 const RecipeOverview = () => {
   const navigate = useNavigate()
+  const { recipes } = useAllRecipes()
+
   return (
     <>
       <div className="section absolute min-h-screen bg-base-100">
@@ -20,6 +23,7 @@ const RecipeOverview = () => {
             />,
           ]}
         />
+        <pre>{JSON.stringify(recipes, null, 2)}</pre>
       </div>
     </>
   )
