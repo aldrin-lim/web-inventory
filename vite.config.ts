@@ -9,11 +9,7 @@ export const hash = Math.floor(Math.random() * 90000) + 1000000
 export default mergeConfig(viteConfig, {
   plugins: [react(), tsconfigPaths()],
   test: {},
-  define: {
-    // By default, Vite doesn't include shims for NodeJS/
-    // necessary for segment analytics lib to work
-    global: {},
-  },
+  define: process.env.NODE_ENV === 'development' ? { global: 'window' } : {},
   build: {
     rollupOptions: {
       output: {
