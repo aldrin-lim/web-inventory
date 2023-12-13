@@ -154,14 +154,6 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
           <div key={1} />,
         ]}
       />
-      <div className="form-control flex w-full flex-row justify-between ">
-        <span>Restock Alert</span>
-        <input
-          type="checkbox"
-          className="toggle toggle-primary"
-          disabled={isLoading}
-        />
-      </div>
       <div>
         <div className="join w-full border py-0">
           <button
