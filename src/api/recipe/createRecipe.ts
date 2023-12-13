@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { ProductSchema } from 'types/product.types'
+import { MaterialSchema } from 'types/recipe.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 
@@ -41,20 +41,11 @@ export const CreateRecipeRequestSchema = z.object({
   }),
   materials: z
     .array(
-      z.object({
-        quantity: z.number({
-          required_error: 'Quantity is required',
-        }),
-        measurement: z
-          .string({
-            required_error: 'Measurement is required',
-          })
-          .min(1),
-        product: z.object({
-          id: z.string({
-            required_error: 'Product is required',
-          }),
-        }),
+      MaterialSchema.pick({
+        cost: true,
+        measurement: true,
+        product: true,
+        quantity: true,
       }),
     )
     .min(1, 'Materials must have at least 1 item'),
@@ -66,9 +57,11 @@ export const CreateRecipeResponseSchema = z.object({
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
   materials: z.array(
-    z.object({
-      quantity: z.number(),
-      product: ProductSchema,
+    MaterialSchema.pick({
+      cost: true,
+      measurement: true,
+      product: true,
+      quantity: true,
     }),
   ),
 })

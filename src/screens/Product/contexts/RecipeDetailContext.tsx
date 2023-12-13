@@ -1,6 +1,8 @@
 import { ReactNode, createContext, useContext, useReducer } from 'react'
-import { Product } from 'types/product.types'
-import { Material, Recipe } from 'types/recipe.types'
+import { Material, MaterialSchema, Recipe } from 'types/recipe.types'
+import calculateMaterialCost from 'util/recipe/calculateMaterialCost'
+import calculateMaxRecipeQuantity from 'util/recipe/calculateMaxRecipeQuantity'
+import { z } from 'zod'
 
 export enum RecipeDetailActiveScreen {
   None = '',
@@ -33,6 +35,15 @@ export enum RecipeDetailActionType {
   UpdateRecipeDetail = 'UPDATE_RECIPE',
 }
 
+const AddMaterialPayloadSchema = MaterialSchema.pick({
+  cost: true,
+  measurement: true,
+  product: true,
+  quantity: true,
+})
+
+type AddMaterialPayload = z.infer<typeof AddMaterialPayloadSchema>
+
 type Action =
   | {
       type: RecipeDetailActionType.UpdateActiveScreen
@@ -42,11 +53,7 @@ type Action =
     }
   | {
       type: RecipeDetailActionType.AddMaterial
-      payload: {
-        quantity: number
-        product: Product
-        measurement: string
-      }
+      payload: AddMaterialPayload
     }
   | {
       type: RecipeDetailActionType.RemoveMaterial
@@ -83,44 +90,74 @@ function reducer(state: State, action: Action): State {
         },
       }
     case RecipeDetailActionType.AddMaterial: {
-      const updatedMaterials = [
-        ...state.recipeDetails.materials,
-        action.payload,
-      ]
-      const cost = updatedMaterials.reduce(
-        (prev, curr) => prev + curr.product.cost * curr.quantity,
+      const newMaterial = {
+        ...action.payload,
+        cost: calculateMaterialCost(
+          action.payload.quantity,
+          action.payload.measurement,
+          action.payload.product.cost,
+          action.payload.product.measurement,
+        ),
+      }
+
+      const updatedMaterials = [...state.recipeDetails.materials, newMaterial]
+
+      // Recalculate the total cost of the recipe
+      const totalCost = updatedMaterials.reduce(
+        (prev, curr) => prev + curr.cost,
         0,
       )
+
+      // Calculate the maximum recipe quantity
+      const maxQuantity = calculateMaxRecipeQuantity(updatedMaterials)
 
       return {
         ...state,
         recipeDetails: {
           ...state.recipeDetails,
-          cost,
+          cost: totalCost,
           materials: updatedMaterials,
+          quantity: maxQuantity,
         },
       }
     }
     case RecipeDetailActionType.UpdateMaterial: {
       const updatedMaterials = state.recipeDetails.materials.map((material) => {
         if (material.product.id === action.payload.productId) {
-          return {
+          const updatedMaterial = {
             ...material,
             [action.payload.field]: action.payload.value,
           }
+
+          // Recalculate cost for the updated material
+          updatedMaterial.cost = calculateMaterialCost(
+            updatedMaterial.quantity,
+            updatedMaterial.measurement,
+            updatedMaterial.product.cost,
+            updatedMaterial.product.measurement,
+          )
+
+          return updatedMaterial
         }
         return material
       })
-      const cost = updatedMaterials.reduce(
-        (prev, curr) => prev + curr.product.cost * curr.quantity,
+
+      // Recalculate the total cost of the recipe
+      const totalCost = updatedMaterials.reduce(
+        (prev, curr) => prev + curr.cost,
         0,
       )
+
+      // Calculate the maximum recipe quantity
+      const maxQuantity = calculateMaxRecipeQuantity(updatedMaterials)
+
       return {
         ...state,
         recipeDetails: {
           ...state.recipeDetails,
-          cost,
+          cost: totalCost,
           materials: updatedMaterials,
+          quantity: maxQuantity,
         },
       }
     }
@@ -129,19 +166,37 @@ function reducer(state: State, action: Action): State {
       const updatedMaterials = state.recipeDetails.materials.filter(
         (material) => material.product.id !== action.payload.productId,
       )
-      const cost = updatedMaterials.reduce(
-        (prev, curr) => prev + curr.product.cost * curr.quantity,
+
+      // Recalculate cost for each remaining material
+      updatedMaterials.forEach((material) => {
+        material.cost = calculateMaterialCost(
+          material.quantity,
+          material.measurement,
+          material.product.cost,
+          material.product.measurement,
+        )
+      })
+
+      // Recalculate the total cost of the recipe
+      const totalCost = updatedMaterials.reduce(
+        (prev, curr) => prev + curr.cost,
         0,
       )
+
+      // Calculate the maximum recipe quantity
+      const maxQuantity = calculateMaxRecipeQuantity(updatedMaterials)
+
       return {
         ...state,
         recipeDetails: {
           ...state.recipeDetails,
-          cost,
+          cost: totalCost,
           materials: updatedMaterials,
+          quantity: maxQuantity,
         },
       }
     }
+
     default:
       return state
   }

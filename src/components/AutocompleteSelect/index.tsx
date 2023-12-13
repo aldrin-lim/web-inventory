@@ -67,7 +67,11 @@ const AutocompleteSelect = (props: AutoCompleteProps) => {
       isClearable
       minMenuHeight={40}
       value={selectedOption}
-      onChange={handleChange}
+      onChange={(option, actionMeta) => {
+        if (actionMeta.action === 'select-option') {
+          handleChange(option)
+        }
+      }}
       options={transformedOptions}
       styles={customStyles as object}
       className={props.className}

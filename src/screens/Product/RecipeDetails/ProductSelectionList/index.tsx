@@ -138,6 +138,7 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
           quantity: 0,
           product,
           measurement: product.measurement || 'pieces',
+          cost: 0,
         },
       })
     }

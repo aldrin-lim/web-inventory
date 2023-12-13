@@ -1,11 +1,13 @@
 import { z } from 'zod'
 import { ProductSchema } from './product.types'
 
-const MaterialSchema = z.object({
+export const MaterialSchema = z.object({
+  id: z.string().optional(),
   quantity: z.number({
     required_error: 'Quantity is required',
   }),
   product: ProductSchema,
+  cost: z.number({ required_error: 'Cost is required' }),
   measurement: z
     .string({
       required_error: 'Measurement is required',
