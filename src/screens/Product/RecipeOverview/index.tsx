@@ -5,6 +5,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import useAllRecipes from 'hooks/useAllRecipes'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
+import RecipeCard from './components/RecipeCard'
 
 const RecipeOverview = () => {
   const navigate = useNavigate()
@@ -28,6 +29,12 @@ const RecipeOverview = () => {
             />,
           ]}
         />
+        <div className="container-card flex flex-row flex-wrap justify-center gap-4 pb-16">
+          {recipes &&
+            recipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+        </div>
       </div>
     </>
   )
