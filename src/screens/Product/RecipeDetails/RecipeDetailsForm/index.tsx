@@ -49,8 +49,9 @@ const RecipeDetailsForm = (props: RecipeDetailsFormProps) => {
       enableReinitialize
       validationSchema={toFormikValidationSchema(CreateRecipeRequestSchema)}
       validateOnChange={false}
+      validateOnBlur={false}
     >
-      {({ values, submitForm, errors }) => {
+      {({ values, submitForm, errors, setFieldValue }) => {
         return (
           <>
             <Toolbar
@@ -72,7 +73,17 @@ const RecipeDetailsForm = (props: RecipeDetailsFormProps) => {
                 />,
               ]}
             />
-            <ProductImages images={[]} onImagesChange={() => {}} />
+            <Field name="images">
+              {({ field }: FieldProps) => (
+                <ProductImages
+                  images={field.value}
+                  onImagesChange={(images) => {
+                    setFieldValue('images', images)
+                  }}
+                />
+              )}
+            </Field>
+
             <Field name="name">
               {({ field, meta }: FieldProps) => (
                 <div className="form-control w-full ">

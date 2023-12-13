@@ -16,7 +16,7 @@ export const MaterialSchema = z.object({
 })
 export type Material = z.infer<typeof MaterialSchema>
 
-const RecipeSchema = z.object({
+export const RecipeSchema = z.object({
   id: z.string(),
   name: z.string({
     required_error: 'recipe name is required',
