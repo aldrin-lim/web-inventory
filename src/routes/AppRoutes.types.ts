@@ -10,7 +10,7 @@ export enum AppPath {
   ProductList = '/products/list',
   ViewProduct = '/products/:id',
   Recipe = '/recipe',
-  RecipeOverview = '/product/recipe',
+  RecipeOverview = '/product/recipes/overview',
   Profile = '/profile',
   Store = '/store',
   Error = '/error',
