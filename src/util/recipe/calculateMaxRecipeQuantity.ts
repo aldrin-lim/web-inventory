@@ -1,7 +1,7 @@
-import convert from 'convert-units'
+import convert, { Unit } from 'convert-units'
 import { Material } from 'types/recipe.types'
 
-export const calculateMaxRecipeQuantity = (materials: Material[]): number => {
+const calculateMaxRecipeQuantity = (materials: Material[]): number => {
   let minQuantityPossible = Infinity
 
   for (const material of materials) {
@@ -9,11 +9,17 @@ export const calculateMaxRecipeQuantity = (materials: Material[]): number => {
       throw new Error(`Product not found for material: ${material.id}`)
     }
 
+    // Asserting the type of measurement units to 'Unit'
+    const fromUnit = material.product.measurement as Unit
+    const toUnit = material.measurement as Unit
+
     const productQuantityInMaterialUnit = convert(material.product.quantity)
-      .from(material.product.measurement)
-      .to(material.measurement)
+      .from(fromUnit)
+      .to(toUnit)
+
     const quantityPossibleWithProduct =
       productQuantityInMaterialUnit / material.quantity
+
     minQuantityPossible = Math.min(
       minQuantityPossible,
       quantityPossibleWithProduct,
@@ -22,3 +28,5 @@ export const calculateMaxRecipeQuantity = (materials: Material[]): number => {
 
   return Math.floor(minQuantityPossible)
 }
+
+export default calculateMaxRecipeQuantity
