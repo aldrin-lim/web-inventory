@@ -146,7 +146,7 @@ const ProductDetailForm = forwardRef(
                   </label>
                   <div className="flex h-[48px] flex-row items-center gap-2">
                     <p>₱</p>
-                    <p>{values.profit}</p>
+                    <p>{values.profit.toFixed(2)}</p>
                   </div>
                 </div>
               </div>

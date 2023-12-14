@@ -16,6 +16,8 @@ import { useNavigate } from 'react-router-dom'
 import PrimaryAction from 'screens/Product/ProductDetail/components/ProductDetailPrimaryAction'
 import useCreateRecipe from 'hooks/useCreateRecipe'
 import { useEffect } from 'react'
+import { toFormikValidationSchema } from 'zod-formik-adapter'
+import { CreateRecipeRequestSchema } from 'api/recipe/createRecipe'
 
 type RecipeDetailsFormProps = {
   onSubmit: () => void
@@ -38,6 +40,7 @@ const RecipeDetailsForm = (props: RecipeDetailsFormProps) => {
     onSubmit: async (values) => {
       await createRecipe(values)
     },
+    validationSchema: toFormikValidationSchema(CreateRecipeRequestSchema),
     enableReinitialize: true,
     validateOnBlur: false,
     validateOnChange: false,
@@ -56,8 +59,6 @@ const RecipeDetailsForm = (props: RecipeDetailsFormProps) => {
     })
   }
 
-  console.log('initialValue', values)
-
   useEffect(() => {
     dispatch({
       type: RecipeDetailActionType.UpdateRecipeDetail,
@@ -66,17 +67,21 @@ const RecipeDetailsForm = (props: RecipeDetailsFormProps) => {
         value: values.name,
       },
     })
-  }, [values.name])
+  }, [dispatch, values.name])
 
   useEffect(() => {
     dispatch({
       type: RecipeDetailActionType.UpdateRecipeDetail,
       payload: {
-        field: 'name',
+        field: 'images',
         value: values.images,
       },
     })
-  }, [values.images])
+  }, [dispatch, values.images])
+
+  useEffect(() => {
+    setFieldValue('cost', props.initialValue.cost)
+  }, [dispatch, props.initialValue.cost, setFieldValue])
 
   return (
     <>
