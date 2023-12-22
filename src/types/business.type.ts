@@ -1,19 +1,39 @@
 import { z } from 'zod'
 
-export const businessSchema = z.object({
-  id: z.string(),
-  description: z.string(),
-  name: z.string(),
+export const BusinessSchema = z.object({
+  id: z
+    .string({
+      required_error: 'ID is required',
+    })
+    .min(1),
+  name: z.string({
+    required_error: 'Name is required',
+  }),
+  description: z
+    .string({
+      required_error: 'Description is required',
+    })
+    .default(''),
+  address: z.string().optional(),
+  contactNumber: z.string().optional(),
+  openingTime: z
+    .string()
+    .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid 24-hour format time'),
+  closingTime: z
+    .string()
+    .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid 24-hour format time'),
 })
 
-export const updateUserBussinessSchema = z.object({
-  id: z.string(),
-  description: z.string().optional(),
-  name: z.string().optional(),
+export const UpdateUserBusinessSchema = BusinessSchema.pick({
+  id: true,
+  name: true,
+  description: true,
+  address: true,
+  contactNumber: true,
+  openingTime: true,
+  closingTime: true,
 })
 
-export type UpdateUserBussinessSchema = z.infer<
-  typeof updateUserBussinessSchema
->
+export type UpdateUserBusinessSchema = z.infer<typeof UpdateUserBusinessSchema>
 
-export type Business = z.infer<typeof businessSchema>
+export type Business = z.infer<typeof BusinessSchema>
