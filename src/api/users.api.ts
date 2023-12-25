@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { Business, UpdateUserBussinessSchema } from 'types/business.type'
+import { Business, UpdateUserBusinessSchema } from 'types/business.type'
 import { User } from 'types/user.type'
 import { httpClient } from 'util/http'
 
@@ -22,7 +22,7 @@ export const updateUser = async (param: UpdateUserRequestParam) => {
   return result
 }
 
-export const updateUserBussiness = async (param: UpdateUserBussinessSchema) => {
+export const updateUserBussiness = async (param: UpdateUserBusinessSchema) => {
   const {
     id,
     description,
