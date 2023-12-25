@@ -13,5 +13,6 @@ export enum AppPath {
   RecipeOverview = '/product/recipes/overview',
   Profile = '/profile',
   Store = '/store',
+  Staff = '/staff',
   Error = '/error',
 }

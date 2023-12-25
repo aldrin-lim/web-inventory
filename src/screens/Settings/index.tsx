@@ -4,6 +4,7 @@ import {
   BuildingStorefrontIcon,
   ChevronRightIcon,
   ArrowLeftOnRectangleIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
@@ -40,6 +41,16 @@ const Settings = () => {
           >
             <BuildingStorefrontIcon className="h-6 w-6" />
             Store
+            <ChevronRightIcon className="ml-auto h-6 w-6 " />
+          </button>
+        </li>
+        <li className="flex-grow">
+          <button
+            className="btn btn-ghost w-full justify-start px-1"
+            onClick={() => navigate(AppPath.Staff)}
+          >
+            <UserGroupIcon className="h-6 w-6" />
+            Staff
             <ChevronRightIcon className="ml-auto h-6 w-6 " />
           </button>
         </li>

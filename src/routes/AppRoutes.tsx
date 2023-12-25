@@ -15,6 +15,7 @@ import ViewProduct from 'screens/Product/ViewProduct'
 import Settings from 'screens/Settings'
 import RecipeOverview from 'screens/Product/RecipeOverview'
 import AddRecipe from 'screens/Product/AddRecipe'
+import Staff from 'screens/Staff'
 
 const AppRoutes = () => (
   <Routes>
@@ -44,6 +45,10 @@ const AppRoutes = () => (
     <Route
       path={AppPath.Store}
       element={<ProtectedRoute element={<Store />} />}
+    />
+    <Route
+      path={AppPath.Staff}
+      element={<ProtectedRoute element={<Staff />} />}
     />
     <Route
       path={AppPath.AddProduct}
