@@ -14,6 +14,9 @@ export default async (param: AddProductSchema) => {
 type AddProductSchema = z.infer<typeof AddProductSchema>
 
 export const AddProductSchema = ProductSchema.pick({
+  name: true,
+  description: true,
+  cost: true,
   profit: true,
   price: true,
   quantity: true,
