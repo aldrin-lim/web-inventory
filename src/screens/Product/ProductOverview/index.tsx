@@ -47,7 +47,7 @@ const ProductOverview = () => {
   })
 
   const {
-    products: outOfSotckProducts,
+    products: outOfStockProducts,
     isLoading: isoutOfSotckProductsLoading,
     error: outOfStouckProductError,
   } = useAllProducts(bussinessId, {
@@ -71,7 +71,7 @@ const ProductOverview = () => {
   if (
     !isLoading &&
     products.length === 0 &&
-    outOfSotckProducts.length === 0 &&
+    outOfStockProducts.length === 0 &&
     localStorage.getItem('productAdded') === null
   ) {
     return <GetStarted />
@@ -80,13 +80,16 @@ const ProductOverview = () => {
   if (
     !isLoading &&
     products.length === 0 &&
-    outOfSotckProducts.length === 0 &&
+    outOfStockProducts.length === 0 &&
     localStorage.getItem('productAdded') === 'true'
   ) {
     return <EmptyProducts />
   }
 
-  const showOutOfStock = outOfSotckProducts.length > 0
+  const hasOutOfStocks = true
+
+  const verticalScrollStyle = 'flex-wrap justify-center'
+  const horizontalScrollSyle = 'overflow-x-auto'
 
   if (error) {
     return (
@@ -139,90 +142,62 @@ const ProductOverview = () => {
           />,
         ]}
       />
-      {products.length > 0 && (
-        <>
-          <div className="flex w-full flex-row items-center justify-between">
-            <h2 className="font-bold">Available</h2>
-            <button
-              className="btn btn-link h-0 min-h-[20px] px-0 text-cyan-400 no-underline disabled:bg-transparent disabled:text-gray-400"
-              onClick={() => navigate(AppPath.ProductList)}
-              disabled={isLoading}
-            >
-              View all
-            </button>
-          </div>
-          <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
+      <div className="flex flex-col gap-4">
+        {/* IN STOCKS */}
+        {products.length > 0 && (
+          <div className="flex flex-col gap-4">
+            <div className="flex w-full flex-row items-center justify-between">
+              <h2 className="font-bold">Available</h2>
+              <button className="btn btn-link h-0 min-h-[20px] px-0 text-cyan-400 no-underline disabled:bg-transparent disabled:text-gray-400">
+                View all
+              </button>
+            </div>
             <div
-              className={`relative w-full ${
-                showOutOfStock ? 'h-[230px]' : 'h-full'
+              className={`flex w-full flex-row gap-x-2 gap-y-4 ${
+                hasOutOfStocks ? horizontalScrollSyle : verticalScrollStyle
               }`}
             >
-              <div
-                className={`flex flex-row gap-3 ${
-                  !showOutOfStock && 'flex-wrap '
-                }`}
-              >
-                {isLoading && (
-                  <>
-                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
-                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
-                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
-                  </>
-                )}
-                {!isLoading &&
-                  products.map((product) => (
-                    <ProductCard
-                      id={product.id as string}
-                      image={product?.images?.[0] || ''}
-                      name={product.name}
-                      key={product.name}
-                      quantity={product.quantity}
-                    />
-                  ))}
-              </div>
+              {products.map((product) => (
+                <ProductCard
+                  id={product.id as string}
+                  image={product?.images?.[0] || ''}
+                  name={product.name}
+                  key={product.name}
+                  quantity={product.quantity}
+                />
+              ))}
             </div>
           </div>
-        </>
-      )}
+        )}
 
-      {showOutOfStock && (
-        <>
-          <div className="flex w-full flex-row items-center justify-between">
-            <h2 className="font-bold">Out of Stock</h2>
-            <button
-              className="btn btn-link h-0 min-h-[20px] px-0 text-cyan-400 no-underline disabled:bg-transparent disabled:text-gray-400"
-              onClick={() => navigate(AppPath.ProductList + '?outOfStock=true')}
-              disabled={isLoading}
+        {/* OUT OF STOCKS */}
+        {outOfStockProducts.length > 0 && (
+          <div className="flex flex-col gap-4">
+            <div className="flex w-full flex-row items-center justify-between">
+              <h2 className="font-bold">Out of Stocks</h2>
+              <button className="btn btn-link h-0 min-h-[20px] px-0 text-cyan-400 no-underline disabled:bg-transparent disabled:text-gray-400">
+                View all
+              </button>
+            </div>
+            <div
+              className={`flex w-full flex-row gap-x-2 gap-y-4 ${
+                hasOutOfStocks ? horizontalScrollSyle : verticalScrollStyle
+              }`}
             >
-              View all
-            </button>
-          </div>
-          <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
-            <div className="relative h-[230px] w-full">
-              <div className="absolute flex flex-row gap-3 ">
-                {isoutOfSotckProductsLoading && (
-                  <>
-                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
-                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
-                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
-                    <div className="skeleton h-[213px] w-[155px] rounded-md" />
-                  </>
-                )}
-                {!isoutOfSotckProductsLoading &&
-                  outOfSotckProducts.map((product) => (
-                    <ProductCard
-                      id={product.id as string}
-                      image={product?.images?.[0] || ''}
-                      name={product.name}
-                      key={product.name}
-                      quantity={product.quantity}
-                    />
-                  ))}
-              </div>
+              {outOfStockProducts.map((product) => (
+                <ProductCard
+                  outOfStock
+                  id={product.id as string}
+                  image={product?.images?.[0] || ''}
+                  name={product.name}
+                  key={product.name}
+                  quantity={product.quantity}
+                />
+              ))}
             </div>
           </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   )
 }

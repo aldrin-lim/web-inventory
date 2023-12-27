@@ -9,10 +9,11 @@ type ProductCardProps = {
   status?: string
   quantity: number
   image?: string
+  outOfStock?: boolean
 }
 
 const ProductCard = (props: ProductCardProps) => {
-  const { name, status, quantity, image, id } = props
+  const { name, status, quantity, image, id, outOfStock = false } = props
   const navigate = useNavigate()
 
   const onClick = (id: string) => {
@@ -21,7 +22,7 @@ const ProductCard = (props: ProductCardProps) => {
 
   return (
     <div
-      className="card card-compact w-[155px] cursor-pointer border border-gray-300 bg-base-100"
+      className="ProductCard card card-compact w-[155px] cursor-pointer border border-gray-300 bg-base-100"
       onClick={() => onClick(id)}
     >
       <figure className="h-[155px] w-[155px] bg-gray-300">
@@ -35,7 +36,11 @@ const ProductCard = (props: ProductCardProps) => {
 
         <div className="flex flex-row gap-1  text-xs">
           <span>{status || 'Active'}</span> •{' '}
-          <span className="overflow-hidden truncate text-ellipsis">
+          <span
+            className={`overflow-hidden truncate text-ellipsis ${
+              outOfStock ? 'text-red-400' : ''
+            }`}
+          >
             {quantity} available
           </span>
         </div>
