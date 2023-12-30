@@ -58,7 +58,11 @@ const Settings = () => {
           <button
             className="btn btn-ghost mb-20 mt-auto w-full justify-start px-1"
             onClick={async () => {
-              await logout()
+              await logout({
+                logoutParams: {
+                  returnTo: window.location.origin,
+                },
+              })
             }}
           >
             <ArrowLeftOnRectangleIcon className="h-6 w-6" />

@@ -11,7 +11,11 @@ const AuthButton = () => {
         },
       })
     } else {
-      await logout()
+      await logout({
+        logoutParams: {
+          returnTo: window.location.origin,
+        },
+      })
     }
   }
   return (

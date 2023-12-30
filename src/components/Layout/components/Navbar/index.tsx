@@ -12,7 +12,7 @@ import { Link, useLocation } from 'react-router-dom'
 
 enum MenuType {
   Home = 'Home',
-  Orders = 'Orders',
+  POS = 'PoS',
   Products = 'Products',
   Settings = 'Settings',
 }
@@ -20,16 +20,6 @@ enum MenuType {
 const Navbar = () => {
   const location = useLocation()
   const buttons = [
-    {
-      name: MenuType.Home,
-      icon: <HomeIcon className="Navbar_ButtonIcon" />,
-      path: AppPath.Home,
-    },
-    {
-      name: MenuType.Orders,
-      icon: <ClipboardDocumentIcon className="Navbar_ButtonIcon" />,
-      path: AppPath.Orders,
-    },
     {
       name: MenuType.Products,
       icon: <TagIcon className="Navbar_ButtonIcon" />,
@@ -50,6 +40,17 @@ const Navbar = () => {
 
   return (
     <nav className="Navbar">
+      <div className="Navbar_ButtonContainer">
+        <a
+          href={import.meta.env.VITE_POS_APP_URL}
+          className={`Navbar_Button btn`}
+        >
+          <ClipboardDocumentIcon className="Navbar_ButtonIcon" />
+          <p className="text-neautral text-center text-[10px] font-light">
+            PoS
+          </p>
+        </a>
+      </div>
       {buttons.map((button) => (
         <div className="Navbar_ButtonContainer" key={button.name}>
           <Link
