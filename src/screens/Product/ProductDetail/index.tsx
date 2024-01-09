@@ -138,9 +138,9 @@ export const ProductDetail = () => {
               onValueChange={(value) => {
                 setFieldValue('price', value)
                 if (value) {
-                  const newProfitAmount = +value - values.cost
+                  const newProfitAmount = +value - Number(values.cost)
                   const newProfitPercentage =
-                    (newProfitAmount / values.cost) * 100
+                    (newProfitAmount / Number(values.cost)) * 100
                   setFieldValue('profitAmount', newProfitAmount)
                   setFieldValue(
                     'profitPercentage',
@@ -178,7 +178,7 @@ export const ProductDetail = () => {
                 onValueChange={(value) => {
                   setFieldValue('cost', value)
                   if (value) {
-                    const newProfitAmount = values.price - +value
+                    const newProfitAmount = Number(values.price) - +value
                     const newProfitPercentage = (newProfitAmount / +value) * 100
                     setFieldValue('profitAmount', newProfitAmount)
                     setFieldValue(
@@ -216,12 +216,13 @@ export const ProductDetail = () => {
                   onValueChange={(value) => {
                     setFieldValue('profitPercentage', value)
                     if (value) {
-                      const newPrice = values.cost * (1 + (+value || 0) / 100)
-                      setFieldValue('price', newPrice)
+                      const newPrice =
+                        Number(values.cost) * (1 + (+value || 0) / 100)
+                      setFieldValue('price', newPrice.toFixed(2))
                       // Rount to 2 decimal places
                       setFieldValue(
                         'profitAmount',
-                        (newPrice - values.cost).toFixed(2),
+                        (newPrice - Number(values.cost)).toFixed(2),
                       )
                     }
                   }}
@@ -242,9 +243,10 @@ export const ProductDetail = () => {
                   onValueChange={(value) => {
                     setFieldValue('profitAmount', value)
                     if (value) {
-                      const newProfitPercentage = (+value / values.cost) * 100
-                      const newPrice = values.cost + +value
-                      setFieldValue('price', newPrice)
+                      const newProfitPercentage =
+                        (+value / Number(values.cost)) * 100
+                      const newPrice = Number(values.cost) + +value
+                      setFieldValue('price', newPrice.toFixed(2))
                       setFieldValue(
                         'profitPercentage',
                         // If has decimal show 2 decimal places, else show 0
