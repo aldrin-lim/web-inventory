@@ -5,7 +5,17 @@ export default {
   plugins: [require('daisyui')],
   daisyui: {
     themes: [
-      'light',
+      {
+        light: {
+          ...require("daisyui/src/theming/themes")["light"],
+          primary: "#856AD4",
+          secondary: "#3A9E92",
+          "primary-content": "#ffffff",
+          "secondary-content": "#ffffff",
+          "accent-content": "#ffffff",
+
+        },
+      },
       // "dark",
       // "cupcake",
       // "bumblebee",

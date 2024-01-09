@@ -9,9 +9,12 @@ body,
   @apply h-full;
 }
 
+*, html {
+  scroll-behavior: smooth !important;
+}
+
 html {
-  scroll-behavior: smooth;
-  overscroll-behavior: none;
+  /* overscroll-behavior: none; */
 }
 
 html, body {
@@ -30,7 +33,7 @@ html, body {
 
 @layer components {
   .section {
-    @apply p-6 w-full
+    @apply p-6 absolute flex min-h-screen w-full flex-col bg-base-100 gap-4
   }
 
   .section:has(.Toolbar) {
@@ -44,5 +47,32 @@ html, body {
 
   .form-control-error {
     @apply text-left text-xs text-red-500
+  }
+
+  .main-screen {
+    @apply flex min-h-screen w-full flex-col gap-4 overflow-hidden bg-base-300
+  }
+
+  .sub-screen {
+    @apply p-6 pt-0 flex min-h-screen w-full flex-col bg-base-100 gap-4
+  }
+
+  .clickable {
+    @apply duration-200 ease-out;
+    animation: button-pop var(--animation-btn, 0.25s) ease-out;
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  }
+  
+  .clickable:active {
+    animation: button-pop 0s ease-out;
+    transform: scale(var(--btn-focus-scale, 0.97));
+  }
+
+  .form-control {
+    @apply relative w-full
+  }
+
+  .form-control > .form-control-label {
+    @apply label absolute -top-[7px] left-[8px] bg-base-100 px-1 py-0 text-xs 
   }
 }
