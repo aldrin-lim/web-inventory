@@ -33,7 +33,7 @@ const StockDetail = (props: StockDetailProps) => {
 
   const [isBulkCost, setIsBulkCost] = useState(false)
 
-  const costPerUnit = values.quantity / +values.bulkCost
+  const costPerUnit = +values.bulkCost / values.quantity
   return (
     <div className="sub-screen">
       <Toolbar
@@ -193,8 +193,11 @@ const StockDetail = (props: StockDetailProps) => {
                 costPerUnit > 0 ? 'text-green-500' : 'text-gray-400'
               }`}
             >
-              Cost: ₱{isNaN(costPerUnit) ? '0.00' : costPerUnit.toFixed(2)}/
-              {values.unitOfMeasurement}
+              Cost: ₱
+              {isNaN(costPerUnit) || costPerUnit == Infinity
+                ? '0.00'
+                : costPerUnit.toFixed(2)}
+              /{values.unitOfMeasurement}
             </p>
           </>
         )}
