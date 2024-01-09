@@ -37,8 +37,6 @@ const ProductDetailForm = forwardRef(
       onDescriptionButtonClick,
     } = props
 
-    console.log('ProductDetailForm', initialValues)
-
     return (
       <Formik
         initialValues={initialValues}
