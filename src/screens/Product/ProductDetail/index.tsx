@@ -17,10 +17,12 @@ import { toFormikValidationSchema } from 'zod-formik-adapter'
 import CurrencyInput from 'react-currency-input-field'
 import useCreateProduct from 'hooks/useCreateProduct'
 import { AddProductSchema } from 'api/product/createProduct'
+import SlidingTransition from 'components/SlidingTransition'
+import Description from './screens/Description'
 
 enum ActiveScreen {
   None = 'none',
-  DiscountList = 'list',
+  Description = 'description',
 }
 
 type ProductDetailProps = {
@@ -31,7 +33,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const { product } = props
   const navigate = useNavigate()
 
-  const [activeScreen] = useState(ActiveScreen.None)
+  const [activeScreen, setActiveScreen] = useState(ActiveScreen.None)
 
   const { createProduct, isCreating } = useCreateProduct()
 
@@ -48,6 +50,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
         profitAmount: 0,
         profitPercentage: 50,
         trackStock: false,
+        description: '',
       } as z.infer<typeof ProductDetailSchema>,
       validationSchema: toFormikValidationSchema(ProductDetailSchema),
       enableReinitialize: true,
@@ -80,9 +83,17 @@ export const ProductDetail = (props: ProductDetailProps) => {
       validateOnChange: false,
     })
 
+  const showDescription = () => {
+    setActiveScreen(ActiveScreen.Description)
+  }
+
+  const goBackToProductScreen = () => {
+    setActiveScreen(ActiveScreen.None)
+  }
+
   return (
     <div
-      className={`OrderSelection main-screen ${
+      className={`ProductDetail main-screen ${
         activeScreen === ActiveScreen.None ? 'h-full' : 'h-screen'
       }`}
     >
@@ -153,11 +164,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
           {/* Set Description CTA */}
           <button
+            onClick={showDescription}
             disabled={isMutating}
             className="flex-start btn btn-ghost w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0"
           >
             <p className="text-overflow-ellipsis overflow-hidden truncate whitespace-nowrap break-words text-left">
-              <span className="text-gray-400">Add Description</span>
+              <span className="text-gray-400">
+                {values.description === '' && 'Add Description'}
+                {values.description}
+              </span>
             </p>
             <ChevronRightIcon className="w-5 flex-shrink-0 text-secondary" />
           </button>
@@ -340,6 +355,20 @@ export const ProductDetail = (props: ProductDetailProps) => {
           )}
         </div>
       </div>
+
+      <SlidingTransition
+        direction="right"
+        isVisible={activeScreen === ActiveScreen.Description}
+        zIndex={11}
+      >
+        <Description
+          description={values.description}
+          onBack={goBackToProductScreen}
+          onComplete={(desription) => {
+            setFieldValue('description', desription)
+          }}
+        />
+      </SlidingTransition>
     </div>
   )
 }
@@ -347,6 +376,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
 const ProductDetailSchema = z.object({
   id: z.string({ required_error: 'Product ID is required' }).nullable(),
   name: z.string({ required_error: 'Product name is required' }),
+  description: z.string().default(''),
   price: z.coerce
     .number({
       required_error: 'Price is required',
