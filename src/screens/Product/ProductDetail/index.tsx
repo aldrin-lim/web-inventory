@@ -46,6 +46,7 @@ export const ProductDetail = () => {
       validationSchema: toFormikValidationSchema(ProductSchema),
       enableReinitialize: true,
       onSubmit: () => {},
+      validateOnChange: false,
     })
 
   return (
@@ -129,15 +130,28 @@ export const ProductDetail = () => {
             <CurrencyInput
               onBlur={getFieldProps('price').onBlur}
               name={getFieldProps('price').name}
+              value={getFieldProps('price').value}
               type="text"
               tabIndex={2}
               className="input input-bordered w-full"
               prefix="₱"
-              onValueChange={(_, __, values) => {
-                if (values?.float) {
-                  setFieldValue('price', values?.float ?? 0)
+              onValueChange={(value) => {
+                setFieldValue('price', value)
+                if (value) {
+                  const newProfitAmount = +value - values.cost
+                  const newProfitPercentage =
+                    (newProfitAmount / values.cost) * 100
+                  setFieldValue('profitAmount', newProfitAmount)
+                  setFieldValue(
+                    'profitPercentage',
+                    // If has decimal show 2 decimal places, else show 0
+                    newProfitPercentage % 1
+                      ? newProfitPercentage.toFixed(2)
+                      : newProfitPercentage.toFixed(0),
+                  )
                 }
               }}
+              allowNegativeValue={false}
             />
             <div className="label py-0">
               <span className="label-text-alt text-xs text-red-400">
@@ -156,13 +170,27 @@ export const ProductDetail = () => {
               <CurrencyInput
                 onBlur={getFieldProps('cost').onBlur}
                 name={getFieldProps('cost').name}
+                value={getFieldProps('cost').value}
                 type="text"
                 tabIndex={3}
                 className="input input-bordered w-full"
                 prefix="₱"
-                onValueChange={(_, __, values) => {
-                  setFieldValue('cost', values?.float ?? 0)
+                onValueChange={(value) => {
+                  setFieldValue('cost', value)
+                  if (value) {
+                    const newProfitAmount = values.price - +value
+                    const newProfitPercentage = (newProfitAmount / +value) * 100
+                    setFieldValue('profitAmount', newProfitAmount)
+                    setFieldValue(
+                      'profitPercentage',
+                      // If has decimal show 2 decimal places, else show 0
+                      newProfitPercentage % 1
+                        ? newProfitPercentage.toFixed(2)
+                        : newProfitPercentage.toFixed(0),
+                    )
+                  }
                 }}
+                allowNegativeValue={false}
               />
               <div className="label py-0">
                 <span className="label-text-alt text-xs text-red-400">
@@ -182,10 +210,23 @@ export const ProductDetail = () => {
                   value={getFieldProps('profitPercentage').value}
                   type="text"
                   tabIndex={4}
-                  className="input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none"
-                  onValueChange={(_, __, values) => {
-                    setFieldValue('profitPercentage', values?.float ?? 0)
+                  className={`input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none ${
+                    values.profitPercentage < 0 ? 'text-red-500' : ''
+                  }`}
+                  onValueChange={(value) => {
+                    setFieldValue('profitPercentage', value)
+                    if (value) {
+                      const newPrice = values.cost * (1 + (+value || 0) / 100)
+                      setFieldValue('price', newPrice)
+                      // Rount to 2 decimal places
+                      setFieldValue(
+                        'profitAmount',
+                        (newPrice - values.cost).toFixed(2),
+                      )
+                    }
                   }}
+                  disableGroupSeparators
+                  allowNegativeValue={false}
                   maxLength={6}
                 />
                 <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
@@ -196,10 +237,24 @@ export const ProductDetail = () => {
                   type="text"
                   tabIndex={5}
                   fixedDecimalLength={2}
-                  className="input w-full border-none bg-transparent px-0 pl-2 focus:outline-none"
-                  onValueChange={(_, __, values) => {
-                    setFieldValue('profitAmount', values?.float ?? 0)
+                  className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
+                  prefix="₱"
+                  onValueChange={(value) => {
+                    setFieldValue('profitAmount', value)
+                    if (value) {
+                      const newProfitPercentage = (+value / values.cost) * 100
+                      const newPrice = values.cost + +value
+                      setFieldValue('price', newPrice)
+                      setFieldValue(
+                        'profitPercentage',
+                        // If has decimal show 2 decimal places, else show 0
+                        newProfitPercentage % 1
+                          ? newProfitPercentage.toFixed(2)
+                          : newProfitPercentage.toFixed(0),
+                      )
+                    }
                   }}
+                  allowNegativeValue={false}
                 />
               </div>
               <div className="label py-0">
@@ -219,7 +274,11 @@ export const ProductDetail = () => {
           {/* Track Stock */}
           <div className="form-control flex w-full flex-row justify-between py-2">
             <span>Track Stock</span>
-            <input type="checkbox" className="toggle toggle-primary" />
+            <input
+              {...getFieldProps('trackStock')}
+              type="checkbox"
+              className="toggle toggle-primary"
+            />
           </div>
 
           {/* Manage Variant */}
@@ -240,10 +299,26 @@ export const ProductDetail = () => {
 const ProductSchema = z.object({
   id: z.string({ required_error: 'Product ID is required' }).nullable(),
   name: z.string({ required_error: 'Product name is required' }),
-  price: z.coerce.number({ required_error: 'Price is required' }),
-  cost: z.number({ required_error: 'Cost is required' }),
-  profitPercentage: z.number({ required_error: 'Profit is required' }),
-  profitAmount: z.number({ required_error: 'Profit is required' }),
+  price: z.coerce
+    .number({
+      required_error: 'Price is required',
+      invalid_type_error: 'Price is required',
+    })
+    .min(0),
+  cost: z.coerce
+    .number({
+      required_error: 'Cost is required',
+      invalid_type_error: 'Cost is required',
+    })
+    .min(0),
+  profitPercentage: z.coerce.number({
+    required_error: 'Profit % is required',
+    invalid_type_error: 'Profit  % is required',
+  }),
+  profitAmount: z.coerce.number({
+    required_error: 'Profit is required',
+    invalid_type_error: 'Profit is required',
+  }),
   images: z.array(z.string()).default([]),
   trackStock: z.boolean().default(false),
 })
