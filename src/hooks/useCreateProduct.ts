@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { AppPath } from 'routes/AppRoutes.types'
-import { Product } from 'types/product.types'
+import { z } from 'zod'
 
 const useCreateProduct = () => {
   const navigate = useNavigate()
@@ -39,11 +39,12 @@ const useCreateProduct = () => {
     },
   })
 
-  const createProduct = async (param: Product) => {
+  const createProduct = async (param: z.infer<typeof AddProductSchema>) => {
     const validation = AddProductSchema.safeParse(param)
 
     if (!validation.success) {
       const error = validation.error.issues[0].message
+      console.error('VALIDATION ERROR: ', error)
       setError(error)
       return
     }

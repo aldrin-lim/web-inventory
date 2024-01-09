@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
-import { useProductDetail } from '../contexts/ProductDetailContext'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -16,20 +15,27 @@ import { z } from 'zod'
 import { useFormik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import CurrencyInput from 'react-currency-input-field'
+import useCreateProduct from 'hooks/useCreateProduct'
+import { AddProductSchema } from 'api/product/createProduct'
 
 enum ActiveScreen {
   None = 'none',
   DiscountList = 'list',
 }
 
-export const ProductDetail = () => {
-  const {
-    state: { productDetails, mode },
-  } = useProductDetail()
+type ProductDetailProps = {
+  product?: z.infer<typeof ProductDetailSchema>
+}
 
+export const ProductDetail = (props: ProductDetailProps) => {
+  const { product } = props
   const navigate = useNavigate()
 
   const [activeScreen] = useState(ActiveScreen.None)
+
+  const { createProduct, isCreating } = useCreateProduct()
+
+  const isMutating = isCreating
 
   const { submitForm, errors, getFieldProps, setFieldValue, values } =
     useFormik({
@@ -42,10 +48,35 @@ export const ProductDetail = () => {
         profitAmount: 0,
         profitPercentage: 50,
         trackStock: false,
-      } as z.infer<typeof ProductSchema>,
-      validationSchema: toFormikValidationSchema(ProductSchema),
+      } as z.infer<typeof ProductDetailSchema>,
+      validationSchema: toFormikValidationSchema(ProductDetailSchema),
       enableReinitialize: true,
-      onSubmit: () => {},
+      onSubmit: async (value) => {
+        const parsedValue = ProductDetailSchema.parse(value)
+
+        if (!product) {
+          if (parsedValue.trackStock === false) {
+            const requestBody: z.infer<typeof AddProductSchema> = {
+              cost: parsedValue.cost,
+              name: parsedValue.name,
+              price: parsedValue.price,
+              profit: parsedValue.profitAmount,
+              quantity: 0,
+              measurement: 'pieces',
+              batches: [
+                {
+                  cost: parsedValue.cost,
+                  name: 'Batch 1',
+                  quantity: 0,
+                  unitOfMeasurment: 'pieces',
+                  costPerUnit: 0,
+                },
+              ],
+            }
+            await createProduct(requestBody)
+          }
+        }
+      },
       validateOnChange: false,
     })
 
@@ -62,15 +93,17 @@ export const ProductDetail = () => {
               key={2}
               icon={<ChevronLeftIcon className="w-6" />}
               onClick={() => navigate(AppPath.ProductOverview)}
+              disabled={isMutating}
             />,
             <ToolbarTitle
               key="title"
-              title={mode === 'add' ? 'Add Product' : 'View Product'}
+              title={product ? 'View Product' : 'Add Product'}
             />,
             <PrimaryAction
-              mode={mode}
+              mode={product ? 'edit' : 'add'}
               key="primaryAction"
-              isLoading={false}
+              disabled={isMutating}
+              isLoading={isMutating}
               onCreate={function (): void {
                 submitForm()
               }}
@@ -78,7 +111,7 @@ export const ProductDetail = () => {
                 throw new Error('Function not implemented.')
               }}
               onSave={function (): void {
-                submitForm()
+                // submitForm()
               }}
               onClone={function (): void {
                 throw new Error('Function not implemented.')
@@ -98,6 +131,7 @@ export const ProductDetail = () => {
               placeholder="(e.g., Milk Tea, Coffee, etc.)"
               className="input input-bordered w-full"
               tabIndex={1}
+              disabled={isMutating}
             />
 
             {errors.name && (
@@ -110,12 +144,18 @@ export const ProductDetail = () => {
           </label>
 
           {/* Recipe CTA */}
-          <button className="btn btn-primary btn-xs max-w-xs  self-start rounded-[5px] text-left">
+          <button
+            disabled={isMutating}
+            className="btn btn-primary btn-xs max-w-xs  self-start rounded-[5px] text-left"
+          >
             Create product using a recipe
           </button>
 
           {/* Set Description CTA */}
-          <button className="flex-start btn btn-ghost w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0">
+          <button
+            disabled={isMutating}
+            className="flex-start btn btn-ghost w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0"
+          >
             <p className="text-overflow-ellipsis overflow-hidden truncate whitespace-nowrap break-words text-left">
               <span className="text-gray-400">Add Description</span>
             </p>
@@ -128,6 +168,7 @@ export const ProductDetail = () => {
               <span className="label-text-alt text-gray-400">Price</span>
             </div>
             <CurrencyInput
+              disabled={isMutating}
               onBlur={getFieldProps('price').onBlur}
               name={getFieldProps('price').name}
               value={getFieldProps('price').value}
@@ -168,6 +209,7 @@ export const ProductDetail = () => {
                 <span className="label-text-alt text-gray-400">Cost</span>
               </div>
               <CurrencyInput
+                disabled={isMutating}
                 onBlur={getFieldProps('cost').onBlur}
                 name={getFieldProps('cost').name}
                 value={getFieldProps('cost').value}
@@ -205,6 +247,7 @@ export const ProductDetail = () => {
                   <span className="label-text-alt text-gray-400">Profit</span>
                 </div>
                 <CurrencyInput
+                  disabled={isMutating}
                   onBlur={getFieldProps('profitPercentage').onBlur}
                   name={getFieldProps('profitPercentage').name}
                   value={getFieldProps('profitPercentage').value}
@@ -232,6 +275,7 @@ export const ProductDetail = () => {
                 />
                 <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
                 <CurrencyInput
+                  disabled={isMutating}
                   onBlur={getFieldProps('profitAmount').onBlur}
                   name={getFieldProps('profitAmount').name}
                   value={getFieldProps('profitAmount').value}
@@ -269,8 +313,9 @@ export const ProductDetail = () => {
 
           {/* Images */}
           <ProductImages
+            disabled={isMutating}
             onImagesChange={() => {}}
-            images={productDetails?.images || []}
+            images={[]}
           />
 
           {/* Track Stock */}
@@ -284,21 +329,22 @@ export const ProductDetail = () => {
           </div>
 
           {/* Manage Variant */}
-          <button className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap justify-between ">
-            <div className="flex flex-row items-center gap-2">
-              <HomeIcon className="w-5 flex-shrink-0 " />
-              <p className="">Manage Variant</p>
-            </div>
-            <ChevronRightIcon className="w-5 flex-shrink-0 " />
-          </button>
+          {values.trackStock && (
+            <button className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap justify-between ">
+              <div className="flex flex-row items-center gap-2">
+                <HomeIcon className="w-5 flex-shrink-0 " />
+                <p className="">Manage Stock</p>
+              </div>
+              <ChevronRightIcon className="w-5 flex-shrink-0 " />
+            </button>
+          )}
         </div>
-        <pre>{JSON.stringify(values, null, 2)}</pre>
       </div>
     </div>
   )
 }
 
-const ProductSchema = z.object({
+const ProductDetailSchema = z.object({
   id: z.string({ required_error: 'Product ID is required' }).nullable(),
   name: z.string({ required_error: 'Product name is required' }),
   price: z.coerce

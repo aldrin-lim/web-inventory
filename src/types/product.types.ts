@@ -1,4 +1,3 @@
-import { uniqueVariantCombinations } from 'util/products'
 import { z } from 'zod'
 
 export type ProductVariantAttribute = {
@@ -23,7 +22,7 @@ export const OptionSchema = z.object({
 })
 
 export const ProductBatchSchema = z.object({
-  id: z.string().optional(),
+  id: z.string(),
   name: z.string({
     required_error: 'Name is required',
     invalid_type_error: 'Name must be a string',
@@ -32,16 +31,20 @@ export const ProductBatchSchema = z.object({
     required_error: 'Cost is required',
     invalid_type_error: 'Cost must be a number',
   }),
+  costPerUnit: z
+    .number({
+      invalid_type_error: 'Cost per Unit must be a number',
+    })
+    .nullable()
+    .optional(),
   quantity: z.number({
     required_error: 'Quantity is required',
     invalid_type_error: 'Quantity must be a number',
   }),
-  measurement: z.string({
+  unitOfMeasurment: z.string({
     required_error: 'Measurement is required',
     invalid_type_error: 'Measurement must be a number',
   }),
-  expiryDate: z.coerce.date().nullable().optional(),
-  purchasedDate: z.coerce.date().nullable().optional(),
 })
 
 export const BaseProductSchema = z.object({
@@ -114,57 +117,7 @@ export const ProductVariantSchema = BaseProductSchema.extend({
     .min(1, 'Variant options must have at least 1 item'),
 })
 
-export const ProductSchema = BaseProductSchema.extend({
-  variants: z
-    .array(ProductVariantSchema)
-    .optional()
-    .refine(uniqueVariantCombinations, {
-      message:
-        'Product variants must have unique combinations of options and values',
-    }),
-})
-
-const PartialBaseProductSchema = BaseProductSchema.partial()
-
-type BaseProductType = z.infer<typeof PartialBaseProductSchema>
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function withProductTypeValidation<
-  O extends BaseProductType,
-  T extends z.ZodTypeDef,
-  I,
->(schema: z.ZodType<O, T, I>) {
-  return schema
-    .refine(
-      (data) => {
-        if (data.productType === ProductType.Regular && data.batches) {
-          return false
-        }
-        return true
-      },
-      {
-        message: 'Batches are not allowed when productType is non material',
-      },
-    )
-    .refine(
-      (data) => {
-        if (
-          data.productType === ProductType.Regular &&
-          data.measurement &&
-          !['pieces', 'pcs', 'pc', 'piece'].includes(
-            data.measurement.toLowerCase(),
-          )
-        ) {
-          return false
-        }
-        return true
-      },
-      {
-        message:
-          'Measurement should only be piece(s) for non material products',
-      },
-    )
-}
+export const ProductSchema = BaseProductSchema
 
 export type Product = z.infer<typeof ProductSchema>
 export type ProductVariant = z.infer<typeof ProductVariantSchema>

@@ -4,6 +4,7 @@ import { PhotoIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
 type ProductImagesProps = {
   images: Array<string>
   onImagesChange: (images: Array<string>) => void
+  disabled?: boolean
 }
 
 const ProductImages = (props: ProductImagesProps) => {
@@ -73,6 +74,7 @@ const ProductImages = (props: ProductImagesProps) => {
         />
         {showAddImageButton && (
           <button
+            disabled={props.disabled}
             className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
             onClick={onClick}
           >

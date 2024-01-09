@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { Product, ProductSchema } from 'types/product.types'
+import { Product, ProductBatchSchema, ProductSchema } from 'types/product.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 
@@ -13,18 +13,9 @@ export default async (param: AddProductSchema) => {
 // Schema and Types
 type AddProductSchema = z.infer<typeof AddProductSchema>
 
-export const AddProductSchema = ProductSchema.pick({
-  name: true,
-  description: true,
-  cost: true,
-  profit: true,
-  price: true,
-  quantity: true,
-  measurement: true,
-  images: true,
-  category: true,
-  allowBackOrder: true,
-  productType: true,
-  expiryDate: true,
-  variants: true,
+export const AddProductSchema = ProductSchema.partial({ id: true }).extend({
+  batches: z
+    .array(ProductBatchSchema.partial({ id: true }))
+    .min(1, 'Batches must have at least 1 item')
+    .optional(),
 })
