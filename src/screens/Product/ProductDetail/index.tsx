@@ -20,6 +20,7 @@ import { AddProductSchema } from 'api/product/createProduct'
 import SlidingTransition from 'components/SlidingTransition'
 import Description from './screens/Description'
 import StockDetail from './screens/StockDetail'
+import { ProductSoldBy } from 'types/product.types'
 
 enum ActiveScreen {
   None = 'none',
@@ -41,49 +42,71 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const isMutating = isCreating
 
-  const { submitForm, errors, getFieldProps, setFieldValue, values } =
-    useFormik({
-      initialValues: {
-        id: null,
-        name: '',
-        price: 0,
-        cost: 0,
-        images: [],
-        profitAmount: 0,
-        profitPercentage: 50,
-        trackStock: false,
-        description: '',
-      } as z.infer<typeof ProductDetailSchema>,
-      validationSchema: toFormikValidationSchema(ProductDetailSchema),
-      enableReinitialize: true,
-      onSubmit: async (value) => {
-        const parsedValue = ProductDetailSchema.parse(value)
+  const {
+    submitForm,
+    errors,
+    getFieldProps,
+    setFieldValue,
+    values,
+    setValues,
+  } = useFormik({
+    initialValues: {
+      name: '',
+      price: 0,
+      cost: 0,
+      images: [],
+      profitAmount: 0,
+      profitPercentage: 50,
+      trackStock: false,
+      description: '',
+      profit: 0,
+      category: '',
+      soldBy: ProductSoldBy.Pieces,
+      allowBackOrder: false,
+      batches: [
+        {
+          name: 'Batch 1',
+          cost: 0,
+          costPerUnit: 0,
+          quantity: 0,
+          unitOfMeasurement: 'pieces',
+        },
+      ],
+    } as z.infer<typeof ProductDetailSchema>,
+    validationSchema: toFormikValidationSchema(ProductDetailSchema),
+    enableReinitialize: true,
+    onSubmit: async (value) => {
+      const parsedValue = ProductDetailSchema.parse(value)
 
-        if (!product) {
-          if (parsedValue.trackStock === false) {
-            const requestBody: z.infer<typeof AddProductSchema> = {
-              cost: parsedValue.cost,
-              name: parsedValue.name,
-              price: parsedValue.price,
-              profit: parsedValue.profitAmount,
-              quantity: 0,
-              measurement: 'pieces',
-              batches: [
-                {
-                  cost: parsedValue.cost,
-                  name: 'Batch 1',
-                  quantity: 0,
-                  unitOfMeasurement: 'pieces',
-                  costPerUnit: 0,
-                },
-              ],
-            }
-            await createProduct(requestBody)
+      if (!product) {
+        if (parsedValue.trackStock === false) {
+          const requestBody: z.infer<typeof AddProductSchema> = {
+            cost: parsedValue.cost,
+            name: parsedValue.name,
+            price: parsedValue.price,
+            profit: parsedValue.profitAmount,
+            soldBy: ProductSoldBy.Pieces,
+            allowBackOrder: false,
+            trackStock: false,
+            category: '',
+            description: parsedValue.description,
+            images: [],
+            batches: [
+              {
+                cost: parsedValue.cost,
+                name: 'Batch 1',
+                quantity: 0,
+                unitOfMeasurement: 'pieces',
+                costPerUnit: 0,
+              },
+            ],
           }
+          await createProduct(requestBody)
         }
-      },
-      validateOnChange: false,
-    })
+      }
+    },
+    validateOnChange: false,
+  })
 
   const showDescription = () => {
     setActiveScreen(ActiveScreen.Description)
@@ -343,7 +366,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
               type="checkbox"
               onChange={(e) => {
                 setFieldValue('trackStock', e.target.checked)
-                console.log(values.trackStock, e.target.checked)
                 if (values.trackStock === false && e.target.checked === true) {
                   setActiveScreen(ActiveScreen.StockDetail)
                 }
@@ -366,6 +388,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             </button>
           )}
         </div>
+        <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre>
       </div>
 
       <SlidingTransition
@@ -387,28 +410,23 @@ export const ProductDetail = (props: ProductDetailProps) => {
         isVisible={activeScreen === ActiveScreen.StockDetail}
         zIndex={11}
       >
-        <StockDetail onBack={goBackToProductScreen} />
+        <StockDetail
+          value={values}
+          onBack={goBackToProductScreen}
+          onComplete={(value) => {
+            const newValues = { ...values }
+            newValues.allowBackOrder = value.allowBackOrder
+            newValues.batches = value.batches
+            newValues.soldBy = value.soldBy
+            setValues(newValues)
+          }}
+        />
       </SlidingTransition>
     </div>
   )
 }
 
-const ProductDetailSchema = z.object({
-  id: z.string({ required_error: 'Product ID is required' }).nullable(),
-  name: z.string({ required_error: 'Product name is required' }),
-  description: z.string().default(''),
-  price: z.coerce
-    .number({
-      required_error: 'Price is required',
-      invalid_type_error: 'Price is required',
-    })
-    .min(0),
-  cost: z.coerce
-    .number({
-      required_error: 'Cost is required',
-      invalid_type_error: 'Cost is required',
-    })
-    .min(0),
+const ProductDetailSchema = AddProductSchema.extend({
   profitPercentage: z.coerce.number({
     required_error: 'Profit % is required',
     invalid_type_error: 'Profit  % is required',
@@ -417,8 +435,6 @@ const ProductDetailSchema = z.object({
     required_error: 'Profit is required',
     invalid_type_error: 'Profit is required',
   }),
-  images: z.array(z.string()).default([]),
-  trackStock: z.boolean().default(false),
 })
 
 export default ProductDetail

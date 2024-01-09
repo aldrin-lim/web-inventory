@@ -7,6 +7,7 @@ import { z } from 'zod'
 import MeasurementSelect from '../MeasurementSelect'
 import { useEffect } from 'react'
 import { useDebounce } from '@uidotdev/usehooks'
+import { TrashIcon } from '@heroicons/react/24/solid'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -15,6 +16,7 @@ type BatchCardProps = {
   soldBy: ProductSoldBy
   isBulkCost?: boolean
   onChange?: (batch: z.infer<typeof BatchSchema>) => void
+  onRemove: () => void
 }
 
 const defaultValue = {
@@ -26,7 +28,7 @@ const defaultValue = {
 } as z.infer<typeof BatchSchema>
 
 const BatchCard = (props: BatchCardProps) => {
-  const { batch, soldBy, isBulkCost = false } = props
+  const { batch, soldBy, isBulkCost = false, onRemove } = props
 
   const formValue = batch ?? defaultValue
   const { getFieldProps, values, setFieldValue } = useFormik({
@@ -71,7 +73,16 @@ const BatchCard = (props: BatchCardProps) => {
 
   return (
     <div className="flex flex-col gap-2 bg-gray-100 p-2">
-      <p className="text-sm uppercase tracking-wider">{batch.name}</p>
+      <div className="flex flex-row justify-between">
+        <p className="text-sm uppercase tracking-wider">{batch.name}</p>
+        <button
+          type="button"
+          className="btn btn-ghost btn-xs"
+          onClick={onRemove}
+        >
+          <TrashIcon className="w-5 text-primary" />
+        </button>
+      </div>
       <p>Quantity</p>
       <QuantityInput
         value={values.quantity}
@@ -144,7 +155,7 @@ const BatchCard = (props: BatchCardProps) => {
           className="input input-bordered w-full"
         />
       </label>
-      <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre>
+      {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
     </div>
   )
 }

@@ -75,31 +75,22 @@ export const BaseProductSchema = z.object({
     required_error: 'Price is required',
     invalid_type_error: 'Price must be a number',
   }),
-  quantity: z
-    .number({
-      required_error: 'Quantity is required',
-      invalid_type_error: 'Quantity must be a number',
-    })
-    .int(),
-  measurement: z.string({
-    required_error: 'Measurement is required',
-    invalid_type_error: 'Measurement must be a string',
-  }),
   images: z.array(z.string()).optional(),
   category: z
     .string({
       invalid_type_error: 'Category must be a string',
     })
     .optional(),
+  trackStock: z.boolean().default(false),
+  soldBy: z.nativeEnum(ProductSoldBy).default(ProductSoldBy.Pieces),
   allowBackOrder: z
     .boolean({
       invalid_type_error: 'Allow back order must be a boolean',
     })
-    .optional(),
+    .default(false),
   batches: z
     .array(ProductBatchSchema)
-    .min(1, 'Batches must have at least 1 item')
-    .optional(),
+    .min(1, 'Batches must have at least 1 item'),
 })
 
 export const ProductVariantSchema = BaseProductSchema.extend({

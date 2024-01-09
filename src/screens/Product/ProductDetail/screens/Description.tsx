@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 type DescriptionProps = {
   onBack: () => void
-  description: string
+  description?: string
   onComplete: (description: string) => void
 }
 

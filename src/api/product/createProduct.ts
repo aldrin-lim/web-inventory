@@ -16,6 +16,5 @@ type AddProductSchema = z.infer<typeof AddProductSchema>
 export const AddProductSchema = ProductSchema.partial({ id: true }).extend({
   batches: z
     .array(ProductBatchSchema.partial({ id: true }))
-    .min(1, 'Batches must have at least 1 item')
-    .optional(),
+    .min(1, 'Batches must have at least 1 item'),
 })

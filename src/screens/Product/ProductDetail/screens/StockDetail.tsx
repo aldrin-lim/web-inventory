@@ -7,13 +7,23 @@ import { useFormik } from 'formik'
 import { useState } from 'react'
 import BatchCard from '../components/BatchCard'
 import { ProductSoldBy } from 'types/product.types'
+import { AddProductSchema } from 'api/product/createProduct'
+import { z } from 'zod'
+import { toFormikValidationSchema } from 'zod-formik-adapter'
 
 type StockDetailProps = {
   onBack: () => void
+  onComplete: (value: z.infer<typeof StockDetailSchema>) => void
+  value: z.infer<typeof StockDetailSchema>
 }
 
+const StockDetailSchema = AddProductSchema.pick({
+  soldBy: true,
+  allowBackOrder: true,
+  batches: true,
+})
+
 const defaultValue = {
-  unitOfMeasurement: 'pieces',
   soldBy: ProductSoldBy.Pieces,
   allowBackOrder: false,
   batches: [
@@ -25,17 +35,21 @@ const defaultValue = {
       unitOfMeasurement: 'pieces',
     },
   ],
-}
+} as z.infer<typeof StockDetailSchema>
 
 const StockDetail = (props: StockDetailProps) => {
   const { onBack, onComplete } = props
 
-  const { getFieldProps, values, setFieldValue } = useFormik({
-    onSubmit: () => {
-      // TODO: When bulk cost is disabled, reset bulk cost to 0 and unit of measurement to pieces
-    },
-    initialValues: defaultValue,
-  })
+  const { getFieldProps, values, setFieldValue, submitForm, errors } =
+    useFormik({
+      onSubmit: (value) => {
+        onComplete(value)
+        onBack()
+        // TODO: When bulk cost is disabled, reset bulk cost to 0 and unit of measurement to pieces
+      },
+      validationSchema: toFormikValidationSchema(StockDetailSchema),
+      initialValues: props.value ?? defaultValue,
+    })
 
   const [isBulkCost, setIsBulkCost] = useState(false)
 
@@ -63,7 +77,7 @@ const StockDetail = (props: StockDetailProps) => {
           <ToolbarButton
             key={3}
             onClick={() => {
-              onBack()
+              submitForm()
             }}
             label="Done"
           />,
@@ -142,9 +156,17 @@ const StockDetail = (props: StockDetailProps) => {
 
       {/* Batches */}
       {/* TODO: Populate this from batches */}
+      {errors.batches && typeof errors.batches === 'string' && (
+        <p className="text-xs text-error">{errors.batches}</p>
+      )}
       {values.batches.map((batch, index) => {
         return (
           <BatchCard
+            onRemove={() => {
+              const newBatches = [...values.batches]
+              newBatches.splice(index, 1)
+              setFieldValue('batches', newBatches)
+            }}
             onChange={(batch) => {
               setFieldValue(`batches.${index}`, batch)
             }}
@@ -167,7 +189,7 @@ const StockDetail = (props: StockDetailProps) => {
         </div>
       </button>
 
-      <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre>
+      {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
     </div>
   )
 }
