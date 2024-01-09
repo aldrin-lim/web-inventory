@@ -34,6 +34,10 @@ const StockDetail = (props: StockDetailProps) => {
   const [isBulkCost, setIsBulkCost] = useState(false)
 
   const costPerUnit = +values.bulkCost / values.quantity
+  const costPerUnitColor =
+    costPerUnit > 0 && costPerUnit !== Infinity
+      ? 'text-green-500'
+      : 'text-gray-400'
   return (
     <div className="sub-screen">
       <Toolbar
@@ -188,11 +192,7 @@ const StockDetail = (props: StockDetailProps) => {
                 allowNegativeValue={false}
               />
             </label>
-            <p
-              className={`${
-                costPerUnit > 0 ? 'text-green-500' : 'text-gray-400'
-              }`}
-            >
+            <p className={`${costPerUnitColor}`}>
               Cost: ₱
               {isNaN(costPerUnit) || costPerUnit == Infinity
                 ? '0.00'
