@@ -19,10 +19,12 @@ import useCreateProduct from 'hooks/useCreateProduct'
 import { AddProductSchema } from 'api/product/createProduct'
 import SlidingTransition from 'components/SlidingTransition'
 import Description from './screens/Description'
+import StockDetail from './screens/StockDetail'
 
 enum ActiveScreen {
   None = 'none',
   Description = 'description',
+  StockDetail = 'stockDetail',
 }
 
 type ProductDetailProps = {
@@ -339,13 +341,23 @@ export const ProductDetail = (props: ProductDetailProps) => {
             <input
               {...getFieldProps('trackStock')}
               type="checkbox"
+              onChange={(e) => {
+                setFieldValue('trackStock', e.target.checked)
+                console.log(values.trackStock, e.target.checked)
+                if (values.trackStock === false && e.target.checked === true) {
+                  setActiveScreen(ActiveScreen.StockDetail)
+                }
+              }}
               className="toggle toggle-primary"
             />
           </div>
 
-          {/* Manage Variant */}
+          {/* Manage Stock */}
           {values.trackStock && (
-            <button className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap justify-between ">
+            <button
+              onClick={() => setActiveScreen(ActiveScreen.StockDetail)}
+              className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap justify-between "
+            >
               <div className="flex flex-row items-center gap-2">
                 <HomeIcon className="w-5 flex-shrink-0 " />
                 <p className="">Manage Stock</p>
@@ -368,6 +380,14 @@ export const ProductDetail = (props: ProductDetailProps) => {
             setFieldValue('description', desription)
           }}
         />
+      </SlidingTransition>
+
+      <SlidingTransition
+        direction="right"
+        isVisible={activeScreen === ActiveScreen.StockDetail}
+        zIndex={11}
+      >
+        <StockDetail onBack={goBackToProductScreen} />
       </SlidingTransition>
     </div>
   )

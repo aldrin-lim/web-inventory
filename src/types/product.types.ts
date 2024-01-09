@@ -92,18 +92,10 @@ export const BaseProductSchema = z.object({
       invalid_type_error: 'Allow back order must be a boolean',
     })
     .optional(),
-  productType: z
-    .nativeEnum(ProductType, {
-      required_error: 'Product type is required',
-      invalid_type_error: 'Product type must be a valid enum value',
-    })
-    .default(ProductType.Regular)
-    .optional(),
   batches: z
     .array(ProductBatchSchema)
     .min(1, 'Batches must have at least 1 item')
     .optional(),
-  expiryDate: z.coerce.date().nullable().optional(),
 })
 
 export const ProductVariantSchema = BaseProductSchema.extend({
