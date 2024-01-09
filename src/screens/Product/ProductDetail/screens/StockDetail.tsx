@@ -3,15 +3,28 @@ import { ChevronLeftIcon, PlusIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import QuantityInput from 'components/QuantityInput'
-import CurrencyInput from 'react-currency-input-field'
-import MeasurementSelect from '../components/MeasurementSelect'
 import { useFormik } from 'formik'
 import { useState } from 'react'
-import { measurementOptions } from 'util/measurement'
+import BatchCard from '../components/BatchCard'
+import { ProductSoldBy } from 'types/product.types'
 
 type StockDetailProps = {
   onBack: () => void
+}
+
+const defaultValue = {
+  unitOfMeasurement: 'pieces',
+  soldBy: ProductSoldBy.Pieces,
+  allowBackOrder: false,
+  batches: [
+    {
+      name: 'Batch 1',
+      cost: 0,
+      costPerUnit: 0,
+      quantity: 0,
+      unitOfMeasurement: 'pieces',
+    },
+  ],
 }
 
 const StockDetail = (props: StockDetailProps) => {
@@ -21,23 +34,22 @@ const StockDetail = (props: StockDetailProps) => {
     onSubmit: () => {
       // TODO: When bulk cost is disabled, reset bulk cost to 0 and unit of measurement to pieces
     },
-    initialValues: {
-      unitOfMeasurement: 'pieces',
-      soldBy: 'pieces',
-      bulkCost: 0,
-      quantity: 0,
-      allowBackOrder: false,
-      expirationDate: null,
-    },
+    initialValues: defaultValue,
   })
 
   const [isBulkCost, setIsBulkCost] = useState(false)
 
-  const costPerUnit = +values.bulkCost / values.quantity
-  const costPerUnitColor =
-    costPerUnit > 0 && costPerUnit !== Infinity
-      ? 'text-green-500'
-      : 'text-gray-400'
+  const addNewBatch = () => {
+    const newBatch = {
+      name: `Batch ${values.batches.length + 1} `,
+      cost: 0,
+      costPerUnit: 0,
+      quantity: 0,
+      unitOfMeasurement:
+        values.soldBy === ProductSoldBy.Pieces ? 'pieces' : 'kg',
+    }
+    setFieldValue('batches', [...values.batches, newBatch])
+  }
   return (
     <div className="sub-screen">
       <Toolbar
@@ -77,14 +89,12 @@ const StockDetail = (props: StockDetailProps) => {
               type="radio"
               className="radio-primary radio"
               name="soldBy"
-              value={'pieces'}
-              checked={values.soldBy === 'pieces'}
+              value={ProductSoldBy.Pieces}
+              checked={values.soldBy === ProductSoldBy.Pieces}
               onChange={(e) => {
                 setFieldValue('soldBy', e.target.value)
                 if (e.target.checked) {
                   setIsBulkCost(false)
-                  setFieldValue('bulkCost', 0)
-                  setFieldValue('unitOfMeasurement', 'pieces')
                 }
               }}
             />
@@ -98,14 +108,10 @@ const StockDetail = (props: StockDetailProps) => {
               type="radio"
               className="radio-primary radio"
               name="soldBy"
-              value={'weight'}
-              checked={values.soldBy === 'weight'}
+              value={ProductSoldBy.Weight}
+              checked={values.soldBy === ProductSoldBy.Weight}
               onChange={(e) => {
                 setFieldValue('soldBy', e.target.value)
-                if (e.target.checked) {
-                  setFieldValue('bulkCost', 0)
-                  setFieldValue('unitOfMeasurement', 'kg')
-                }
               }}
             />
             <span className="label-text">Weight</span>
@@ -124,10 +130,6 @@ const StockDetail = (props: StockDetailProps) => {
               <input
                 onChange={(e) => {
                   setIsBulkCost(e.target.checked)
-                  if (!e.target.checked === false) {
-                    setFieldValue('bulkCost', 0)
-                    setFieldValue('unitOfMeasurement', 'kg')
-                  }
                 }}
                 type="checkbox"
                 className="toggle toggle-primary"
@@ -140,118 +142,32 @@ const StockDetail = (props: StockDetailProps) => {
 
       {/* Batches */}
       {/* TODO: Populate this from batches */}
-      <div className="flex flex-col gap-2 bg-gray-100 p-2">
-        <p className="text-sm uppercase tracking-wider">Batch 1</p>
-        <p>Quantity</p>
-        <QuantityInput
-          value={values.quantity}
-          onChange={(newValue) => {
-            setFieldValue('quantity', newValue)
-          }}
-          className="w-full"
-        />
-
-        {values.soldBy === 'weight' && (
-          <label className="form-control w-full ">
-            <div className="">
-              <span className="label-text-alt ">Unit of Measurement</span>
-            </div>
-            <MeasurementSelect
-              value={{
-                label:
-                  measurementOptions.find(
-                    (option) => option.value === values.unitOfMeasurement,
-                  )?.label || '',
-                value: values.unitOfMeasurement,
-              }}
-              onChange={(value) => {
-                setFieldValue('unitOfMeasurement', value?.value)
-              }}
-            />
-          </label>
-        )}
-
-        {/* If sold by weight */}
-        {isBulkCost && (
-          <>
-            <label className="form-control w-full ">
-              <div className="">
-                <span className="label-text">Bulk Cost</span>
-              </div>
-              <CurrencyInput
-                onBlur={getFieldProps('bulkCost').onBlur}
-                name={getFieldProps('bulkCost').name}
-                value={getFieldProps('bulkCost').value}
-                type="text"
-                tabIndex={2}
-                className="input input-bordered w-full"
-                prefix="₱"
-                onValueChange={(value) => {
-                  setFieldValue('bulkCost', value)
-                }}
-                allowNegativeValue={false}
-              />
-            </label>
-            <p className={`${costPerUnitColor}`}>
-              Cost: ₱
-              {isNaN(costPerUnit) || costPerUnit == Infinity
-                ? '0.00'
-                : costPerUnit.toFixed(2)}
-              /{values.unitOfMeasurement}
-            </p>
-          </>
-        )}
-
-        {/* Expiration */}
-        <label className="form-control w-full ">
-          <div className="">
-            <span className="label-text-alt ">Expiration</span>
-          </div>
-          <input
-            {...getFieldProps('expirationDate')}
-            type="date"
-            placeholder="Expiration Date"
-            className="input input-bordered w-full"
+      {values.batches.map((batch, index) => {
+        return (
+          <BatchCard
+            onChange={(batch) => {
+              setFieldValue(`batches.${index}`, batch)
+            }}
+            batch={batch}
+            key={index}
+            soldBy={values.soldBy}
+            isBulkCost={isBulkCost}
           />
-        </label>
+        )
+      })}
 
-        {/* Warning */}
-        {/* <label className="form-control w-full ">
-          <div className="">
-            <span className="label-text-alt ">Expiration warning before:</span>
-          </div>
-          <div className="flex flex-row gap-4">
-            <input
-              placeholder="Hours, Days, Weeks, Months"
-              className="input input-bordered w-[120px]"
-            />
-            <div className="w-full">
-              <MeasurementSelect
-                measurements={['time']}
-                value={{
-                  label:
-                    getAllMeasurementUnits(['time']).find(
-                      (option) => option.value === values.warnBefore,
-                    )?.label || '',
-                  value: values.warnBefore,
-                }}
-                onChange={(value) => {
-                  setFieldValue('warnBefore', value?.value)
-                }}
-              />
-            </div>
-          </div>
-        </label> */}
-        {/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
-      </div>
-
-      <button className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap  ">
+      <button
+        onClick={addNewBatch}
+        className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap  "
+      >
         <PlusIcon className="w-5 flex-shrink-0 " />
 
         <div className="flex flex-row items-center gap-2">
           <p className="">New Batch</p>
         </div>
       </button>
+
+      <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre>
     </div>
   )
 }

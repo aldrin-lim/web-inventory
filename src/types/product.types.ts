@@ -10,6 +10,11 @@ export enum ProductType {
   Regular = 'regular',
 }
 
+export enum ProductSoldBy {
+  Pieces = 'pieces',
+  Weight = 'weight',
+}
+
 export const OptionSchema = z.object({
   option: z.string({
     required_error: 'Variant Option name is required',
@@ -35,13 +40,12 @@ export const ProductBatchSchema = z.object({
     .number({
       invalid_type_error: 'Cost per Unit must be a number',
     })
-    .nullable()
     .optional(),
   quantity: z.number({
     required_error: 'Quantity is required',
     invalid_type_error: 'Quantity must be a number',
   }),
-  unitOfMeasurment: z.string({
+  unitOfMeasurement: z.string({
     required_error: 'Measurement is required',
     invalid_type_error: 'Measurement must be a number',
   }),

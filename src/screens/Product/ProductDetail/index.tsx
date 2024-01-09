@@ -73,7 +73,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   cost: parsedValue.cost,
                   name: 'Batch 1',
                   quantity: 0,
-                  unitOfMeasurment: 'pieces',
+                  unitOfMeasurement: 'pieces',
                   costPerUnit: 0,
                 },
               ],

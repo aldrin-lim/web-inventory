@@ -1,6 +1,8 @@
 import convert, { Measure } from 'convert-units'
 
-export function getAllMeasurementUnits(measures: Measure[] = ['mass', 'time']) {
+export function getAllMeasurementUnits(
+  measures: Measure[] = ['mass', 'volume'],
+) {
   const measurementOptions = []
 
   const units = measures
