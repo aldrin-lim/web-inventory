@@ -1,219 +1,39 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AppPath } from 'routes/AppRoutes.types'
+import { useProductDetail } from '../contexts/ProductDetailContext'
 import {
-  ChevronRightIcon,
-  ArchiveBoxIcon,
   ChevronLeftIcon,
-  PlusIcon,
+  ChevronRightIcon,
+  HomeIcon,
 } from '@heroicons/react/24/solid'
-import ProductImages from 'screens/Product/ProductDetail/components/ProductImages'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import { FormikProps } from 'formik'
-import useCreateProduct from 'hooks/useCreateProduct'
-import useUpdateProduct from 'hooks/useUpdateProduct'
-import { useCallback, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { AppPath } from 'routes/AppRoutes.types'
-import { Product, ProductVariant } from 'types/product.types'
-import {
-  useProductDetail,
-  ProductDetailActionModal,
-  ProductDetailActionType,
-} from '../contexts/ProductDetailContext'
-import ConfirmDeleteDialog from './components/ConfirmDeleteDialog'
-import useDeleteProduct from 'hooks/useDeleteProduct'
 import PrimaryAction from './components/ProductDetailPrimaryAction'
-import ProductDetailForm from './components/ProductDetailForm'
-import ProductVariantList from './components/ProductVariantList'
-import { AnimatePresence, motion } from 'framer-motion'
-import AddDescription from './AddDescription'
-import AddProductDetail, { AddProductDetailSchema } from './AddProductDetails'
-import AddProductVariant from './AddProductVariants'
-import { subscreenAnimation } from 'constants/animation'
-import { z } from 'zod'
-import { ProductVariantDetailProvider } from '../contexts/ProductVariantDetailContext'
-import ProductVariantDetail from './ProductVariantDetail'
+import ProductImages from './components/ProductImages'
+
+enum ActiveScreen {
+  None = 'none',
+  DiscountList = 'list',
+}
 
 export const ProductDetail = () => {
   const {
-    dispatch,
-    state: { activeModal, productDetails, mode },
+    state: { productDetails, mode },
   } = useProductDetail()
-
-  const [currentVariant, setCurrentVariant] = useState<{
-    variant: ProductVariant
-    variantIndex: number
-  } | null>(null)
-
-  const modalDialogRef = useRef<HTMLDialogElement>(null)
-  const formikRef = useRef<FormikProps<Product | ProductVariant>>(null)
-
-  const { createProduct, isCreating } = useCreateProduct()
-  const { updateProduct, isUpdating } = useUpdateProduct()
-  const { deleteProduct, isDeleting } = useDeleteProduct()
-
-  const isMutating = isUpdating || isCreating || isDeleting
 
   const navigate = useNavigate()
 
-  const setActiveModal = (modal: ProductDetailActionModal) => {
-    dispatch({
-      type: ProductDetailActionType.SetActiveModal,
-      payload: modal,
-    })
-  }
-
-  const setProductValue = useCallback(
-    (field: keyof Product, value: unknown) => {
-      dispatch({
-        type: ProductDetailActionType.UpdateProductDetail,
-        payload: {
-          field,
-          value,
-        },
-      })
-    },
-    [dispatch],
-  )
-
-  const submitForm = async () => {
-    formikRef.current?.submitForm
-    if (mode === 'add') {
-      await createProduct(productDetails)
-    } else {
-      console.log(productDetails)
-      await updateProduct(productDetails)
-    }
-  }
-
-  const onDeleteProduct = useCallback(async () => {
-    if (productDetails.id) {
-      await deleteProduct({ id: productDetails.id })
-      navigate(AppPath.ProductOverview)
-    } else {
-      // track why id isnt being provided
-    }
-  }, [deleteProduct, navigate, productDetails.id])
-
-  const onClone = useCallback(async () => {
-    if (productDetails.id) {
-      const newProductName = `copy of ${productDetails.name}`
-      await createProduct({
-        ...productDetails,
-        name: newProductName,
-      })
-    } else {
-      // track why id isnt being provided
-    }
-  }, [createProduct, productDetails])
-
-  const setFieldValue = (field: keyof Product, value: unknown) => {
-    formikRef.current?.setFieldValue(field, value)
-    setProductValue(field, value)
-  }
-
-  const closeSubscreens = () =>
-    dispatch({
-      type: ProductDetailActionType.SetActiveModal,
-      payload: ProductDetailActionModal.None,
-    })
-
-  const saveDescription = (description: string) => {
-    dispatch({
-      type: ProductDetailActionType.UpdateProductDetail,
-      payload: {
-        field: 'description',
-        value: description,
-      },
-    })
-  }
-
-  const onSaveDetails = (data: z.infer<typeof AddProductDetailSchema>) => {
-    const { category, expiryDate, quantity, measurement, allowBackOrder } = data
-    if (category) {
-      setProductValue('category', category)
-    }
-
-    if (expiryDate) {
-      setProductValue('expiryDate', expiryDate)
-    }
-
-    if (quantity !== undefined || quantity !== null) {
-      setProductValue('quantity', quantity)
-    }
-
-    if (measurement) {
-      setProductValue('measurement', measurement)
-    }
-    if (allowBackOrder) {
-      setProductValue('allowBackOrder', allowBackOrder)
-    }
-  }
-
-  const onDescriptionButtonClick = () => {
-    setActiveModal(ProductDetailActionModal.Description)
-  }
-
-  const onProductImagesChange = (images: Array<string>) => {
-    setProductValue('images', images)
-  }
-
-  const onProductVariantClick = (index: number) => {
-    if (productDetails.variants && productDetails.variants[index]) {
-      setCurrentVariant({
-        variantIndex: index,
-        variant: productDetails.variants[index],
-      })
-    }
-  }
+  const [activeScreen] = useState(ActiveScreen.None)
 
   return (
-    <>
-      <ConfirmDeleteDialog
-        ref={modalDialogRef}
-        productName={productDetails.name}
-        onDelete={onDeleteProduct}
-      />
-
-      <AnimatePresence>
-        <motion.div
-          className={[
-            'section absolute z-30 flex min-h-screen flex-col gap-4 bg-base-100  pt-0',
-            currentVariant ? '' : 'hidden',
-          ].join(' ')}
-          variants={subscreenAnimation}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          key={JSON.stringify(currentVariant) ?? 0}
-        >
-          {currentVariant && (
-            <ProductVariantDetailProvider
-              productDetails={currentVariant.variant}
-            >
-              <ProductVariantDetail
-                onClose={() => setCurrentVariant(null)}
-                onSave={(variant) => {
-                  dispatch({
-                    type: ProductDetailActionType.UpdateProductVariant,
-                    payload: {
-                      variantIndex: currentVariant.variantIndex,
-                      updatedVariant: variant,
-                    },
-                  })
-                  setCurrentVariant(null)
-                }}
-              />
-            </ProductVariantDetailProvider>
-          )}
-          {!currentVariant && <div />}
-        </motion.div>
-      </AnimatePresence>
-      <div
-        className={`section relative flex-col gap-4 pt-0 ${
-          currentVariant ? 'hidden' : 'flex'
-        }`}
-      >
+    <div
+      className={`OrderSelection main-screen ${
+        activeScreen === ActiveScreen.None ? 'h-full' : 'h-screen'
+      }`}
+    >
+      <div className="sub-screen">
         <Toolbar
           items={[
             <ToolbarButton
@@ -228,120 +48,131 @@ export const ProductDetail = () => {
             <PrimaryAction
               mode={mode}
               key="primaryAction"
-              isLoading={isMutating}
-              onClone={onClone}
-              onCreate={submitForm}
-              onDelete={onDeleteProduct}
-              onSave={submitForm}
+              isLoading={false}
+              onCreate={function (): void {
+                throw new Error('Function not implemented.')
+              }}
+              onDelete={function (): void {
+                throw new Error('Function not implemented.')
+              }}
+              onSave={function (): void {
+                throw new Error('Function not implemented.')
+              }}
+              onClone={function (): void {
+                throw new Error('Function not implemented.')
+              }}
             />,
           ]}
         />
-        <div
-          className={`inline-flex flex-grow flex-col gap-4 ${
-            activeModal !== ProductDetailActionModal.None // Prevent overlapping content to appear on other subscreen
-              ? 'h-0 overflow-hidden'
-              : 'h-full'
-          }`}
-        >
-          <ProductDetailForm
-            initialValues={productDetails}
-            onSubmit={submitForm}
-            setFieldValue={setFieldValue}
-            ref={formikRef}
-            disabled={isMutating}
-            onDescriptionButtonClick={onDescriptionButtonClick}
-          />
+        <div className="flex flex-col items-start gap-2">
+          {/* Product Name */}
+          <label className="form-control w-full ">
+            <div className="form-control-label  ">
+              <span className="label-text-alt text-gray-400">Product Name</span>
+            </div>
+            <input
+              type="text"
+              placeholder="(e.g., Milk Tea, Coffee, etc.)"
+              className="input input-bordered w-full"
+              tabIndex={1}
+            />
+            {/* <div className="label py-0">
+              <span className="label-text-alt text-xs text-red-400">asd</span>
+            </div> */}
+          </label>
 
+          {/* Recipe CTA */}
+          <button className="btn btn-primary btn-xs max-w-xs  self-start rounded-[5px] text-left">
+            Create product using a recipe
+          </button>
+
+          {/* Set Description CTA */}
+          <button className="flex-start btn btn-ghost w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0">
+            <p className="text-overflow-ellipsis overflow-hidden truncate whitespace-nowrap break-words text-left">
+              <span className="text-gray-400">Add Description</span>
+            </p>
+            <ChevronRightIcon className="w-5 flex-shrink-0 text-secondary" />
+          </button>
+
+          {/* Price Input */}
+          <label className="form-control ">
+            <div className="form-control-label  ">
+              <span className="label-text-alt text-gray-400">Price</span>
+            </div>
+            <input
+              type="text"
+              tabIndex={2}
+              className="input input-bordered w-full"
+            />
+            <div className="label py-0">
+              <span className="label-text-alt text-xs text-red-400">
+                &nbsp;
+              </span>
+            </div>
+          </label>
+
+          {/* Cost and Profit */}
+          <div className="flex w-full flex-row gap-2">
+            {/* Cost */}
+            <label className="form-control ">
+              <div className="form-control-label  ">
+                <span className="label-text-alt text-gray-400">Cost</span>
+              </div>
+              <input
+                tabIndex={3}
+                type="text"
+                className="input input-bordered w-full"
+              />
+              <div className="label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  &nbsp;
+                </span>
+              </div>
+            </label>
+
+            {/* Profit */}
+            <div className="form-control input input-bordered relative flex flex-row items-center">
+              <div className="form-control-label  ">
+                <span className="label-text-alt text-gray-400">Profit</span>
+              </div>
+              <input
+                type="text"
+                defaultValue="50"
+                className="input w-[30px] border-none bg-transparent px-0 focus:outline-none"
+                maxLength={2}
+              />
+              <p className="-ml-2">%</p>
+              <input
+                type="text"
+                placeholder="Profit"
+                className="input w-full border-none bg-transparent px-0  pl-4 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Images */}
           <ProductImages
-            onImagesChange={onProductImagesChange}
+            onImagesChange={() => {}}
             images={productDetails?.images || []}
           />
 
-          {!productDetails.variants ||
-            (productDetails.variants?.length === 0 && (
-              <button
-                className="btn btn-ghost btn-outline btn-primary flex w-full flex-row justify-between"
-                onClick={() => setActiveModal(ProductDetailActionModal.Detail)}
-                disabled={isMutating}
-              >
-                <div className="flex flex-row items-center gap-1">
-                  <ArchiveBoxIcon className="w-5" />
-                  Manage Inventory
-                </div>
-                <ChevronRightIcon className="w-5" />
-              </button>
-            ))}
-
-          <div className="flex w-full flex-row items-center justify-between">
-            <h1 className="font-bold">Variants</h1>
-            {productDetails.variants && productDetails.variants.length > 0 && (
-              <button
-                onClick={() =>
-                  setActiveModal(ProductDetailActionModal.Variants)
-                }
-                className="btn btn-ghost btn-sm"
-              >
-                <PlusIcon className="w-5 text-blue-400" />
-              </button>
-            )}
+          {/* Track Stock */}
+          <div className="form-control flex w-full flex-row justify-between py-2">
+            <span>Track Stock</span>
+            <input type="checkbox" className="toggle toggle-primary" />
           </div>
-          {!(productDetails.variants && productDetails.variants.length > 0) && (
-            <button
-              className="btn btn-ghost btn-outline btn-primary btn-md  text-center"
-              onClick={() => setActiveModal(ProductDetailActionModal.Variants)}
-              disabled={isMutating || productDetails.name.length < 1}
-            >
-              Add Variants
-            </button>
-          )}
 
-          <ProductVariantList
-            onItemClick={onProductVariantClick}
-            variants={productDetails.variants}
-          />
+          {/* Manage Variant */}
+          <button className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap justify-between ">
+            <div className="flex flex-row items-center gap-2">
+              <HomeIcon className="w-5 flex-shrink-0 " />
+              <p className="">Manage Variant</p>
+            </div>
+            <ChevronRightIcon className="w-5 flex-shrink-0 " />
+          </button>
         </div>
-
-        <AnimatePresence>
-          <motion.div
-            className={[
-              'section absolute left-0 right-0 z-10 h-full bg-base-100 pt-0',
-              activeModal === ProductDetailActionModal.None ? 'hidden' : '',
-            ].join(' ')}
-            variants={subscreenAnimation}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            key={activeModal}
-          >
-            {activeModal === ProductDetailActionModal.Description && (
-              <AddDescription
-                onBack={closeSubscreens}
-                onSave={saveDescription}
-                description={productDetails?.description}
-              />
-            )}
-
-            {activeModal === ProductDetailActionModal.Detail && (
-              <AddProductDetail
-                values={{
-                  category: productDetails.category || '',
-                  expiryDate: productDetails.expiryDate || null,
-                  quantity: productDetails.quantity || 0,
-                  measurement: productDetails.measurement || 'pieces',
-                  allowBackOrder: productDetails.allowBackOrder,
-                }}
-                onSave={onSaveDetails}
-                onClose={closeSubscreens}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-        {[
-          ProductDetailActionModal.Variants,
-          ProductDetailActionModal.VariantsInfo,
-        ].includes(activeModal) && <AddProductVariant />}
       </div>
-    </>
+    </div>
   )
 }
 
