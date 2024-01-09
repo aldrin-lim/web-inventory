@@ -40,6 +40,14 @@ html, body {
     @apply pt-0
   }
 
+  .sub-screen:has(.ToolbarContainer) > .ToolbarContainer + *{
+    @apply mt-16
+  }
+
+  .main-screen:has(.ToolbarContainer) > .ToolbarContainer + *{
+    @apply mt-16
+  }
+
 
   .form-control {
     @apply text-left
@@ -50,7 +58,7 @@ html, body {
   }
 
   .main-screen {
-    @apply flex min-h-screen w-full flex-col gap-4 overflow-hidden bg-base-300
+    @apply flex min-h-screen w-full flex-col gap-4 overflow-hidden bg-base-100
   }
 
   .sub-screen {

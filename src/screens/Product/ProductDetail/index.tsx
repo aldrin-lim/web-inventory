@@ -12,6 +12,10 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import PrimaryAction from './components/ProductDetailPrimaryAction'
 import ProductImages from './components/ProductImages'
+import { z } from 'zod'
+import { useFormik } from 'formik'
+import { toFormikValidationSchema } from 'zod-formik-adapter'
+import CurrencyInput from 'react-currency-input-field'
 
 enum ActiveScreen {
   None = 'none',
@@ -26,6 +30,23 @@ export const ProductDetail = () => {
   const navigate = useNavigate()
 
   const [activeScreen] = useState(ActiveScreen.None)
+
+  const { submitForm, errors, getFieldProps, setFieldValue, values } =
+    useFormik({
+      initialValues: {
+        id: null,
+        name: '',
+        price: 0,
+        cost: 0,
+        images: [],
+        profitAmount: 0,
+        profitPercentage: 50,
+        trackStock: false,
+      } as z.infer<typeof ProductSchema>,
+      validationSchema: toFormikValidationSchema(ProductSchema),
+      enableReinitialize: true,
+      onSubmit: () => {},
+    })
 
   return (
     <div
@@ -50,13 +71,13 @@ export const ProductDetail = () => {
               key="primaryAction"
               isLoading={false}
               onCreate={function (): void {
-                throw new Error('Function not implemented.')
+                submitForm()
               }}
               onDelete={function (): void {
                 throw new Error('Function not implemented.')
               }}
               onSave={function (): void {
-                throw new Error('Function not implemented.')
+                submitForm()
               }}
               onClone={function (): void {
                 throw new Error('Function not implemented.')
@@ -71,14 +92,20 @@ export const ProductDetail = () => {
               <span className="label-text-alt text-gray-400">Product Name</span>
             </div>
             <input
+              {...getFieldProps('name')}
               type="text"
               placeholder="(e.g., Milk Tea, Coffee, etc.)"
               className="input input-bordered w-full"
               tabIndex={1}
             />
-            {/* <div className="label py-0">
-              <span className="label-text-alt text-xs text-red-400">asd</span>
-            </div> */}
+
+            {errors.name && (
+              <div className="label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  {errors.name}
+                </span>
+              </div>
+            )}
           </label>
 
           {/* Recipe CTA */}
@@ -95,18 +122,26 @@ export const ProductDetail = () => {
           </button>
 
           {/* Price Input */}
-          <label className="form-control ">
+          <label className="form-control">
             <div className="form-control-label  ">
               <span className="label-text-alt text-gray-400">Price</span>
             </div>
-            <input
+            <CurrencyInput
+              onBlur={getFieldProps('price').onBlur}
+              name={getFieldProps('price').name}
               type="text"
               tabIndex={2}
               className="input input-bordered w-full"
+              prefix="₱"
+              onValueChange={(_, __, values) => {
+                if (values?.float) {
+                  setFieldValue('price', values?.float ?? 0)
+                }
+              }}
             />
             <div className="label py-0">
               <span className="label-text-alt text-xs text-red-400">
-                &nbsp;
+                {errors.price}&nbsp;
               </span>
             </div>
           </label>
@@ -114,39 +149,64 @@ export const ProductDetail = () => {
           {/* Cost and Profit */}
           <div className="flex w-full flex-row gap-2">
             {/* Cost */}
-            <label className="form-control ">
+            <label className="form-control max-w-[40%]">
               <div className="form-control-label  ">
                 <span className="label-text-alt text-gray-400">Cost</span>
               </div>
-              <input
-                tabIndex={3}
+              <CurrencyInput
+                onBlur={getFieldProps('cost').onBlur}
+                name={getFieldProps('cost').name}
                 type="text"
+                tabIndex={3}
                 className="input input-bordered w-full"
+                prefix="₱"
+                onValueChange={(_, __, values) => {
+                  setFieldValue('cost', values?.float ?? 0)
+                }}
               />
               <div className="label py-0">
                 <span className="label-text-alt text-xs text-red-400">
-                  &nbsp;
+                  {errors.cost}&nbsp;
                 </span>
               </div>
             </label>
-
             {/* Profit */}
-            <div className="form-control input input-bordered relative flex flex-row items-center">
-              <div className="form-control-label  ">
-                <span className="label-text-alt text-gray-400">Profit</span>
+            <div className="form-control">
+              <div className="form-control input input-bordered relative flex flex-row items-center">
+                <div className="form-control-label  ">
+                  <span className="label-text-alt text-gray-400">Profit</span>
+                </div>
+                <CurrencyInput
+                  onBlur={getFieldProps('profitPercentage').onBlur}
+                  name={getFieldProps('profitPercentage').name}
+                  value={getFieldProps('profitPercentage').value}
+                  type="text"
+                  tabIndex={2}
+                  className="input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none"
+                  onValueChange={(_, __, values) => {
+                    setFieldValue('profitPercentage', values?.float ?? 0)
+                  }}
+                  maxLength={6}
+                />
+                <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
+                <CurrencyInput
+                  onBlur={getFieldProps('profitAmount').onBlur}
+                  name={getFieldProps('profitAmount').name}
+                  value={getFieldProps('profitAmount').value}
+                  type="text"
+                  tabIndex={2}
+                  fixedDecimalLength={2}
+                  className="input w-full border-none bg-transparent px-0 pl-2 focus:outline-none"
+                  onValueChange={(_, __, values) => {
+                    setFieldValue('profitAmount', values?.float ?? 0)
+                  }}
+                />
               </div>
-              <input
-                type="text"
-                defaultValue="50"
-                className="input w-[30px] border-none bg-transparent px-0 focus:outline-none"
-                maxLength={2}
-              />
-              <p className="-ml-2">%</p>
-              <input
-                type="text"
-                placeholder="Profit"
-                className="input w-full border-none bg-transparent px-0  pl-4 focus:outline-none"
-              />
+              <div className="label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  {errors.profitAmount}&nbsp;
+                </span>
+              </div>
             </div>
           </div>
 
@@ -171,9 +231,21 @@ export const ProductDetail = () => {
             <ChevronRightIcon className="w-5 flex-shrink-0 " />
           </button>
         </div>
+        <pre>{JSON.stringify(values, null, 2)}</pre>
       </div>
     </div>
   )
 }
+
+const ProductSchema = z.object({
+  id: z.string({ required_error: 'Product ID is required' }).nullable(),
+  name: z.string({ required_error: 'Product name is required' }),
+  price: z.coerce.number({ required_error: 'Price is required' }),
+  cost: z.number({ required_error: 'Cost is required' }),
+  profitPercentage: z.number({ required_error: 'Profit is required' }),
+  profitAmount: z.number({ required_error: 'Profit is required' }),
+  images: z.array(z.string()).default([]),
+  trackStock: z.boolean().default(false),
+})
 
 export default ProductDetail

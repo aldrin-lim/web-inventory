@@ -93,7 +93,7 @@ const ProductOverview = () => {
 
   if (error) {
     return (
-      <div className="ProductOverview section ">
+      <div className="ProductOverview main-screen ">
         <Toolbar
           items={[
             <ToolbarButton
@@ -123,7 +123,7 @@ const ProductOverview = () => {
   }
 
   return (
-    <div className="ProductOverview section">
+    <div className="ProductOverview main-screen section">
       <Toolbar
         items={[
           <ToolbarButton
