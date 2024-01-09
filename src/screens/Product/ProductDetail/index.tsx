@@ -181,7 +181,7 @@ export const ProductDetail = () => {
                   name={getFieldProps('profitPercentage').name}
                   value={getFieldProps('profitPercentage').value}
                   type="text"
-                  tabIndex={2}
+                  tabIndex={4}
                   className="input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none"
                   onValueChange={(_, __, values) => {
                     setFieldValue('profitPercentage', values?.float ?? 0)
@@ -194,7 +194,7 @@ export const ProductDetail = () => {
                   name={getFieldProps('profitAmount').name}
                   value={getFieldProps('profitAmount').value}
                   type="text"
-                  tabIndex={2}
+                  tabIndex={5}
                   fixedDecimalLength={2}
                   className="input w-full border-none bg-transparent px-0 pl-2 focus:outline-none"
                   onValueChange={(_, __, values) => {
