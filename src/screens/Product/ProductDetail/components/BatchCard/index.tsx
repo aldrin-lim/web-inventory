@@ -19,18 +19,10 @@ type BatchCardProps = {
   onRemove: () => void
 }
 
-const defaultValue = {
-  name: 'Batch 1',
-  cost: 0,
-  costPerUnit: 0,
-  quantity: 0,
-  unitOfMeasurement: 'pieces',
-} as z.infer<typeof BatchSchema>
-
 const BatchCard = (props: BatchCardProps) => {
   const { batch, soldBy, isBulkCost = false, onRemove } = props
 
-  const formValue = batch ?? defaultValue
+  const formValue = batch
   const { getFieldProps, values, setFieldValue } = useFormik({
     onSubmit: () => {
       // TODO: When bulk cost is disabled, reset bulk cost to 0 and unit of measurement to pieces
@@ -62,7 +54,9 @@ const BatchCard = (props: BatchCardProps) => {
   return (
     <div className="flex flex-col gap-2 bg-gray-100 p-2">
       <div className="flex flex-row justify-between">
-        <p className="text-sm uppercase tracking-wider">{batch.name}</p>
+        <p className="text-sm uppercase tracking-wider">
+          Batch {batch.id?.slice(0, 6)}
+        </p>
         <button
           type="button"
           className="btn btn-ghost btn-xs"

@@ -9,6 +9,7 @@ import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { AddProductSchema } from 'api/product/createProduct'
 import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
+import { v4 } from 'uuid'
 
 type StockDetail = z.infer<typeof StockDetailSchema>
 
@@ -79,14 +80,17 @@ const StockDetail = (props: StockDetailProps) => {
   const addNewBatch = () => {
     // get measurement from exiting batch
     const newBatch = {
+      id: v4(),
       name: `Batch ${values.batches.length + 1} `,
       cost: values.isBulkCost ? 0 : Number(values.cost),
       costPerUnit: 0,
       quantity: 1,
       unitOfMeasurement:
-        values.soldBy === ProductSoldBy.Pieces ? 'pieces' : 'g',
+        values.soldBy === ProductSoldBy.Pieces
+          ? 'pieces'
+          : values.batches[0].unitOfMeasurement ?? 'g',
       expirationDate: null,
-    }
+    } as z.infer<typeof ProductBatchSchema>
     setFieldValue('batches', [...values.batches, newBatch])
   }
 

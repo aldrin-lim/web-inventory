@@ -22,6 +22,9 @@ import Description from './screens/Description'
 import StockDetail from './screens/StockDetail'
 import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { GetProductSchema } from 'api/product/getProductById'
+import useDeleteProduct from 'hooks/useDeleteProduct'
+import useUpdateProduct from 'hooks/useUpdateProduct'
+import { UpdateProductSchema } from 'api/product/updateProductById'
 
 enum ActiveScreen {
   None = 'none',
@@ -57,7 +60,7 @@ const defaultValue = {
       expirationDate: null,
     },
   ],
-} as z.infer<typeof ProductDetailSchema>
+} as z.infer<typeof AddProductDetailSchema>
 
 export const getActiveBatch = (
   batches: z.infer<typeof ProductBatchSchema>[],
@@ -86,8 +89,10 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const [activeScreen, setActiveScreen] = useState(ActiveScreen.None)
 
   const { createProduct, isCreating } = useCreateProduct()
+  const { deleteProduct, isDeleting } = useDeleteProduct()
+  const { updateProduct, isUpdating } = useUpdateProduct()
 
-  const isMutating = isCreating
+  const isMutating = isCreating || isDeleting || isUpdating
 
   const value = product
     ? ({
@@ -95,7 +100,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
         profitAmount: product.profit,
         profitPercentage: (product.profit / product.activeBatch.cost) * 100,
         cost: product.activeBatch.cost,
-      } as z.infer<typeof ProductDetailSchema>)
+      } as z.infer<typeof UpdateProductDetailSchema>)
     : defaultValue
   const {
     submitForm,
@@ -106,13 +111,17 @@ export const ProductDetail = (props: ProductDetailProps) => {
     setValues,
   } = useFormik({
     initialValues: value,
-    validationSchema: toFormikValidationSchema(ProductDetailSchema),
+    validationSchema: toFormikValidationSchema(
+      props.product ? UpdateProductDetailSchema : AddProductDetailSchema,
+    ),
     enableReinitialize: true,
     validateOnBlur: false,
     onSubmit: async (value) => {
-      const parsedValue = ProductDetailSchema.parse(value)
+      const parsedValue = (
+        props.product ? UpdateProductDetailSchema : AddProductDetailSchema
+      ).parse(value)
 
-      if (!product) {
+      if (mode === 'add') {
         if (parsedValue.trackStock === false) {
           const requestBody: z.infer<typeof AddProductSchema> = {
             name: parsedValue.name,
@@ -140,7 +149,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             name: parsedValue.name,
             price: parsedValue.price,
             profit: parsedValue.profitAmount,
-            soldBy: ProductSoldBy.Pieces,
+            soldBy: parsedValue.soldBy,
             category: parsedValue.category,
             description: parsedValue.description,
             images: parsedValue.images,
@@ -163,7 +172,42 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
           await createProduct(requestBody)
         }
+      } else {
+        const requestBody: z.infer<typeof UpdateProductSchema> = {
+          name: parsedValue.name,
+          price: parsedValue.price,
+          profit: parsedValue.profitAmount,
+          soldBy: parsedValue.soldBy,
+          category: parsedValue.category,
+          description: parsedValue.description,
+          images: parsedValue.images,
+          batches: parsedValue.batches as z.infer<
+            typeof UpdateProductSchema
+          >['batches'],
+          allowBackOrder: parsedValue.allowBackOrder,
+          trackStock: parsedValue.trackStock,
+          isBulkCost: parsedValue.isBulkCost,
+        }
+
+        if (parsedValue.trackStock === false) {
+          requestBody.batches = [
+            {
+              ...defaultValue.batches[0],
+              quantity: 0,
+              cost: parsedValue.cost ?? 0,
+            },
+          ]
+        }
+
+        if (product) {
+          await updateProduct({
+            id: product.id,
+            product: requestBody,
+          })
+        }
       }
+
+      navigate(AppPath.ProductOverview)
     },
     validateOnChange: false,
   })
@@ -245,11 +289,13 @@ export const ProductDetail = (props: ProductDetailProps) => {
               onCreate={function (): void {
                 submitForm()
               }}
-              onDelete={function (): void {
-                throw new Error('Function not implemented.')
+              onDelete={async () => {
+                if (product) {
+                  deleteProduct({ id: product.id })
+                }
               }}
               onSave={function (): void {
-                // submitForm()
+                submitForm()
               }}
               onClone={function (): void {
                 throw new Error('Function not implemented.')
@@ -547,8 +593,10 @@ export const ProductDetail = (props: ProductDetailProps) => {
           {/* Images */}
           <ProductImages
             disabled={isMutating}
-            onImagesChange={() => {}}
-            images={[]}
+            onImagesChange={(images) => {
+              setFieldValue('images', images)
+            }}
+            images={values.images ?? []}
           />
 
           {/* Track Stock */}
@@ -639,7 +687,24 @@ export const ProductDetail = (props: ProductDetailProps) => {
   )
 }
 
-export const ProductDetailSchema = AddProductSchema.extend({
+const AddProductDetailSchema = AddProductSchema.extend({
+  profitPercentage: z.coerce.number({
+    required_error: 'Profit % is required',
+    invalid_type_error: 'Profit  % is required',
+  }),
+  profitAmount: z.coerce.number({
+    required_error: 'Profit is required',
+    invalid_type_error: 'Profit is required',
+  }),
+  cost: z.number({
+    coerce: true,
+    required_error: 'Cost is required',
+  }),
+  activeBatch: ProductBatchSchema.optional(),
+  batches: z.array(ProductBatchSchema.partial({ id: true })),
+})
+
+const UpdateProductDetailSchema = AddProductSchema.extend({
   profitPercentage: z.coerce.number({
     required_error: 'Profit % is required',
     invalid_type_error: 'Profit  % is required',

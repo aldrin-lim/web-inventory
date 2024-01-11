@@ -93,9 +93,7 @@ export const BaseProductSchema = z.object({
       invalid_type_error: 'Allow back order must be a boolean',
     })
     .default(false),
-  batches: z
-    .array(ProductBatchSchema)
-    .min(1, 'Batches must have at least 1 item'),
+  batches: z.array(ProductBatchSchema),
 })
 
 export const ProductSchema = BaseProductSchema
