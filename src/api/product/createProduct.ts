@@ -13,7 +13,10 @@ export default async (param: AddProductSchema) => {
 // Schema and Types
 type AddProductSchema = z.infer<typeof AddProductSchema>
 
-export const AddProductSchema = ProductSchema.partial({ id: true }).extend({
+export const AddProductSchema = ProductSchema.partial({
+  id: true,
+  activeBatch: true,
+}).extend({
   batches: z
     .array(ProductBatchSchema.partial({ id: true }))
     .min(1, 'Batches must have at least 1 item'),

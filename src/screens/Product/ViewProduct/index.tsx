@@ -35,7 +35,7 @@ const ViewProduct = () => {
 
   return (
     <ProductDetailProvider productDetails={product} mode="edit">
-      <ProductDetail />
+      <ProductDetail product={product} />
     </ProductDetailProvider>
   )
 }

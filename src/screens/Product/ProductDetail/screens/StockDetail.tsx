@@ -4,66 +4,92 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import { useFormik } from 'formik'
-import { useState } from 'react'
 import BatchCard from '../components/BatchCard'
-import { ProductSoldBy } from 'types/product.types'
+import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { AddProductSchema } from 'api/product/createProduct'
 import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 
+type StockDetail = z.infer<typeof StockDetailSchema>
+
 type StockDetailProps = {
   onBack: () => void
-  onComplete: (value: z.infer<typeof StockDetailSchema>) => void
-  value: z.infer<typeof StockDetailSchema>
+  onComplete: (value: StockDetail) => void
+  value: StockDetail
+  activeBatch?: z.infer<typeof ProductBatchSchema>
 }
 
 const StockDetailSchema = AddProductSchema.pick({
   soldBy: true,
   allowBackOrder: true,
   batches: true,
+  isBulkCost: true,
+}).extend({
+  id: z.string().optional(),
+  cost: z.number({ coerce: true }).optional().default(0),
+  batches: z.array(ProductBatchSchema.partial({ id: true })),
 })
 
-const defaultValue = {
-  soldBy: ProductSoldBy.Pieces,
-  allowBackOrder: false,
-  batches: [
-    {
-      name: 'Batch 1',
-      cost: 0,
-      costPerUnit: 0,
-      quantity: 0,
-      unitOfMeasurement: 'pieces',
-    },
-  ],
-} as z.infer<typeof StockDetailSchema>
+// LEGEND
+// Active Batch - Batch that has more than 0 quantity and isnt expired
 
+// NOTES:
+
+// If there is an active batch prop it means that its editable
+
+// TODO:
+// For CREATE PRODUCT, no batch with zero quantity is allowed
+
+// TODO:
+// For UPDATE PRODUCT, if batch is active and quantity is zero, find the next active batch.
+// If there is no active batch, dont allow update
 const StockDetail = (props: StockDetailProps) => {
   const { onBack, onComplete } = props
 
   const { getFieldProps, values, setFieldValue, submitForm, errors } =
-    useFormik({
+    useFormik<StockDetail>({
       onSubmit: (value) => {
-        onComplete(value)
+        if (value.isBulkCost === false) {
+          onComplete({
+            ...value,
+            batches: values.batches.map((batch) => {
+              return {
+                ...batch,
+                cost: values.cost,
+                costPerUnit: 0,
+              }
+            }),
+          })
+        } else {
+          onComplete({
+            ...value,
+          })
+        }
         onBack()
-        // TODO: When bulk cost is disabled, reset bulk cost to 0 and unit of measurement to pieces
+
+        // TODO: Take not that when a batch matched the active batch, update the actibe batch same as the batch updated
+
+        // for UPDATE product. There should be atleast an active batch. If not we dont to continue the edit
       },
       validationSchema: toFormikValidationSchema(StockDetailSchema),
-      initialValues: props.value ?? defaultValue,
+      initialValues: props.value,
+      enableReinitialize: true,
     })
 
-  const [isBulkCost, setIsBulkCost] = useState(false)
-
   const addNewBatch = () => {
+    // get measurement from exiting batch
     const newBatch = {
       name: `Batch ${values.batches.length + 1} `,
-      cost: 0,
+      cost: values.isBulkCost ? 0 : Number(values.cost),
       costPerUnit: 0,
-      quantity: 0,
+      quantity: 1,
       unitOfMeasurement:
-        values.soldBy === ProductSoldBy.Pieces ? 'pieces' : 'kg',
+        values.soldBy === ProductSoldBy.Pieces ? 'pieces' : 'g',
+      expirationDate: null,
     }
     setFieldValue('batches', [...values.batches, newBatch])
   }
+
   return (
     <div className="sub-screen">
       <Toolbar
@@ -83,17 +109,21 @@ const StockDetail = (props: StockDetailProps) => {
           />,
         ]}
       />
+
       {/* Back order tracking */}
       <div className="form-control flex w-full flex-row justify-between py-2">
         <span>Allow selling when out of stock</span>
         <input
           {...getFieldProps('allowBackOrder')}
+          checked={values.allowBackOrder}
           type="checkbox"
           className="toggle toggle-primary"
         />
       </div>
 
       {/* Sell by */}
+
+      {/* RESET the batches every time this changes */}
       <p>Use/Sell By:</p>
       <div className="bg-gray-100  p-2">
         <div className="form-control ">
@@ -108,7 +138,16 @@ const StockDetail = (props: StockDetailProps) => {
               onChange={(e) => {
                 setFieldValue('soldBy', e.target.value)
                 if (e.target.checked) {
-                  setIsBulkCost(false)
+                  setFieldValue('isBulkCost', false)
+                  setFieldValue(
+                    'batches',
+                    values.batches.map((batch) => {
+                      return {
+                        ...batch,
+                        unitOfMeasurement: 'pieces',
+                      }
+                    }),
+                  )
                 }
               }}
             />
@@ -126,6 +165,17 @@ const StockDetail = (props: StockDetailProps) => {
               checked={values.soldBy === ProductSoldBy.Weight}
               onChange={(e) => {
                 setFieldValue('soldBy', e.target.value)
+                if (e.target.checked) {
+                  setFieldValue(
+                    'batches',
+                    values.batches.map((batch) => {
+                      return {
+                        ...batch,
+                        unitOfMeasurement: 'g',
+                      }
+                    }),
+                  )
+                }
               }}
             />
             <span className="label-text">Weight</span>
@@ -142,8 +192,22 @@ const StockDetail = (props: StockDetailProps) => {
             <span>Bulk Cost</span>
             <div className="flex flex-row gap-2">
               <input
+                {...getFieldProps('isBulkCost')}
+                checked={values.isBulkCost}
                 onChange={(e) => {
-                  setIsBulkCost(e.target.checked)
+                  setFieldValue('isBulkCost', e.target.checked)
+                  if (e.target.checked) {
+                    setFieldValue(
+                      'batches',
+                      values.batches.map((batch) => {
+                        return {
+                          ...batch,
+                          cost: 0,
+                          costPerUnit: 0,
+                        }
+                      }),
+                    )
+                  }
                 }}
                 type="checkbox"
                 className="toggle toggle-primary"
@@ -173,7 +237,7 @@ const StockDetail = (props: StockDetailProps) => {
             batch={batch}
             key={index}
             soldBy={values.soldBy}
-            isBulkCost={isBulkCost}
+            isBulkCost={values.isBulkCost}
           />
         )
       })}
@@ -190,6 +254,7 @@ const StockDetail = (props: StockDetailProps) => {
       </button>
 
       {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
+      {/* <pre className="text-xs">{JSON.stringify(errors, null, 2)}</pre> */}
     </div>
   )
 }

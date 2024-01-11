@@ -38,22 +38,10 @@ const BatchCard = (props: BatchCardProps) => {
     initialValues: {
       ...formValue,
     },
+    enableReinitialize: true,
   })
 
-  useEffect(() => {
-    if (soldBy === 'weight') {
-      setFieldValue('unitOfMeasurement', 'kg')
-    } else {
-      setFieldValue('unitOfMeasurement', 'pieces')
-    }
-    setFieldValue('cost', 0)
-  }, [soldBy])
-
-  useEffect(() => {
-    setFieldValue('cost', 0)
-  }, [isBulkCost])
-
-  const costPerUnit = Number(values.cost) / values.quantity
+  const costPerUnit = isBulkCost ? Number(values.cost) / values.quantity : 0
   const costPerUnitColor =
     costPerUnit > 0 && costPerUnit !== Infinity
       ? 'text-green-500'

@@ -33,15 +33,18 @@ export const ProductBatchSchema = z.object({
     invalid_type_error: 'Name must be a string',
   }),
   cost: z.number({
+    coerce: true,
     required_error: 'Cost is required',
     invalid_type_error: 'Cost must be a number',
   }),
   costPerUnit: z
     .number({
+      coerce: true,
       invalid_type_error: 'Cost per Unit must be a number',
     })
     .optional(),
   quantity: z.number({
+    coerce: true,
     required_error: 'Quantity is required',
     invalid_type_error: 'Quantity must be a number',
   }),
@@ -49,6 +52,9 @@ export const ProductBatchSchema = z.object({
     required_error: 'Measurement is required',
     invalid_type_error: 'Measurement must be a number',
   }),
+  expirationDate: z
+    .date({ invalid_type_error: 'Expiration  must be a data', coerce: true })
+    .nullable(),
 })
 
 export const BaseProductSchema = z.object({
@@ -63,17 +69,15 @@ export const BaseProductSchema = z.object({
       invalid_type_error: 'Description must be a string',
     })
     .optional(),
-  cost: z.number({
-    required_error: 'Cost is required',
-    invalid_type_error: 'Cost must be a number',
-  }),
   profit: z.number({
     required_error: 'Profit is required',
     invalid_type_error: 'Profit must be a number',
+    coerce: true,
   }),
   price: z.number({
     required_error: 'Price is required',
     invalid_type_error: 'Price must be a number',
+    coerce: true,
   }),
   images: z.array(z.string()).optional(),
   category: z
@@ -82,6 +86,7 @@ export const BaseProductSchema = z.object({
     })
     .optional(),
   trackStock: z.boolean().default(false),
+  isBulkCost: z.boolean().default(false),
   soldBy: z.nativeEnum(ProductSoldBy).default(ProductSoldBy.Pieces),
   allowBackOrder: z
     .boolean({
@@ -93,18 +98,6 @@ export const BaseProductSchema = z.object({
     .min(1, 'Batches must have at least 1 item'),
 })
 
-export const ProductVariantSchema = BaseProductSchema.extend({
-  id: z
-    .string({
-      invalid_type_error: 'Product Variant ID must be a string',
-    })
-    .optional(),
-  variantOptions: z
-    .array(OptionSchema)
-    .min(1, 'Variant options must have at least 1 item'),
-})
-
 export const ProductSchema = BaseProductSchema
 
 export type Product = z.infer<typeof ProductSchema>
-export type ProductVariant = z.infer<typeof ProductVariantSchema>

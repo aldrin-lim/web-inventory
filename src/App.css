@@ -14,11 +14,11 @@ body,
 }
 
 html {
-  /* overscroll-behavior: none; */
+  overscroll-behavior: none;
 }
 
 html, body {
-  overscroll-behavior-x: none;
+  overscroll-behavior: none;
 }
 
 .App {

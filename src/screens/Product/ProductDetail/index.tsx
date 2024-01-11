@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import {
@@ -20,7 +20,8 @@ import { AddProductSchema } from 'api/product/createProduct'
 import SlidingTransition from 'components/SlidingTransition'
 import Description from './screens/Description'
 import StockDetail from './screens/StockDetail'
-import { ProductSoldBy } from 'types/product.types'
+import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
+import { GetProductSchema } from 'api/product/getProductById'
 
 enum ActiveScreen {
   None = 'none',
@@ -29,7 +30,53 @@ enum ActiveScreen {
 }
 
 type ProductDetailProps = {
-  product?: z.infer<typeof ProductDetailSchema>
+  product?: z.infer<typeof GetProductSchema>
+}
+
+const defaultValue = {
+  name: '',
+  price: 0,
+  cost: 0,
+  images: [],
+  profitAmount: 0,
+  profitPercentage: 50,
+  trackStock: false,
+  description: '',
+  profit: 0,
+  category: '',
+  soldBy: ProductSoldBy.Pieces,
+  allowBackOrder: false,
+  isBulkCost: false,
+  batches: [
+    {
+      name: 'Batch 1',
+      cost: 0,
+      costPerUnit: 0,
+      quantity: 1,
+      unitOfMeasurement: 'pieces',
+      expirationDate: null,
+    },
+  ],
+} as z.infer<typeof ProductDetailSchema>
+
+export const getActiveBatch = (
+  batches: z.infer<typeof ProductBatchSchema>[],
+) => {
+  // Find the first batch that has quantity > 0
+  // Check if it has expiration date, if it has, check if its not expired
+  // Batch is active when quantity > 0 and not expired or no expiration date
+  const activeBatch = batches.find(
+    (batch) =>
+      batch.quantity > 0 &&
+      (!batch.expirationDate || new Date(batch.expirationDate) > new Date()),
+  )
+
+  // If no active batch found, get the first batch
+  if (!activeBatch) {
+    return batches[0]
+  }
+
+  return activeBatch
 }
 
 export const ProductDetail = (props: ProductDetailProps) => {
@@ -42,6 +89,14 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const isMutating = isCreating
 
+  const value = product
+    ? ({
+        ...product,
+        profitAmount: product.profit,
+        profitPercentage: (product.profit / product.activeBatch.cost) * 100,
+        cost: product.activeBatch.cost,
+      } as z.infer<typeof ProductDetailSchema>)
+    : defaultValue
   const {
     submitForm,
     errors,
@@ -50,63 +105,71 @@ export const ProductDetail = (props: ProductDetailProps) => {
     values,
     setValues,
   } = useFormik({
-    initialValues: {
-      name: '',
-      price: 0,
-      cost: 0,
-      images: [],
-      profitAmount: 0,
-      profitPercentage: 50,
-      trackStock: false,
-      description: '',
-      profit: 0,
-      category: '',
-      soldBy: ProductSoldBy.Pieces,
-      allowBackOrder: false,
-      batches: [
-        {
-          name: 'Batch 1',
-          cost: 0,
-          costPerUnit: 0,
-          quantity: 0,
-          unitOfMeasurement: 'pieces',
-        },
-      ],
-    } as z.infer<typeof ProductDetailSchema>,
+    initialValues: value,
     validationSchema: toFormikValidationSchema(ProductDetailSchema),
     enableReinitialize: true,
+    validateOnBlur: false,
     onSubmit: async (value) => {
       const parsedValue = ProductDetailSchema.parse(value)
 
       if (!product) {
         if (parsedValue.trackStock === false) {
           const requestBody: z.infer<typeof AddProductSchema> = {
-            cost: parsedValue.cost,
             name: parsedValue.name,
             price: parsedValue.price,
             profit: parsedValue.profitAmount,
             soldBy: ProductSoldBy.Pieces,
-            allowBackOrder: false,
-            trackStock: false,
-            category: '',
+            category: parsedValue.category,
             description: parsedValue.description,
-            images: [],
+            images: parsedValue.images,
             batches: [
               {
-                cost: parsedValue.cost,
-                name: 'Batch 1',
+                ...defaultValue.batches[0],
                 quantity: 0,
-                unitOfMeasurement: 'pieces',
-                costPerUnit: 0,
+                cost: parsedValue.cost ?? 0,
               },
             ],
+
+            allowBackOrder: false,
+            trackStock: false,
+            isBulkCost: false,
           }
+          await createProduct(requestBody)
+        } else {
+          const requestBody: z.infer<typeof AddProductSchema> = {
+            name: parsedValue.name,
+            price: parsedValue.price,
+            profit: parsedValue.profitAmount,
+            soldBy: ProductSoldBy.Pieces,
+            category: parsedValue.category,
+            description: parsedValue.description,
+            images: parsedValue.images,
+            batches: parsedValue.batches,
+            allowBackOrder: parsedValue.allowBackOrder,
+            trackStock: parsedValue.trackStock,
+            isBulkCost: parsedValue.isBulkCost,
+          }
+
+          // Make sure if the sold by pieces, make all the batches to have
+          // unit of measurement to pieces, cost to the parsedValue.cost, and cost per unit to 0
+          if (parsedValue.soldBy === ProductSoldBy.Pieces) {
+            requestBody.batches = requestBody.batches.map((batch) => ({
+              ...batch,
+              unitOfMeasurement: 'pieces',
+              costPerUnit: 0,
+              cost: Number(parsedValue.cost),
+            }))
+          }
+
           await createProduct(requestBody)
         }
       }
     },
     validateOnChange: false,
   })
+
+  const mode: 'add' | 'edit' = product ? 'edit' : 'add'
+  const addModeActiveBatch = values.batches[0]
 
   const showDescription = () => {
     setActiveScreen(ActiveScreen.Description)
@@ -115,6 +178,45 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const goBackToProductScreen = () => {
     setActiveScreen(ActiveScreen.None)
   }
+
+  useEffect(() => {
+    if (mode === 'add') {
+      if (values.isBulkCost === true) {
+        const newProfitAmount =
+          Number(values.price) - Number(addModeActiveBatch.costPerUnit)
+        const newProfitPercentage =
+          (newProfitAmount / Number(addModeActiveBatch.costPerUnit)) * 100
+
+        setFieldValue('profitPercentage', newProfitPercentage)
+        setFieldValue('profitAmount', newProfitAmount)
+      } else {
+        const newProfitAmount = Number(values.price) - Number(values.cost)
+        const newProfitPercentage =
+          (newProfitAmount / Number(values.cost)) * 100
+
+        setFieldValue('profitPercentage', newProfitPercentage)
+        setFieldValue('profitAmount', newProfitAmount)
+      }
+    }
+  }, [values.isBulkCost])
+
+  const priceDisplayValue =
+    Number(values.price) === Infinity || isNaN(values.price)
+      ? '0.00'
+      : values.price
+  const costDisplayValue =
+    Number(values.cost) === Infinity || isNaN(values.cost ?? 0)
+      ? '0.00'
+      : values.cost
+  const profitAmountDisplayValue =
+    Number(values.profitAmount) === Infinity || isNaN(values.profitAmount)
+      ? '0.00'
+      : values.profitAmount
+  const profitPercentageDisplayValue =
+    Number(values.profitPercentage) === Infinity ||
+    isNaN(values.profitPercentage)
+      ? '0'
+      : values.profitPercentage
 
   return (
     <div
@@ -202,49 +304,39 @@ export const ProductDetail = (props: ProductDetailProps) => {
             <ChevronRightIcon className="w-5 flex-shrink-0 text-secondary" />
           </button>
 
-          {/* Price Input */}
-          <label className="form-control">
-            <div className="form-control-label  ">
-              <span className="label-text-alt text-gray-400">Price</span>
-            </div>
-            <CurrencyInput
-              disabled={isMutating}
-              onBlur={getFieldProps('price').onBlur}
-              name={getFieldProps('price').name}
-              value={getFieldProps('price').value}
-              type="text"
-              tabIndex={2}
-              className="input input-bordered w-full"
-              prefix="₱"
-              onValueChange={(value) => {
-                setFieldValue('price', value)
-                if (value) {
-                  const newProfitAmount = +value - Number(values.cost)
-                  const newProfitPercentage =
-                    (newProfitAmount / Number(values.cost)) * 100
-                  setFieldValue('profitAmount', newProfitAmount)
-                  setFieldValue(
-                    'profitPercentage',
-                    // If has decimal show 2 decimal places, else show 0
-                    newProfitPercentage % 1
-                      ? newProfitPercentage.toFixed(2)
-                      : newProfitPercentage.toFixed(0),
-                  )
-                }
-              }}
-              allowNegativeValue={false}
-            />
-            <div className="label py-0">
-              <span className="label-text-alt text-xs text-red-400">
-                {errors.price}&nbsp;
-              </span>
-            </div>
-          </label>
+          {/* Cost per Unit */}
+          {/* For CREATE PRODUCT, use the first batch */}
+          {values.isBulkCost && mode === 'add' && (
+            <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-primary p-2 py-1 text-white">
+              <p className="font-bold">Cost:</p>
 
-          {/* Cost and Profit */}
-          <div className="flex w-full flex-row gap-2">
-            {/* Cost */}
-            <label className="form-control max-w-[40%]">
+              <div className="flex flex-row">
+                <p className="font-bold">
+                  ₱ {values.batches[0].costPerUnit?.toFixed(2)}
+                </p>
+                /<p> {values.batches[0].unitOfMeasurement}</p>
+              </div>
+            </div>
+          )}
+
+          {values.isBulkCost && mode === 'edit' && (
+            <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-primary p-2 py-1 text-white">
+              <p className="font-bold">Cost:</p>
+
+              <div className="flex flex-row">
+                <p className="font-bold">
+                  ₱ {product?.activeBatch.costPerUnit?.toFixed(2)}
+                </p>
+                /<p> {product?.activeBatch.unitOfMeasurement}</p>
+              </div>
+            </div>
+          )}
+
+          {/* For UPPDATE PRODUCT, use active batch.*/}
+
+          {/* Cost */}
+          {values.isBulkCost === false && (
+            <label className="form-control">
               <div className="form-control-label  ">
                 <span className="label-text-alt text-gray-400">Cost</span>
               </div>
@@ -252,7 +344,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 disabled={isMutating}
                 onBlur={getFieldProps('cost').onBlur}
                 name={getFieldProps('cost').name}
-                value={getFieldProps('cost').value}
+                value={costDisplayValue}
                 type="text"
                 tabIndex={3}
                 className="input input-bordered w-full"
@@ -260,16 +352,22 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 onValueChange={(value) => {
                   setFieldValue('cost', value)
                   if (value) {
-                    const newProfitAmount = Number(values.price) - +value
-                    const newProfitPercentage = (newProfitAmount / +value) * 100
-                    setFieldValue('profitAmount', newProfitAmount)
-                    setFieldValue(
-                      'profitPercentage',
-                      // If has decimal show 2 decimal places, else show 0
-                      newProfitPercentage % 1
-                        ? newProfitPercentage.toFixed(2)
-                        : newProfitPercentage.toFixed(0),
-                    )
+                    if (values.isBulkCost === false) {
+                      const newProfitAmount = Number(values.price) - +value
+                      const newProfitPercentage =
+                        (newProfitAmount / +value) * 100
+                      setFieldValue('profitAmount', newProfitAmount)
+                      setFieldValue(
+                        'profitPercentage',
+                        // If has decimal show 2 decimal places, else show 0
+                        newProfitPercentage % 1
+                          ? newProfitPercentage.toFixed(2)
+                          : newProfitPercentage.toFixed(0),
+                      )
+                    }
+                    if (!values.activeBatch || values.trackStock === false) {
+                      setFieldValue('batches.0.cost', Number(value))
+                    }
                   }
                 }}
                 allowNegativeValue={false}
@@ -277,6 +375,67 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <div className="label py-0">
                 <span className="label-text-alt text-xs text-red-400">
                   {errors.cost}&nbsp;
+                </span>
+              </div>
+            </label>
+          )}
+
+          {/* Price and Profit */}
+          <div className="flex w-full flex-row gap-2">
+            {/* Price Input */}
+            <label className="form-control max-w-[40%]">
+              <div className="form-control-label  ">
+                <span className="label-text-alt text-gray-400">Price</span>
+              </div>
+              <CurrencyInput
+                disabled={isMutating}
+                onBlur={getFieldProps('price').onBlur}
+                name={getFieldProps('price').name}
+                value={priceDisplayValue}
+                type="text"
+                tabIndex={2}
+                className="input input-bordered w-full"
+                prefix="₱"
+                onValueChange={(value) => {
+                  setFieldValue('price', value)
+                  if (value) {
+                    if (mode === 'add') {
+                      if (values.isBulkCost === false) {
+                        const newProfitAmount = +value - Number(values.cost)
+                        const newProfitPercentage =
+                          (newProfitAmount / Number(values.cost)) * 100
+                        setFieldValue('profitAmount', newProfitAmount)
+                        setFieldValue(
+                          'profitPercentage',
+                          // If has decimal show 2 decimal places, else show 0
+                          newProfitPercentage % 1
+                            ? newProfitPercentage.toFixed(2)
+                            : newProfitPercentage.toFixed(0),
+                        )
+                      } else {
+                        const newProfitAmount =
+                          +value - Number(addModeActiveBatch.costPerUnit)
+                        const newProfitPercentage =
+                          (newProfitAmount /
+                            Number(addModeActiveBatch.costPerUnit)) *
+                          100
+                        setFieldValue('profitAmount', newProfitAmount)
+                        setFieldValue(
+                          'profitPercentage',
+                          // If has decimal show 2 decimal places, else show 0
+                          newProfitPercentage % 1
+                            ? newProfitPercentage.toFixed(2)
+                            : newProfitPercentage.toFixed(0),
+                        )
+                      }
+                    }
+                  }
+                }}
+                allowNegativeValue={false}
+              />
+              <div className="label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  {errors.price}&nbsp;
                 </span>
               </div>
             </label>
@@ -290,7 +449,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   disabled={isMutating}
                   onBlur={getFieldProps('profitPercentage').onBlur}
                   name={getFieldProps('profitPercentage').name}
-                  value={getFieldProps('profitPercentage').value}
+                  value={profitPercentageDisplayValue}
                   type="text"
                   tabIndex={4}
                   className={`input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none ${
@@ -299,14 +458,30 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   onValueChange={(value) => {
                     setFieldValue('profitPercentage', value)
                     if (value) {
-                      const newPrice =
-                        Number(values.cost) * (1 + (+value || 0) / 100)
-                      setFieldValue('price', newPrice.toFixed(2))
-                      // Rount to 2 decimal places
-                      setFieldValue(
-                        'profitAmount',
-                        (newPrice - Number(values.cost)).toFixed(2),
-                      )
+                      if (mode === 'add') {
+                        if (values.isBulkCost === false) {
+                          const newPrice =
+                            Number(values.cost) * (1 + (+value || 0) / 100)
+                          setFieldValue('price', newPrice.toFixed(2))
+                          // Rount to 2 decimal places
+                          setFieldValue(
+                            'profitAmount',
+                            (newPrice - Number(values.cost)).toFixed(2),
+                          )
+                        } else {
+                          const newPrice =
+                            Number(addModeActiveBatch.costPerUnit) *
+                            (1 + (+value || 0) / 100)
+                          setFieldValue('price', newPrice.toFixed(2))
+                          // Rount to 2 decimal places
+                          setFieldValue(
+                            'profitAmount',
+                            (
+                              newPrice - Number(addModeActiveBatch.costPerUnit)
+                            ).toFixed(2),
+                          )
+                        }
+                      }
                     }
                   }}
                   disableGroupSeparators
@@ -318,7 +493,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   disabled={isMutating}
                   onBlur={getFieldProps('profitAmount').onBlur}
                   name={getFieldProps('profitAmount').name}
-                  value={getFieldProps('profitAmount').value}
+                  value={profitAmountDisplayValue}
                   type="text"
                   tabIndex={5}
                   fixedDecimalLength={2}
@@ -327,17 +502,35 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   onValueChange={(value) => {
                     setFieldValue('profitAmount', value)
                     if (value) {
-                      const newProfitPercentage =
-                        (+value / Number(values.cost)) * 100
-                      const newPrice = Number(values.cost) + +value
-                      setFieldValue('price', newPrice.toFixed(2))
-                      setFieldValue(
-                        'profitPercentage',
-                        // If has decimal show 2 decimal places, else show 0
-                        newProfitPercentage % 1
-                          ? newProfitPercentage.toFixed(2)
-                          : newProfitPercentage.toFixed(0),
-                      )
+                      if (mode === 'add') {
+                        if (values.isBulkCost) {
+                          const newProfitPercentage =
+                            (+value / Number(values.cost)) * 100
+                          const newPrice = Number(values.cost) + +value
+                          setFieldValue('price', newPrice.toFixed(2))
+                          setFieldValue(
+                            'profitPercentage',
+                            // If has decimal show 2 decimal places, else show 0
+                            newProfitPercentage % 1
+                              ? newProfitPercentage.toFixed(2)
+                              : newProfitPercentage.toFixed(0),
+                          )
+                        } else {
+                          const newProfitPercentage =
+                            (+value / Number(addModeActiveBatch.costPerUnit)) *
+                            100
+                          const newPrice =
+                            Number(addModeActiveBatch.costPerUnit) + +value
+                          setFieldValue('price', newPrice.toFixed(2))
+                          setFieldValue(
+                            'profitPercentage',
+                            // If has decimal show 2 decimal places, else show 0
+                            newProfitPercentage % 1
+                              ? newProfitPercentage.toFixed(2)
+                              : newProfitPercentage.toFixed(0),
+                          )
+                        }
+                      }
                     }
                   }}
                   allowNegativeValue={false}
@@ -370,6 +563,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   setActiveScreen(ActiveScreen.StockDetail)
                 }
               }}
+              checked={values.trackStock}
               className="toggle toggle-primary"
             />
           </div>
@@ -388,7 +582,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
             </button>
           )}
         </div>
-        <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre>
+        {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
+        {/* <pre className="text-xs">{JSON.stringify(errors, null, 2)}</pre> */}
       </div>
 
       <SlidingTransition
@@ -411,13 +606,31 @@ export const ProductDetail = (props: ProductDetailProps) => {
         zIndex={11}
       >
         <StockDetail
+          activeBatch={props.product?.activeBatch}
           value={values}
           onBack={goBackToProductScreen}
           onComplete={(value) => {
+            if (values.batches.length === 0) {
+              setValues({
+                ...values,
+                allowBackOrder: false,
+                trackStock: false,
+                isBulkCost: false,
+                soldBy: ProductSoldBy.Pieces,
+                batches: [
+                  {
+                    ...defaultValue.batches[0],
+                    cost: values.cost,
+                  },
+                ],
+              })
+              return
+            }
             const newValues = { ...values }
             newValues.allowBackOrder = value.allowBackOrder
             newValues.batches = value.batches
             newValues.soldBy = value.soldBy
+            newValues.isBulkCost = value.isBulkCost
             setValues(newValues)
           }}
         />
@@ -426,7 +639,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
   )
 }
 
-const ProductDetailSchema = AddProductSchema.extend({
+export const ProductDetailSchema = AddProductSchema.extend({
   profitPercentage: z.coerce.number({
     required_error: 'Profit % is required',
     invalid_type_error: 'Profit  % is required',
@@ -435,6 +648,12 @@ const ProductDetailSchema = AddProductSchema.extend({
     required_error: 'Profit is required',
     invalid_type_error: 'Profit is required',
   }),
+  cost: z.number({
+    coerce: true,
+    required_error: 'Cost is required',
+  }),
+  activeBatch: ProductBatchSchema.optional(),
+  batches: z.array(ProductBatchSchema.partial({ id: true })),
 })
 
 export default ProductDetail
