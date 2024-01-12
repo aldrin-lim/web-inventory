@@ -86,6 +86,19 @@ export const getActiveBatch = (batches: GetActiveBatchParam) => {
   return activeBatch
 }
 
+const computeProfitPercentage = (price: number, cost: number) => {
+  const profitAmount = price - cost
+  const profitPercentage = (profitAmount / cost) * 100
+
+  return profitPercentage % 1 ? profitPercentage.toFixed(2) : profitPercentage
+}
+
+const computeProfitAmount = (price: number, cost: number) => {
+  const profitAmount = price - cost
+
+  return profitAmount.toFixed(2)
+}
+
 export const ProductDetail = (props: ProductDetailProps) => {
   const { product } = props
   const navigate = useNavigate()
@@ -363,20 +376,21 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 onValueChange={(value) => {
                   setFieldValue('cost', value)
                   if (value) {
-                    if (values.isBulkCost === false) {
-                      const newProfitAmount = Number(values.price) - +value
-                      const newProfitPercentage =
-                        (newProfitAmount / +value) * 100
-                      setFieldValue('profitAmount', newProfitAmount)
-                      setFieldValue(
-                        'profitPercentage',
-                        // If has decimal show 2 decimal places, else show 0
-                        newProfitPercentage % 1
-                          ? newProfitPercentage.toFixed(2)
-                          : newProfitPercentage.toFixed(0),
-                      )
-                    }
-                    if (!values.activeBatch || values.trackStock === false) {
+                    const cost = +value
+                    const newProfitAmount = computeProfitAmount(
+                      Number(values.price),
+                      cost,
+                    )
+                    const newProfitPercentage = computeProfitPercentage(
+                      Number(values.price),
+                      cost,
+                    )
+                    setFieldValue('profitAmount', newProfitAmount)
+                    setFieldValue('profitPercentage', newProfitPercentage)
+                    if (
+                      values.trackStock === false ||
+                      values.isBulkCost === false
+                    ) {
                       setFieldValue('batches.0.cost', Number(value))
                     }
                   }
@@ -408,22 +422,23 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 className="input input-bordered w-full"
                 prefix="₱"
                 onValueChange={(value) => {
-                  setFieldValue('price', value)
-                  if (value) {
-                    const cost = values.isBulkCost
-                      ? getActiveBatch(values.batches).costPerUnit
-                      : values.cost
-                    const newProfitAmount = +value - Number(cost)
-                    const newProfitPercentage =
-                      (newProfitAmount / Number(cost)) * 100
-                    setFieldValue('profitAmount', newProfitAmount)
-                    setFieldValue(
-                      'profitPercentage',
-                      // If has decimal show 2 decimal places, else show 0
-                      newProfitPercentage % 1
-                        ? newProfitPercentage.toFixed(2)
-                        : newProfitPercentage.toFixed(0),
+                  const newPrice = value
+                  setFieldValue('price', newPrice)
+                  if (newPrice) {
+                    const cost =
+                      (values.isBulkCost
+                        ? getActiveBatch(values.batches).costPerUnit
+                        : values.cost) ?? 0
+                    const newProfitAmount = computeProfitAmount(
+                      Number(newPrice),
+                      cost,
                     )
+                    const newProfitPercentage = computeProfitPercentage(
+                      Number(newPrice),
+                      cost,
+                    )
+                    setFieldValue('profitAmount', newProfitAmount)
+                    setFieldValue('profitPercentage', newProfitPercentage)
                   }
                 }}
                 allowNegativeValue={false}
@@ -451,18 +466,21 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     values.profitPercentage < 0 ? 'text-red-500' : ''
                   }`}
                   onValueChange={(value) => {
-                    setFieldValue('profitPercentage', value)
-                    if (value) {
-                      const cost = values.isBulkCost
-                        ? getActiveBatch(values.batches).costPerUnit
-                        : values.cost
-                      const newPrice = Number(cost) * (1 + (+value || 0) / 100)
-                      setFieldValue('price', newPrice.toFixed(2))
-                      // Rount to 2 decimal places
-                      setFieldValue(
-                        'profitAmount',
-                        (newPrice - Number(cost)).toFixed(2),
+                    const newProfitPercentage = value
+                    setFieldValue('profitPercentage', newProfitPercentage)
+                    if (newProfitPercentage) {
+                      const cost =
+                        (values.isBulkCost
+                          ? getActiveBatch(values.batches).costPerUnit
+                          : values.cost) ?? 0
+                      const newPrice =
+                        Number(cost) * (1 + (+newProfitPercentage || 0) / 100)
+                      const newProfitAmount = computeProfitAmount(
+                        newPrice,
+                        cost,
                       )
+                      setFieldValue('price', newPrice.toFixed(2))
+                      setFieldValue('profitAmount', newProfitAmount)
                     }
                   }}
                   disableGroupSeparators
@@ -481,21 +499,22 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
                   prefix="₱"
                   onValueChange={(value) => {
-                    setFieldValue('profitAmount', value)
-                    if (value) {
+                    const newProfitAmount = value
+                    setFieldValue('profitAmount', newProfitAmount)
+                    if (newProfitAmount) {
                       const cost = values.isBulkCost
                         ? getActiveBatch(values.batches).costPerUnit
                         : values.cost
-                      const newProfitPercentage = (+value / Number(cost)) * 100
-                      const newPrice = Number(cost) + +value
-                      setFieldValue('price', newPrice.toFixed(2))
-                      setFieldValue(
-                        'profitPercentage',
-                        // If has decimal show 2 decimal places, else show 0
-                        newProfitPercentage % 1
-                          ? newProfitPercentage.toFixed(2)
-                          : newProfitPercentage.toFixed(0),
+
+                      const newPrice = Number(cost) + Number(newProfitAmount)
+
+                      const newProfitPercentage = computeProfitPercentage(
+                        newPrice,
+                        Number(cost),
                       )
+
+                      setFieldValue('price', newPrice.toFixed(2))
+                      setFieldValue('profitPercentage', newProfitPercentage)
                     }
                   }}
                   allowNegativeValue={false}
