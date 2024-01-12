@@ -13,10 +13,11 @@ export type AutoCompleteProps = {
   className?: string
   onChange?: (value: OptionsValue | null) => void
   value: string | OptionsValue
+  disabled?: boolean
 }
 
 const AutocompleteSelect = (props: AutoCompleteProps) => {
-  const { options, defaultValue, value, maxMenuHeight = 120 } = props
+  const { options, defaultValue, value, maxMenuHeight = 120, disabled } = props
 
   // Function to transform a string or OptionsValue to the required format
   const transformOption = (option: string | OptionsValue) => {
@@ -64,6 +65,7 @@ const AutocompleteSelect = (props: AutoCompleteProps) => {
 
   return (
     <Select
+      isDisabled={disabled}
       isClearable
       minMenuHeight={40}
       value={selectedOption}

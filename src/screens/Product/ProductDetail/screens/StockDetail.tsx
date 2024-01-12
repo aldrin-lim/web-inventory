@@ -18,6 +18,7 @@ type StockDetailProps = {
   onComplete: (value: StockDetail) => void
   value: StockDetail
   activeBatch?: z.infer<typeof ProductBatchSchema>
+  mode?: 'add' | 'edit'
 }
 
 const StockDetailSchema = AddProductSchema.pick({
@@ -45,7 +46,7 @@ const StockDetailSchema = AddProductSchema.pick({
 // For UPDATE PRODUCT, if batch is active and quantity is zero, find the next active batch.
 // If there is no active batch, dont allow update
 const StockDetail = (props: StockDetailProps) => {
-  const { onBack, onComplete } = props
+  const { onBack, onComplete, mode = 'add' } = props
 
   const { getFieldProps, values, setFieldValue, submitForm, errors } =
     useFormik<StockDetail>({
@@ -138,6 +139,7 @@ const StockDetail = (props: StockDetailProps) => {
               className="radio-primary radio"
               name="soldBy"
               value={ProductSoldBy.Pieces}
+              disabled={mode === 'edit'}
               checked={values.soldBy === ProductSoldBy.Pieces}
               onChange={(e) => {
                 setFieldValue('soldBy', e.target.value)
@@ -166,6 +168,7 @@ const StockDetail = (props: StockDetailProps) => {
               className="radio-primary radio"
               name="soldBy"
               value={ProductSoldBy.Weight}
+              disabled={mode === 'edit'}
               checked={values.soldBy === ProductSoldBy.Weight}
               onChange={(e) => {
                 setFieldValue('soldBy', e.target.value)
@@ -191,7 +194,7 @@ const StockDetail = (props: StockDetailProps) => {
       <div className="flex w-full flex-row items-center justify-between">
         <p className="flex-grow">Stock:</p>
 
-        {values.soldBy === 'weight' && (
+        {mode === 'add' && values.soldBy === 'weight' && (
           <div className="form-control ml-auto flex w-auto flex-row gap-2 ">
             <span>Bulk Cost</span>
             <div className="flex flex-row gap-2">
@@ -230,6 +233,7 @@ const StockDetail = (props: StockDetailProps) => {
       {values.batches.map((batch, index) => {
         return (
           <BatchCard
+            mode={mode}
             onRemove={() => {
               const newBatches = [...values.batches]
               newBatches.splice(index, 1)

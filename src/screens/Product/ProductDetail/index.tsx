@@ -176,6 +176,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
           await createProduct(requestBody)
         }
+        navigate(AppPath.ProductOverview)
       } else {
         const requestBody: z.infer<typeof UpdateProductSchema> = {
           name: parsedValue.name,
@@ -210,8 +211,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
           })
         }
       }
-
-      navigate(AppPath.ProductOverview)
     },
     validateOnChange: false,
   })
@@ -562,7 +561,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             </button>
           )}
         </div>
-        <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre>
+        {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
         {/* <pre className="text-xs">{JSON.stringify(errors, null, 2)}</pre> */}
       </div>
 
@@ -586,6 +585,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
         zIndex={11}
       >
         <StockDetail
+          mode={mode}
           activeBatch={props.product?.activeBatch}
           value={values}
           onBack={goBackToProductScreen}
