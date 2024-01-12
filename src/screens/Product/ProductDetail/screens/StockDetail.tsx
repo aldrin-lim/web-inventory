@@ -51,6 +51,7 @@ const StockDetail = (props: StockDetailProps) => {
     useFormik<StockDetail>({
       onSubmit: (value) => {
         if (value.isBulkCost === false) {
+          onBack()
           onComplete({
             ...value,
             batches: values.batches.map((batch) => {
@@ -61,12 +62,11 @@ const StockDetail = (props: StockDetailProps) => {
               }
             }),
           })
+          onBack()
         } else {
-          onComplete({
-            ...value,
-          })
+          onBack()
+          onComplete(value)
         }
-        onBack()
 
         // TODO: Take not that when a batch matched the active batch, update the actibe batch same as the batch updated
 

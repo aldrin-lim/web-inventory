@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import {
@@ -25,6 +25,7 @@ import { GetProductSchema } from 'api/product/getProductById'
 import useDeleteProduct from 'hooks/useDeleteProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
 import { UpdateProductSchema } from 'api/product/updateProductById'
+import { v4 } from 'uuid'
 
 enum ActiveScreen {
   None = 'none',
@@ -42,7 +43,7 @@ const defaultValue = {
   cost: 0,
   images: [],
   profitAmount: 0,
-  profitPercentage: 50,
+  profitPercentage: 0,
   trackStock: false,
   description: '',
   profit: 0,
@@ -62,9 +63,12 @@ const defaultValue = {
   ],
 } as z.infer<typeof AddProductDetailSchema>
 
-export const getActiveBatch = (
-  batches: z.infer<typeof ProductBatchSchema>[],
-) => {
+const GetActiveBatchParam = z.union([
+  ProductBatchSchema,
+  ProductBatchSchema.partial({ id: true }),
+])
+type GetActiveBatchParam = z.infer<typeof GetActiveBatchParam>[]
+export const getActiveBatch = (batches: GetActiveBatchParam) => {
   // Find the first batch that has quantity > 0
   // Check if it has expiration date, if it has, check if its not expired
   // Batch is active when quantity > 0 and not expired or no expiration date
@@ -213,7 +217,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
   })
 
   const mode: 'add' | 'edit' = product ? 'edit' : 'add'
-  const addModeActiveBatch = values.batches[0]
 
   const showDescription = () => {
     setActiveScreen(ActiveScreen.Description)
@@ -222,27 +225,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const goBackToProductScreen = () => {
     setActiveScreen(ActiveScreen.None)
   }
-
-  useEffect(() => {
-    if (mode === 'add') {
-      if (values.isBulkCost === true) {
-        const newProfitAmount =
-          Number(values.price) - Number(addModeActiveBatch.costPerUnit)
-        const newProfitPercentage =
-          (newProfitAmount / Number(addModeActiveBatch.costPerUnit)) * 100
-
-        setFieldValue('profitPercentage', newProfitPercentage)
-        setFieldValue('profitAmount', newProfitAmount)
-      } else {
-        const newProfitAmount = Number(values.price) - Number(values.cost)
-        const newProfitPercentage =
-          (newProfitAmount / Number(values.cost)) * 100
-
-        setFieldValue('profitPercentage', newProfitPercentage)
-        setFieldValue('profitAmount', newProfitAmount)
-      }
-    }
-  }, [values.isBulkCost])
 
   const priceDisplayValue =
     Number(values.price) === Infinity || isNaN(values.price)
@@ -351,34 +333,18 @@ export const ProductDetail = (props: ProductDetailProps) => {
           </button>
 
           {/* Cost per Unit */}
-          {/* For CREATE PRODUCT, use the first batch */}
-          {values.isBulkCost && mode === 'add' && (
+          {values.isBulkCost && (
             <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-primary p-2 py-1 text-white">
               <p className="font-bold">Cost:</p>
 
               <div className="flex flex-row">
                 <p className="font-bold">
-                  ₱ {values.batches[0].costPerUnit?.toFixed(2)}
+                  ₱ {getActiveBatch(values.batches).costPerUnit?.toFixed(2)}
                 </p>
-                /<p> {values.batches[0].unitOfMeasurement}</p>
+                /<p> {getActiveBatch(values.batches).unitOfMeasurement}</p>
               </div>
             </div>
           )}
-
-          {values.isBulkCost && mode === 'edit' && (
-            <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-primary p-2 py-1 text-white">
-              <p className="font-bold">Cost:</p>
-
-              <div className="flex flex-row">
-                <p className="font-bold">
-                  ₱ {product?.activeBatch.costPerUnit?.toFixed(2)}
-                </p>
-                /<p> {product?.activeBatch.unitOfMeasurement}</p>
-              </div>
-            </div>
-          )}
-
-          {/* For UPPDATE PRODUCT, use active batch.*/}
 
           {/* Cost */}
           {values.isBulkCost === false && (
@@ -445,36 +411,20 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 onValueChange={(value) => {
                   setFieldValue('price', value)
                   if (value) {
-                    if (mode === 'add') {
-                      if (values.isBulkCost === false) {
-                        const newProfitAmount = +value - Number(values.cost)
-                        const newProfitPercentage =
-                          (newProfitAmount / Number(values.cost)) * 100
-                        setFieldValue('profitAmount', newProfitAmount)
-                        setFieldValue(
-                          'profitPercentage',
-                          // If has decimal show 2 decimal places, else show 0
-                          newProfitPercentage % 1
-                            ? newProfitPercentage.toFixed(2)
-                            : newProfitPercentage.toFixed(0),
-                        )
-                      } else {
-                        const newProfitAmount =
-                          +value - Number(addModeActiveBatch.costPerUnit)
-                        const newProfitPercentage =
-                          (newProfitAmount /
-                            Number(addModeActiveBatch.costPerUnit)) *
-                          100
-                        setFieldValue('profitAmount', newProfitAmount)
-                        setFieldValue(
-                          'profitPercentage',
-                          // If has decimal show 2 decimal places, else show 0
-                          newProfitPercentage % 1
-                            ? newProfitPercentage.toFixed(2)
-                            : newProfitPercentage.toFixed(0),
-                        )
-                      }
-                    }
+                    const cost = values.isBulkCost
+                      ? getActiveBatch(values.batches).costPerUnit
+                      : values.cost
+                    const newProfitAmount = +value - Number(cost)
+                    const newProfitPercentage =
+                      (newProfitAmount / Number(cost)) * 100
+                    setFieldValue('profitAmount', newProfitAmount)
+                    setFieldValue(
+                      'profitPercentage',
+                      // If has decimal show 2 decimal places, else show 0
+                      newProfitPercentage % 1
+                        ? newProfitPercentage.toFixed(2)
+                        : newProfitPercentage.toFixed(0),
+                    )
                   }
                 }}
                 allowNegativeValue={false}
@@ -504,30 +454,16 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   onValueChange={(value) => {
                     setFieldValue('profitPercentage', value)
                     if (value) {
-                      if (mode === 'add') {
-                        if (values.isBulkCost === false) {
-                          const newPrice =
-                            Number(values.cost) * (1 + (+value || 0) / 100)
-                          setFieldValue('price', newPrice.toFixed(2))
-                          // Rount to 2 decimal places
-                          setFieldValue(
-                            'profitAmount',
-                            (newPrice - Number(values.cost)).toFixed(2),
-                          )
-                        } else {
-                          const newPrice =
-                            Number(addModeActiveBatch.costPerUnit) *
-                            (1 + (+value || 0) / 100)
-                          setFieldValue('price', newPrice.toFixed(2))
-                          // Rount to 2 decimal places
-                          setFieldValue(
-                            'profitAmount',
-                            (
-                              newPrice - Number(addModeActiveBatch.costPerUnit)
-                            ).toFixed(2),
-                          )
-                        }
-                      }
+                      const cost = values.isBulkCost
+                        ? getActiveBatch(values.batches).costPerUnit
+                        : values.cost
+                      const newPrice = Number(cost) * (1 + (+value || 0) / 100)
+                      setFieldValue('price', newPrice.toFixed(2))
+                      // Rount to 2 decimal places
+                      setFieldValue(
+                        'profitAmount',
+                        (newPrice - Number(cost)).toFixed(2),
+                      )
                     }
                   }}
                   disableGroupSeparators
@@ -548,35 +484,19 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   onValueChange={(value) => {
                     setFieldValue('profitAmount', value)
                     if (value) {
-                      if (mode === 'add') {
-                        if (values.isBulkCost) {
-                          const newProfitPercentage =
-                            (+value / Number(values.cost)) * 100
-                          const newPrice = Number(values.cost) + +value
-                          setFieldValue('price', newPrice.toFixed(2))
-                          setFieldValue(
-                            'profitPercentage',
-                            // If has decimal show 2 decimal places, else show 0
-                            newProfitPercentage % 1
-                              ? newProfitPercentage.toFixed(2)
-                              : newProfitPercentage.toFixed(0),
-                          )
-                        } else {
-                          const newProfitPercentage =
-                            (+value / Number(addModeActiveBatch.costPerUnit)) *
-                            100
-                          const newPrice =
-                            Number(addModeActiveBatch.costPerUnit) + +value
-                          setFieldValue('price', newPrice.toFixed(2))
-                          setFieldValue(
-                            'profitPercentage',
-                            // If has decimal show 2 decimal places, else show 0
-                            newProfitPercentage % 1
-                              ? newProfitPercentage.toFixed(2)
-                              : newProfitPercentage.toFixed(0),
-                          )
-                        }
-                      }
+                      const cost = values.isBulkCost
+                        ? getActiveBatch(values.batches).costPerUnit
+                        : values.cost
+                      const newProfitPercentage = (+value / Number(cost)) * 100
+                      const newPrice = Number(cost) + +value
+                      setFieldValue('price', newPrice.toFixed(2))
+                      setFieldValue(
+                        'profitPercentage',
+                        // If has decimal show 2 decimal places, else show 0
+                        newProfitPercentage % 1
+                          ? newProfitPercentage.toFixed(2)
+                          : newProfitPercentage.toFixed(0),
+                      )
                     }
                   }}
                   allowNegativeValue={false}
@@ -610,6 +530,18 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 if (values.trackStock === false && e.target.checked === true) {
                   setActiveScreen(ActiveScreen.StockDetail)
                 }
+                if (e.target.checked === false) {
+                  setFieldValue('allowBackOrder', false)
+                  setFieldValue('isBulkCost', false)
+                  setFieldValue('soldBy', ProductSoldBy.Pieces)
+                  setFieldValue('batches', [
+                    {
+                      ...defaultValue.batches[0],
+                      id: v4(),
+                      cost: values.cost,
+                    },
+                  ])
+                }
               }}
               checked={values.trackStock}
               className="toggle toggle-primary"
@@ -630,7 +562,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             </button>
           )}
         </div>
-        {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
+        <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre>
         {/* <pre className="text-xs">{JSON.stringify(errors, null, 2)}</pre> */}
       </div>
 
@@ -658,28 +590,42 @@ export const ProductDetail = (props: ProductDetailProps) => {
           value={values}
           onBack={goBackToProductScreen}
           onComplete={(value) => {
-            if (values.batches.length === 0) {
-              setValues({
-                ...values,
-                allowBackOrder: false,
-                trackStock: false,
-                isBulkCost: false,
-                soldBy: ProductSoldBy.Pieces,
-                batches: [
-                  {
-                    ...defaultValue.batches[0],
-                    cost: values.cost,
-                  },
-                ],
-              })
-              return
+            if (value.batches.length === 0) {
+              setFieldValue('allowBackOrder', false)
+              setFieldValue('trackStock', false)
+              setFieldValue('isBulkCost', false)
+              setFieldValue('soldBy', ProductSoldBy.Pieces)
+              setFieldValue('batches', [
+                {
+                  ...defaultValue.batches[0],
+                  id: v4(),
+                  cost: values.cost,
+                },
+              ])
+            } else {
+              const newValues = { ...values }
+              newValues.allowBackOrder = value.allowBackOrder
+              newValues.batches = value.batches
+              newValues.soldBy = value.soldBy
+              newValues.isBulkCost = value.isBulkCost
+              setValues(newValues)
             }
-            const newValues = { ...values }
-            newValues.allowBackOrder = value.allowBackOrder
-            newValues.batches = value.batches
-            newValues.soldBy = value.soldBy
-            newValues.isBulkCost = value.isBulkCost
-            setValues(newValues)
+
+            if (value.isBulkCost === true) {
+              const cost = getActiveBatch(value.batches).costPerUnit
+              const newProfitAmount = Number(values.price) - Number(cost)
+              const newProfitPercentage = (newProfitAmount / Number(cost)) * 100
+
+              setFieldValue('profitPercentage', newProfitPercentage)
+              setFieldValue('profitAmount', newProfitAmount)
+            } else {
+              const newProfitAmount = Number(values.price) - Number(values.cost)
+              const newProfitPercentage =
+                (newProfitAmount / Number(values.cost)) * 100
+
+              setFieldValue('profitPercentage', newProfitPercentage)
+              setFieldValue('profitAmount', newProfitAmount)
+            }
           }}
         />
       </SlidingTransition>
