@@ -26,6 +26,7 @@ import useDeleteProduct from 'hooks/useDeleteProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
 import { UpdateProductSchema } from 'api/product/updateProductById'
 import { v4 } from 'uuid'
+import useCloneProduct from 'hooks/useCloneProduct'
 
 enum ActiveScreen {
   None = 'none',
@@ -108,8 +109,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const { createProduct, isCreating } = useCreateProduct()
   const { deleteProduct, isDeleting } = useDeleteProduct()
   const { updateProduct, isUpdating } = useUpdateProduct()
+  const { cloneProduct, isCloning } = useCloneProduct()
 
-  const isMutating = isCreating || isDeleting || isUpdating
+  const isMutating = isCreating || isDeleting || isUpdating || isCloning
 
   const value = product
     ? ({
@@ -285,14 +287,17 @@ export const ProductDetail = (props: ProductDetailProps) => {
               }}
               onDelete={async () => {
                 if (product) {
-                  deleteProduct({ id: product.id })
+                  await deleteProduct({ id: product.id })
+                  navigate(AppPath.ProductOverview)
                 }
               }}
               onSave={function (): void {
                 submitForm()
               }}
-              onClone={function (): void {
-                throw new Error('Function not implemented.')
+              onClone={async () => {
+                if (product) {
+                  await cloneProduct({ id: product.id })
+                }
               }}
             />,
           ]}
