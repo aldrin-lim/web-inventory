@@ -127,7 +127,7 @@ const BatchCard = (props: BatchCardProps) => {
             Cost: ₱
             {isNaN(costPerUnit) || costPerUnit == Infinity
               ? '0.00'
-              : costPerUnit.toFixed(2)}
+              : costPerUnit}
             /{values.unitOfMeasurement}
           </p>
         </>
