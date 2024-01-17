@@ -71,7 +71,7 @@ const GetActiveBatchParam = z.union([
   ProductBatchSchema.partial({ id: true }),
 ])
 type GetActiveBatchParam = z.infer<typeof GetActiveBatchParam>[]
-const getActiveBatch = (batches: GetActiveBatchParam) => {
+export const getActiveBatch = (batches: GetActiveBatchParam) => {
   // Find the first batch that has quantity > 0
   // Check if it has expiration date, if it has, check if its not expired
   // Batch is active when quantity > 0 and not expired or no expiration date

@@ -38,21 +38,18 @@ const Skeleton = () => {
           <div key={null} />,
         ]}
       />
-      <div className="flex w-full flex-row items-center justify-between">
-        <div className="skeleton h-[24px] w-[69px] rounded-md" />
-        <div className="skeleton h-[24px] w-[53px] rounded-md" />
-      </div>
-      <div className="flex w-full flex-col items-center justify-start gap-4 overflow-x-auto ">
-        <div className={`relative h-full w-full`}>
-          <div className={`flex flex-row flex-wrap gap-3`}>
-            {Array.from({ length: skeletonNumber }).map((_, index) => (
-              <div
-                key={index}
-                className="skeleton h-[213px] w-[155px] rounded-md"
-              />
-            ))}
-          </div>
-        </div>
+      <div className="ProductMenuGrid grid w-full grid-flow-row-dense grid-cols-2 justify-center gap-4 md:flex md:flex-row md:flex-wrap">
+        <div className="skeleton block min-h-[221px] min-w-[155px] max-w-[155px] justify-self-center" />
+        <div className="skeleton block min-h-[221px] min-w-[155px] max-w-[155px] justify-self-center" />
+        <div className="skeleton block min-h-[221px] min-w-[155px] max-w-[155px] justify-self-center" />
+        <div className="skeleton block min-h-[221px] min-w-[155px] max-w-[155px] justify-self-center" />
+
+        {/* MORE ON LARGER VIEW */}
+
+        <div className="skeleton hidden min-h-[221px] min-w-[155px] max-w-[155px] justify-self-center md:block" />
+        <div className="skeleton hidden min-h-[221px] min-w-[155px] max-w-[155px] justify-self-center md:block" />
+        <div className="skeleton hidden min-h-[221px] min-w-[155px] max-w-[155px] justify-self-center md:block" />
+        <div className="skeleton hidden min-h-[221px] min-w-[155px] max-w-[155px] justify-self-center md:block" />
       </div>
     </div>
   )

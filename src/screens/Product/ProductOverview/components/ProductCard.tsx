@@ -22,7 +22,7 @@ const ProductCard = (props: ProductCardProps) => {
 
   return (
     <div
-      className="ProductCard card card-compact w-[155px] cursor-pointer border border-gray-300 bg-base-100"
+      className="ProductCard card card-compact w-[155px] cursor-pointer overflow-hidden border border-gray-300 bg-base-100"
       onClick={() => onClick(id)}
     >
       <figure className="h-[155px] w-[155px] bg-gray-300">

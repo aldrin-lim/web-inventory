@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { v4 } from 'uuid'
 import { type StockDetail, StockDetailSchema } from '../ProductDetail.types'
+import { getActiveBatch } from '..'
 
 type StockDetailProps = {
   onBack: () => void
@@ -68,6 +69,8 @@ const StockDetail = (props: StockDetailProps) => {
     } as z.infer<typeof ProductBatchSchema>
     setFieldValue('batches', [...values.batches, newBatch])
   }
+
+  const activeBatchId = getActiveBatch(values.batches)?.id
 
   return (
     <div className="sub-screen">
@@ -207,6 +210,7 @@ const StockDetail = (props: StockDetailProps) => {
       {values.batches.map((batch, index) => {
         return (
           <BatchCard
+            active={batch.id === activeBatchId}
             disabled={disabled}
             onRemove={() => {
               const newBatches = [...values.batches]

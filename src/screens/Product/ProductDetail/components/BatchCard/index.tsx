@@ -18,6 +18,7 @@ type BatchCardProps = {
   onChange?: (batch: z.infer<typeof BatchSchema>) => void
   onRemove: () => void
   disabled?: boolean
+  active?: boolean
 }
 
 const BatchCard = (props: BatchCardProps) => {
@@ -27,6 +28,7 @@ const BatchCard = (props: BatchCardProps) => {
     isBulkCost = false,
     onRemove,
     disabled = false,
+    active = false,
   } = props
 
   const formValue = batch
@@ -58,94 +60,111 @@ const BatchCard = (props: BatchCardProps) => {
     setFieldValue('costPerUnit', costPerUnit)
   }, [costPerUnit])
 
-  return (
-    <div className="flex flex-col gap-2 bg-gray-100 p-2">
-      <div className="flex flex-row justify-between">
-        <p className="text-sm uppercase tracking-wider">
-          Batch {batch.id?.slice(0, 6)}
-        </p>
-        <button
-          type="button"
-          className="btn btn-ghost btn-xs"
-          onClick={onRemove}
-        >
-          <TrashIcon className="w-5 text-primary" />
-        </button>
-      </div>
-      <p>Quantity</p>
-      <QuantityInput
-        value={values.quantity}
-        onChange={(newValue) => {
-          setFieldValue('quantity', newValue)
-        }}
-        className="w-full"
-      />
-      {soldBy === 'weight' && (
-        <label className="form-control w-full ">
-          <div className="">
-            <span className="label-text-alt ">Unit of Measurement</span>
-          </div>
-          <MeasurementSelect
-            disabled={disabled}
-            value={{
-              label:
-                measurementOptions.find(
-                  (option) => option.value === values.unitOfMeasurement,
-                )?.label || '',
-              value: values.unitOfMeasurement,
-            }}
-            onChange={(value) => {
-              setFieldValue('unitOfMeasurement', value?.value)
-            }}
-          />
-        </label>
-      )}
+  const isExpired =
+    values.expirationDate && new Date(values.expirationDate) < new Date()
 
-      {/* If sold by weight */}
-      {isBulkCost && (
-        <>
+  const activeStyle = ''
+
+  return (
+    <div>
+      <div
+        className={`flex flex-col gap-2 border-double bg-gray-100  p-2 ${activeStyle}`}
+      >
+        {active && (
+          <span className="text-xs font-bold text-primary">
+            (Currently used)
+          </span>
+        )}
+        {isExpired && (
+          <span className="text-xs font-bold text-warning">(EXPIRED)</span>
+        )}
+        <div className="flex flex-row justify-between">
+          <p className="text-sm uppercase tracking-wider">
+            Batch {batch.id?.slice(0, 6)}
+          </p>
+          <button
+            type="button"
+            className="btn btn-ghost btn-xs"
+            onClick={onRemove}
+          >
+            <TrashIcon className="w-5 text-primary" />
+          </button>
+        </div>
+        <p>Quantity</p>
+        <QuantityInput
+          value={values.quantity}
+          onChange={(newValue) => {
+            setFieldValue('quantity', newValue)
+          }}
+          className="w-full"
+        />
+        {soldBy === 'weight' && (
           <label className="form-control w-full ">
             <div className="">
-              <span className="label-text">Bulk Cost</span>
+              <span className="label-text-alt ">Unit of Measurement</span>
             </div>
-            <CurrencyInput
+            <MeasurementSelect
               disabled={disabled}
-              onBlur={getFieldProps('cost').onBlur}
-              name={getFieldProps('cost').name}
-              value={getFieldProps('cost').value}
-              type="text"
-              tabIndex={2}
-              className="input input-bordered w-full"
-              prefix="₱"
-              onValueChange={(value) => {
-                setFieldValue('cost', value)
+              value={{
+                label:
+                  measurementOptions.find(
+                    (option) => option.value === values.unitOfMeasurement,
+                  )?.label || '',
+                value: values.unitOfMeasurement,
               }}
-              allowNegativeValue={false}
+              onChange={(value) => {
+                setFieldValue('unitOfMeasurement', value?.value)
+              }}
             />
           </label>
-          <p className={`${costPerUnitColor}`}>
-            Cost: ₱
-            {isNaN(costPerUnit) || costPerUnit == Infinity
-              ? '0.00'
-              : costPerUnit}
-            /{values.unitOfMeasurement}
-          </p>
-        </>
-      )}
+        )}
 
-      {/* Expiration */}
-      <label className="form-control w-full ">
-        <div className="">
-          <span className="label-text-alt ">Expiration</span>
-        </div>
-        <input
-          {...getFieldProps('expirationDate')}
-          type="date"
-          placeholder="Expiration Date"
-          className="input input-bordered w-full"
-        />
-      </label>
-      {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
+        {/* If sold by weight */}
+        {isBulkCost && (
+          <>
+            <label className="form-control w-full ">
+              <div className="">
+                <span className="label-text">Bulk Cost</span>
+              </div>
+              <CurrencyInput
+                disabled={disabled}
+                onBlur={getFieldProps('cost').onBlur}
+                name={getFieldProps('cost').name}
+                value={getFieldProps('cost').value}
+                type="text"
+                tabIndex={2}
+                className="input input-bordered w-full"
+                prefix="₱"
+                onValueChange={(value) => {
+                  setFieldValue('cost', value)
+                }}
+                allowNegativeValue={false}
+              />
+            </label>
+            <p className={`${costPerUnitColor}`}>
+              Cost: ₱
+              {isNaN(costPerUnit) || costPerUnit == Infinity
+                ? '0.00'
+                : costPerUnit}
+              /{values.unitOfMeasurement}
+            </p>
+          </>
+        )}
+
+        {/* Expiration */}
+        <label className="form-control w-full ">
+          <div className="">
+            <span className="label-text-alt ">Expiration</span>
+          </div>
+          <input
+            {...getFieldProps('expirationDate')}
+            type="date"
+            placeholder="Expiration Date"
+            className="input input-bordered w-full"
+          />
+        </label>
+        {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
+      </div>
     </div>
   )
 }
