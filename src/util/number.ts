@@ -5,7 +5,7 @@ export function sanitizeNaN(x: number) {
   return x
 }
 
-export function toNumber(x: string | undefined | null) {
+export function toNumber(x: unknown) {
   // Parse string to number
   // If NaN return 0
   return sanitizeNaN(Number(x))

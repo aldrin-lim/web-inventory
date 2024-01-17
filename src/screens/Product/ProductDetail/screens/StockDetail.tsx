@@ -6,12 +6,10 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { useFormik } from 'formik'
 import BatchCard from '../components/BatchCard'
 import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
-import { AddProductSchema } from 'api/product/createProduct'
 import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { v4 } from 'uuid'
-
-type StockDetail = z.infer<typeof StockDetailSchema>
+import { type StockDetail, StockDetailSchema } from '../ProductDetail.types'
 
 type StockDetailProps = {
   onBack: () => void
@@ -20,17 +18,6 @@ type StockDetailProps = {
   activeBatch?: z.infer<typeof ProductBatchSchema>
   mode?: 'add' | 'edit'
 }
-
-const StockDetailSchema = AddProductSchema.pick({
-  soldBy: true,
-  allowBackOrder: true,
-  batches: true,
-  isBulkCost: true,
-}).extend({
-  id: z.string().optional(),
-  cost: z.number({ coerce: true }).optional().default(0),
-  batches: z.array(ProductBatchSchema.partial({ id: true })),
-})
 
 // LEGEND
 // Active Batch - Batch that has more than 0 quantity and isnt expired
@@ -51,29 +38,16 @@ const StockDetail = (props: StockDetailProps) => {
   const { getFieldProps, values, setFieldValue, submitForm, errors } =
     useFormik<StockDetail>({
       onSubmit: (value) => {
-        if (value.isBulkCost === false) {
-          onBack()
-          onComplete({
-            ...value,
-            batches: values.batches.map((batch) => {
-              return {
-                ...batch,
-                cost: values.cost,
-                costPerUnit: 0,
-              }
-            }),
-          })
-          onBack()
-        } else {
-          onBack()
-          onComplete(value)
-        }
-
-        // TODO: Take not that when a batch matched the active batch, update the actibe batch same as the batch updated
-
-        // for UPDATE product. There should be atleast an active batch. If not we dont to continue the edit
+        onBack()
+        onComplete(value)
       },
-      validationSchema: toFormikValidationSchema(StockDetailSchema),
+      validationSchema: toFormikValidationSchema(
+        StockDetailSchema.pick({
+          batches: true,
+          isBulkCost: true,
+          soldBy: true,
+        }),
+      ),
       initialValues: props.value,
       enableReinitialize: true,
     })

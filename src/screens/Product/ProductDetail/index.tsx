@@ -6,7 +6,6 @@ import {
   ChevronRightIcon,
   HomeIcon,
 } from '@heroicons/react/24/solid'
-import { toNumber } from 'lodash'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
@@ -28,6 +27,8 @@ import useUpdateProduct from 'hooks/useUpdateProduct'
 import { UpdateProductSchema } from 'api/product/updateProductById'
 import { v4 } from 'uuid'
 import useCloneProduct from 'hooks/useCloneProduct'
+import { toNumber } from 'util/number'
+import { ProductDetailSchema } from './ProductDetail.types'
 
 enum ActiveScreen {
   None = 'none',
@@ -63,14 +64,14 @@ const defaultValue = {
       expirationDate: null,
     },
   ],
-} as z.infer<typeof AddProductDetailSchema>
+} as z.infer<typeof ProductDetailSchema>
 
 const GetActiveBatchParam = z.union([
   ProductBatchSchema,
   ProductBatchSchema.partial({ id: true }),
 ])
 type GetActiveBatchParam = z.infer<typeof GetActiveBatchParam>[]
-export const getActiveBatch = (batches: GetActiveBatchParam) => {
+const getActiveBatch = (batches: GetActiveBatchParam) => {
   // Find the first batch that has quantity > 0
   // Check if it has expiration date, if it has, check if its not expired
   // Batch is active when quantity > 0 and not expired or no expiration date
@@ -122,7 +123,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           toNumber(product.activeBatch.cost),
         ),
         cost: product.activeBatch.cost,
-      } as z.infer<typeof UpdateProductDetailSchema>)
+      } as z.infer<typeof ProductDetailSchema>)
     : defaultValue
   const {
     submitForm,
@@ -133,15 +134,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
     setValues,
   } = useFormik({
     initialValues: value,
-    validationSchema: toFormikValidationSchema(
-      props.product ? UpdateProductDetailSchema : AddProductDetailSchema,
-    ),
+    validationSchema: toFormikValidationSchema(ProductDetailSchema),
     enableReinitialize: true,
     validateOnBlur: false,
     onSubmit: async (value) => {
-      const parsedValue = (
-        props.product ? UpdateProductDetailSchema : AddProductDetailSchema
-      ).parse(value)
+      const parsedValue = ProductDetailSchema.parse(value)
 
       if (mode === 'add') {
         if (parsedValue.trackStock === false) {
@@ -156,7 +153,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             batches: [
               {
                 ...defaultValue.batches[0],
-                quantity: 0,
+                quantity: 1,
                 cost: parsedValue.cost ?? 0,
               },
             ],
@@ -216,7 +213,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           requestBody.batches = [
             {
               ...defaultValue.batches[0],
-              quantity: 0,
+              quantity: 1,
               cost: parsedValue.cost ?? 0,
             },
           ]
@@ -419,6 +416,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 onValueChange={(value) => {
                   setFieldValue('price', value)
                   const newPrice = toNumber(value)
+                  console.log('newPrice', toNumber(value))
                   const cost = values.isBulkCost
                     ? toNumber(getActiveBatch(values.batches).costPerUnit)
                     : toNumber(values.cost)
@@ -427,8 +425,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     newPrice,
                     cost,
                   )
-                  setFieldValue('profitAmount', newProfitAmount)
-                  setFieldValue('profitPercentage', newProfitPercentage)
+                  setFieldValue('profitAmount', toNumber(newProfitAmount))
+                  setFieldValue(
+                    'profitPercentage',
+                    toNumber(newProfitPercentage),
+                  )
                 }}
                 allowNegativeValue={false}
               />
@@ -451,9 +452,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   value={profitPercentageDisplayValue ?? ''}
                   type="text"
                   tabIndex={4}
-                  className={`input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none ${
-                    values.profitPercentage < 0 ? 'text-red-500' : ''
-                  }`}
+                  className={[
+                    'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
+                  ].join(' ')}
                   decimalsLimit={9}
                   onValueChange={(value) => {
                     setFieldValue('profitPercentage', value)
@@ -550,6 +551,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     batches: [
                       {
                         ...defaultValue.batches[0],
+                        quantity: 1,
                         id: v4(),
                         cost: toNumber(values.cost),
                       },
@@ -629,6 +631,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   {
                     ...defaultValue.batches[0],
                     id: v4(),
+                    quantity: 1,
                     cost: toNumber(values.cost),
                   },
                 ],
@@ -650,53 +653,5 @@ export const ProductDetail = (props: ProductDetailProps) => {
     </div>
   )
 }
-
-const AddProductDetailSchema = AddProductSchema.extend({
-  profitPercentage: z.coerce.number({
-    required_error: 'Profit % is required',
-    invalid_type_error: 'Profit  % is required',
-  }),
-  profitAmount: z.coerce
-    .number({
-      required_error: 'Profit is required',
-      invalid_type_error: 'Profit is required',
-    })
-    .nullable(),
-  cost: z
-    .number({
-      coerce: true,
-      required_error: 'Cost is required',
-    })
-    .nullable(),
-  price: z
-    .number({
-      coerce: true,
-      required_error: 'Price is required',
-    })
-    .nullable(),
-  activeBatch: ProductBatchSchema.optional(),
-  batches: z.array(ProductBatchSchema.partial({ id: true })),
-})
-
-const UpdateProductDetailSchema = AddProductSchema.extend({
-  profitPercentage: z.coerce.number({
-    required_error: 'Profit % is required',
-    invalid_type_error: 'Profit  % is required',
-  }),
-  profitAmount: z.coerce.number({
-    required_error: 'Profit is required',
-    invalid_type_error: 'Profit is required',
-  }),
-  cost: z.coerce.number({
-    coerce: true,
-    required_error: 'Cost is required',
-  }),
-  price: z.coerce.number({
-    coerce: true,
-    required_error: 'Price   is required',
-  }),
-  activeBatch: ProductBatchSchema.optional(),
-  batches: z.array(ProductBatchSchema.partial({ id: true })),
-})
 
 export default ProductDetail
