@@ -17,11 +17,17 @@ type BatchCardProps = {
   isBulkCost?: boolean
   onChange?: (batch: z.infer<typeof BatchSchema>) => void
   onRemove: () => void
-  mode?: 'add' | 'edit'
+  disabled?: boolean
 }
 
 const BatchCard = (props: BatchCardProps) => {
-  const { batch, soldBy, isBulkCost = false, onRemove, mode = 'add' } = props
+  const {
+    batch,
+    soldBy,
+    isBulkCost = false,
+    onRemove,
+    disabled = false,
+  } = props
 
   const formValue = batch
   const { getFieldProps, values, setFieldValue } = useFormik({
@@ -80,7 +86,7 @@ const BatchCard = (props: BatchCardProps) => {
             <span className="label-text-alt ">Unit of Measurement</span>
           </div>
           <MeasurementSelect
-            disabled={mode === 'edit'}
+            disabled={disabled}
             value={{
               label:
                 measurementOptions.find(
@@ -103,7 +109,7 @@ const BatchCard = (props: BatchCardProps) => {
               <span className="label-text">Bulk Cost</span>
             </div>
             <CurrencyInput
-              disabled={mode === 'edit'}
+              disabled={disabled}
               onBlur={getFieldProps('cost').onBlur}
               name={getFieldProps('cost').name}
               value={getFieldProps('cost').value}
@@ -134,7 +140,7 @@ const BatchCard = (props: BatchCardProps) => {
         </div>
         <input
           {...getFieldProps('expirationDate')}
-          disabled={mode === 'edit'}
+          disabled={disabled}
           type="date"
           placeholder="Expiration Date"
           className="input input-bordered w-full"

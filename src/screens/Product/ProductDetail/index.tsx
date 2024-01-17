@@ -112,6 +112,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const { updateProduct, isUpdating } = useUpdateProduct()
   const { cloneProduct, isCloning } = useCloneProduct()
 
+  const [isStockReset, setIsStockReset] = useState(false)
+
   const isMutating = isCreating || isDeleting || isUpdating || isCloning
 
   const value = product
@@ -532,6 +534,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   setActiveScreen(ActiveScreen.StockDetail)
                 }
                 if (e.target.checked === false) {
+                  setIsStockReset(true)
                   const newProfitAmount = computeProfitAmount(
                     toNumber(values.price),
                     toNumber(values.cost),
@@ -602,7 +605,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
         zIndex={11}
       >
         <StockDetail
-          mode={mode}
+          disabled={isStockReset === false && mode === 'edit'}
           activeBatch={props.product?.activeBatch}
           value={values}
           onBack={goBackToProductScreen}
@@ -619,6 +622,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               cost,
             )
             if (value.batches.length === 0) {
+              setIsStockReset(true)
               await setValues({
                 ...values,
                 allowBackOrder: false,
