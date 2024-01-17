@@ -140,7 +140,6 @@ const BatchCard = (props: BatchCardProps) => {
         </div>
         <input
           {...getFieldProps('expirationDate')}
-          disabled={disabled}
           type="date"
           placeholder="Expiration Date"
           className="input input-bordered w-full"
