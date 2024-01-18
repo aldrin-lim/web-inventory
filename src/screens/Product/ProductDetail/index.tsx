@@ -14,7 +14,6 @@ import ProductImages from './components/ProductImages'
 import { z } from 'zod'
 import { useFormik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
-import CurrencyInput from 'react-currency-input-field'
 import useCreateProduct from 'hooks/useCreateProduct'
 import { AddProductSchema } from 'api/product/createProduct'
 import SlidingTransition from 'components/SlidingTransition'
@@ -360,7 +359,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <div className="form-control-label  ">
                 <span className="label-text-alt text-gray-400">Cost</span>
               </div>
-              <CurrencyInput
+              <input
                 disabled={isMutating}
                 onBlur={getFieldProps('cost').onBlur}
                 name={getFieldProps('cost').name}
@@ -368,28 +367,30 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 type="text"
                 tabIndex={3}
                 className="input input-bordered w-full"
-                prefix="₱"
                 placeholder="₱0"
-                decimalsLimit={9}
-                onValueChange={(value) => {
-                  setFieldValue('cost', value)
-                  const cost = toNumber(value)
-                  const price = toNumber(values.price)
-                  const newProfitAmount = computeProfitAmount(price, cost)
-                  const newProfitPercentage = computeProfitPercentage(
-                    price,
-                    cost,
-                  )
-                  setFieldValue('profitAmount', newProfitAmount)
-                  setFieldValue('profitPercentage', newProfitPercentage)
-                  if (
-                    values.trackStock === false ||
-                    values.isBulkCost === false
-                  ) {
-                    setFieldValue('batches.0.cost', toNumber(cost))
+                inputMode="decimal"
+                onChange={({ target: { value } }) => {
+                  const regex = /^(\d+)?(\.\d*)?$/
+                  if (regex.test(value) || value === '') {
+                    setFieldValue('cost', value)
+
+                    const cost = toNumber(value)
+                    const price = toNumber(values.price)
+                    const newProfitAmount = computeProfitAmount(price, cost)
+                    const newProfitPercentage = computeProfitPercentage(
+                      price,
+                      cost,
+                    )
+                    setFieldValue('profitAmount', newProfitAmount)
+                    setFieldValue('profitPercentage', newProfitPercentage)
+                    if (
+                      values.trackStock === false ||
+                      values.isBulkCost === false
+                    ) {
+                      setFieldValue('batches.0.cost', toNumber(cost))
+                    }
                   }
                 }}
-                allowNegativeValue={false}
               />
               <div className="label py-0">
                 <span className="label-text-alt text-xs text-red-400">
@@ -406,7 +407,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <div className="form-control-label  ">
                 <span className="label-text-alt text-gray-400">Price</span>
               </div>
-              <CurrencyInput
+              <input
                 disabled={isMutating}
                 onBlur={getFieldProps('price').onBlur}
                 name={getFieldProps('price').name}
@@ -414,28 +415,29 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 type="text"
                 tabIndex={2}
                 className="input input-bordered w-full"
-                prefix="₱"
                 placeholder="₱0"
-                decimalsLimit={9}
-                onValueChange={(value) => {
-                  setFieldValue('price', value)
-                  const newPrice = toNumber(value)
-                  console.log('newPrice', toNumber(value))
-                  const cost = values.isBulkCost
-                    ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                    : toNumber(values.cost)
-                  const newProfitAmount = computeProfitAmount(newPrice, cost)
-                  const newProfitPercentage = computeProfitPercentage(
-                    newPrice,
-                    cost,
-                  )
-                  setFieldValue('profitAmount', toNumber(newProfitAmount))
-                  setFieldValue(
-                    'profitPercentage',
-                    toNumber(newProfitPercentage),
-                  )
+                inputMode="decimal"
+                onChange={({ target: { value } }) => {
+                  const regex = /^(\d+)?(\.\d*)?$/
+                  if (regex.test(value) || value === '') {
+                    setFieldValue('price', value)
+                    const newPrice = toNumber(value)
+                    console.log('newPrice', toNumber(value))
+                    const cost = values.isBulkCost
+                      ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                      : toNumber(values.cost)
+                    const newProfitAmount = computeProfitAmount(newPrice, cost)
+                    const newProfitPercentage = computeProfitPercentage(
+                      newPrice,
+                      cost,
+                    )
+                    setFieldValue('profitAmount', toNumber(newProfitAmount))
+                    setFieldValue(
+                      'profitPercentage',
+                      toNumber(newProfitPercentage),
+                    )
+                  }
                 }}
-                allowNegativeValue={false}
               />
               <div className="label py-0">
                 <span className="label-text-alt text-xs text-red-400">
@@ -449,34 +451,37 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 <div className="form-control-label  ">
                   <span className="label-text-alt text-gray-400">Profit</span>
                 </div>
-                <CurrencyInput
+                <input
                   disabled={isMutating}
                   onBlur={getFieldProps('profitPercentage').onBlur}
                   name={getFieldProps('profitPercentage').name}
                   value={profitPercentageDisplayValue ?? ''}
                   type="text"
                   tabIndex={4}
+                  inputMode="decimal"
                   className={[
                     'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
                   ].join(' ')}
-                  decimalsLimit={9}
-                  onValueChange={(value) => {
-                    setFieldValue('profitPercentage', value)
-                    const newProfitPercentage = toNumber(value)
-                    const cost = values.isBulkCost
-                      ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                      : toNumber(values.cost)
-                    const newPrice = cost * (1 + newProfitPercentage / 100)
-                    const newProfitAmount = computeProfitAmount(newPrice, cost)
-                    setFieldValue('price', newPrice)
-                    setFieldValue('profitAmount', newProfitAmount)
+                  onChange={({ target: { value } }) => {
+                    const regex = /^(\d+)?(\.\d*)?$/
+                    if (regex.test(value) || value === '') {
+                      setFieldValue('profitPercentage', value)
+                      const newProfitPercentage = toNumber(value)
+                      const cost = values.isBulkCost
+                        ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                        : toNumber(values.cost)
+                      const newPrice = cost * (1 + newProfitPercentage / 100)
+                      const newProfitAmount = computeProfitAmount(
+                        newPrice,
+                        cost,
+                      )
+                      setFieldValue('price', newPrice)
+                      setFieldValue('profitAmount', newProfitAmount)
+                    }
                   }}
-                  disableGroupSeparators
-                  allowNegativeValue={false}
-                  maxLength={6}
                 />
                 <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
-                <CurrencyInput
+                <input
                   disabled={isMutating}
                   onBlur={getFieldProps('profitAmount').onBlur}
                   name={getFieldProps('profitAmount').name}
@@ -484,27 +489,28 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   type="text"
                   tabIndex={5}
                   className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
-                  prefix="₱"
                   placeholder="₱0"
-                  decimalsLimit={9}
-                  onValueChange={(value) => {
-                    setFieldValue('profitAmount', value)
-                    const newProfitAmount = toNumber(value)
-                    const cost = values.isBulkCost
-                      ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                      : toNumber(values.cost)
+                  inputMode="decimal"
+                  onChange={({ target: { value } }) => {
+                    const regex = /^(\d+)?(\.\d*)?$/
+                    if (regex.test(value) || value === '') {
+                      setFieldValue('profitAmount', value)
+                      const newProfitAmount = toNumber(value)
+                      const cost = values.isBulkCost
+                        ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                        : toNumber(values.cost)
 
-                    const newPrice = cost + newProfitAmount
+                      const newPrice = cost + newProfitAmount
 
-                    const newProfitPercentage = computeProfitPercentage(
-                      newPrice,
-                      cost,
-                    )
+                      const newProfitPercentage = computeProfitPercentage(
+                        newPrice,
+                        cost,
+                      )
 
-                    setFieldValue('price', newPrice)
-                    setFieldValue('profitPercentage', newProfitPercentage)
+                      setFieldValue('price', newPrice)
+                      setFieldValue('profitPercentage', newProfitPercentage)
+                    }
                   }}
-                  allowNegativeValue={false}
                 />
               </div>
               <div className="label py-0">
