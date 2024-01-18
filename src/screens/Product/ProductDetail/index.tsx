@@ -638,7 +638,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 batches: [newBatch],
               })
             } else {
-              console.log(2)
               const cost = value.isBulkCost
                 ? toNumber(getActiveBatch(value.batches).costPerUnit)
                 : toNumber(values.cost)
