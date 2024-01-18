@@ -1,12 +1,13 @@
 import { TrashIcon } from '@heroicons/react/24/solid'
 import ImageLoader from 'components/ImageLoader'
 import convert, { Unit } from 'convert-units'
-import { FormikErrors, useFormik } from 'formik'
+import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { getActiveBatch } from 'screens/Product/ProductDetail'
 import MeasurementSelect from 'screens/Product/ProductDetail/components/MeasurementSelect'
-import { Material, MaterialSchema } from 'types/recipe.types'
-import { measurementOptions } from 'util/measurement'
+import { ProductSoldBy } from 'types/product.types'
+import { Material } from 'types/recipe.types'
+import { measurementOptions, pieceMesurement } from 'util/measurement'
 import { toNumber } from 'util/number'
 
 type RecipeMaterialCardProps = {
@@ -17,7 +18,7 @@ type RecipeMaterialCardProps = {
 }
 
 const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
-  const { material } = props
+  const { material, onChange } = props
   const image = material.product.images && material.product.images[0]
 
   const [totalCost, setTotalCost] = useState(0)
@@ -47,6 +48,12 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
   }, [values.quantity])
 
   useEffect(() => {
+    if (onChange) {
+      onChange(values)
+    }
+  }, [values.cost, values.quantity])
+
+  useEffect(() => {
     // using convertible-units, change the cost per unit base from the values.unitOfMeasurement
     // by converting it
     // then set the cost per unit
@@ -59,13 +66,15 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
     const toUnit = values.unitOfMeasurement
 
     // Calculate the conversion factor from the product's unit to the material's unit
-    const conversionFactor = convert(1)
-      .from(fromUnit as Unit)
-      .to(toUnit as Unit)
+    let conversionFactor = 1
+
+    if (values.product.soldBy === ProductSoldBy.Weight) {
+      conversionFactor = convert(1)
+        .from(fromUnit as Unit)
+        .to(toUnit as Unit)
+    }
 
     const newCostPerUnit = cost * conversionFactor
-
-    // console.log('conversionFactor', conversionFactor)
 
     setTotalCost(values.quantity * newCostPerUnit)
     setFieldValue('cost', newCostPerUnit)
@@ -113,18 +122,24 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
           </div>
 
           <div>
-            <MeasurementSelect
-              value={{
-                label:
-                  measurementOptions.find(
-                    (option) => option.value === values.unitOfMeasurement,
-                  )?.label || '',
-                value: values.unitOfMeasurement,
-              }}
-              onChange={(value) => {
-                setFieldValue('unitOfMeasurement', value?.value)
-              }}
-            />
+            {values.product.soldBy === ProductSoldBy.Weight && (
+              <MeasurementSelect
+                value={{
+                  label:
+                    measurementOptions.find(
+                      (option) => option.value === values.unitOfMeasurement,
+                    )?.label || '',
+                  value: values.unitOfMeasurement,
+                }}
+                onChange={(value) => {
+                  setFieldValue('unitOfMeasurement', value?.value)
+                }}
+              />
+            )}
+            {values.product.soldBy === ProductSoldBy.Pieces && (
+              <MeasurementSelect value={pieceMesurement} disabled />
+            )}
+
             {/* <p className="form-control-error">
               {props.error && props.error?.unitOfMeasurement}&nbsp;
             </p> */}

@@ -1,6 +1,6 @@
 import SlidingTransition from 'components/SlidingTransition'
 import ProductSelectionList from './ProductSelectionList'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { Material, Recipe, RecipeSchema } from 'types/recipe.types'
 import { ChevronLeftIcon, PlusIcon } from '@heroicons/react/24/solid'
@@ -14,6 +14,8 @@ import { useFormik } from 'formik'
 import RecipeMaterialCard from './RecipeDetailsForm/components/RecipeMaterialCard'
 import { getActiveBatch } from '../ProductDetail'
 import { toNumber } from 'util/number'
+import { AppPath } from 'routes/AppRoutes.types'
+import { useNavigate } from 'react-router-dom'
 
 enum ActiveScreen {
   None = 'none',
@@ -28,7 +30,7 @@ const initialValue = {
   id: '',
   name: '',
   description: '',
-  cost: null,
+  cost: 0,
   images: [],
   price: null,
   profitAmount: null,
@@ -40,6 +42,8 @@ const initialValue = {
 
 const RecipeDetails = (props: RecipeDetailsProps) => {
   const { recipe } = props
+
+  const navigate = useNavigate()
 
   const mode = recipe ? 'edit' : 'add'
 
@@ -61,6 +65,13 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
     setActiveScreen(ActiveScreen.None)
   }
 
+  useEffect(() => {
+    const totalCost = values.materials.reduce((acc, material) => {
+      return acc + material.cost * material.quantity
+    }, 0)
+    setFieldValue('cost', totalCost)
+  }, [values.materials])
+
   return (
     <div
       className={`RecipeDetail main-screen ${
@@ -73,6 +84,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             <ToolbarButton
               key={1}
               icon={<ChevronLeftIcon className="w-6" />}
+              onClick={() => {
+                navigate(AppPath.RecipeOverview)
+              }}
             />,
             <ToolbarTitle
               key="title"
@@ -111,7 +125,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           {/* Cost */}
           <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
             <p>Cost</p>
-            <p>₱ 0.00</p>
+            <p>₱ {values.cost}</p>
           </div>
 
           {/* Price and Profit */}
@@ -237,13 +251,22 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
           {values.materials.length > 0 && (
             <div className="flex flex-row gap-2">
-              {values.materials.map((material) => (
-                <RecipeMaterialCard key={material.id} material={material} />
+              {values.materials.map((material, index) => (
+                <RecipeMaterialCard
+                  key={material.id}
+                  material={material}
+                  onChange={(updateMaterial) => {
+                    setFieldValue(`materials.${index}`, updateMaterial)
+                  }}
+                />
               ))}
             </div>
           )}
+
+          <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre>
         </div>
       </div>
+
       <SlidingTransition
         direction="bottom"
         isVisible={activeScreen === ActiveScreen.ProductGrid}
@@ -287,12 +310,10 @@ const RecipeDetailSchema = RecipeSchema.extend({
       invalid_type_error: 'Profit is required',
     })
     .nullable(),
-  cost: z
-    .number({
-      coerce: true,
-      required_error: 'Price is required',
-    })
-    .nullable(),
+  cost: z.number({
+    coerce: true,
+    required_error: 'Price is required',
+  }),
   price: z
     .number({
       coerce: true,

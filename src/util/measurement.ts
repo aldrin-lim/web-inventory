@@ -1,5 +1,10 @@
 import convert, { Measure, Unit } from 'convert-units'
 
+export const pieceMesurement = {
+  label: 'Piece (pc)',
+  value: 'pc(s)' as Unit,
+}
+
 export function getAllMeasurementUnits(
   measures: Measure[] = ['mass', 'volume'],
 ) {
@@ -17,11 +22,6 @@ export function getAllMeasurementUnits(
     })
   }
 
-  return measurementOptions.concat([
-    {
-      label: 'Piece (pc)',
-      value: 'pc' as Unit,
-    },
-  ])
+  return measurementOptions.concat([pieceMesurement])
 }
 export const measurementOptions = getAllMeasurementUnits()
