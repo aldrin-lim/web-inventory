@@ -370,7 +370,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 placeholder="₱0"
                 inputMode="decimal"
                 onChange={({ target: { value } }) => {
-                  const regex = /^(\d+)?(\.\d*)?$/
+                  const regex = /^-?(\d+)?(\.\d*)?$/
                   if (regex.test(value) || value === '') {
                     setFieldValue('cost', value)
 
@@ -418,7 +418,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 placeholder="₱0"
                 inputMode="decimal"
                 onChange={({ target: { value } }) => {
-                  const regex = /^(\d+)?(\.\d*)?$/
+                  const regex = /^-?(\d+)?(\.\d*)?$/
                   if (regex.test(value) || value === '') {
                     setFieldValue('price', value)
                     const newPrice = toNumber(value)
@@ -463,7 +463,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
                   ].join(' ')}
                   onChange={({ target: { value } }) => {
-                    const regex = /^(\d+)?(\.\d*)?$/
+                    const regex = /^-?(\d+)?(\.\d*)?$/
                     if (regex.test(value) || value === '') {
                       setFieldValue('profitPercentage', value)
                       const newProfitPercentage = toNumber(value)
@@ -492,7 +492,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   placeholder="₱0"
                   inputMode="decimal"
                   onChange={({ target: { value } }) => {
-                    const regex = /^(\d+)?(\.\d*)?$/
+                    const regex = /^-?(\d+)?(\.\d*)?$/
                     if (regex.test(value) || value === '') {
                       setFieldValue('profitAmount', value)
                       const newProfitAmount = toNumber(value)
