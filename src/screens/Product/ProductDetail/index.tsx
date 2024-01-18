@@ -122,7 +122,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
         profitAmount: product.profit,
         profitPercentage: computeProfitPercentage(
           product.price,
-          toNumber(product.activeBatch.cost),
+          product.isBulkCost
+            ? toNumber(getActiveBatch(product.batches).costPerUnit)
+            : toNumber(getActiveBatch(product.batches).cost),
         ),
         cost: product.activeBatch.cost,
       } as z.infer<typeof ProductDetailSchema>)
