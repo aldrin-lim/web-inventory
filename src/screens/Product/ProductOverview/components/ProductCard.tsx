@@ -10,10 +10,18 @@ type ProductCardProps = {
   quantity: number
   image?: string
   outOfStock?: boolean
+  unitOfMeasurment?: string
 }
 
 const ProductCard = (props: ProductCardProps) => {
-  const { name, status, quantity, image, id, outOfStock = false } = props
+  const {
+    name,
+    image,
+    id,
+    unitOfMeasurment,
+    quantity = 0,
+    outOfStock = false,
+  } = props
   const navigate = useNavigate()
 
   const onClick = (id: string) => {
@@ -22,10 +30,10 @@ const ProductCard = (props: ProductCardProps) => {
 
   return (
     <div
-      className="ProductCard card card-compact w-[155px] cursor-pointer overflow-hidden border border-gray-300 bg-base-100"
+      className="ProductCard card card-compact relative w-[155px] cursor-pointer justify-self-center border border-gray-300 bg-base-100"
       onClick={() => onClick(id)}
     >
-      <figure className="h-[155px] w-[155px] bg-gray-300">
+      <figure className="h-[155px] w-[153px] overflow-hidden bg-gray-300">
         {/* Show image or PhotoIcon based on image load status */}
         <ImageLoader src={image} iconClassName="w-24 text-gray-400" />
       </figure>
@@ -35,13 +43,12 @@ const ProductCard = (props: ProductCardProps) => {
         </h2>
 
         <div className="flex flex-row gap-1  text-xs">
-          <span>{status || 'Active'}</span> •{' '}
           <span
             className={`overflow-hidden truncate text-ellipsis ${
               outOfStock ? 'text-red-400' : ''
             }`}
           >
-            {quantity} available
+            {quantity} {unitOfMeasurment} available
           </span>
         </div>
       </div>

@@ -13,6 +13,7 @@ import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
 import Skeleton from './components/Skeleton'
 
 import './styles.css'
+import { getActiveBatch } from '../ProductDetail'
 
 const getProductCardNumber = (size: ScreenSize) => {
   switch (size) {
@@ -86,7 +87,7 @@ const ProductOverview = () => {
     return <EmptyProducts />
   }
 
-  const hasOutOfStocks = true
+  const hasOutOfStocks = outOfStockProducts.length > 0
 
   const verticalScrollStyle = 'flex-wrap justify-center'
   const horizontalScrollSyle = 'overflow-x-auto'
@@ -142,7 +143,7 @@ const ProductOverview = () => {
           />,
         ]}
       />
-      <div className="flex flex-col gap-4">
+      <div className="group flex flex-col gap-4">
         {/* IN STOCKS */}
         {products.length > 0 && (
           <div className="flex flex-col gap-4">
@@ -163,7 +164,10 @@ const ProductOverview = () => {
                   image={product?.images?.[0] || ''}
                   name={product.name}
                   key={product.name}
-                  quantity={product.quantity}
+                  quantity={getActiveBatch(product.batches)?.quantity}
+                  unitOfMeasurment={
+                    getActiveBatch(product.batches).unitOfMeasurement
+                  }
                 />
               ))}
             </div>
