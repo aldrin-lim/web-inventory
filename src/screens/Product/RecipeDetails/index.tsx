@@ -13,6 +13,7 @@ import CurrencyInput from 'react-currency-input-field'
 import { useFormik } from 'formik'
 import RecipeMaterialCard from './RecipeDetailsForm/components/RecipeMaterialCard'
 import { getActiveBatch } from '../ProductDetail'
+import { toNumber } from 'util/number'
 
 enum ActiveScreen {
   None = 'none',
@@ -250,11 +251,15 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       >
         <ProductSelectionList
           onProductSelect={(product) => {
+            const activeBatch = getActiveBatch(product.batches)
+            const cost = product.isBulkCost
+              ? toNumber(activeBatch.costPerUnit)
+              : toNumber(activeBatch.cost)
             setFieldValue('materials', [
               ...values.materials,
               {
-                cost: 0,
                 quantity: 0,
+                cost,
                 unitOfMeasurement: getActiveBatch(product.batches)
                   .unitOfMeasurement,
                 product,

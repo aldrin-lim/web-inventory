@@ -1,20 +1,26 @@
 import { TrashIcon } from '@heroicons/react/24/solid'
 import ImageLoader from 'components/ImageLoader'
+import convert, { Unit } from 'convert-units'
 import { FormikErrors, useFormik } from 'formik'
+import { useEffect, useState } from 'react'
+import { getActiveBatch } from 'screens/Product/ProductDetail'
 import MeasurementSelect from 'screens/Product/ProductDetail/components/MeasurementSelect'
 import { Material, MaterialSchema } from 'types/recipe.types'
 import { measurementOptions } from 'util/measurement'
+import { toNumber } from 'util/number'
 
 type RecipeMaterialCardProps = {
   material: Material
   onRemove?: () => void
-
+  onChange?: (material: Material) => void
   // error?: FormikErrors<Material>
 }
 
 const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
   const { material } = props
   const image = material.product.images && material.product.images[0]
+
+  const [totalCost, setTotalCost] = useState(0)
 
   const name = material.product.name
 
@@ -23,6 +29,7 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
     onSubmit: () => {
       //
     },
+    enableReinitialize: true,
   })
 
   const increaseQuantity = () => {
@@ -35,15 +42,50 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
     }
   }
 
+  useEffect(() => {
+    setTotalCost(values.quantity * values.cost)
+  }, [values.quantity])
+
+  useEffect(() => {
+    // using convertible-units, change the cost per unit base from the values.unitOfMeasurement
+    // by converting it
+    // then set the cost per unit
+    const activeBatch = getActiveBatch(values.product.batches)
+    const cost = values.product.isBulkCost
+      ? toNumber(activeBatch.costPerUnit)
+      : toNumber(activeBatch.cost)
+
+    const fromUnit = activeBatch.unitOfMeasurement
+    const toUnit = values.unitOfMeasurement
+
+    // Calculate the conversion factor from the product's unit to the material's unit
+    const conversionFactor = convert(1)
+      .from(fromUnit as Unit)
+      .to(toUnit as Unit)
+
+    const newCostPerUnit = cost * conversionFactor
+
+    // console.log('conversionFactor', conversionFactor)
+
+    setTotalCost(values.quantity * newCostPerUnit)
+    setFieldValue('cost', newCostPerUnit)
+  }, [values.unitOfMeasurement])
+
   return (
     <div className="container-card relative flex flex-row flex-wrap justify-evenly gap-2">
+      {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
       <div className="card card-compact w-[155px] border border-gray-300 bg-base-100">
         <button
-          className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2 bg-purple-300"
+          className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2 bg-primary"
           onClick={props.onRemove}
         >
           <TrashIcon className="w-5 text-white" />
         </button>
+        <div className="absolute left-0 top-2 max-w-[60%]">
+          <div className="w-full truncate bg-primary p-1 text-sm text-primary-content">
+            ₱ {totalCost}
+          </div>
+        </div>
         <figure className="h-[155px] w-[153px] overflow-hidden rounded-t-2xl bg-gray-300">
           <ImageLoader src={image} iconClassName="w-24 text-gray-400" />
         </figure>
