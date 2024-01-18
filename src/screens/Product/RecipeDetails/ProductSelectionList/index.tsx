@@ -15,10 +15,6 @@ import MiddleTruncateText from 'components/MiddleTruncatedText'
 import { z } from 'zod'
 import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
 import * as API from 'api/product'
-import {
-  RecipeDetailActionType,
-  useRecipeDetail,
-} from 'screens/Product/contexts/RecipeDetailContext'
 import { Product } from 'types/product.types'
 
 const getTruncateSize = (size: ScreenSize) => {
@@ -54,6 +50,7 @@ function useDebounce(value: string, delay: number) {
 
 type ProductSelectionListProps = {
   onClose: () => void
+  onProductSelect: (product: Product) => void
 }
 
 const ProductSelectionList = (props: ProductSelectionListProps) => {
@@ -61,13 +58,6 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
   const [page] = useState(0)
 
   const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
-
-  const {
-    dispatch,
-    state: {
-      recipeDetails: { materials },
-    },
-  } = useRecipeDetail()
 
   const [enableFilter, setEnableFilter] = useState(false)
   const [outOfStockFilter, setOutOfStockFilter] = useState<
@@ -90,13 +80,6 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
 
   const filteredProducts = useMemo(() => {
     let items = data?.pages.flatMap((page) => page) || []
-
-    // Apply out-of-stock filter
-    if (enableFilter && typeof outOfStockFilter === 'boolean') {
-      items = items.filter((item) =>
-        outOfStockFilter ? item.quantity === 0 : item.quantity > 0,
-      )
-    }
 
     // Apply search filter
     if (debouncedSearchTerm) {
@@ -127,27 +110,8 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
     }
   }, [searchParams])
 
-  const onClick = (product: Product) => {
-    const isMaterialExisting = materials.find(
-      (m) => m.product.id === product.id,
-    )
-    if (!isMaterialExisting) {
-      dispatch({
-        type: RecipeDetailActionType.AddMaterial,
-        payload: {
-          quantity: 0,
-          product,
-          measurement: product.measurement || 'pieces',
-          cost: 0,
-        },
-      })
-    }
-
-    props.onClose()
-  }
-
   return (
-    <div className="section absolute flex min-h-screen w-full flex-col gap-4 bg-base-100">
+    <div className="main-screen section">
       <Toolbar
         items={[
           <ToolbarButton key="back" label="Back" onClick={props.onClose} />,
@@ -210,7 +174,7 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
               return (
                 <div style={style} className="" key={product.name}>
                   <button
-                    onClick={() => onClick(product as Product)}
+                    onClick={() => props.onProductSelect(product)}
                     className="rounded-row btn btn-ghost no-animation flex w-full flex-row justify-start rounded-none border-b-gray-200 bg-gray-100"
                   >
                     <figure className="h-[24px] w-[24px]">
@@ -228,7 +192,7 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
                           />
                         </p>
                         <p className="ml-auto text-xs font-normal">
-                          {product.quantity || 0} available
+                          {/* {product.quantity || 0} available */}
                         </p>
                       </div>
                     </div>

@@ -66,7 +66,6 @@ const AutocompleteSelect = (props: AutoCompleteProps) => {
   return (
     <Select
       isDisabled={disabled}
-      isClearable
       minMenuHeight={40}
       value={selectedOption}
       onChange={(option, actionMeta) => {

@@ -159,7 +159,7 @@ const RecipeDetailsForm = (props: RecipeDetailsFormProps) => {
                 </button>
               )}
               <div className="container-card flex flex-row flex-wrap justify-center gap-4">
-                {values.materials.length > 0 &&
+                {/* {values.materials.length > 0 &&
                   values.materials.map((material, index) => {
                     let error = undefined
                     if (
@@ -170,14 +170,8 @@ const RecipeDetailsForm = (props: RecipeDetailsFormProps) => {
                       error = errors.materials[index]
                     }
 
-                    return (
-                      <RecipeMaterialCard
-                        error={error as FormikErrors<Material>}
-                        material={material}
-                        key={material.product.id}
-                      />
-                    )
-                  })}
+                    return <div />
+                  })} */}
               </div>
             </div>
           </div>

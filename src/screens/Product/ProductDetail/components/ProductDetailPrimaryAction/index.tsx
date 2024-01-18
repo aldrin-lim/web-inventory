@@ -3,7 +3,7 @@ import UpdateActionMenu from '../UpdateActionMenu'
 
 type PrimaryActionProps = {
   disabled?: boolean
-  isLoading: boolean
+  isLoading?: boolean
   onCreate: () => void
   onDelete: () => void
   onSave: () => void

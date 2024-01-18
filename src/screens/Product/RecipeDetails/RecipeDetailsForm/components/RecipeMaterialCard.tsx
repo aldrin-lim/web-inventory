@@ -1,61 +1,50 @@
 import { TrashIcon } from '@heroicons/react/24/solid'
 import ImageLoader from 'components/ImageLoader'
-import { FormikErrors } from 'formik'
+import { FormikErrors, useFormik } from 'formik'
 import MeasurementSelect from 'screens/Product/ProductDetail/components/MeasurementSelect'
-import {
-  RecipeDetailActionType,
-  useRecipeDetail,
-} from 'screens/Product/contexts/RecipeDetailContext'
-import { Material } from 'types/recipe.types'
+import { Material, MaterialSchema } from 'types/recipe.types'
+import { measurementOptions } from 'util/measurement'
 
 type RecipeMaterialCardProps = {
   material: Material
-  error?: FormikErrors<Material>
+  onRemove?: () => void
+
+  // error?: FormikErrors<Material>
 }
 
 const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
   const { material } = props
-  const {
-    product: { id, name },
-    quantity,
-  } = material
-  const { dispatch } = useRecipeDetail()
   const image = material.product.images && material.product.images[0]
 
-  const updateMaterial = (field: keyof Material, value: unknown) => {
-    dispatch({
-      type: RecipeDetailActionType.UpdateMaterial,
-      payload: {
-        field,
-        value,
-        productId: id,
-      },
-    })
-  }
+  const name = material.product.name
+
+  const { values, setFieldValue } = useFormik({
+    initialValues: material,
+    onSubmit: () => {
+      //
+    },
+  })
 
   const increaseQuantity = () => {
-    updateMaterial('quantity', quantity + 1)
+    setFieldValue('quantity', values.quantity + 1)
   }
 
   const decreaseQuantity = () => {
-    if (quantity > 0) {
-      updateMaterial('quantity', quantity - 1)
+    if (values.quantity > 0) {
+      setFieldValue('quantity', values.quantity - 1)
     }
-  }
-
-  const removeMaterial = () => {
-    dispatch({
-      type: RecipeDetailActionType.RemoveMaterial,
-      payload: {
-        productId: id,
-      },
-    })
   }
 
   return (
     <div className="container-card relative flex flex-row flex-wrap justify-evenly gap-2">
-      <div className="card card-compact w-[155px] cursor-pointer border border-gray-300 bg-base-100">
-        <figure className="h-[155px] w-[155px] bg-gray-300">
+      <div className="card card-compact w-[155px] border border-gray-300 bg-base-100">
+        <button
+          className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2 bg-purple-300"
+          onClick={props.onRemove}
+        >
+          <TrashIcon className="w-5 text-white" />
+        </button>
+        <figure className="h-[155px] w-[153px] overflow-hidden rounded-t-2xl bg-gray-300">
           <ImageLoader src={image} iconClassName="w-24 text-gray-400" />
         </figure>
         <div className="card-body flex flex-col  !px-1 !py-2 text-left">
@@ -67,12 +56,12 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
                 -
               </button>
               <input
-                value={quantity}
+                value={values.quantity}
                 type="number"
                 inputMode="numeric"
                 className="input join-item w-full p-0 text-center text-black"
                 onChange={(e) => {
-                  updateMaterial('quantity', +e.target.value)
+                  setFieldValue('quantity', +e.target.value)
                 }}
               />
               <button className="btn  join-item" onClick={increaseQuantity}>
@@ -83,26 +72,23 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
 
           <div>
             <MeasurementSelect
-              onChange={(option) => {
-                updateMaterial('measurement', option?.value)
-              }}
               value={{
-                label: material.measurement,
-                value: material.measurement,
+                label:
+                  measurementOptions.find(
+                    (option) => option.value === values.unitOfMeasurement,
+                  )?.label || '',
+                value: values.unitOfMeasurement,
+              }}
+              onChange={(value) => {
+                setFieldValue('unitOfMeasurement', value?.value)
               }}
             />
-            <p className="form-control-error">
-              {props.error && props.error?.measurement}&nbsp;
-            </p>
+            {/* <p className="form-control-error">
+              {props.error && props.error?.unitOfMeasurement}&nbsp;
+            </p> */}
           </div>
         </div>
       </div>
-      <button
-        className="btn btn-circle btn-ghost btn-xs absolute right-2 top-2 bg-purple-300"
-        onClick={removeMaterial}
-      >
-        <TrashIcon className="w-4 text-white" />
-      </button>
     </div>
   )
 }
