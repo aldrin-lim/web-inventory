@@ -610,19 +610,23 @@ export const ProductDetail = (props: ProductDetailProps) => {
           value={values}
           onBack={goBackToProductScreen}
           onComplete={async (value) => {
-            const cost = value.isBulkCost
-              ? toNumber(getActiveBatch(value.batches).costPerUnit)
-              : toNumber(values.cost)
-            const newProfitAmount = computeProfitAmount(
-              toNumber(values.price),
-              cost,
-            )
-            const newProfitPercentage = computeProfitPercentage(
-              toNumber(values.price),
-              cost,
-            )
             if (value.batches.length === 0) {
               setIsStockReset(true)
+              const cost = toNumber(values.cost)
+              const newBatch = {
+                ...defaultValue.batches[0],
+                id: v4(),
+                quantity: 1,
+                cost,
+              }
+              const newProfitAmount = computeProfitAmount(
+                toNumber(values.price),
+                cost,
+              )
+              const newProfitPercentage = computeProfitPercentage(
+                toNumber(values.price),
+                cost,
+              )
               await setValues({
                 ...values,
                 allowBackOrder: false,
@@ -631,16 +635,21 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 soldBy: ProductSoldBy.Pieces,
                 profitPercentage: newProfitPercentage,
                 profitAmount: newProfitAmount,
-                batches: [
-                  {
-                    ...defaultValue.batches[0],
-                    id: v4(),
-                    quantity: 1,
-                    cost: toNumber(values.cost),
-                  },
-                ],
+                batches: [newBatch],
               })
             } else {
+              console.log(2)
+              const cost = value.isBulkCost
+                ? toNumber(getActiveBatch(value.batches).costPerUnit)
+                : toNumber(values.cost)
+              const newProfitAmount = computeProfitAmount(
+                toNumber(values.price),
+                cost,
+              )
+              const newProfitPercentage = computeProfitPercentage(
+                toNumber(values.price),
+                cost,
+              )
               await setValues({
                 ...values,
                 allowBackOrder: value.allowBackOrder,
