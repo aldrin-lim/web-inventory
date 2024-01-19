@@ -9,6 +9,7 @@ import { ProductSoldBy } from 'types/product.types'
 import { Material } from 'types/recipe.types'
 import { measurementOptions, pieceMesurement } from 'util/measurement'
 import { toNumber } from 'util/number'
+import Big from 'big.js'
 
 type RecipeMaterialCardProps = {
   material: Material
@@ -34,17 +35,21 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
   })
 
   const increaseQuantity = () => {
-    setFieldValue('quantity', values.quantity + 1)
+    // setFieldValue('quantity', values.quantity + 1)
+    setFieldValue('quantity', new Big(values.quantity).plus(1).toNumber())
   }
 
   const decreaseQuantity = () => {
     if (values.quantity > 0) {
-      setFieldValue('quantity', values.quantity - 1)
+      // setFieldValue('quantity', values.quantity - 1)
+      setFieldValue('quantity', new Big(values.quantity).minus(1).toNumber())
     }
   }
 
   useEffect(() => {
-    setTotalCost(values.quantity * values.cost)
+    setTotalCost(
+      new Big(values.quantity).times(new Big(values.cost)).toNumber(),
+    )
   }, [values.quantity])
 
   useEffect(() => {
@@ -74,9 +79,16 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
         .to(toUnit as Unit)
     }
 
-    const newCostPerUnit = cost * conversionFactor
+    const newCostPerUnit = new Big(cost)
+      .times(new Big(conversionFactor))
+      .toNumber()
 
-    setTotalCost(values.quantity * newCostPerUnit)
+    // setTotalCost(values.quantity * newCostPerUnit)
+    setTotalCost(
+      new Big(values.quantity).times(new Big(newCostPerUnit)).toNumber(),
+    )
+    new Big(0.1).plus(new Big(0.2)).toPrecision(9)
+
     setFieldValue('cost', newCostPerUnit)
   }, [values.unitOfMeasurement])
 

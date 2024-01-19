@@ -16,6 +16,7 @@ import { getActiveBatch } from '../ProductDetail'
 import { toNumber } from 'util/number'
 import { AppPath } from 'routes/AppRoutes.types'
 import { useNavigate } from 'react-router-dom'
+import Big from 'big.js'
 
 enum ActiveScreen {
   None = 'none',
@@ -67,7 +68,8 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
   useEffect(() => {
     const totalCost = values.materials.reduce((acc, material) => {
-      return acc + material.cost * material.quantity
+      const total = new Big(material.cost).times(new Big(material.quantity))
+      return new Big(acc).plus(total).toNumber()
     }, 0)
     setFieldValue('cost', totalCost)
   }, [values.materials])
@@ -146,7 +148,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 placeholder="₱0"
                 decimalsLimit={9}
                 onValueChange={(value) => {
-                  // setFieldValue('price', value)
+                  setFieldValue('price', value)
                   // const newPrice = toNumber(value)
                   // console.log('newPrice', toNumber(value))
                   // const cost = values.isBulkCost

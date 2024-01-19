@@ -28,6 +28,7 @@ import { v4 } from 'uuid'
 import useCloneProduct from 'hooks/useCloneProduct'
 import { toNumber } from 'util/number'
 import { ProductDetailSchema } from './ProductDetail.types'
+import Big from 'big.js'
 
 enum ActiveScreen {
   None = 'none',
@@ -89,13 +90,16 @@ export const getActiveBatch = (batches: GetActiveBatchParam) => {
 }
 
 const computeProfitPercentage = (price: number, cost: number) => {
-  const profitAmount = toNumber(price - cost)
-  const profitPercentage = toNumber(profitAmount / cost) * 100
+  // const profitAmount = toNumber(price - cost)
+  // const profitPercentage = toNumber(profitAmount / cost) * 100
+  const profitAmount = new Big(price).minus(cost)
+  const profitPercentage = profitAmount.div(cost).times(100).toNumber()
   return profitPercentage
 }
 
 const computeProfitAmount = (price: number, cost: number) => {
-  const profitAmount = price - cost
+  // const profitAmount = price - cost
+  const profitAmount = new Big(price).minus(cost).toNumber()
 
   return profitAmount
 }
@@ -422,7 +426,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   if (regex.test(value) || value === '') {
                     setFieldValue('price', value)
                     const newPrice = toNumber(value)
-                    console.log('newPrice', toNumber(value))
                     const cost = values.isBulkCost
                       ? toNumber(getActiveBatch(values.batches).costPerUnit)
                       : toNumber(values.cost)
@@ -470,7 +473,14 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       const cost = values.isBulkCost
                         ? toNumber(getActiveBatch(values.batches).costPerUnit)
                         : toNumber(values.cost)
-                      const newPrice = cost * (1 + newProfitPercentage / 100)
+                      // const newPrice = cost * (1 + newProfitPercentage / 100)
+                      const newPrice = new Big(cost)
+                        .times(
+                          new Big(1).plus(
+                            new Big(newProfitPercentage).div(100),
+                          ),
+                        )
+                        .toNumber()
                       const newProfitAmount = computeProfitAmount(
                         newPrice,
                         cost,
@@ -500,8 +510,10 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         ? toNumber(getActiveBatch(values.batches).costPerUnit)
                         : toNumber(values.cost)
 
-                      const newPrice = cost + newProfitAmount
-
+                      // const newPrice = cost + newProfitAmount
+                      const newPrice = new Big(cost)
+                        .plus(new Big(newProfitAmount))
+                        .toNumber()
                       const newProfitPercentage = computeProfitPercentage(
                         newPrice,
                         cost,

@@ -5,9 +5,11 @@ import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { measurementOptions } from 'util/measurement'
 import { z } from 'zod'
 import MeasurementSelect from '../MeasurementSelect'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDebounce } from '@uidotdev/usehooks'
 import { TrashIcon } from '@heroicons/react/24/solid'
+import Big from 'big.js'
+import { toNumber } from 'lodash'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -42,7 +44,19 @@ const BatchCard = (props: BatchCardProps) => {
     enableReinitialize: true,
   })
 
-  const costPerUnit = isBulkCost ? Number(values.cost) / values.quantity : 0
+  console.log(values.cost, values.quantity)
+
+  // const costPerUnit = isBulkCost ? Number(values.cost) / values.quantity : 0
+  const costPerUnit = useMemo(() => {
+    try {
+      const newCost = isBulkCost
+        ? new Big(values.cost ?? 0).div(values.quantity ?? 0).toNumber()
+        : 0
+      return newCost
+    } catch {
+      return 0
+    }
+  }, [values.cost, values.quantity])
   const costPerUnitColor =
     costPerUnit > 0 && costPerUnit !== Infinity
       ? 'text-green-500'
