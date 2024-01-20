@@ -80,14 +80,12 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
     }
 
     const newCostPerUnit = new Big(cost)
-      .times(new Big(conversionFactor))
+      .div(new Big(conversionFactor))
       .toNumber()
 
-    // setTotalCost(values.quantity * newCostPerUnit)
     setTotalCost(
       new Big(values.quantity).times(new Big(newCostPerUnit)).toNumber(),
     )
-    new Big(0.1).plus(new Big(0.2)).toPrecision(9)
 
     setFieldValue('cost', newCostPerUnit)
   }, [values.unitOfMeasurement])

@@ -9,7 +9,6 @@ import { useEffect, useMemo } from 'react'
 import { useDebounce } from '@uidotdev/usehooks'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
-import { toNumber } from 'lodash'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -44,8 +43,6 @@ const BatchCard = (props: BatchCardProps) => {
     enableReinitialize: true,
   })
 
-  console.log(values.cost, values.quantity)
-
   // const costPerUnit = isBulkCost ? Number(values.cost) / values.quantity : 0
   const costPerUnit = useMemo(() => {
     try {
@@ -77,13 +74,9 @@ const BatchCard = (props: BatchCardProps) => {
   const isExpired =
     values.expirationDate && new Date(values.expirationDate) < new Date()
 
-  const activeStyle = ''
-
   return (
     <div>
-      <div
-        className={`flex flex-col gap-2 border-double bg-gray-100  p-2 ${activeStyle}`}
-      >
+      <div className={`flex flex-col gap-2 border-double bg-gray-100  p-2 `}>
         {active && (
           <span className="text-xs font-bold text-primary">
             (Currently used)

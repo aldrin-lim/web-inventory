@@ -264,8 +264,6 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
               ))}
             </div>
           )}
-
-          <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre>
         </div>
       </div>
 
