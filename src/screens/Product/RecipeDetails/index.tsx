@@ -130,14 +130,17 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           ]}
         />
 
-        <div className="fixed left-0 top-[48px] z-[10] !mt-0 flex flex-col gap-2 bg-base-100 pt-4">
-          <div className="flex flex-col gap-2 bg-base-100 px-6 ">
-            <ProductImages
-              images={[]}
-              onImagesChange={() => {
-                //
-              }}
-            />
+        <div className="fixed left-0 top-[48px] z-[10] !mt-0 flex flex-col bg-base-100 pt-1">
+          <div className="flex w-full flex-col gap-2 bg-base-100 px-6">
+            <div className="mb-2">
+              <ProductImages
+                size="sm"
+                images={[]}
+                onImagesChange={() => {
+                  //
+                }}
+              />
+            </div>
             {/* Recipe Name */}
             <label className="form-control w-full ">
               <div className="form-control-label  ">
@@ -311,7 +314,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           </div>
         </div>
 
-        <div className="mt-[450px]">
+        <div className="mt-[380px]">
           {values.materials.length > 0 && (
             <div className="flex flex-row flex-wrap gap-2">
               {values.materials.map((material, index) => (

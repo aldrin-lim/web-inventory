@@ -5,9 +5,14 @@ type ProductImagesProps = {
   images: Array<string>
   onImagesChange: (images: Array<string>) => void
   disabled?: boolean
+  size?: 'sm' | 'default'
 }
 
+const defaultSize = 150
+const smSize = 100
+
 const ProductImages = (props: ProductImagesProps) => {
+  const { size = 'default' } = props
   const [images, setImages] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -59,6 +64,8 @@ const ProductImages = (props: ProductImagesProps) => {
     }
   }, [props.images])
 
+  const imageSize = size === 'sm' ? smSize : defaultSize
+
   return (
     <div className="flex w-full flex-row gap-5 ">
       <div>
@@ -75,7 +82,7 @@ const ProductImages = (props: ProductImagesProps) => {
         {showAddImageButton && (
           <button
             disabled={props.disabled}
-            className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
+            className={`btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300`}
             onClick={onClick}
           >
             <PlusIcon className="w-8 text-success" />
@@ -83,7 +90,7 @@ const ProductImages = (props: ProductImagesProps) => {
         )}
         {showInitialImageButton && (
           <button
-            className="btn btn-square mt-1 flex h-[150px] w-[150px] flex-col"
+            className={`btn btn-square mt-1 flex h-[${imageSize}px] w-[${imageSize}px] flex-col`}
             onClick={onClick}
           >
             <PhotoIcon className="w-14 " />
@@ -94,7 +101,9 @@ const ProductImages = (props: ProductImagesProps) => {
       <div className="flex max-w-xs flex-row  gap-3 overflow-x-auto">
         {images.map((image, index) => (
           <div key={index} className="relative">
-            <div className="flex h-[150px] w-[150px] min-w-[150px] justify-center overflow-hidden rounded-md border bg-gray-100">
+            <div
+              className={`flex h-[${imageSize}px] w-[${imageSize}px] min-w-[${imageSize}px] justify-center overflow-hidden rounded-md border bg-gray-100`}
+            >
               <img src={image} alt="Uploaded preview" />
             </div>
             <button
