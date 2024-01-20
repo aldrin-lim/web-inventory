@@ -130,7 +130,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           ]}
         />
 
-        <div className="fixed left-0 top-[48px] z-[20] !mt-0 flex flex-col gap-2 bg-base-100 pt-4">
+        <div className="fixed left-0 top-[48px] z-[10] !mt-0 flex flex-col gap-2 bg-base-100 pt-4">
           <div className="flex flex-col gap-2 bg-base-100 px-6 ">
             <ProductImages
               images={[]}
