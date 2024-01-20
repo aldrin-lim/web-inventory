@@ -26,7 +26,11 @@ import useUpdateProduct from 'hooks/useUpdateProduct'
 import { UpdateProductSchema } from 'api/product/updateProductById'
 import { v4 } from 'uuid'
 import useCloneProduct from 'hooks/useCloneProduct'
-import { toNumber } from 'util/number'
+import {
+  computeProfitAmount,
+  computeProfitPercentage,
+  toNumber,
+} from 'util/number'
 import { ProductDetailSchema } from './ProductDetail.types'
 import Big from 'big.js'
 
@@ -87,21 +91,6 @@ export const getActiveBatch = (batches: GetActiveBatchParam) => {
   }
 
   return activeBatch
-}
-
-const computeProfitPercentage = (price: number, cost: number) => {
-  // const profitAmount = toNumber(price - cost)
-  // const profitPercentage = toNumber(profitAmount / cost) * 100
-  const profitAmount = new Big(price).minus(cost)
-  const profitPercentage = profitAmount.div(cost).times(100).toNumber()
-  return profitPercentage
-}
-
-const computeProfitAmount = (price: number, cost: number) => {
-  // const profitAmount = price - cost
-  const profitAmount = new Big(price).minus(cost).toNumber()
-
-  return profitAmount
 }
 
 export const ProductDetail = (props: ProductDetailProps) => {

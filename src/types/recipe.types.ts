@@ -23,6 +23,16 @@ export const RecipeSchema = z.object({
     required_error: 'Recipe name is required',
     invalid_type_error: 'Recipe name is must be a string',
   }),
+  price: z.number({
+    coerce: true,
+    required_error: 'Recipe price is required',
+    invalid_type_error: 'Recipe price must be a number',
+  }),
+  profit: z.number({
+    coerce: true,
+    required_error: 'Profit is required',
+    invalid_type_error: 'Profit must be a number',
+  }),
   quantity: z.number(),
   description: z.string().optional(),
   images: z.array(z.string()).optional(),

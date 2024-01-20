@@ -22,6 +22,6 @@ export function getAllMeasurementUnits(
     })
   }
 
-  return measurementOptions.concat([pieceMesurement])
+  return measurementOptions
 }
 export const measurementOptions = getAllMeasurementUnits()

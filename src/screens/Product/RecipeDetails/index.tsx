@@ -9,14 +9,19 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import PrimaryAction from '../ProductDetail/components/ProductDetailPrimaryAction'
 import ProductImages from '../ProductDetail/components/ProductImages'
-import CurrencyInput from 'react-currency-input-field'
 import { useFormik } from 'formik'
 import RecipeMaterialCard from './RecipeDetailsForm/components/RecipeMaterialCard'
 import { getActiveBatch } from '../ProductDetail'
-import { toNumber } from 'util/number'
+import {
+  computeProfitAmount,
+  computeProfitPercentage,
+  toNumber,
+} from 'util/number'
 import { AppPath } from 'routes/AppRoutes.types'
 import { useNavigate } from 'react-router-dom'
 import Big from 'big.js'
+import { toFormikValidationSchema } from 'zod-formik-adapter'
+import { toast } from 'react-toastify'
 
 enum ActiveScreen {
   None = 'none',
@@ -36,6 +41,7 @@ const initialValue = {
   price: null,
   profitAmount: null,
   profitPercentage: null,
+  profit: 0,
   measurement: 'pieces',
   quantity: 0,
   materials: [],
@@ -49,18 +55,37 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
   const mode = recipe ? 'edit' : 'add'
 
   const [activeScreen, setActiveScreen] = useState(ActiveScreen.None)
-  const [cost, setCost] = useState(0)
+
+  const formikValues = recipe
+    ? {
+        ...recipe,
+        profitAmount: computeProfitAmount(recipe.price, recipe.cost),
+        profitPercentage: computeProfitPercentage(recipe.price, recipe.cost),
+      }
+    : initialValue
 
   const { setFieldValue, errors, getFieldProps, values } = useFormik({
-    initialValues: recipe || initialValue,
-    onSubmit: async (values) => {
+    initialValues: formikValues,
+    onSubmit: async () => {
       // await createRecipe(values)
     },
-    validationSchema: RecipeDetailSchema,
+    validationSchema: toFormikValidationSchema(RecipeDetailSchema),
     enableReinitialize: true,
     validateOnBlur: false,
     validateOnChange: false,
   })
+
+  useEffect(() => {
+    if (recipe?.price && recipe?.cost && recipe.price > 0 && recipe.cost > 0) {
+      const profitAmount = computeProfitAmount(recipe.price, recipe.cost)
+      const profitPercentage = computeProfitPercentage(
+        recipe.price,
+        recipe.cost,
+      )
+      setFieldValue('profitAmount', profitAmount)
+      setFieldValue('profitPercentage', profitPercentage)
+    }
+  }, [recipe])
 
   const closeProductSelection = () => {
     setActiveScreen(ActiveScreen.None)
@@ -104,158 +129,194 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             />,
           ]}
         />
-        <ProductImages
-          images={[]}
-          onImagesChange={() => {
-            //
-          }}
-        />
-        <div className="flex flex-col gap-2">
-          {/* Recipe Name */}
-          <label className="form-control w-full ">
-            <div className="form-control-label  ">
-              <span className="label-text-alt text-gray-400">Recipe Name</span>
-            </div>
-            <input
-              type="text"
-              placeholder="(e.g., Cookies, Tea, etc.)"
-              className="input input-bordered w-full"
-              tabIndex={1}
+
+        <div className="fixed left-0 top-[48px] z-[20] !mt-0 flex flex-col gap-2 bg-base-100 pt-4">
+          <div className="flex flex-col gap-2 bg-base-100 px-6 ">
+            <ProductImages
+              images={[]}
+              onImagesChange={() => {
+                //
+              }}
             />
-          </label>
-
-          {/* Cost */}
-          <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
-            <p>Cost</p>
-            <p>₱ {values.cost}</p>
-          </div>
-
-          {/* Price and Profit */}
-          <div className="flex w-full flex-row gap-4">
-            {/* Price Input */}
-            <label className="form-control max-w-[40%]">
+            {/* Recipe Name */}
+            <label className="form-control w-full ">
               <div className="form-control-label  ">
-                <span className="label-text-alt text-gray-400">Price</span>
+                <span className="label-text-alt text-gray-400">
+                  Recipe Name
+                </span>
               </div>
-              <CurrencyInput
-                // onBlur={getFieldProps('price').onBlur}
-                // name={getFieldProps('price').name}
-                // value={priceDisplayValue ?? ''}
+              <input
                 type="text"
-                tabIndex={2}
+                placeholder="(e.g., Cookies, Tea, etc.)"
                 className="input input-bordered w-full"
-                prefix="₱"
-                placeholder="₱0"
-                decimalsLimit={9}
-                onValueChange={(value) => {
-                  setFieldValue('price', value)
-                  // const newPrice = toNumber(value)
-                  // console.log('newPrice', toNumber(value))
-                  // const cost = values.isBulkCost
-                  //   ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                  //   : toNumber(values.cost)
-                  // const newProfitAmount = computeProfitAmount(newPrice, cost)
-                  // const newProfitPercentage = computeProfitPercentage(
-                  //   newPrice,
-                  //   cost,
-                  // )
-                  // setFieldValue('profitAmount', toNumber(newProfitAmount))
-                  // setFieldValue(
-                  //   'profitPercentage',
-                  //   toNumber(newProfitPercentage),
-                  // )
-                }}
-                allowNegativeValue={false}
+                tabIndex={1}
               />
-              <div className="label py-0">
-                <span className="label-text-alt text-xs text-red-400">
-                  {/* {errors.price}&nbsp; */}
-                </span>
-              </div>
             </label>
-            {/* Profit */}
-            <div className="form-control">
-              <div className="form-control input input-bordered relative flex flex-row items-center">
+
+            {/* Cost */}
+            <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
+              <p>Cost</p>
+              <p>₱ {values.cost}</p>
+            </div>
+
+            {/* Price and Profit */}
+            <div className="flex w-full flex-row gap-2">
+              {/* Price Input */}
+              <label className="form-control max-w-[40%]">
                 <div className="form-control-label  ">
-                  <span className="label-text-alt text-gray-400">Profit</span>
+                  <span className="label-text-alt text-gray-400">Price</span>
                 </div>
-                <CurrencyInput
-                  // onBlur={getFieldProps('profitPercentage').onBlur}
-                  // name={getFieldProps('profitPercentage').name}
-                  // value={profitPercentageDisplayValue ?? ''}
+                <input
+                  // disabled={isMutating}
+                  onBlur={getFieldProps('price').onBlur}
+                  name={getFieldProps('price').name}
+                  value={values.price ?? ''}
                   type="text"
-                  tabIndex={4}
-                  className={[
-                    'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
-                  ].join(' ')}
-                  decimalsLimit={9}
-                  onValueChange={(value) => {
-                    // setFieldValue('profitPercentage', value)
-                    // const newProfitPercentage = toNumber(value)
-                    // const cost = values.isBulkCost
-                    //   ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                    //   : toNumber(values.cost)
-                    // const newPrice = cost * (1 + newProfitPercentage / 100)
-                    // const newProfitAmount = computeProfitAmount(newPrice, cost)
-                    // setFieldValue('price', newPrice)
-                    // setFieldValue('profitAmount', newProfitAmount)
-                  }}
-                  disableGroupSeparators
-                  allowNegativeValue={false}
-                  maxLength={6}
-                />
-                <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
-                <CurrencyInput
-                  // onBlur={getFieldProps('profitAmount').onBlur}
-                  // name={getFieldProps('profitAmount').name}
-                  // value={profitAmountDisplayValue ?? ''}
-                  type="text"
-                  tabIndex={5}
-                  className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
-                  prefix="₱"
+                  tabIndex={2}
+                  className="input input-bordered w-full"
                   placeholder="₱0"
-                  decimalsLimit={9}
-                  onValueChange={(value) => {}}
-                  allowNegativeValue={false}
+                  inputMode="decimal"
+                  onChange={({ target: { value } }) => {
+                    const regex = /^-?(\d+)?(\.\d*)?$/
+                    if (regex.test(value) || value === '') {
+                      setFieldValue('price', value)
+                      const newPrice = toNumber(value)
+                      const cost = values.cost
+                      const newProfitAmount = computeProfitAmount(
+                        newPrice,
+                        cost,
+                      )
+                      const newProfitPercentage = computeProfitPercentage(
+                        newPrice,
+                        cost,
+                      )
+                      setFieldValue('profitAmount', toNumber(newProfitAmount))
+                      setFieldValue(
+                        'profitPercentage',
+                        toNumber(newProfitPercentage),
+                      )
+                    }
+                  }}
                 />
-              </div>
-              <div className="label py-0">
-                <span className="label-text-alt text-xs text-red-400">
-                  {/* {errors.profitAmount}&nbsp; */}
-                </span>
+                <div className="label py-0">
+                  <span className="label-text-alt text-xs text-red-400">
+                    {errors.price}&nbsp;
+                  </span>
+                </div>
+              </label>
+              {/* Profit */}
+              <div className="form-control">
+                <div className="form-control input input-bordered relative flex flex-row items-center">
+                  <div className="form-control-label  ">
+                    <span className="label-text-alt text-gray-400">Profit</span>
+                  </div>
+                  <input
+                    // disabled={isMutating}
+                    onBlur={getFieldProps('profitPercentage').onBlur}
+                    name={getFieldProps('profitPercentage').name}
+                    value={values.profitPercentage ?? ''}
+                    type="text"
+                    tabIndex={4}
+                    inputMode="decimal"
+                    className={[
+                      'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
+                    ].join(' ')}
+                    onChange={({ target: { value } }) => {
+                      const regex = /^-?(\d+)?(\.\d*)?$/
+                      if (regex.test(value) || value === '') {
+                        setFieldValue('profitPercentage', value)
+                        const newProfitPercentage = toNumber(value)
+                        const cost = values.cost
+                        // const newPrice = cost * (1 + newProfitPercentage / 100)
+                        const newPrice = new Big(cost)
+                          .times(
+                            new Big(1).plus(
+                              new Big(newProfitPercentage).div(100),
+                            ),
+                          )
+                          .toNumber()
+                        const newProfitAmount = computeProfitAmount(
+                          newPrice,
+                          cost,
+                        )
+                        setFieldValue('price', newPrice)
+                        setFieldValue('profitAmount', newProfitAmount)
+                      }
+                    }}
+                  />
+                  <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
+                  <input
+                    // disabled={isMutating}
+                    onBlur={getFieldProps('profitAmount').onBlur}
+                    name={getFieldProps('profitAmount').name}
+                    value={values.profitAmount ?? ''}
+                    type="text"
+                    tabIndex={5}
+                    className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
+                    placeholder="₱0"
+                    inputMode="decimal"
+                    onChange={({ target: { value } }) => {
+                      const regex = /^-?(\d+)?(\.\d*)?$/
+                      if (regex.test(value) || value === '') {
+                        setFieldValue('profitAmount', value)
+                        const newProfitAmount = toNumber(value)
+                        const cost = values.cost
+
+                        // const newPrice = cost + newProfitAmount
+                        const newPrice = new Big(cost)
+                          .plus(new Big(newProfitAmount))
+                          .toNumber()
+                        const newProfitPercentage = computeProfitPercentage(
+                          newPrice,
+                          cost,
+                        )
+
+                        setFieldValue('price', newPrice)
+                        setFieldValue('profitPercentage', newProfitPercentage)
+                      }
+                    }}
+                  />
+                </div>
+                <div className="label py-0">
+                  <span className="label-text-alt text-xs text-red-400">
+                    {errors.profitAmount}&nbsp;
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Materials */}
-          <div className="flex flex-row justify-between">
-            <h1>Materials</h1>
-            {values.materials.length > 0 && (
+            {/* Materials */}
+            <div className="flex flex-row justify-between">
+              <h1>Materials</h1>
+              {values.materials.length > 0 && (
+                <button
+                  onClick={() => setActiveScreen(ActiveScreen.ProductGrid)}
+                  className="btn btn-ghost btn-sm text-blue-400"
+                >
+                  <PlusIcon className="w-5 " />
+                  Add
+                </button>
+              )}
+            </div>
+
+            {/* Materials Card */}
+            {values.materials.length === 0 && (
               <button
                 onClick={() => setActiveScreen(ActiveScreen.ProductGrid)}
-                className="btn btn-ghost btn-sm text-blue-400"
+                className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
               >
-                <PlusIcon className="w-5 " />
-                Add
+                <PlusIcon className="w-8 text-success" />
               </button>
             )}
           </div>
+        </div>
 
-          {/* Materials Card */}
-          {values.materials.length === 0 && (
-            <button
-              onClick={() => setActiveScreen(ActiveScreen.ProductGrid)}
-              className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
-            >
-              <PlusIcon className="w-8 text-success" />
-            </button>
-          )}
-
+        <div className="mt-[450px]">
           {values.materials.length > 0 && (
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row flex-wrap gap-2">
               {values.materials.map((material, index) => (
                 <RecipeMaterialCard
-                  key={material.id}
+                  key={index}
                   material={material}
                   onChange={(updateMaterial) => {
                     setFieldValue(`materials.${index}`, updateMaterial)
@@ -278,16 +339,28 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             const cost = product.isBulkCost
               ? toNumber(activeBatch.costPerUnit)
               : toNumber(activeBatch.cost)
-            setFieldValue('materials', [
-              ...values.materials,
-              {
-                quantity: 0,
-                cost,
-                unitOfMeasurement: getActiveBatch(product.batches)
-                  .unitOfMeasurement,
-                product,
-              } as Material,
-            ])
+
+            const productExists = values.materials.find(
+              (material) => material.product.id === product.id,
+            )
+
+            if (!productExists) {
+              setFieldValue('materials', [
+                ...values.materials,
+                {
+                  quantity: 0,
+                  cost,
+                  unitOfMeasurement: getActiveBatch(product.batches)
+                    .unitOfMeasurement,
+                  product,
+                } as Material,
+              ])
+            } else {
+              toast.warn('Product is already in the recipe', {
+                autoClose: 1000,
+                theme: 'colored',
+              })
+            }
             setActiveScreen(ActiveScreen.None)
           }}
           onClose={closeProductSelection}
@@ -314,10 +387,10 @@ const RecipeDetailSchema = RecipeSchema.extend({
     coerce: true,
     required_error: 'Price is required',
   }),
-  price: z
+  price: z.coerce
     .number({
-      coerce: true,
       required_error: 'Price is required',
+      invalid_type_error: 'Price is required',
     })
     .nullable(),
 })
