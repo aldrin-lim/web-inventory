@@ -7,7 +7,6 @@ import {
 import axios from 'axios'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { Product } from 'types/product.types'
 
 const useUpdateProduct = () => {
   const queryClient = useQueryClient()
