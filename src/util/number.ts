@@ -32,3 +32,13 @@ export const computeProfitAmount = (price: number, cost: number) => {
 
   return profitAmount
 }
+
+export const profitPercentageColor = (amount: string | number) => {
+  const amountNumber = toNumber(amount)
+  if (amountNumber > 0) {
+    return 'text-green-500'
+  } else if (amountNumber < 0) {
+    return 'text-red-500'
+  }
+  return ''
+}

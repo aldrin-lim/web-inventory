@@ -29,6 +29,7 @@ import useCloneProduct from 'hooks/useCloneProduct'
 import {
   computeProfitAmount,
   computeProfitPercentage,
+  profitPercentageColor,
   toNumber,
 } from 'util/number'
 import { ProductDetailSchema } from './ProductDetail.types'
@@ -453,6 +454,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   inputMode="decimal"
                   className={[
                     'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
+                    profitPercentageColor(values.profitPercentage),
                   ].join(' ')}
                   onValueChange={(value) => {
                     setFieldValue('profitPercentage', value)
