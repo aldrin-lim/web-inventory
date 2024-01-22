@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import {
@@ -33,6 +33,7 @@ import {
 } from 'util/number'
 import { ProductDetailSchema } from './ProductDetail.types'
 import Big from 'big.js'
+import CurrencyInput from 'react-currency-input-field'
 
 enum ActiveScreen {
   None = 'none',
@@ -46,10 +47,10 @@ type ProductDetailProps = {
 
 const defaultValue = {
   name: '',
-  price: null,
-  cost: null,
+  price: 0,
+  cost: 0,
   images: [],
-  profitAmount: null,
+  profitAmount: 0,
   profitPercentage: 0,
   trackStock: false,
   description: '',
@@ -134,6 +135,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
     enableReinitialize: true,
     validateOnBlur: false,
     onSubmit: async (value) => {
+      console.log(value)
+
       const parsedValue = ProductDetailSchema.parse(value)
 
       if (mode === 'add') {
@@ -160,6 +163,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           }
           await createProduct(requestBody)
         } else {
+          console.log('pasok')
           const requestBody: z.infer<typeof AddProductSchema> = {
             name: parsedValue.name,
             price: toNumber(parsedValue.price),
@@ -225,10 +229,14 @@ export const ProductDetail = (props: ProductDetailProps) => {
     setActiveScreen(ActiveScreen.None)
   }
 
-  const priceDisplayValue = values.price
-  const costDisplayValue = values.cost
-  const profitAmountDisplayValue = values.profitAmount
-  const profitPercentageDisplayValue = values.profitPercentage
+  useEffect(() => {
+    if (mode === 'add') {
+      setFieldValue('cost', '')
+      setFieldValue('price', '')
+      setFieldValue('profitAmount', '')
+      setFieldValue('profitPercentage', '')
+    }
+  }, [mode])
 
   return (
     <div
@@ -255,6 +263,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
               disabled={isMutating}
               isLoading={isMutating}
               onCreate={function (): void {
+                console.log(errors)
+                console.log(values)
                 submitForm()
               }}
               onDelete={async () => {
@@ -341,22 +351,21 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <div className="form-control-label  ">
                 <span className="label-text-alt text-gray-400">Cost</span>
               </div>
-              <input
+              <CurrencyInput
+                decimalsLimit={2}
+                prefix="₱"
                 disabled={isMutating}
-                onBlur={getFieldProps('cost').onBlur}
                 name={getFieldProps('cost').name}
-                value={costDisplayValue ?? ''}
+                value={values.cost}
                 type="text"
                 tabIndex={3}
                 className="input input-bordered w-full"
                 placeholder="₱0"
                 inputMode="decimal"
-                onChange={({ target: { value } }) => {
-                  const regex = /^-?(\d+)?(\.\d*)?$/
-                  if (regex.test(value) || value === '') {
-                    setFieldValue('cost', value)
-
-                    const cost = toNumber(value)
+                onValueChange={(value) => {
+                  setFieldValue('cost', value)
+                  const cost = toNumber(value)
+                  if (values.price > 0) {
                     const price = toNumber(values.price)
                     const newProfitAmount = computeProfitAmount(price, cost)
                     const newProfitPercentage = computeProfitPercentage(
@@ -365,12 +374,13 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     )
                     setFieldValue('profitAmount', newProfitAmount)
                     setFieldValue('profitPercentage', newProfitPercentage)
-                    if (
-                      values.trackStock === false ||
-                      values.isBulkCost === false
-                    ) {
-                      setFieldValue('batches.0.cost', toNumber(cost))
-                    }
+                  }
+
+                  if (
+                    values.trackStock === false ||
+                    values.isBulkCost === false
+                  ) {
+                    setFieldValue('batches.0.cost', toNumber(cost))
                   }
                 }}
               />
@@ -389,35 +399,34 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <div className="form-control-label  ">
                 <span className="label-text-alt text-gray-400">Price</span>
               </div>
-              <input
+              <CurrencyInput
+                decimalsLimit={2}
+                prefix="₱"
                 disabled={isMutating}
                 onBlur={getFieldProps('price').onBlur}
                 name={getFieldProps('price').name}
-                value={priceDisplayValue ?? ''}
+                value={values.price}
                 type="text"
                 tabIndex={2}
                 className="input input-bordered w-full"
                 placeholder="₱0"
                 inputMode="decimal"
-                onChange={({ target: { value } }) => {
-                  const regex = /^-?(\d+)?(\.\d*)?$/
-                  if (regex.test(value) || value === '') {
-                    setFieldValue('price', value)
-                    const newPrice = toNumber(value)
-                    const cost = values.isBulkCost
-                      ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                      : toNumber(values.cost)
-                    const newProfitAmount = computeProfitAmount(newPrice, cost)
-                    const newProfitPercentage = computeProfitPercentage(
-                      newPrice,
-                      cost,
-                    )
-                    setFieldValue('profitAmount', toNumber(newProfitAmount))
-                    setFieldValue(
-                      'profitPercentage',
-                      toNumber(newProfitPercentage),
-                    )
-                  }
+                onValueChange={(value) => {
+                  setFieldValue('price', value)
+                  const newPrice = toNumber(value)
+                  const cost = values.isBulkCost
+                    ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                    : toNumber(values.cost)
+                  const newProfitAmount = computeProfitAmount(newPrice, cost)
+                  const newProfitPercentage = computeProfitPercentage(
+                    newPrice,
+                    cost,
+                  )
+                  setFieldValue('profitAmount', toNumber(newProfitAmount))
+                  setFieldValue(
+                    'profitPercentage',
+                    toNumber(newProfitPercentage),
+                  )
                 }}
               />
               <div className="label py-0">
@@ -432,77 +441,70 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 <div className="form-control-label  ">
                   <span className="label-text-alt text-gray-400">Profit</span>
                 </div>
-                <input
+                <CurrencyInput
+                  decimalsLimit={2}
                   disabled={isMutating}
                   onBlur={getFieldProps('profitPercentage').onBlur}
                   name={getFieldProps('profitPercentage').name}
-                  value={profitPercentageDisplayValue ?? ''}
+                  value={values.profitPercentage}
+                  placeholder="70"
                   type="text"
                   tabIndex={4}
                   inputMode="decimal"
                   className={[
                     'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
                   ].join(' ')}
-                  onChange={({ target: { value } }) => {
-                    const regex = /^-?(\d+)?(\.\d*)?$/
-                    if (regex.test(value) || value === '') {
-                      setFieldValue('profitPercentage', value)
-                      const newProfitPercentage = toNumber(value)
-                      const cost = values.isBulkCost
-                        ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                        : toNumber(values.cost)
-                      // const newPrice = cost * (1 + newProfitPercentage / 100)
-                      const newPrice = new Big(cost)
-                        .times(
-                          new Big(1).plus(
-                            new Big(newProfitPercentage).div(100),
-                          ),
-                        )
-                        .round(2)
-                        .toNumber()
-                      const newProfitAmount = computeProfitAmount(
-                        newPrice,
-                        cost,
+                  onValueChange={(value) => {
+                    setFieldValue('profitPercentage', value)
+                    const newProfitPercentage = toNumber(value)
+                    const cost = values.isBulkCost
+                      ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                      : toNumber(values.cost)
+                    // const newPrice = cost * (1 + newProfitPercentage / 100)
+                    const newPrice = new Big(cost)
+                      .times(
+                        new Big(1).plus(new Big(newProfitPercentage).div(100)),
                       )
+                      .round(2)
+                      .toNumber()
+                    const newProfitAmount = computeProfitAmount(newPrice, cost)
 
-                      setFieldValue('price', newPrice)
-                      setFieldValue('profitAmount', newProfitAmount)
-                    }
+                    setFieldValue('price', newPrice)
+                    setFieldValue('profitAmount', newProfitAmount)
                   }}
                 />
                 <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
-                <input
+                <CurrencyInput
+                  decimalsLimit={2}
+                  prefix="₱"
                   disabled={isMutating}
                   onBlur={getFieldProps('profitAmount').onBlur}
                   name={getFieldProps('profitAmount').name}
-                  value={profitAmountDisplayValue ?? ''}
+                  value={values.profitAmount}
                   type="text"
                   tabIndex={5}
                   className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
                   placeholder="₱0"
                   inputMode="decimal"
-                  onChange={({ target: { value } }) => {
-                    const regex = /^-?(\d+)?(\.\d*)?$/
-                    if (regex.test(value) || value === '') {
-                      setFieldValue('profitAmount', value)
-                      const newProfitAmount = toNumber(value)
-                      const cost = values.isBulkCost
-                        ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                        : toNumber(values.cost)
+                  onValueChange={(value) => {
+                    setFieldValue('profitAmount', value)
+                    const newProfitAmount = toNumber(value)
+                    const cost = values.isBulkCost
+                      ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                      : toNumber(values.cost)
 
-                      // const newPrice = cost + newProfitAmount
-                      const newPrice = new Big(cost)
-                        .plus(new Big(newProfitAmount))
-                        .round(2)
-                        .toNumber()
-                      const newProfitPercentage = computeProfitPercentage(
-                        newPrice,
-                        cost,
-                      )
+                    // const newPrice = cost + newProfitAmount
+                    const newPrice = new Big(cost)
+                      .plus(new Big(newProfitAmount))
+                      .round(2)
+                      .toNumber()
+                    const newProfitPercentage = computeProfitPercentage(
+                      newPrice,
+                      cost,
+                    )
 
-                      setFieldValue('price', newPrice)
-                      setFieldValue('profitPercentage', newProfitPercentage)
-                    }
+                    setFieldValue('price', newPrice)
+                    setFieldValue('profitPercentage', newProfitPercentage)
                   }}
                 />
               </div>
