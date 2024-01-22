@@ -23,7 +23,7 @@ const MeasurementSelect = (props: MeasurementSelectProps) => {
       value={value}
       onChange={onChange}
       options={options}
-      className="measurement-selection"
+      className="measurement-selection text-base"
     />
   )
 }
