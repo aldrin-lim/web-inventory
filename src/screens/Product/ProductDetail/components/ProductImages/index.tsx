@@ -8,11 +8,13 @@ type ProductImagesProps = {
   size?: 'sm' | 'default'
 }
 
-const defaultSize = 150
-const smSize = 100
+const defaultSize = '130'
+const smSize = '100'
 
 const ProductImages = (props: ProductImagesProps) => {
   const { size = 'default' } = props
+  const imageSize = size === 'sm' ? smSize : defaultSize
+
   const [images, setImages] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -64,10 +66,8 @@ const ProductImages = (props: ProductImagesProps) => {
     }
   }, [props.images])
 
-  const imageSize = size === 'sm' ? smSize : defaultSize
-
   return (
-    <div className="flex w-full flex-row gap-5 ">
+    <div className={`flex w-full flex-row gap-5`}>
       <div>
         <input
           ref={inputRef}
@@ -82,7 +82,7 @@ const ProductImages = (props: ProductImagesProps) => {
         {showAddImageButton && (
           <button
             disabled={props.disabled}
-            className={`btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300`}
+            className={`btn btn-square mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300`}
             onClick={onClick}
           >
             <PlusIcon className="w-8 text-success" />
