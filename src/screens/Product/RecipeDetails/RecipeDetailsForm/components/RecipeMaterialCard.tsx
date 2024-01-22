@@ -161,7 +161,6 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
             {values.product.soldBy === ProductSoldBy.Weight && (
               <MeasurementSelect
                 disabled={disabled}
-                measurements={['mass']}
                 value={{
                   label:
                     measurementOptions.find(
