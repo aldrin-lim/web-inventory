@@ -456,7 +456,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 disableGroupSeparators={true}
                 inputMode="decimal"
                 className={[
-                  'input w-[70px] border-none bg-transparent px-0 text-center focus:outline-none',
+                  'input w-1/2 border-none bg-transparent px-0 text-left focus:outline-none',
                   profitPercentageColor(values.profitPercentage),
                 ].join(' ')}
                 onValueChange={(value) => {
