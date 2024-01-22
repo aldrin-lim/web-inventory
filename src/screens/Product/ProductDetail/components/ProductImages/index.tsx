@@ -8,8 +8,8 @@ type ProductImagesProps = {
   size?: 'sm' | 'default'
 }
 
-const defaultSize = '130'
-const smSize = '100'
+const defaultSize = '130px'
+const smSize = '100px'
 
 const ProductImages = (props: ProductImagesProps) => {
   const { size = 'default' } = props
@@ -90,8 +90,12 @@ const ProductImages = (props: ProductImagesProps) => {
         )}
         {showInitialImageButton && (
           <button
-            className={`btn btn-square mt-1 flex h-[${imageSize}px] w-[${imageSize}px] flex-col`}
+            className={`btn btn-square mt-1 flex flex-col`}
             onClick={onClick}
+            style={{
+              width: imageSize,
+              height: imageSize,
+            }}
           >
             <PhotoIcon className="w-14 " />
             <span className="text-xs ">Upload</span>
@@ -102,7 +106,11 @@ const ProductImages = (props: ProductImagesProps) => {
         {images.map((image, index) => (
           <div key={index} className="relative">
             <div
-              className={`flex h-[${imageSize}px] w-[${imageSize}px] min-w-[${imageSize}px] justify-center overflow-hidden rounded-md border bg-gray-100`}
+              className={`flex justify-center overflow-hidden rounded-md border bg-gray-100`}
+              style={{
+                width: imageSize,
+                height: imageSize,
+              }}
             >
               <img src={image} alt="Uploaded preview" />
             </div>
