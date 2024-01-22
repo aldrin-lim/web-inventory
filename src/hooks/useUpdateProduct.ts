@@ -46,7 +46,6 @@ const useUpdateProduct = () => {
       id: param.id,
       ...param.product,
     })
-    console.log('param', param)
 
     if (!validation.success) {
       const error = validation.error.issues[0].message

@@ -122,7 +122,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
     const handleScroll = () => {
       console.log('document.body.scrollTop', window.scrollY)
 
-      if (window.scrollY > 193) {
+      if (window.scrollY > 202) {
         setAdjustContent(true)
       } else {
         setAdjustContent(false)
@@ -383,7 +383,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
         {adjustContent && (
           <div className="fixed left-0 top-[48px] z-[10] !mt-0 flex flex-col bg-base-100 pt-1">
-            <div className="flex w-full flex-col gap-2 bg-base-100 px-6">
+            <div className="flex w-full flex-col gap-4 bg-base-100 px-6">
               {/* Cost */}
               <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
                 <p>Cost</p>

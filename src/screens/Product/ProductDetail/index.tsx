@@ -129,7 +129,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
     enableReinitialize: true,
     validateOnBlur: false,
     onSubmit: async (value) => {
-      console.log(value)
       const parsedValue = ProductDetailSchema.parse(value)
       if (mode === 'add') {
         if (parsedValue.trackStock === false) {
@@ -155,7 +154,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
           }
           await createProduct(requestBody)
         } else {
-          console.log('pasok')
           const requestBody: z.infer<typeof AddProductSchema> = {
             name: parsedValue.name,
             price: toNumber(parsedValue.price),
