@@ -174,17 +174,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
             isBulkCost: parsedValue.isBulkCost,
           }
 
-          // Make sure if the sold by pieces, make all the batches to have
-          // unit of measurement to pieces, cost to the parsedValue.cost, and cost per unit to 0
-          if (parsedValue.soldBy === ProductSoldBy.Pieces) {
-            requestBody.batches = requestBody.batches.map((batch) => ({
-              ...batch,
-              unitOfMeasurement: 'pieces',
-              costPerUnit: 0,
-              cost: Number(parsedValue.cost),
-            }))
-          }
-
           await createProduct(requestBody)
         }
         navigate(AppPath.ProductOverview)
@@ -469,11 +458,13 @@ export const ProductDetail = (props: ProductDetailProps) => {
                             new Big(newProfitPercentage).div(100),
                           ),
                         )
+                        .round(2)
                         .toNumber()
                       const newProfitAmount = computeProfitAmount(
                         newPrice,
                         cost,
                       )
+
                       setFieldValue('price', newPrice)
                       setFieldValue('profitAmount', newProfitAmount)
                     }
@@ -502,6 +493,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       // const newPrice = cost + newProfitAmount
                       const newPrice = new Big(cost)
                         .plus(new Big(newProfitAmount))
+                        .round(2)
                         .toNumber()
                       const newProfitPercentage = computeProfitPercentage(
                         newPrice,

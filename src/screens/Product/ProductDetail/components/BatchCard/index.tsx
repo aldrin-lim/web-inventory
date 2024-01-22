@@ -47,7 +47,10 @@ const BatchCard = (props: BatchCardProps) => {
   const costPerUnit = useMemo(() => {
     try {
       const newCost = isBulkCost
-        ? new Big(values.cost ?? 0).div(values.quantity ?? 0).toNumber()
+        ? new Big(values.cost ?? 0)
+            .div(values.quantity ?? 0)
+            .round(2)
+            .toNumber()
         : 0
       return newCost
     } catch {

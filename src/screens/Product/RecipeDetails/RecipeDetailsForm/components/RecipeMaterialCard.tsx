@@ -1,7 +1,7 @@
 import { TrashIcon } from '@heroicons/react/24/solid'
 import ImageLoader from 'components/ImageLoader'
 import convert, { Unit } from 'convert-units'
-import { useFormik } from 'formik'
+import { FormikErrors, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { getActiveBatch } from 'screens/Product/ProductDetail'
 import MeasurementSelect from 'screens/Product/ProductDetail/components/MeasurementSelect'
@@ -15,11 +15,12 @@ type RecipeMaterialCardProps = {
   material: Material
   onRemove?: () => void
   onChange?: (material: Material) => void
-  // error?: FormikErrors<Material>
+  errors?: FormikErrors<Material>
+  disabled?: boolean
 }
 
 const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
-  const { material, onChange } = props
+  const { material, onChange, errors, disabled = false } = props
   const image = material.product.images && material.product.images[0]
 
   const [totalCost, setTotalCost] = useState(0)
@@ -35,20 +36,24 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
   })
 
   const increaseQuantity = () => {
-    // setFieldValue('quantity', values.quantity + 1)
-    setFieldValue('quantity', new Big(values.quantity).plus(1).toNumber())
+    setFieldValue(
+      'quantity',
+      new Big(values.quantity).plus(1).round(2).toNumber(),
+    )
   }
 
   const decreaseQuantity = () => {
     if (values.quantity > 0) {
-      // setFieldValue('quantity', values.quantity - 1)
-      setFieldValue('quantity', new Big(values.quantity).minus(1).toNumber())
+      setFieldValue(
+        'quantity',
+        new Big(values.quantity).minus(1).round(2).toNumber(),
+      )
     }
   }
 
   useEffect(() => {
     setTotalCost(
-      new Big(values.quantity).times(new Big(values.cost)).toNumber(),
+      new Big(values.quantity).times(new Big(values.cost)).round(2).toNumber(),
     )
   }, [values.quantity])
 
@@ -81,10 +86,14 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
 
     const newCostPerUnit = new Big(cost)
       .div(new Big(conversionFactor))
+      .round(2)
       .toNumber()
 
     setTotalCost(
-      new Big(values.quantity).times(new Big(newCostPerUnit)).toNumber(),
+      new Big(values.quantity)
+        .times(new Big(newCostPerUnit))
+        .round(2)
+        .toNumber(),
     )
 
     setFieldValue('cost', newCostPerUnit)
@@ -113,10 +122,15 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
 
           <div className="flex flex-row gap-1 text-xs">
             <div className="join flex border border-gray-300">
-              <button className="join-itm btn" onClick={decreaseQuantity}>
+              <button
+                disabled={disabled}
+                className="join-itm btn"
+                onClick={decreaseQuantity}
+              >
                 -
               </button>
               <input
+                disabled={disabled}
                 value={values.quantity}
                 type="number"
                 inputMode="numeric"
@@ -125,15 +139,28 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
                   setFieldValue('quantity', +e.target.value)
                 }}
               />
-              <button className="btn  join-item" onClick={increaseQuantity}>
+              <button
+                disabled={disabled}
+                className="btn  join-item"
+                onClick={increaseQuantity}
+              >
                 +
               </button>
             </div>
           </div>
 
+          {errors && errors.quantity && (
+            <div className="label py-0">
+              <span className="label-text-alt text-xs text-red-400">
+                {errors.quantity}
+              </span>
+            </div>
+          )}
+
           <div>
             {values.product.soldBy === ProductSoldBy.Weight && (
               <MeasurementSelect
+                disabled={disabled}
                 measurements={['mass']}
                 value={{
                   label:

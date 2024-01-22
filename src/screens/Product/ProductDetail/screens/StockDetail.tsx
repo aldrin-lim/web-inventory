@@ -120,18 +120,18 @@ const StockDetail = (props: StockDetailProps) => {
               checked={values.soldBy === ProductSoldBy.Pieces}
               onChange={(e) => {
                 setFieldValue('soldBy', e.target.value)
-                if (e.target.checked) {
-                  setFieldValue('isBulkCost', false)
-                  setFieldValue(
-                    'batches',
-                    values.batches.map((batch) => {
-                      return {
-                        ...batch,
-                        unitOfMeasurement: 'pieces',
-                      }
-                    }),
-                  )
-                }
+                // if (e.target.checked) {
+                //   setFieldValue('isBulkCost', false)
+                //   setFieldValue(
+                //     'batches',
+                //     values.batches.map((batch) => {
+                //       return {
+                //         ...batch,
+                //         unitOfMeasurement: 'pieces',
+                //       }
+                //     }),
+                //   )
+                // }
               }}
             />
             <span className="label-text">Pieces</span>
@@ -171,35 +171,33 @@ const StockDetail = (props: StockDetailProps) => {
       <div className="flex w-full flex-row items-center justify-between">
         <p className="flex-grow">Stock:</p>
 
-        {values.soldBy === 'weight' && (
-          <div className="form-control ml-auto flex w-auto flex-row gap-2 ">
-            <span>Bulk Cost</span>
-            <div className="flex flex-row gap-2">
-              <input
-                {...getFieldProps('isBulkCost')}
-                checked={values.isBulkCost}
-                onChange={(e) => {
-                  setFieldValue('isBulkCost', e.target.checked)
-                  if (e.target.checked) {
-                    setFieldValue(
-                      'batches',
-                      values.batches.map((batch) => {
-                        return {
-                          ...batch,
-                          cost: 0,
-                          costPerUnit: 0,
-                        }
-                      }),
-                    )
-                  }
-                }}
-                type="checkbox"
-                className="toggle toggle-primary"
-              />
-              <InformationCircleIcon className="w-5 text-neutral" />
-            </div>
+        <div className="form-control ml-auto flex w-auto flex-row gap-2 ">
+          <span>Bulk Cost</span>
+          <div className="flex flex-row gap-2">
+            <input
+              {...getFieldProps('isBulkCost')}
+              checked={values.isBulkCost}
+              onChange={(e) => {
+                setFieldValue('isBulkCost', e.target.checked)
+                if (e.target.checked) {
+                  setFieldValue(
+                    'batches',
+                    values.batches.map((batch) => {
+                      return {
+                        ...batch,
+                        cost: 0,
+                        costPerUnit: 0,
+                      }
+                    }),
+                  )
+                }
+              }}
+              type="checkbox"
+              className="toggle toggle-primary"
+            />
+            <InformationCircleIcon className="w-5 text-neutral" />
           </div>
-        )}
+        </div>
       </div>
 
       {/* Batches */}

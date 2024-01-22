@@ -18,7 +18,7 @@ export const MaterialSchema = z.object({
 export type Material = z.infer<typeof MaterialSchema>
 
 export const RecipeSchema = z.object({
-  id: z.string(),
+  id: z.string({ required_error: 'Recipe id is required' }),
   name: z.string({
     required_error: 'Recipe name is required',
     invalid_type_error: 'Recipe name is must be a string',
@@ -33,7 +33,6 @@ export const RecipeSchema = z.object({
     required_error: 'Profit is required',
     invalid_type_error: 'Profit must be a number',
   }),
-  quantity: z.number(),
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
   measurement: z.string(),

@@ -9,7 +9,6 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import PrimaryAction from '../ProductDetail/components/ProductDetailPrimaryAction'
 import ProductImages from '../ProductDetail/components/ProductImages'
-import { useFormik } from 'formik'
 import RecipeMaterialCard from './RecipeDetailsForm/components/RecipeMaterialCard'
 import { getActiveBatch } from '../ProductDetail'
 import {
@@ -22,6 +21,10 @@ import { useNavigate } from 'react-router-dom'
 import Big from 'big.js'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { toast } from 'react-toastify'
+import { CreateRecipeSchema } from 'api/recipe/createRecipe'
+import useCreateRecipe from 'hooks/useCreateRecipe'
+import { useFormik } from 'formik'
+import { omit } from 'lodash'
 
 enum ActiveScreen {
   None = 'none',
@@ -38,9 +41,9 @@ const initialValue = {
   description: '',
   cost: 0,
   images: [],
-  price: null,
-  profitAmount: null,
-  profitPercentage: null,
+  price: 0,
+  profitAmount: 0,
+  profitPercentage: 0,
   profit: 0,
   measurement: 'pieces',
   quantity: 0,
@@ -56,6 +59,10 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
   const [activeScreen, setActiveScreen] = useState(ActiveScreen.None)
 
+  const { isCreating, createRecipe } = useCreateRecipe()
+
+  const isMutating = isCreating
+
   const formikValues = recipe
     ? {
         ...recipe,
@@ -64,16 +71,25 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       }
     : initialValue
 
-  const { setFieldValue, errors, getFieldProps, values } = useFormik({
-    initialValues: formikValues,
-    onSubmit: async () => {
-      // await createRecipe(values)
-    },
-    validationSchema: toFormikValidationSchema(RecipeDetailSchema),
-    enableReinitialize: true,
-    validateOnBlur: false,
-    validateOnChange: false,
-  })
+  const { setFieldValue, errors, getFieldProps, values, submitForm } =
+    useFormik({
+      initialValues: formikValues,
+      onSubmit: async (formValue) => {
+        const body = CreateRecipeSchema.parse(
+          omit(formValue, ['id', 'profitAmount', 'profitPercentage']),
+        )
+
+        body.profit = toNumber(formValue.profitAmount)
+
+        // consts
+        // body.profit = toNumber(formValue.profit)
+        await createRecipe(body)
+      },
+      validationSchema: toFormikValidationSchema(RecipeDetailSchema),
+      enableReinitialize: true,
+      validateOnBlur: false,
+      validateOnChange: false,
+    })
 
   useEffect(() => {
     if (recipe?.price && recipe?.cost && recipe.price > 0 && recipe.cost > 0) {
@@ -94,10 +110,12 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
   useEffect(() => {
     const totalCost = values.materials.reduce((acc, material) => {
       const total = new Big(material.cost).times(new Big(material.quantity))
-      return new Big(acc).plus(total).toNumber()
+      return new Big(acc).plus(total).round(2).toNumber()
     }, 0)
     setFieldValue('cost', totalCost)
   }, [values.materials])
+
+  console.log(errors)
 
   return (
     <div
@@ -122,7 +140,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             <PrimaryAction
               key="primaryAction"
               mode={mode}
-              onCreate={function (): void {}}
+              onCreate={() => {
+                submitForm()
+              }}
               onDelete={async () => {}}
               onSave={function (): void {}}
               onClone={async () => {}}
@@ -134,10 +154,11 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           <div className="flex w-full flex-col gap-2 bg-base-100 px-6">
             <div className="mb-2">
               <ProductImages
+                disabled={isMutating}
                 size="sm"
-                images={[]}
-                onImagesChange={() => {
-                  //
+                images={values.images ?? []}
+                onImagesChange={(images) => {
+                  setFieldValue('images', images)
                 }}
               />
             </div>
@@ -149,11 +170,20 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 </span>
               </div>
               <input
+                {...getFieldProps('name')}
+                disabled={isMutating}
                 type="text"
                 placeholder="(e.g., Cookies, Tea, etc.)"
                 className="input input-bordered w-full"
                 tabIndex={1}
               />
+              {errors && errors.name && (
+                <div className="label py-0">
+                  <span className="label-text-alt text-xs text-red-400">
+                    {errors.name}
+                  </span>
+                </div>
+              )}
             </label>
 
             {/* Cost */}
@@ -170,10 +200,10 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                   <span className="label-text-alt text-gray-400">Price</span>
                 </div>
                 <input
-                  // disabled={isMutating}
+                  disabled={isMutating}
                   onBlur={getFieldProps('price').onBlur}
                   name={getFieldProps('price').name}
-                  value={values.price ?? ''}
+                  value={values.price || ''}
                   type="text"
                   tabIndex={2}
                   className="input input-bordered w-full"
@@ -183,21 +213,23 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                     const regex = /^-?(\d+)?(\.\d*)?$/
                     if (regex.test(value) || value === '') {
                       setFieldValue('price', value)
-                      const newPrice = toNumber(value)
-                      const cost = values.cost
-                      const newProfitAmount = computeProfitAmount(
-                        newPrice,
-                        cost,
-                      )
-                      const newProfitPercentage = computeProfitPercentage(
-                        newPrice,
-                        cost,
-                      )
-                      setFieldValue('profitAmount', toNumber(newProfitAmount))
-                      setFieldValue(
-                        'profitPercentage',
-                        toNumber(newProfitPercentage),
-                      )
+                      if (values.cost > 0) {
+                        const newPrice = toNumber(value)
+                        const cost = values.cost
+                        const newProfitAmount = computeProfitAmount(
+                          newPrice,
+                          cost,
+                        )
+                        const newProfitPercentage = computeProfitPercentage(
+                          newPrice,
+                          cost,
+                        )
+                        setFieldValue('profitAmount', toNumber(newProfitAmount))
+                        setFieldValue(
+                          'profitPercentage',
+                          toNumber(newProfitPercentage),
+                        )
+                      }
                     }
                   }}
                 />
@@ -214,13 +246,14 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                     <span className="label-text-alt text-gray-400">Profit</span>
                   </div>
                   <input
-                    // disabled={isMutating}
+                    disabled={isMutating}
                     onBlur={getFieldProps('profitPercentage').onBlur}
                     name={getFieldProps('profitPercentage').name}
-                    value={values.profitPercentage ?? ''}
+                    value={values.profitPercentage || ''}
                     type="text"
                     tabIndex={4}
                     inputMode="decimal"
+                    placeholder="70%"
                     className={[
                       'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
                     ].join(' ')}
@@ -228,31 +261,34 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                       const regex = /^-?(\d+)?(\.\d*)?$/
                       if (regex.test(value) || value === '') {
                         setFieldValue('profitPercentage', value)
-                        const newProfitPercentage = toNumber(value)
-                        const cost = values.cost
-                        // const newPrice = cost * (1 + newProfitPercentage / 100)
-                        const newPrice = new Big(cost)
-                          .times(
-                            new Big(1).plus(
-                              new Big(newProfitPercentage).div(100),
-                            ),
+                        if (values.cost > 0) {
+                          const newProfitPercentage = toNumber(value)
+                          const cost = values.cost
+                          const newPrice = new Big(cost)
+                            .times(
+                              new Big(1).plus(
+                                new Big(newProfitPercentage).div(100),
+                              ),
+                            )
+                            .round(2)
+                            .toNumber()
+
+                          const newProfitAmount = computeProfitAmount(
+                            newPrice,
+                            cost,
                           )
-                          .toNumber()
-                        const newProfitAmount = computeProfitAmount(
-                          newPrice,
-                          cost,
-                        )
-                        setFieldValue('price', newPrice)
-                        setFieldValue('profitAmount', newProfitAmount)
+                          setFieldValue('price', newPrice)
+                          setFieldValue('profitAmount', newProfitAmount)
+                        }
                       }
                     }}
                   />
                   <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
                   <input
-                    // disabled={isMutating}
+                    disabled={isMutating}
                     onBlur={getFieldProps('profitAmount').onBlur}
                     name={getFieldProps('profitAmount').name}
-                    value={values.profitAmount ?? ''}
+                    value={values.profitAmount || ''}
                     type="text"
                     tabIndex={5}
                     className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
@@ -262,27 +298,30 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                       const regex = /^-?(\d+)?(\.\d*)?$/
                       if (regex.test(value) || value === '') {
                         setFieldValue('profitAmount', value)
-                        const newProfitAmount = toNumber(value)
-                        const cost = values.cost
+                        if (values.cost > 0) {
+                          const newProfitAmount = toNumber(value)
+                          const cost = values.cost
 
-                        // const newPrice = cost + newProfitAmount
-                        const newPrice = new Big(cost)
-                          .plus(new Big(newProfitAmount))
-                          .toNumber()
-                        const newProfitPercentage = computeProfitPercentage(
-                          newPrice,
-                          cost,
-                        )
+                          // const newPrice = cost + newProfitAmount
+                          const newPrice = new Big(cost)
+                            .plus(new Big(newProfitAmount))
+                            .round(2)
+                            .toNumber()
+                          const newProfitPercentage = computeProfitPercentage(
+                            newPrice,
+                            cost,
+                          )
 
-                        setFieldValue('price', newPrice)
-                        setFieldValue('profitPercentage', newProfitPercentage)
+                          setFieldValue('price', newPrice)
+                          setFieldValue('profitPercentage', newProfitPercentage)
+                        }
                       }
                     }}
                   />
                 </div>
                 <div className="label py-0">
                   <span className="label-text-alt text-xs text-red-400">
-                    {errors.profitAmount}&nbsp;
+                    {errors.profitAmount || errors.profitPercentage}&nbsp;
                   </span>
                 </div>
               </div>
@@ -311,14 +350,27 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 <PlusIcon className="w-8 text-success" />
               </button>
             )}
+
+            {errors &&
+              values.materials.length === 0 &&
+              errors.materials &&
+              typeof errors.materials === 'string' && (
+                <div className="label py-0">
+                  <span className="label-text-alt text-xs text-red-400">
+                    {errors.materials}
+                  </span>
+                </div>
+              )}
           </div>
         </div>
 
-        <div className="mt-[380px]">
+        <div className="mt-[400px]">
           {values.materials.length > 0 && (
             <div className="flex flex-row flex-wrap gap-2">
               {values.materials.map((material, index) => (
                 <RecipeMaterialCard
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  errors={errors.materials as any}
                   key={index}
                   material={material}
                   onChange={(updateMaterial) => {
@@ -374,18 +426,19 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 }
 
 const RecipeDetailSchema = RecipeSchema.extend({
+  id: z.string(),
   profitPercentage: z.coerce
     .number({
       required_error: 'Profit % is required',
       invalid_type_error: 'Profit  % is required',
     })
-    .nullable(),
+    .positive('Must be greater than 0'),
   profitAmount: z.coerce
     .number({
       required_error: 'Profit is required',
       invalid_type_error: 'Profit is required',
     })
-    .nullable(),
+    .positive('Must be greater than 0'),
   cost: z.number({
     coerce: true,
     required_error: 'Price is required',
@@ -395,7 +448,7 @@ const RecipeDetailSchema = RecipeSchema.extend({
       required_error: 'Price is required',
       invalid_type_error: 'Price is required',
     })
-    .nullable(),
+    .positive('Must be greater than 0'),
 })
 
 export default RecipeDetails

@@ -13,7 +13,7 @@ const RecipeOverview = () => {
 
   return (
     <>
-      <div className="section absolute min-h-screen bg-base-100">
+      <div className="main-screen">
         <Toolbar
           items={[
             <ToolbarButton

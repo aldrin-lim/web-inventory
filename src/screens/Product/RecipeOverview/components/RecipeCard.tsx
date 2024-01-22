@@ -8,8 +8,9 @@ type RecipeMaterialCardProps = {
 
 const RecipeCard = (props: RecipeMaterialCardProps) => {
   const { recipe } = props
-  const { name, cost, quantity } = recipe
+  const { name, cost } = recipe
   const image = recipe.images && recipe.images[0]
+  console.log(recipe)
 
   return (
     <div className="card card-compact w-[155px] cursor-pointer border border-gray-300 bg-base-100">
@@ -22,9 +23,8 @@ const RecipeCard = (props: RecipeMaterialCardProps) => {
         </h2>
 
         <div className="flex flex-row gap-1  text-xs">
-          <span>{status || 'Active'}</span> •{' '}
           <span className="overflow-hidden truncate text-ellipsis">
-            {quantity} available
+            ?? available
           </span>
         </div>
       </div>

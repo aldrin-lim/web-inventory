@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import * as API from 'api/recipe'
-import { CreateRecipeRequestSchema } from 'api/recipe/createRecipe'
+import {
+  CreateRecipeRequestSchema,
+  CreateRecipeSchema,
+} from 'api/recipe/createRecipe'
 import axios from 'axios'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { AppPath } from 'routes/AppRoutes.types'
 
 const useCreateRecipe = () => {
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [error, setError] = useState<unknown | undefined | null>(null)
 
@@ -34,12 +34,11 @@ const useCreateRecipe = () => {
         theme: 'colored',
       })
       await queryClient.invalidateQueries(['recipe', data.id])
-      navigate(`${AppPath.RecipeOverview}/${data.id}`)
     },
   })
 
   const createRecipe = async (param: CreateRecipeRequestSchema) => {
-    const validation = CreateRecipeRequestSchema.safeParse(param)
+    const validation = CreateRecipeSchema.safeParse(param)
 
     if (!validation.success) {
       const error = validation.error.issues[0].message
