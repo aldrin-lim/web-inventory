@@ -10,6 +10,7 @@ import { Material } from 'types/recipe.types'
 import { measurementOptions, pieceMesurement } from 'util/measurement'
 import { toNumber } from 'util/number'
 import Big from 'big.js'
+import QuantityInput from 'components/QuantityInput'
 
 type RecipeMaterialCardProps = {
   material: Material
@@ -24,7 +25,9 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
   const image = material.product.images && material.product.images[0]
 
   const measurement =
-    convert().describe(material.unitOfMeasurement as Unit).measure ?? 'mass'
+    material.unitOfMeasurement !== 'pieces'
+      ? convert().describe(material.unitOfMeasurement as Unit)
+      : ''
 
   const [totalCost, setTotalCost] = useState(0)
 
@@ -37,22 +40,6 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
     },
     enableReinitialize: true,
   })
-
-  const increaseQuantity = () => {
-    setFieldValue(
-      'quantity',
-      new Big(values.quantity).plus(1).round(2).toNumber(),
-    )
-  }
-
-  const decreaseQuantity = () => {
-    if (values.quantity > 0) {
-      setFieldValue(
-        'quantity',
-        new Big(values.quantity).minus(1).round(2).toNumber(),
-      )
-    }
-  }
 
   useEffect(() => {
     setTotalCost(
@@ -124,32 +111,13 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
           <h2 className="card-title text-sm">{name}</h2>
 
           <div className="flex flex-row gap-1 text-xs">
-            <div className="join flex border border-gray-300">
-              <button
-                disabled={disabled}
-                className="join-itm btn"
-                onClick={decreaseQuantity}
-              >
-                -
-              </button>
-              <input
-                disabled={disabled}
-                value={values.quantity}
-                type="number"
-                inputMode="numeric"
-                className="input join-item w-full p-0 text-center text-black"
-                onChange={(e) => {
-                  setFieldValue('quantity', +e.target.value)
-                }}
-              />
-              <button
-                disabled={disabled}
-                className="btn  join-item"
-                onClick={increaseQuantity}
-              >
-                +
-              </button>
-            </div>
+            <QuantityInput
+              value={values.quantity}
+              onChange={(newValue) => {
+                setFieldValue('quantity', newValue)
+              }}
+              className="w-full"
+            />
           </div>
 
           {errors && errors.quantity && (
@@ -161,7 +129,7 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
           )}
 
           <div>
-            {values.product.soldBy === ProductSoldBy.Weight && (
+            {values.unitOfMeasurement !== 'pieces' && (
               <MeasurementSelect
                 measurements={[measurement]}
                 disabled={disabled}
@@ -177,7 +145,7 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
                 }}
               />
             )}
-            {values.product.soldBy === ProductSoldBy.Pieces && (
+            {values.unitOfMeasurement === 'pieces' && (
               <MeasurementSelect value={pieceMesurement} disabled />
             )}
 

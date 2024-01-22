@@ -117,6 +117,13 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
   const [adjustContent, setAdjustContent] = useState(false)
 
+  const onRecipeMaterialRemove = (index: number) => {
+    setFieldValue(
+      'materials',
+      values.materials.filter((_, i) => i !== index),
+    )
+  }
+
   useEffect(() => {
     // Add scroll handler for window
     const handleScroll = () => {
@@ -575,6 +582,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                   errors={errors.materials as any}
                   key={index}
                   material={material}
+                  onRemove={() => {
+                    onRecipeMaterialRemove(index)
+                  }}
                   onChange={(updateMaterial) => {
                     setFieldValue(`materials.${index}`, updateMaterial)
                   }}
