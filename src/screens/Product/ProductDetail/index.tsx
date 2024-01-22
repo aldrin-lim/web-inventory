@@ -113,13 +113,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const value = product
     ? ({
         ...product,
-        profitAmount: product.profit,
-        profitPercentage: computeProfitPercentage(
-          product.price,
-          product.isBulkCost
-            ? toNumber(getActiveBatch(product.batches).costPerUnit)
-            : toNumber(getActiveBatch(product.batches).cost),
-        ),
         cost: product.activeBatch.cost,
       } as z.infer<typeof ProductDetailSchema>)
     : defaultValue
@@ -145,7 +138,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
           const requestBody: z.infer<typeof AddProductSchema> = {
             name: parsedValue.name,
             price: toNumber(parsedValue.price),
-            profit: toNumber(parsedValue.profitAmount),
+            profitPercentage: toNumber(parsedValue.profitPercentage),
+            profitAmount: toNumber(parsedValue.profitAmount),
             soldBy: ProductSoldBy.Pieces,
             category: parsedValue.category,
             description: parsedValue.description,
@@ -168,7 +162,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
           const requestBody: z.infer<typeof AddProductSchema> = {
             name: parsedValue.name,
             price: toNumber(parsedValue.price),
-            profit: toNumber(parsedValue.profitAmount),
+            profitPercentage: toNumber(parsedValue.profitPercentage),
+            profitAmount: toNumber(parsedValue.profitAmount),
             soldBy: parsedValue.soldBy,
             category: parsedValue.category,
             description: parsedValue.description,
@@ -186,7 +181,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
         const requestBody: z.infer<typeof UpdateProductSchema> = {
           name: parsedValue.name,
           price: parsedValue.price as number,
-          profit: parsedValue.profitAmount as number,
+          profitPercentage: toNumber(parsedValue.profitPercentage),
+          profitAmount: toNumber(parsedValue.profitAmount),
           soldBy: parsedValue.soldBy,
           category: parsedValue.category,
           description: parsedValue.description,

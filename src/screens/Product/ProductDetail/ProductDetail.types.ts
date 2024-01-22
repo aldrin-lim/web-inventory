@@ -3,24 +3,12 @@ import { z } from 'zod'
 export const ProductDetailSchema = ProductSchema.partial({
   id: true,
 }).extend({
-  profitPercentage: z.coerce.number({
-    required_error: 'Profit % is required',
-    invalid_type_error: 'Profit  % is required',
-  }),
-  profitAmount: z.coerce.number({
-    required_error: 'Profit is required',
-    invalid_type_error: 'Profit is required',
-  }),
-  cost: z.number({
-    coerce: true,
-    required_error: 'Cost is required',
-    invalid_type_error: 'Cost is required',
-  }),
-  price: z.number({
-    coerce: true,
-    required_error: 'Price is required',
-    invalid_type_error: 'Price is required',
-  }),
+  cost: z
+    .number({
+      coerce: true,
+      required_error: 'Price is required',
+    })
+    .positive('Must be greater than 0'),
   activeBatch: ProductBatchSchema.optional(),
   batches: z.array(ProductBatchSchema.partial({ id: true })),
 })

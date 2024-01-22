@@ -646,14 +646,16 @@ const RecipeDetailSchema = RecipeSchema.extend({
       invalid_type_error: 'Profit is required',
     })
     .positive('Must be greater than 0'),
-  cost: z.number({
-    coerce: true,
-    required_error: 'Price is required',
-  }),
+  cost: z
+    .number({
+      coerce: true,
+      required_error: 'Price is required',
+    })
+    .positive('Must be greater than 0'),
   price: z.coerce
     .number({
       required_error: 'Price is required',
-      invalid_type_error: 'Price is required',
+      invalid_type_error: 'Price is must be number',
     })
     .positive('Must be greater than 0'),
 })

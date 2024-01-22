@@ -69,9 +69,14 @@ export const BaseProductSchema = z.object({
       invalid_type_error: 'Description must be a string',
     })
     .optional(),
-  profit: z.coerce.number({
-    required_error: 'Profit is required',
-    invalid_type_error: 'Profit must be a number',
+  profitAmount: z.number({
+    required_error: 'Profit Amount is required',
+    invalid_type_error: 'Profit Amount must be a number',
+    coerce: true,
+  }),
+  profitPercentage: z.number({
+    required_error: 'Profit Percentage is required',
+    invalid_type_error: 'Profit Percentage must be a number',
     coerce: true,
   }),
   price: z.coerce.number({
