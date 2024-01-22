@@ -23,6 +23,9 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
   const { material, onChange, errors, disabled = false } = props
   const image = material.product.images && material.product.images[0]
 
+  const measurement =
+    convert().describe(material.unitOfMeasurement as Unit).measure ?? 'mass'
+
   const [totalCost, setTotalCost] = useState(0)
 
   const name = material.product.name
@@ -160,6 +163,7 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
           <div>
             {values.product.soldBy === ProductSoldBy.Weight && (
               <MeasurementSelect
+                measurements={[measurement]}
                 disabled={disabled}
                 value={{
                   label:
