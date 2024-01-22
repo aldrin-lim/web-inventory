@@ -1,9 +1,11 @@
+import CurrencyInput from 'react-currency-input-field'
+
 type QuantityInputProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
 > & {
   value?: number
-  onChange?: (value: number) => void
+  onChange?: (string?: string) => void
 }
 
 const QuantityInput = (props: QuantityInputProps) => {
@@ -15,22 +17,21 @@ const QuantityInput = (props: QuantityInputProps) => {
         className="join-itm  btn"
         onClick={() => {
           if (value > 0) {
-            onChange && onChange(value - 1)
+            onChange && onChange(`${+value - 1}`)
           }
         }}
       >
         -
       </button>
-      <input
-        {...props}
-        onChange={(e) => {
-          if (isNaN(+e.target.value)) {
-            return
-          }
+      <CurrencyInput
+        decimalsLimit={0}
+        value={value}
+        onValueChange={(value) => {
           if (onChange) {
-            onChange(+e.target.value)
+            onChange(value)
           }
         }}
+        disableGroupSeparators={true}
         inputMode="numeric"
         className={`join-item text-center ${props.className}`}
       />
@@ -38,7 +39,7 @@ const QuantityInput = (props: QuantityInputProps) => {
         disabled={props.disabled}
         className="btn join-item"
         onClick={() => {
-          onChange && onChange(value + 1)
+          onChange && onChange(`${+value + 1}`)
         }}
       >
         +
