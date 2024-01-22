@@ -46,10 +46,6 @@ const VariantOptionForm = (props: VariantOptionFormProps) => {
     props.onSave(variants)
   }
 
-  useEffect(() => {
-    console.log(JSON.stringify(variants, null, 2))
-  }, [variants])
-
   return (
     <>
       {currentVariant && (

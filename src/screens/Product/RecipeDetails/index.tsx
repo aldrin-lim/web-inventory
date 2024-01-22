@@ -120,8 +120,6 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
   useEffect(() => {
     // Add scroll handler for window
     const handleScroll = () => {
-      console.log('document.body.scrollTop', window.scrollY)
-
       if (window.scrollY > 202) {
         setAdjustContent(true)
       } else {
@@ -140,9 +138,6 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       className={`RecipeDetail main-screen ${
         activeScreen === ActiveScreen.None ? 'h-full' : 'h-screen'
       }`}
-      onScroll={(e) => {
-        console.log(e.currentTarget.scrollTop)
-      }}
     >
       <div className="sub-screen">
         <Toolbar

@@ -10,7 +10,6 @@ const RecipeCard = (props: RecipeMaterialCardProps) => {
   const { recipe } = props
   const { name, cost } = recipe
   const image = recipe.images && recipe.images[0]
-  console.log(recipe)
 
   return (
     <div className="card card-compact w-[155px] cursor-pointer border border-gray-300 bg-base-100">
