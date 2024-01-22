@@ -86,7 +86,7 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
 
     const newCostPerUnit = new Big(cost)
       .div(new Big(conversionFactor))
-      .round(2)
+      // .round(2)
       .toNumber()
 
     setTotalCost(
