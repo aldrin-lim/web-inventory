@@ -130,9 +130,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     validateOnBlur: false,
     onSubmit: async (value) => {
       console.log(value)
-
       const parsedValue = ProductDetailSchema.parse(value)
-
       if (mode === 'add') {
         if (parsedValue.trackStock === false) {
           const requestBody: z.infer<typeof AddProductSchema> = {
@@ -151,7 +149,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 cost: parsedValue.cost ?? 0,
               },
             ],
-
             allowBackOrder: false,
             trackStock: false,
             isBulkCost: false,
@@ -173,7 +170,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
             trackStock: parsedValue.trackStock,
             isBulkCost: parsedValue.isBulkCost,
           }
-
           await createProduct(requestBody)
         }
         navigate(AppPath.ProductOverview)
@@ -194,7 +190,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
           trackStock: parsedValue.trackStock,
           isBulkCost: parsedValue.isBulkCost,
         }
-
         if (parsedValue.trackStock === false) {
           requestBody.batches = [
             {
@@ -204,7 +199,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
             },
           ]
         }
-
         if (product) {
           await updateProduct({
             id: product.id,
@@ -259,9 +253,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               key="primaryAction"
               disabled={isMutating}
               isLoading={isMutating}
-              onCreate={function (): void {
-                console.log(errors)
-                console.log(values)
+              onCreate={() => {
                 submitForm()
               }}
               onDelete={async () => {
@@ -657,6 +649,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 allowBackOrder: value.allowBackOrder,
                 batches: value.batches,
                 soldBy: value.soldBy,
+                cost,
                 isBulkCost: value.isBulkCost,
                 profitPercentage: newProfitPercentage,
                 profitAmount: newProfitAmount,
