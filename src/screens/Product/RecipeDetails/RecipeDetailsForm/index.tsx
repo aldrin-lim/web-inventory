@@ -1,13 +1,12 @@
 import { PlusIcon } from '@heroicons/react/24/solid'
-import { FormikErrors, useFormik } from 'formik'
+import { useFormik } from 'formik'
 import ProductImages from 'screens/Product/ProductDetail/components/ProductImages'
 import {
   RecipeDetailActionType,
   RecipeDetailActiveScreen,
   useRecipeDetail,
 } from 'screens/Product/contexts/RecipeDetailContext'
-import { Material, Recipe } from 'types/recipe.types'
-import RecipeMaterialCard from './components/RecipeMaterialCard'
+import { Recipe } from 'types/recipe.types'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
@@ -17,7 +16,7 @@ import PrimaryAction from 'screens/Product/ProductDetail/components/ProductDetai
 import useCreateRecipe from 'hooks/useCreateRecipe'
 import { useEffect } from 'react'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
-import { CreateRecipeRequestSchema } from 'api/recipe/createRecipe'
+import { CreateRecipeSchema } from 'api/recipe/createRecipe'
 
 type RecipeDetailsFormProps = {
   onSubmit: () => void
@@ -40,7 +39,7 @@ const RecipeDetailsForm = (props: RecipeDetailsFormProps) => {
     onSubmit: async (values) => {
       await createRecipe(values)
     },
-    validationSchema: toFormikValidationSchema(CreateRecipeRequestSchema),
+    validationSchema: toFormikValidationSchema(CreateRecipeSchema),
     enableReinitialize: true,
     validateOnBlur: false,
     validateOnChange: false,

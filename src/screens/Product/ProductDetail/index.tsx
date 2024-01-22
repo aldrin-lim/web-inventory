@@ -635,27 +635,27 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 ? toNumber(getActiveBatch(value.batches).costPerUnit)
                 : toNumber(values.cost)
 
-              if (!values.price) {
-                const newProfitAmount = computeProfitAmount(
-                  toNumber(values.price),
-                  cost,
-                )
-                const newProfitPercentage = computeProfitPercentage(
-                  toNumber(values.price),
-                  cost,
-                )
-              }
-
-              await setValues({
+              const updatedValues = {
                 ...values,
                 allowBackOrder: value.allowBackOrder,
                 batches: value.batches,
                 soldBy: value.soldBy,
                 cost,
                 isBulkCost: value.isBulkCost,
-                profitPercentage: newProfitPercentage,
-                profitAmount: newProfitAmount,
-              })
+              }
+
+              if (values.price) {
+                updatedValues.profitAmount = computeProfitAmount(
+                  toNumber(values.price),
+                  cost,
+                )
+                updatedValues.profitPercentage = computeProfitPercentage(
+                  toNumber(values.price),
+                  cost,
+                )
+              }
+
+              await setValues(updatedValues)
             }
           }}
         />

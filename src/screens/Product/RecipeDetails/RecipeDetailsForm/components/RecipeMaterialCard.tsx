@@ -1,6 +1,6 @@
 import { TrashIcon } from '@heroicons/react/24/solid'
 import ImageLoader from 'components/ImageLoader'
-import convert, { Unit } from 'convert-units'
+import convert, { Measure, Unit } from 'convert-units'
 import { FormikErrors, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { getActiveBatch } from 'screens/Product/ProductDetail'
@@ -26,7 +26,7 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
 
   const measurement =
     material.unitOfMeasurement !== 'pieces'
-      ? convert().describe(material.unitOfMeasurement as Unit)
+      ? convert().describe(material.unitOfMeasurement as Unit).measure
       : ''
 
   const [totalCost, setTotalCost] = useState(0)
@@ -114,7 +114,7 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
             <QuantityInput
               value={values.quantity}
               onChange={(newValue) => {
-                setFieldValue('quantity', newValue)
+                setFieldValue('quantity', newValue ?? 0)
               }}
               className="w-full"
             />
@@ -131,7 +131,7 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
           <div>
             {values.unitOfMeasurement !== 'pieces' && (
               <MeasurementSelect
-                measurements={[measurement]}
+                measurements={[measurement as Measure]}
                 disabled={disabled}
                 value={{
                   label:
