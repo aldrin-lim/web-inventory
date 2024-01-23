@@ -64,7 +64,7 @@ const StoreDetail = () => {
         }
       }
       toast.error(errorMessage, {
-        autoClose: 3000,
+        autoClose: 1000,
         theme: 'colored',
       })
     },
