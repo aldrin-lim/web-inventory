@@ -526,6 +526,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 if (values.trackStock === false && e.target.checked === true) {
                   setActiveScreen(ActiveScreen.StockDetail)
                 }
+                if (e.target.checked === true) {
+                  if (mode === 'edit') {
+                    setIsStockReset(true)
+                  }
+                }
                 if (e.target.checked === false) {
                   setIsStockReset(true)
                   const newProfitAmount = computeProfitAmount(
@@ -598,7 +603,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
         zIndex={11}
       >
         <StockDetail
-          disabled={isStockReset === false && mode === 'edit'}
+          disabled={
+            isStockReset === false &&
+            mode === 'edit' &&
+            values.trackStock === true
+          }
           activeBatch={props.product?.activeBatch}
           value={values}
           onBack={goBackToProductScreen}
