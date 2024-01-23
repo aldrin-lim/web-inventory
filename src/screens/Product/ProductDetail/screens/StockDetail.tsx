@@ -120,18 +120,17 @@ const StockDetail = (props: StockDetailProps) => {
               checked={values.soldBy === ProductSoldBy.Pieces}
               onChange={(e) => {
                 setFieldValue('soldBy', e.target.value)
-                // if (e.target.checked) {
-                //   setFieldValue('isBulkCost', false)
-                //   setFieldValue(
-                //     'batches',
-                //     values.batches.map((batch) => {
-                //       return {
-                //         ...batch,
-                //         unitOfMeasurement: 'pieces',
-                //       }
-                //     }),
-                //   )
-                // }
+                if (e.target.checked) {
+                  setFieldValue(
+                    'batches',
+                    values.batches.map((batch) => {
+                      return {
+                        ...batch,
+                        unitOfMeasurement: 'pieces',
+                      }
+                    }),
+                  )
+                }
               }}
             />
             <span className="label-text">Pieces</span>

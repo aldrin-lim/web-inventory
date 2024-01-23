@@ -21,10 +21,8 @@ import { useNavigate } from 'react-router-dom'
 import Big from 'big.js'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { toast } from 'react-toastify'
-import { CreateRecipeSchema } from 'api/recipe/createRecipe'
 import useCreateRecipe from 'hooks/useCreateRecipe'
 import { useFormik } from 'formik'
-import { omit } from 'lodash'
 
 enum ActiveScreen {
   None = 'none',
@@ -63,27 +61,13 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
   const isMutating = isCreating
 
-  const formikValues = recipe
-    ? {
-        ...recipe,
-        profitAmount: computeProfitAmount(recipe.price, recipe.cost),
-        profitPercentage: computeProfitPercentage(recipe.price, recipe.cost),
-      }
-    : initialValue
+  const formikValues = recipe ? recipe : initialValue
 
   const { setFieldValue, errors, getFieldProps, values, submitForm } =
     useFormik({
       initialValues: formikValues,
       onSubmit: async (formValue) => {
-        const body = CreateRecipeSchema.parse(
-          omit(formValue, ['id', 'profitAmount', 'profitPercentage']),
-        )
-
-        body.profit = toNumber(formValue.profitAmount)
-
-        // consts
-        // body.profit = toNumber(formValue.profit)
-        await createRecipe(body)
+        await createRecipe(formValue)
       },
       validationSchema: toFormikValidationSchema(RecipeDetailSchema),
       enableReinitialize: true,
@@ -586,7 +570,10 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                     onRecipeMaterialRemove(index)
                   }}
                   onChange={(updateMaterial) => {
-                    setFieldValue(`materials.${index}`, updateMaterial)
+                    setFieldValue(`materials.${index}`, {
+                      ...updateMaterial,
+                      quantity: toNumber(updateMaterial.quantity),
+                    })
                   }}
                 />
               ))}
@@ -638,7 +625,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 }
 
 const RecipeDetailSchema = RecipeSchema.extend({
-  id: z.string(),
+  id: z.string().optional(),
   profitPercentage: z.coerce
     .number({
       required_error: 'Profit % is required',
