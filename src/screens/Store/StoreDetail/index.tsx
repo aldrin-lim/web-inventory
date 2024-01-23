@@ -52,7 +52,7 @@ const StoreDetail = () => {
     mutationFn: updateUserBussiness,
     onSuccess: async () => {
       toast.success('Store successfully updated', {
-        autoClose: 2000,
+        autoClose: 500,
         theme: 'colored',
       })
     },
@@ -64,7 +64,7 @@ const StoreDetail = () => {
         }
       }
       toast.error(errorMessage, {
-        autoClose: 1000,
+        autoClose: 500,
         theme: 'colored',
       })
     },

@@ -624,7 +624,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
               ])
             } else {
               toast.warn('Product is already in the recipe', {
-                autoClose: 1000,
+                autoClose: 500,
                 theme: 'colored',
               })
             }
