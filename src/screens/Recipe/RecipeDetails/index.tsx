@@ -87,6 +87,18 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
     }
   }, [recipe])
 
+  useEffect(() => {
+    if (values?.price && values?.cost && values.price > 0 && values.cost > 0) {
+      const profitAmount = computeProfitAmount(values.price, values.cost)
+      const profitPercentage = computeProfitPercentage(
+        values.price,
+        values.cost,
+      )
+      setFieldValue('profitAmount', profitAmount)
+      setFieldValue('profitPercentage', profitPercentage)
+    }
+  }, [values.cost])
+
   const closeProductSelection = () => {
     setActiveScreen(ActiveScreen.None)
   }
