@@ -16,6 +16,7 @@ import Settings from 'screens/Settings'
 import RecipeOverview from 'screens/Recipe/RecipeOverview'
 import AddRecipe from 'screens/Recipe/AddRecipe'
 import Staff from 'screens/Staff'
+import ViewRecipe from 'screens/Recipe/ViewRecipe'
 
 const AppRoutes = () => (
   <Routes>
@@ -65,6 +66,10 @@ const AppRoutes = () => (
     <Route
       path={AppPath.ViewProduct}
       element={<ProtectedRoute element={<ViewProduct />} />}
+    />
+    <Route
+      path={AppPath.ViewRecipe}
+      element={<ProtectedRoute element={<ViewRecipe />} />}
     />
 
     <Route

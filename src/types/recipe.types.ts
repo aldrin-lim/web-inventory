@@ -33,7 +33,7 @@ export const RecipeSchema = z.object({
   }),
   cost: z.number({
     coerce: true,
-    required_error: 'Price is required',
+    required_error: 'Cost is required',
   }),
   price: z.coerce.number({
     required_error: 'Price is required',
@@ -42,7 +42,6 @@ export const RecipeSchema = z.object({
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
   measurement: z.string(),
-  cost: z.number(),
   materials: z
     .array(MaterialSchema)
     .min(1, 'Materials must have at least 1 item'),

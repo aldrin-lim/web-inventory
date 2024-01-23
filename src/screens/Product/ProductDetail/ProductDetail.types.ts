@@ -6,7 +6,7 @@ export const ProductDetailSchema = ProductSchema.partial({
   cost: z
     .number({
       coerce: true,
-      required_error: 'Price is required',
+      required_error: 'Cost is required',
     })
     .positive('Must be greater than 0'),
   activeBatch: ProductBatchSchema.optional(),

@@ -32,7 +32,11 @@ const RecipeOverview = () => {
         <div className="container-card flex flex-row flex-wrap justify-center gap-4 pb-16">
           {recipes &&
             recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
+              <RecipeCard
+                onClick={() => navigate(`${AppPath.Recipe}/${recipe.id}`)}
+                key={recipe.id}
+                recipe={recipe}
+              />
             ))}
         </div>
       </div>

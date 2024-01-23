@@ -57,10 +57,14 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
 
   return (
     <div
+      tabIndex={0}
       className={[
         'dropdown dropdown-end inline-flex w-auto',
         open ? 'dropdown-open' : '',
       ].join(' ')}
+      onBlur={() => {
+        setOpen(false)
+      }}
     >
       <label
         onClick={() => setOpen((prev) => !prev)}
@@ -73,7 +77,7 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
           <button
             disabled={props.isLoading}
             onClick={onSave}
-            className="btn btn-ghost btn-sm flex flex-row justify-start gap-3 rounded-none "
+            className="btn btn-ghost  flex flex-row justify-start gap-3 rounded-none "
           >
             <PencilSquareIcon className="w-5" />
             <span>Save</span>
@@ -85,7 +89,7 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
           <button
             disabled={props.isLoading}
             onClick={onClone}
-            className="btn btn-ghost btn-sm flex flex-row justify-start gap-3 rounded-none "
+            className="btn btn-ghost  flex flex-row justify-start gap-3 rounded-none "
           >
             <DocumentDuplicateIcon className="w-5" />
             <span>Clone</span>
@@ -96,7 +100,7 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
           <button
             disabled={props.isLoading}
             onClick={onDelete}
-            className="btn btn-ghost btn-sm flex flex-row justify-start gap-3 rounded-none "
+            className="btn btn-ghost  flex flex-row justify-start gap-3 rounded-none "
           >
             <TrashIcon className="w-5" />
             <span>Delete</span>
