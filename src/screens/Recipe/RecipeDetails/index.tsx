@@ -7,10 +7,10 @@ import { ChevronLeftIcon, PlusIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import PrimaryAction from '../ProductDetail/components/ProductDetailPrimaryAction'
-import ProductImages from '../ProductDetail/components/ProductImages'
+import PrimaryAction from '../../Product/ProductDetail/components/ProductDetailPrimaryAction'
+import ProductImages from '../../Product/ProductDetail/components/ProductImages'
 import RecipeMaterialCard from './RecipeDetailsForm/components/RecipeMaterialCard'
-import { getActiveBatch } from '../ProductDetail'
+import { getActiveBatch } from '../../Product/ProductDetail'
 import {
   computeProfitAmount,
   computeProfitPercentage,

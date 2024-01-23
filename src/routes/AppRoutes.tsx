@@ -13,8 +13,8 @@ import ProductList from 'screens/Product/ProductList'
 import Error from 'screens/Error'
 import ViewProduct from 'screens/Product/ViewProduct'
 import Settings from 'screens/Settings'
-import RecipeOverview from 'screens/Product/RecipeOverview'
-import AddRecipe from 'screens/Product/AddRecipe'
+import RecipeOverview from 'screens/Recipe/RecipeOverview'
+import AddRecipe from 'screens/Recipe/AddRecipe'
 import Staff from 'screens/Staff'
 
 const AppRoutes = () => (
