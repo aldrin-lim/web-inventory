@@ -47,11 +47,11 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
     )
   }, [values.quantity])
 
-  useEffect(() => {
-    if (onChange) {
-      onChange(values)
-    }
-  }, [values.cost, values.quantity])
+  // useEffect(() => {
+  //   if (onChange) {
+  //     onChange(values)
+  //   }
+  // }, [values.cost, values.quantity])
 
   useEffect(() => {
     // using convertible-units, change the cost per unit base from the values.unitOfMeasurement
@@ -115,6 +115,10 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
               value={values.quantity}
               onChange={(newValue) => {
                 setFieldValue('quantity', newValue ?? 0)
+                onChange?.({
+                  ...values,
+                  quantity: newValue,
+                })
               }}
               className="w-full"
             />
@@ -142,6 +146,12 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
                 }}
                 onChange={(value) => {
                   setFieldValue('unitOfMeasurement', value?.value)
+                  if (value?.value) {
+                    onChange?.({
+                      ...values,
+                      unitOfMeasurement: value.value,
+                    })
+                  }
                 }}
               />
             )}

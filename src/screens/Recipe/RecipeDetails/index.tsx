@@ -23,6 +23,7 @@ import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { toast } from 'react-toastify'
 import useCreateRecipe from 'hooks/useCreateRecipe'
 import { useFormik } from 'formik'
+import useUpdateRecipe from 'hooks/useUpdateRecipe'
 
 enum ActiveScreen {
   None = 'none',
@@ -58,8 +59,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
   const [activeScreen, setActiveScreen] = useState(ActiveScreen.None)
 
   const { isCreating, createRecipe } = useCreateRecipe()
+  const { isUpdating, updateRecipe } = useUpdateRecipe()
 
-  const isMutating = isCreating
+  const isMutating = isCreating || isUpdating
 
   const formikValues = recipe ? recipe : initialValue
 
@@ -67,7 +69,14 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
     useFormik({
       initialValues: formikValues,
       onSubmit: async (formValue) => {
-        await createRecipe(formValue)
+        if (mode === 'add') {
+          await createRecipe(formValue)
+        } else {
+          await updateRecipe({
+            id: formValue.id as string,
+            recipe: formValue,
+          })
+        }
       },
       validationSchema: toFormikValidationSchema(RecipeDetailSchema),
       enableReinitialize: true,
@@ -76,40 +85,45 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
     })
 
   useEffect(() => {
-    if (recipe?.price && recipe?.cost && recipe.price > 0 && recipe.cost > 0) {
-      const profitAmount = computeProfitAmount(recipe.price, recipe.cost)
-      const profitPercentage = computeProfitPercentage(
-        recipe.price,
-        recipe.cost,
-      )
-      setFieldValue('profitAmount', profitAmount)
-      setFieldValue('profitPercentage', profitPercentage)
+    if (mode === 'add') {
+      if (
+        recipe?.price &&
+        recipe?.cost &&
+        recipe.price > 0 &&
+        recipe.cost > 0
+      ) {
+        const profitAmount = computeProfitAmount(recipe.price, recipe.cost)
+        const profitPercentage = computeProfitPercentage(
+          recipe.price,
+          recipe.cost,
+        )
+        setFieldValue('profitAmount', profitAmount)
+        setFieldValue('profitPercentage', profitPercentage)
+      }
     }
   }, [recipe])
-
-  useEffect(() => {
-    if (values?.price && values?.cost && values.price > 0 && values.cost > 0) {
-      const profitAmount = computeProfitAmount(values.price, values.cost)
-      const profitPercentage = computeProfitPercentage(
-        values.price,
-        values.cost,
-      )
-      setFieldValue('profitAmount', profitAmount)
-      setFieldValue('profitPercentage', profitPercentage)
-    }
-  }, [values.cost])
 
   const closeProductSelection = () => {
     setActiveScreen(ActiveScreen.None)
   }
 
-  useEffect(() => {
-    const totalCost = values.materials.reduce((acc, material) => {
-      const total = new Big(material.cost).times(new Big(material.quantity))
-      return new Big(acc).plus(total).round(2).toNumber()
-    }, 0)
-    setFieldValue('cost', totalCost)
-  }, [values.materials])
+  // useEffect(() => {
+  //   const totalCost = values.materials.reduce((acc, material) => {
+  //     const total = new Big(material.cost).times(new Big(material.quantity))
+  //     return new Big(acc).plus(total).toNumber()
+  //   }, 0)
+  //   console.log({
+  //     totalCost,
+  //     'values.price': values.price
+  //   })
+  //   if (values?.price && totalCost && values.price > 0 && totalCost > 0) {
+  //     const profitAmount = computeProfitAmount(values.price, totalCost)
+  //     const profitPercentage = computeProfitPercentage(values.price, totalCost)
+  //     setFieldValue('profitAmount', profitAmount)
+  //     setFieldValue('profitPercentage', profitPercentage)
+  //   }
+  //   setFieldValue('cost', totalCost)
+  // }, [values.materials])
 
   const [adjustContent, setAdjustContent] = useState(false)
 
@@ -163,7 +177,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 submitForm()
               }}
               onDelete={async () => {}}
-              onSave={function (): void {}}
+              onSave={() => {
+                submitForm()
+              }}
               onClone={async () => {}}
             />,
           ]}
@@ -380,7 +396,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
         </div>
 
         {adjustContent && (
-          <div className="fixed left-0 top-[48px] z-[10] !mt-0 flex flex-col bg-base-100 pt-1">
+          <div className="fixed left-0 top-[48px] z-[1] !mt-0 flex flex-col bg-base-100 pt-1">
             <div className="flex w-full flex-col gap-4 bg-base-100 px-6">
               {/* Cost */}
               <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
@@ -581,11 +597,31 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                   onRemove={() => {
                     onRecipeMaterialRemove(index)
                   }}
-                  onChange={(updateMaterial) => {
-                    setFieldValue(`materials.${index}`, {
-                      ...updateMaterial,
-                      quantity: toNumber(updateMaterial.quantity),
-                    })
+                  onChange={(param) => {
+                    const newMaterial = {
+                      ...param,
+                      quantity: toNumber(param.quantity),
+                    }
+
+                    const materials = [...values.materials]
+                    materials[index] = newMaterial
+
+                    const totalCost = materials.reduce((acc, material) => {
+                      const total = new Big(material.cost).times(
+                        new Big(material.quantity),
+                      )
+                      return new Big(acc).plus(total).toNumber()
+                    }, 0)
+
+                    const profitPercentage = computeProfitPercentage(
+                      values.price,
+                      totalCost,
+                    )
+
+                    console.log(profitPercentage)
+
+                    setFieldValue('cost', totalCost)
+                    setFieldValue(`materials.${index}`, newMaterial)
                   }}
                 />
               ))}

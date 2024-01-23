@@ -63,7 +63,9 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
         open ? 'dropdown-open' : '',
       ].join(' ')}
       onBlur={() => {
-        setOpen(false)
+        setTimeout(() => {
+          setOpen(false)
+        }, 200)
       }}
     >
       <label
@@ -73,7 +75,7 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
         <EllipsisVerticalIcon className="w-6 text-blue-400" />
       </label>
       {open && (
-        <div className="dop menu dropdown-content top-10 z-[1] flex w-36 flex-col overflow-hidden rounded-md bg-base-100 p-0 shadow">
+        <div className="dop menu dropdown-content top-10 flex w-36 flex-col overflow-hidden rounded-md bg-base-100 p-0 shadow">
           <button
             disabled={props.isLoading}
             onClick={onSave}
