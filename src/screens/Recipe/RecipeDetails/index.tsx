@@ -66,7 +66,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
   const { isDeleting, deleteRecipe } = useDeleteRecipe()
   const { isCloning, cloneRecipe } = useCloneRecipe()
 
-  const isMutating = isCreating || isUpdating || isDeleting
+  const isMutating = isCreating || isUpdating || isDeleting || isCloning
 
   const formikValues = recipe ? recipe : initialValue
 
