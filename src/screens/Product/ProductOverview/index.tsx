@@ -8,11 +8,23 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 
 import './styles.css'
 import ProductList from './components/ProductList'
-import { ComponentProps } from 'react'
+import { ComponentProps, useState } from 'react'
 import GetStarted from './components/GetStarted'
+import { Product } from 'types/product.types'
+import Inventory from 'screens/Inventory'
+import SlidingTransition from 'components/SlidingTransition'
+
+enum ActiveScreen {
+  None,
+  Inventory,
+}
 
 const ProductOverview = () => {
   const navigate = useNavigate()
+
+  const [activeScreen, setActiveScreen] = useState<ActiveScreen>(
+    ActiveScreen.None,
+  )
 
   const { products, isLoading } = useAllProducts()
 
@@ -24,6 +36,10 @@ const ProductOverview = () => {
 
   const orientation: ComponentProps<typeof ProductList>['orientation'] =
     hasOutOfStockProducts ? 'horizontal' : 'vertical'
+
+  const viewProduct = (product: Product) => {
+    navigate(`${AppPath.Products}/${product.id}`)
+  }
 
   const renderContent = () => {
     if (isLoading) {
@@ -37,32 +53,62 @@ const ProductOverview = () => {
     return (
       <div className="flex flex-col gap-4">
         {/* IN STOCKS */}
-        <ProductList products={inStocks} orientation={orientation} />
+        <ProductList
+          onViewAll={() => setActiveScreen(ActiveScreen.Inventory)}
+          onProductSelect={viewProduct}
+          products={inStocks}
+          orientation={orientation}
+        />
 
-        <ProductList products={outOfStocks} orientation={orientation} />
+        <ProductList
+          onViewAll={() => setActiveScreen(ActiveScreen.Inventory)}
+          onProductSelect={viewProduct}
+          products={outOfStocks}
+          orientation={orientation}
+        />
       </div>
     )
   }
   return (
-    <div className="screen pb-[100px]">
-      <Toolbar
-        items={[
-          <ToolbarButton
-            key={1}
-            icon={<ChevronLeftIcon className="w-6" />}
-            onClick={() => navigate(AppPath.Products)}
-          />,
+    <>
+      <div
+        className={[
+          'screen pb-[100px]',
+          activeScreen === ActiveScreen.Inventory
+            ? 'h-screen overflow-hidden'
+            : '',
+        ].join(' ')}
+      >
+        <Toolbar
+          items={[
+            <ToolbarButton
+              key={1}
+              icon={<ChevronLeftIcon className="w-6" />}
+              onClick={() => navigate(AppPath.Products)}
+            />,
 
-          <ToolbarTitle key="title" title="Products" />,
-          <ToolbarButton
-            key={2}
-            label="Add"
-            onClick={() => navigate(AppPath.AddProduct)}
-          />,
-        ]}
-      />
-      {renderContent()}
-    </div>
+            <ToolbarTitle key="title" title="Products" />,
+            <ToolbarButton
+              key={2}
+              label="Add"
+              onClick={() => navigate(AppPath.AddProduct)}
+            />,
+          ]}
+        />
+        {renderContent()}
+      </div>
+      <SlidingTransition
+        direction="right"
+        isVisible={activeScreen === ActiveScreen.Inventory}
+        zIndex={11}
+      >
+        <Inventory
+          products={products}
+          onBack={() => setActiveScreen(ActiveScreen.None)}
+          onProductSelect={viewProduct}
+        />
+      </SlidingTransition>
+    </>
   )
 }
 

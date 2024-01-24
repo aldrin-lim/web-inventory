@@ -15,12 +15,19 @@ import { isWithinExpiration } from 'util/data'
 type InventoryProps = {
   showAddProduct?: boolean
   onProductSelect?: (product: Product) => void
+  onBack?: () => void
+  products: Product[]
+  isLoading?: boolean
 }
 
 const Inventory = (props: InventoryProps) => {
-  const { onProductSelect, showAddProduct = false } = props
+  const {
+    products = [],
+    isLoading,
+    onProductSelect,
+    showAddProduct = false,
+  } = props
   const navigate = useNavigate()
-  const { products, isLoading } = useAllProducts()
   const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
 
   const [nameFilter, setNameFilter] = useState('')
@@ -42,7 +49,13 @@ const Inventory = (props: InventoryProps) => {
           <ToolbarButton
             key={'negative'}
             icon={<ChevronLeftIcon className="w-6" />}
-            onClick={() => navigate(AppPath.Products)}
+            onClick={() => {
+              if (props.onBack) {
+                props.onBack()
+              } else {
+                navigate(AppPath.Products)
+              }
+            }}
           />,
 
           <ToolbarTitle key="title" title="Inventory" />,

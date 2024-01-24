@@ -1,37 +1,24 @@
 import MiddleTruncatedText from 'components/MiddleTruncatedText'
 import ImageLoader from 'components/ImageLoader'
-import { useNavigate } from 'react-router-dom'
-import { AppPath } from 'routes/AppRoutes.types'
+import { Product } from 'types/product.types'
 
 type ProductCardProps = {
-  id: string
-  name: string
-  status?: string
-  quantity: number
-  image?: string
-  outOfStock?: boolean
-  unitOfMeasurment?: string
+  product: Product
+  onClick?: (product: Product) => void
 }
 
 const ProductCard = (props: ProductCardProps) => {
-  const {
-    name,
-    image,
-    id,
-    unitOfMeasurment,
-    quantity = 0,
-    outOfStock = false,
-  } = props
-  const navigate = useNavigate()
+  const { product, onClick } = props
+  const { name, outOfStock, totalQuantity } = product
 
-  const onClick = (id: string) => {
-    navigate(`${AppPath.Products}/${id}`)
-  }
+  const { unitOfMeasurement } = product.activeBatch
+
+  const image = product.images?.[0] || ''
 
   return (
     <div
       className="ProductCard card card-compact relative w-[155px] cursor-pointer justify-self-center border border-gray-300 bg-base-100"
-      onClick={() => onClick(id)}
+      onClick={() => onClick?.(product)}
     >
       <figure className="h-[155px] w-[153px] overflow-hidden bg-gray-300">
         {/* Show image or PhotoIcon based on image load status */}
@@ -48,7 +35,7 @@ const ProductCard = (props: ProductCardProps) => {
               outOfStock ? 'text-red-400' : ''
             }`}
           >
-            {quantity} {unitOfMeasurment} available
+            {totalQuantity} {unitOfMeasurement} available
           </span>
         </div>
       </div>
