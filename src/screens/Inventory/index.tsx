@@ -57,91 +57,99 @@ const Inventory = (props: InventoryProps) => {
       />
       {isLoading ? <Skeleton /> : null}
 
-      <div className="flex flex-col gap-4">
-        <div
-          role="alert"
-          className="1 alert alert-warning flex flex-row gap-2 rounded-md p-2 text-primary-content"
-        >
-          <InformationCircleIcon className="w-4" />
-          <span className="text-xs">
-            {numberOfNearExpirationProducts} item(s) are about to expire
-          </span>
-        </div>
-        <input
-          className="input input-bordered"
-          onChange={(e) => setNameFilter(e.target.value)}
-          placeholder="Search Product by Name"
-        />
-        <div className="flex w-full flex-row justify-between bg-gray-200 p-2">
-          <p className="uppercase">PRODUCT</p>
-          <p className="uppercase">COST</p>
-        </div>
-        <ul className="menu w-full border-b p-0 [&_li>*]:rounded-md [&_li>*]:border-b">
-          {filteredProducts.map((product) => (
-            <li
-              onClick={() => onProductSelect?.(product)}
-              key={product.id}
-              className="w-full"
+      {!isLoading && (
+        <div className="relative flex flex-col gap-4">
+          <div className="sticky top-[65px] z-[10] space-y-4 bg-base-100 ">
+            <div
+              role="alert"
+              className="1 alert alert-warning flex flex-row gap-2 rounded-md p-2 text-primary-content"
             >
-              <a className="flex">
-                <div className="flex w-full flex-row justify-between gap-4">
-                  <div className="flex flex-row items-center gap-2">
-                    {product?.images.length === 0 && (
-                      <div className="rounded-md bg-base-300 p-2">
-                        <PhotoIcon className="w-5  " />
+              <InformationCircleIcon className="w-4" />
+              <span className="text-xs">
+                {numberOfNearExpirationProducts} item(s) are about to expire
+              </span>
+            </div>
+            <input
+              className="input input-bordered w-full "
+              onChange={(e) => setNameFilter(e.target.value)}
+              placeholder="Search Product by Name"
+            />
+          </div>
+
+          <div className="flex w-full flex-row justify-between bg-gray-200 p-2">
+            <p className="uppercase">PRODUCT</p>
+            <p className="uppercase">COST</p>
+          </div>
+          <ul className="menu w-full border-b p-0 [&_li>*]:rounded-md [&_li>*]:border-b">
+            {filteredProducts.map((product) => (
+              <li
+                onClick={() => onProductSelect?.(product)}
+                key={product.id}
+                className="w-full"
+              >
+                <a className="flex">
+                  <div className="flex w-full flex-row justify-between gap-4">
+                    <div className="flex flex-row items-center gap-2">
+                      {product?.images.length === 0 && (
+                        <div className="rounded-md bg-base-300 p-2">
+                          <PhotoIcon className="w-5  " />
+                        </div>
+                      )}
+                      {product?.images.length > 0 && (
+                        <img
+                          src={product.images[0]}
+                          className="bg h-9 w-9 rounded-md"
+                        />
+                      )}
+                      <div className="flex flex-col ">
+                        <h1
+                          className={[
+                            'text-base',
+                            isWithinExpiration(
+                              product.activeBatch.expirationDate,
+                            )
+                              ? 'text-orange-400'
+                              : '',
+                          ].join(' ')}
+                        >
+                          <MiddleTruncateText
+                            text={`${product.name}`}
+                            maxLength={getTruncateSize(currentBreakpoint)}
+                          />
+                        </h1>
+                        {product.outOfStock === false ? (
+                          <p className="text-xs">{product.availability}</p>
+                        ) : (
+                          <p className="text-xs text-red-500">Out of stock</p>
+                        )}
+                      </div>
+                    </div>
+                    {product.isBulkCost && (
+                      <div className="text-right">
+                        <p className="text-base font-medium">
+                          ₱ {product.activeBatch.costPerUnit}{' '}
+                        </p>
+                        <p className="text-xs">
+                          / {product.activeBatch.unitOfMeasurement}
+                        </p>
                       </div>
                     )}
-                    {product?.images.length > 0 && (
-                      <img
-                        src={product.images[0]}
-                        className="bg h-9 w-9 rounded-md"
-                      />
-                    )}
-                    <div className="flex flex-col ">
-                      <h1
-                        className={[
-                          'text-base',
-                          isWithinExpiration(product.activeBatch.expirationDate)
-                            ? 'text-orange-400'
-                            : '',
-                        ].join(' ')}
-                      >
-                        <MiddleTruncateText
-                          text={`${product.name}`}
-                          maxLength={getTruncateSize(currentBreakpoint)}
-                        />
-                      </h1>
-                      {product.outOfStock === false ? (
-                        <p className="text-xs">{product.availability}</p>
-                      ) : (
-                        <p className="text-xs text-red-500">Out of stock</p>
-                      )}
-                    </div>
-                  </div>
-                  {product.isBulkCost && (
-                    <div className="text-right">
-                      <p className="text-base font-medium">
-                        ₱ {product.activeBatch.costPerUnit}{' '}
-                      </p>
-                      <p className="text-xs">
-                        / {product.activeBatch.unitOfMeasurement}
-                      </p>
-                    </div>
-                  )}
 
-                  {!product.isBulkCost && (
-                    <div className="text-right">
-                      <p className="text-base font-medium">
-                        ₱ {Intl.NumberFormat().format(product.activeBatch.cost)}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+                    {!product.isBulkCost && (
+                      <div className="text-right">
+                        <p className="text-base font-medium">
+                          ₱{' '}
+                          {Intl.NumberFormat().format(product.activeBatch.cost)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
