@@ -65,9 +65,11 @@ const Inventory = (props: InventoryProps) => {
               className="1 alert alert-warning flex flex-row gap-2 rounded-md p-2 text-primary-content"
             >
               <InformationCircleIcon className="w-4" />
-              <span className="text-xs">
-                {numberOfNearExpirationProducts} item(s) are about to expire
-              </span>
+              {numberOfNearExpirationProducts > 0 && (
+                <span className="text-xs">
+                  {numberOfNearExpirationProducts} item(s) are about to expire
+                </span>
+              )}
             </div>
             <input
               className="input input-bordered w-full "
