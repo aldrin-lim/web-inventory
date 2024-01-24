@@ -29,25 +29,43 @@ html, body {
   .DatePicker {
     -webkit-min-logical-width: calc(100% - 16px)
   }
+
+  .screen .ToolbarContainer {
+    @apply px-3
+  }
+
+  .screen > * {
+    @apply px-3
+  }
+
+  /* .ToolbarContainer + * {
+    @apply px-3
+  } */
 }
 
 @layer components {
-  .section {
-    @apply p-6 absolute flex min-h-screen w-full flex-col bg-base-100 gap-4
+  /* TEMPORARY WORKAROUND */
+/* 
+  .main-screen {
+    @apply w-full
   }
+  .main-screen:not(.ToolbarContainer) {
+    @apply px-3 w-full
+  } */
 
-  .section:has(.Toolbar) {
-    @apply pt-0
+  /* .sub-screen {
+    @apply w-full
   }
+  .sub-screen:not(.ToolbarContainer) {
+    @apply px-3 w-full
+  } */
 
-  .sub-screen:has(.ToolbarContainer) > .ToolbarContainer + *{
-    @apply mt-16
-  }
 
-  .main-screen:has(.ToolbarContainer) > .ToolbarContainer + *{
-    @apply mt-16
-  }
 
+
+  /* .section {
+    @apply  absolute flex min-h-screen w-full flex-col bg-base-100 gap-4
+  } */
 
   .form-control {
     @apply text-left
@@ -57,13 +75,13 @@ html, body {
     @apply text-left text-xs text-red-500
   }
 
-  .main-screen {
+  /* .main-screen {
     @apply flex min-h-screen w-full flex-col gap-4 overflow-hidden bg-base-100
-  }
+  } */
 
-  .sub-screen {
+  /* .sub-screen {
     @apply p-6 pt-0 flex min-h-screen w-full flex-col bg-base-100 gap-4
-  }
+  } */
 
   .clickable {
     @apply duration-200 ease-out;

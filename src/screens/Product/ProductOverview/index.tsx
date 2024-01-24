@@ -124,7 +124,7 @@ const ProductOverview = () => {
   }
 
   return (
-    <div className="ProductOverview main-screen section">
+    <div className="screen absolute flex w-full flex-col gap-4">
       <Toolbar
         items={[
           <ToolbarButton
@@ -143,7 +143,7 @@ const ProductOverview = () => {
           />,
         ]}
       />
-      <div className="group flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
         {/* IN STOCKS */}
         {products.length > 0 && (
           <div className="flex flex-col gap-4">

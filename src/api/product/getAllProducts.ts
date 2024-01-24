@@ -7,11 +7,7 @@ import { z } from 'zod'
 export default async (
   param?: PaginationOptions & GetAllProductFilterSchema,
 ) => {
-  let url = '/products'
-
-  if (param && Object.keys(param).length > 0) {
-    url = `${url}?${new URLSearchParams(param as string).toString()}`
-  }
+  const url = '/products'
 
   const result = await httpClient
     .get<unknown, AxiosResponse<Array<GetAllProductSchema>>>(url)
