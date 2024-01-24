@@ -25,6 +25,7 @@ import useCreateRecipe from 'hooks/useCreateRecipe'
 import { useFormik } from 'formik'
 import useUpdateRecipe from 'hooks/useUpdateRecipe'
 import CurrencyInput from 'react-currency-input-field'
+import useDeleteRecipe from 'hooks/useDeleteRecipe'
 
 enum ActiveScreen {
   None = 'none',
@@ -61,8 +62,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
   const { isCreating, createRecipe } = useCreateRecipe()
   const { isUpdating, updateRecipe } = useUpdateRecipe()
+  const { isDeleting, deleteRecipe } = useDeleteRecipe()
 
-  const isMutating = isCreating || isUpdating
+  const isMutating = isCreating || isUpdating || isDeleting
 
   const formikValues = recipe ? recipe : initialValue
 
@@ -173,7 +175,14 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
               onCreate={() => {
                 submitForm()
               }}
-              onDelete={async () => {}}
+              onDelete={async () => {
+                if (recipe && recipe.id) {
+                  await deleteRecipe({
+                    id: recipe.id,
+                  })
+                  navigate(AppPath.RecipeOverview)
+                }
+              }}
               onSave={() => {
                 submitForm()
               }}

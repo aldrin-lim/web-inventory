@@ -81,8 +81,6 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
     },
   )
 
-  console.log(existingProducts)
-
   const filteredProducts = useMemo(() => {
     let items = data?.pages.flatMap((page) => page) || []
 
