@@ -24,6 +24,7 @@ import { toast } from 'react-toastify'
 import useCreateRecipe from 'hooks/useCreateRecipe'
 import { useFormik } from 'formik'
 import useUpdateRecipe from 'hooks/useUpdateRecipe'
+import CurrencyInput from 'react-currency-input-field'
 
 enum ActiveScreen {
   None = 'none',
@@ -234,7 +235,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
               <div className="form-control-label  ">
                 <span className="label-text-alt text-gray-400">Price</span>
               </div>
-              <input
+              <CurrencyInput
+                decimalsLimit={2}
+                prefix="₱"
                 disabled={isMutating}
                 onBlur={getFieldProps('price').onBlur}
                 name={getFieldProps('price').name}
@@ -244,27 +247,21 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 className="input input-bordered w-full"
                 placeholder="₱0"
                 inputMode="decimal"
-                onChange={({ target: { value } }) => {
-                  const regex = /^-?(\d+)?(\.\d*)?$/
-                  if (regex.test(value) || value === '') {
-                    setFieldValue('price', value)
-                    if (values.cost > 0) {
-                      const newPrice = toNumber(value)
-                      const cost = values.cost
-                      const newProfitAmount = computeProfitAmount(
-                        newPrice,
-                        cost,
-                      )
-                      const newProfitPercentage = computeProfitPercentage(
-                        newPrice,
-                        cost,
-                      )
-                      setFieldValue('profitAmount', toNumber(newProfitAmount))
-                      setFieldValue(
-                        'profitPercentage',
-                        toNumber(newProfitPercentage),
-                      )
-                    }
+                onValueChange={(value) => {
+                  setFieldValue('price', value)
+                  if (values.cost > 0) {
+                    const newPrice = toNumber(value)
+                    const cost = values.cost
+                    const newProfitAmount = computeProfitAmount(newPrice, cost)
+                    const newProfitPercentage = computeProfitPercentage(
+                      newPrice,
+                      cost,
+                    )
+                    setFieldValue('profitAmount', toNumber(newProfitAmount))
+                    setFieldValue(
+                      'profitPercentage',
+                      toNumber(newProfitPercentage),
+                    )
                   }
                 }}
               />
@@ -280,7 +277,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 <div className="form-control-label  ">
                   <span className="label-text-alt text-gray-400">Profit</span>
                 </div>
-                <input
+                <CurrencyInput
+                  decimalsLimit={2}
+                  disableGroupSeparators
                   disabled={isMutating}
                   onBlur={getFieldProps('profitPercentage').onBlur}
                   name={getFieldProps('profitPercentage').name}
@@ -293,33 +292,32 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                     'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
                   ].join(' ')}
                   onChange={({ target: { value } }) => {
-                    const regex = /^-?(\d+)?(\.\d*)?$/
-                    if (regex.test(value) || value === '') {
-                      setFieldValue('profitPercentage', value)
-                      if (values.cost > 0) {
-                        const newProfitPercentage = toNumber(value)
-                        const cost = values.cost
-                        const newPrice = new Big(cost)
-                          .times(
-                            new Big(1).plus(
-                              new Big(newProfitPercentage).div(100),
-                            ),
-                          )
-                          .round(2)
-                          .toNumber()
-
-                        const newProfitAmount = computeProfitAmount(
-                          newPrice,
-                          cost,
+                    setFieldValue('profitPercentage', value)
+                    if (values.cost > 0) {
+                      const newProfitPercentage = toNumber(value)
+                      const cost = values.cost
+                      const newPrice = new Big(cost)
+                        .times(
+                          new Big(1).plus(
+                            new Big(newProfitPercentage).div(100),
+                          ),
                         )
-                        setFieldValue('price', newPrice)
-                        setFieldValue('profitAmount', newProfitAmount)
-                      }
+                        .round(2)
+                        .toNumber()
+
+                      const newProfitAmount = computeProfitAmount(
+                        newPrice,
+                        cost,
+                      )
+                      setFieldValue('price', newPrice)
+                      setFieldValue('profitAmount', newProfitAmount)
                     }
                   }}
                 />
                 <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
-                <input
+                <CurrencyInput
+                  decimalsLimit={2}
+                  prefix="₱"
                   disabled={isMutating}
                   onBlur={getFieldProps('profitAmount').onBlur}
                   name={getFieldProps('profitAmount').name}
@@ -329,27 +327,24 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                   className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
                   placeholder="₱0"
                   inputMode="decimal"
-                  onChange={({ target: { value } }) => {
-                    const regex = /^-?(\d+)?(\.\d*)?$/
-                    if (regex.test(value) || value === '') {
-                      setFieldValue('profitAmount', value)
-                      if (values.cost > 0) {
-                        const newProfitAmount = toNumber(value)
-                        const cost = values.cost
+                  onValueChange={(value) => {
+                    setFieldValue('profitAmount', value)
+                    if (values.cost > 0) {
+                      const newProfitAmount = toNumber(value)
+                      const cost = values.cost
 
-                        // const newPrice = cost + newProfitAmount
-                        const newPrice = new Big(cost)
-                          .plus(new Big(newProfitAmount))
-                          .round(2)
-                          .toNumber()
-                        const newProfitPercentage = computeProfitPercentage(
-                          newPrice,
-                          cost,
-                        )
+                      // const newPrice = cost + newProfitAmount
+                      const newPrice = new Big(cost)
+                        .plus(new Big(newProfitAmount))
+                        .round(2)
+                        .toNumber()
+                      const newProfitPercentage = computeProfitPercentage(
+                        newPrice,
+                        cost,
+                      )
 
-                        setFieldValue('price', newPrice)
-                        setFieldValue('profitPercentage', newProfitPercentage)
-                      }
+                      setFieldValue('price', newPrice)
+                      setFieldValue('profitPercentage', newProfitPercentage)
                     }
                   }}
                 />
