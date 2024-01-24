@@ -51,11 +51,14 @@ function useDebounce(value: string, delay: number) {
 type ProductSelectionListProps = {
   onClose: () => void
   onProductSelect: (product: Product) => void
+  existingProducts?: string[]
 }
 
 const ProductSelectionList = (props: ProductSelectionListProps) => {
   const [searchParams] = useSearchParams()
   const [page] = useState(0)
+
+  const { existingProducts } = props
 
   const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
 
@@ -78,6 +81,8 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
     },
   )
 
+  console.log(existingProducts)
+
   const filteredProducts = useMemo(() => {
     let items = data?.pages.flatMap((page) => page) || []
 
@@ -88,7 +93,10 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
       )
     }
 
-    return items
+    return items.filter((item) => {
+      if (existingProducts?.includes(item.id)) return false
+      return true
+    })
   }, [data?.pages, enableFilter, outOfStockFilter, debouncedSearchTerm])
 
   useEffect(() => {

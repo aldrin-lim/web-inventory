@@ -107,23 +107,19 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
     setActiveScreen(ActiveScreen.None)
   }
 
-  // useEffect(() => {
-  //   const totalCost = values.materials.reduce((acc, material) => {
-  //     const total = new Big(material.cost).times(new Big(material.quantity))
-  //     return new Big(acc).plus(total).toNumber()
-  //   }, 0)
-  //   console.log({
-  //     totalCost,
-  //     'values.price': values.price
-  //   })
-  //   if (values?.price && totalCost && values.price > 0 && totalCost > 0) {
-  //     const profitAmount = computeProfitAmount(values.price, totalCost)
-  //     const profitPercentage = computeProfitPercentage(values.price, totalCost)
-  //     setFieldValue('profitAmount', profitAmount)
-  //     setFieldValue('profitPercentage', profitPercentage)
-  //   }
-  //   setFieldValue('cost', totalCost)
-  // }, [values.materials])
+  useEffect(() => {
+    const totalCost = values.materials.reduce((acc, material) => {
+      const total = new Big(material.cost).times(new Big(material.quantity))
+      return new Big(acc).plus(total).toNumber()
+    }, 0)
+    if (values?.price && totalCost && values.price > 0 && totalCost > 0) {
+      const profitAmount = computeProfitAmount(values.price, totalCost)
+      const profitPercentage = computeProfitPercentage(values.price, totalCost)
+      setFieldValue('profitAmount', profitAmount)
+      setFieldValue('profitPercentage', profitPercentage)
+    }
+    setFieldValue('cost', totalCost)
+  }, [values.materials])
 
   const [adjustContent, setAdjustContent] = useState(false)
 
@@ -223,6 +219,13 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             <p>Cost</p>
             <p>₱ {values.cost}</p>
           </div>
+          {errors && errors.cost && (
+            <div className="label py-0">
+              <span className="label-text-alt text-xs text-red-400">
+                {errors.cost}
+              </span>
+            </div>
+          )}
 
           {/* Price and Profit */}
           <div className="flex w-full flex-row gap-2">
@@ -603,24 +606,6 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                       quantity: toNumber(param.quantity),
                     }
 
-                    const materials = [...values.materials]
-                    materials[index] = newMaterial
-
-                    const totalCost = materials.reduce((acc, material) => {
-                      const total = new Big(material.cost).times(
-                        new Big(material.quantity),
-                      )
-                      return new Big(acc).plus(total).toNumber()
-                    }, 0)
-
-                    const profitPercentage = computeProfitPercentage(
-                      values.price,
-                      totalCost,
-                    )
-
-                    console.log(profitPercentage)
-
-                    setFieldValue('cost', totalCost)
                     setFieldValue(`materials.${index}`, newMaterial)
                   }}
                 />
@@ -636,6 +621,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
         zIndex={10}
       >
         <ProductSelectionList
+          existingProducts={values.materials.map(
+            (material) => material.product.id,
+          )}
           onProductSelect={(product) => {
             const activeBatch = getActiveBatch(product.batches)
             const cost = product.isBulkCost
