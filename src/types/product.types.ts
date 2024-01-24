@@ -79,11 +79,12 @@ export const BaseProductSchema = z.object({
     invalid_type_error: 'Profit Percentage must be a number',
     coerce: true,
   }),
-  price: z.coerce.number({
+  price: z.number({
     required_error: 'Price is required',
     invalid_type_error: 'Price must be a number',
+    coerce: true,
   }),
-  images: z.array(z.string()).optional(),
+  images: z.array(z.string()),
   category: z
     .string({
       invalid_type_error: 'Category must be a string',
@@ -92,12 +93,19 @@ export const BaseProductSchema = z.object({
   trackStock: z.boolean().default(false),
   isBulkCost: z.boolean().default(false),
   soldBy: z.nativeEnum(ProductSoldBy).default(ProductSoldBy.Pieces),
+  forSale: z.boolean().default(true),
+  outOfStock: z.boolean().default(false),
+  availability: z.string().default(''),
+  totalQuantity: z.number().default(0),
   allowBackOrder: z
     .boolean({
       invalid_type_error: 'Allow back order must be a boolean',
     })
     .default(false),
-  batches: z.array(ProductBatchSchema),
+  batches: z
+    .array(ProductBatchSchema)
+    .min(1, 'Batches must have at least 1 item'),
+  activeBatch: ProductBatchSchema,
 })
 
 export const ProductSchema = BaseProductSchema

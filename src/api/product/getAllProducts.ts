@@ -4,28 +4,14 @@ import { ProductBatchSchema, ProductSchema } from 'types/product.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 
-export default async (
-  param?: PaginationOptions & GetAllProductFilterSchema,
-) => {
+export default async () => {
   const url = '/products'
 
   const result = await httpClient
     .get<unknown, AxiosResponse<Array<GetAllProductSchema>>>(url)
     .then((res) => res.data)
-  return result || []
+  return result
 }
 
 // Schema and Types
-export type GetAllProductSchema = z.infer<typeof GetProductSchema>
-
-export type GetAllProductFilterSchema = z.infer<
-  typeof GetAllProductsFilterSchema
->
-
-const GetProductSchema = ProductSchema.extend({
-  activeBatch: ProductBatchSchema,
-})
-
-const GetAllProductsFilterSchema = z.object({
-  outOfStock: z.boolean().optional(),
-})
+export type GetAllProductSchema = z.infer<typeof ProductSchema>

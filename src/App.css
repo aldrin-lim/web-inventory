@@ -44,6 +44,10 @@ html, body {
 }
 
 @layer components {
+  
+  .screen {
+    @apply absolute flex w-full flex-col gap-4 min-h-screen
+  }
   /* TEMPORARY WORKAROUND */
 /* 
   .main-screen {

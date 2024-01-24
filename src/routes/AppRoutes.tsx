@@ -9,7 +9,6 @@ import Profile from 'screens/Profile'
 import Store from 'screens/Store'
 import AddProduct from 'screens/Product/AddProduct'
 import ProductOverview from 'screens/Product/ProductOverview'
-import ProductList from 'screens/Product/ProductList'
 import Error from 'screens/Error'
 import ViewProduct from 'screens/Product/ViewProduct'
 import Settings from 'screens/Settings'
@@ -18,6 +17,7 @@ import AddRecipe from 'screens/Recipe/AddRecipe'
 import Staff from 'screens/Staff'
 import ViewRecipe from 'screens/Recipe/ViewRecipe'
 import { PropsWithChildren } from 'react'
+import Inventory from 'screens/Inventory'
 
 const Header = ({ children }: PropsWithChildren) => {
   return (
@@ -92,8 +92,8 @@ const AppRoutes = () => (
       element={<ProtectedRoute element={<AddRecipe />} />}
     />
     <Route
-      path={AppPath.ProductList}
-      element={<ProtectedRoute element={<ProductList />} />}
+      path={AppPath.Inventory}
+      element={<ProtectedRoute element={<Inventory />} />}
     />
     <Route
       path={AppPath.ViewProduct}
