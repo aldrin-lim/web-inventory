@@ -47,14 +47,14 @@ const ProductOverview = () => {
       <div className="flex flex-col gap-4">
         {/* IN STOCKS */}
         <ProductList
-          onViewAll={() => navigate('list')}
+          onViewAll={() => navigate('list', { replace: true })}
           onProductSelect={viewProduct}
           products={inStocks}
           orientation={orientation}
         />
 
         <ProductList
-          onViewAll={() => navigate('list')}
+          onViewAll={() => navigate('list', { replace: true })}
           onProductSelect={viewProduct}
           products={outOfStocks}
           orientation={orientation}
@@ -98,7 +98,7 @@ const ProductOverview = () => {
       >
         <Inventory
           products={products}
-          onBack={() => navigate(-1)}
+          onBack={() => navigate('', { replace: true })}
           onProductSelect={viewProduct}
         />
       </SlidingTransition>
