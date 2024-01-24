@@ -2,29 +2,22 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import useAllProducts from 'hooks/useAllProducts'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 
 import './styles.css'
 import ProductList from './components/ProductList'
-import { ComponentProps, useState } from 'react'
+import { ComponentProps } from 'react'
 import GetStarted from './components/GetStarted'
 import { Product } from 'types/product.types'
 import Inventory from 'screens/Inventory'
 import SlidingTransition from 'components/SlidingTransition'
 
-enum ActiveScreen {
-  None,
-  Inventory,
-}
-
 const ProductOverview = () => {
   const navigate = useNavigate()
 
-  const [activeScreen, setActiveScreen] = useState<ActiveScreen>(
-    ActiveScreen.None,
-  )
+  const location = useLocation()
 
   const { products, isLoading } = useAllProducts()
 
@@ -54,14 +47,14 @@ const ProductOverview = () => {
       <div className="flex flex-col gap-4">
         {/* IN STOCKS */}
         <ProductList
-          onViewAll={() => setActiveScreen(ActiveScreen.Inventory)}
+          onViewAll={() => navigate('list')}
           onProductSelect={viewProduct}
           products={inStocks}
           orientation={orientation}
         />
 
         <ProductList
-          onViewAll={() => setActiveScreen(ActiveScreen.Inventory)}
+          onViewAll={() => navigate('list')}
           onProductSelect={viewProduct}
           products={outOfStocks}
           orientation={orientation}
@@ -69,12 +62,13 @@ const ProductOverview = () => {
       </div>
     )
   }
+
   return (
     <>
       <div
         className={[
           'screen pb-[100px]',
-          activeScreen === ActiveScreen.Inventory
+          location.pathname === '/products/overview'
             ? 'h-screen overflow-hidden'
             : '',
         ].join(' ')}
@@ -99,12 +93,12 @@ const ProductOverview = () => {
       </div>
       <SlidingTransition
         direction="right"
-        isVisible={activeScreen === ActiveScreen.Inventory}
+        isVisible={location.pathname === '/products/overview/list'}
         zIndex={11}
       >
         <Inventory
           products={products}
-          onBack={() => setActiveScreen(ActiveScreen.None)}
+          onBack={() => navigate(-1)}
           onProductSelect={viewProduct}
         />
       </SlidingTransition>

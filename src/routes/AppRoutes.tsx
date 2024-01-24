@@ -17,7 +17,6 @@ import AddRecipe from 'screens/Recipe/AddRecipe'
 import Staff from 'screens/Staff'
 import ViewRecipe from 'screens/Recipe/ViewRecipe'
 import { PropsWithChildren } from 'react'
-import Inventory from 'screens/Inventory'
 
 const Header = ({ children }: PropsWithChildren) => {
   return (
@@ -51,16 +50,16 @@ const TestComponent = () => {
 
 const AppRoutes = () => (
   <Routes>
+    <Route
+      path={'/products/overview/*'}
+      element={<ProtectedRoute element={<ProductOverview />} />}
+    />
     <Route path="/test" element={<TestComponent />} />
     <Route path="/" element={<ProtectedRoute element={<Layout />} />}>
       <Route index element={<ProductMenu />} />
       <Route path={AppPath.Home} element={<Home />} />
       <Route path={AppPath.Orders} element={<Orders />} />
       <Route path={AppPath.Products} element={<ProductMenu />} />
-      <Route
-        path={AppPath.ProductOverview}
-        element={<ProtectedRoute element={<ProductOverview />} />}
-      />
       <Route
         path={AppPath.RecipeOverview}
         element={<ProtectedRoute element={<RecipeOverview />} />}
@@ -90,10 +89,6 @@ const AppRoutes = () => (
     <Route
       path={AppPath.AddRecipe}
       element={<ProtectedRoute element={<AddRecipe />} />}
-    />
-    <Route
-      path={AppPath.Inventory}
-      element={<ProtectedRoute element={<Inventory />} />}
     />
     <Route
       path={AppPath.ViewProduct}
