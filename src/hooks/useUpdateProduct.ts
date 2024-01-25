@@ -1,9 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import * as API from 'api/product'
-import {
-  UpdateProductRequestScheam,
-  UpdateProductSchema,
-} from 'api/product/updateProductById'
+import { UpdateProductRequestScheam } from 'api/product/updateProduct'
 import axios from 'axios'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
@@ -39,21 +36,9 @@ const useUpdateProduct = () => {
 
   const updateProduct = async (param: {
     id: string
-    product: UpdateProductRequestScheam
+    body: UpdateProductRequestScheam
   }) => {
-    const validation = UpdateProductSchema.safeParse({
-      id: param.id,
-      ...param.product,
-    })
-
-    if (!validation.success) {
-      const error = validation.error.issues[0].message
-      console.log(error)
-      return
-    }
-
-    const requestBody = validation.data
-    await mutateAsync({ id: param.id, product: requestBody })
+    await mutateAsync({ id: param.id, product: param.body })
   }
 
   return {

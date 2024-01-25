@@ -1,6 +1,6 @@
 export { default as createProduct } from './createProduct'
 export { default as getAllProducts } from './getAllProducts'
 export { default as getProductById } from './getProductById'
-export { default as updateProductById } from './updateProductById'
+export { default as updateProductById } from './updateProduct'
 export { default as deleteProductById } from './deleteProductById'
 export { default as cloneProduct } from './cloneProduct'

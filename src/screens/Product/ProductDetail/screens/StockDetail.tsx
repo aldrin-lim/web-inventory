@@ -73,7 +73,7 @@ const StockDetail = (props: StockDetailProps) => {
   const activeBatchId = getActiveBatch(values.batches)?.id
 
   return (
-    <div className="screen">
+    <div className="screen pb-6">
       <Toolbar
         items={[
           <ToolbarButton
@@ -92,7 +92,7 @@ const StockDetail = (props: StockDetailProps) => {
         ]}
       />
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 ">
         {/* Back order tracking */}
         <div className="form-control flex w-full flex-row justify-between py-2">
           <span>Allow selling when out of stock</span>

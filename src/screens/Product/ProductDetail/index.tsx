@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import {
@@ -15,7 +15,6 @@ import { z } from 'zod'
 import { useFormik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import useCreateProduct from 'hooks/useCreateProduct'
-import { AddProductSchema } from 'api/product/createProduct'
 import SlidingTransition from 'components/SlidingTransition'
 import Description from './screens/Description'
 import StockDetail from './screens/StockDetail'
@@ -23,7 +22,6 @@ import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { GetProductSchema } from 'api/product/getProductById'
 import useDeleteProduct from 'hooks/useDeleteProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
-import { UpdateProductSchema } from 'api/product/updateProductById'
 import { v4 } from 'uuid'
 import useCloneProduct from 'hooks/useCloneProduct'
 import {
@@ -32,10 +30,17 @@ import {
   profitPercentageColor,
   toNumber,
 } from 'util/number'
-import { ProductDetailSchema } from './ProductDetail.types'
+import {
+  AddProductDetailSchema,
+  ProductDetailFormValidationSchema,
+  ViewProductDetailSchema,
+} from './ProductDetail.types'
 import Big from 'big.js'
 import CurrencyInput from 'react-currency-input-field'
 import { useCustomRoute } from 'util/route'
+import { CreateProductBodySchema } from 'api/product/createProduct'
+import { toast } from 'react-toastify'
+import { UpdateProductBodySchema } from 'api/product/updateProduct'
 
 enum ScreenPath {
   Description = 'description',
@@ -66,6 +71,7 @@ const defaultValue = {
   totalQuantity: 0,
   batches: [
     {
+      id: v4(),
       name: 'Batch 1',
       cost: 0,
       costPerUnit: 0,
@@ -74,7 +80,7 @@ const defaultValue = {
       expirationDate: null,
     },
   ],
-} as z.infer<typeof ProductDetailSchema>
+} as AddProductDetailSchema
 
 const GetActiveBatchParam = z.union([
   ProductBatchSchema,
@@ -100,8 +106,19 @@ export const getActiveBatch = (batches: GetActiveBatchParam) => {
 }
 
 export const ProductDetail = (props: ProductDetailProps) => {
-  const { product } = props
   const navigate = useNavigate()
+
+  const product = useMemo(() => {
+    if (!props.product) {
+      return undefined
+    }
+    return {
+      ...props.product,
+      cost: getActiveBatch(props.product.batches).costPerUnit,
+    } as ViewProductDetailSchema
+  }, [props.product])
+
+  const mode: 'add' | 'edit' = product ? 'edit' : 'add'
 
   const { currentScreen, isParentScreen, navigateToParent } =
     useCustomRoute(ScreenPath)
@@ -115,12 +132,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const isMutating = isCreating || isDeleting || isUpdating || isCloning
 
-  const value = product
-    ? ({
-        ...product,
-        cost: product.activeBatch.cost,
-      } as z.infer<typeof ProductDetailSchema>)
-    : defaultValue
+  const initialValues = product ?? defaultValue
   const {
     submitForm,
     errors,
@@ -129,11 +141,71 @@ export const ProductDetail = (props: ProductDetailProps) => {
     values,
     setValues,
   } = useFormik({
-    initialValues: value,
-    validationSchema: toFormikValidationSchema(ProductDetailSchema),
+    initialValues,
+    validationSchema: toFormikValidationSchema(
+      ProductDetailFormValidationSchema,
+    ),
     enableReinitialize: true,
     validateOnBlur: false,
-    onSubmit: async (value) => {
+    onSubmit: async (formValue) => {
+      formValue.price = toNumber(formValue.price)
+      formValue.profitPercentage = toNumber(formValue.profitPercentage)
+      formValue.profitAmount = toNumber(formValue.profitAmount)
+
+      const validation = (
+        product ? CreateProductBodySchema : UpdateProductBodySchema
+      ).safeParse(formValue)
+
+      if (!validation.success) {
+        const error = validation.error.issues[0].message
+        toast.error(error, {
+          autoClose: 500,
+          theme: 'colored',
+        })
+        return
+      }
+
+      if (product) {
+        await updateProduct({
+          id: product.id,
+          body: validation.data,
+        })
+      } else {
+        await createProduct(validation.data as CreateProductBodySchema)
+      }
+
+      // if (mode === 'add') {
+      //   const validation = CreateProductBodySchema.safeParse(formValue)
+
+      //   if (!validation.success) {
+      //     const error = validation.error.issues[0].message
+      //     toast.error(error, {
+      //       autoClose: 500,
+      //       theme: 'colored',
+      //     })
+      //     return
+      //   }
+
+      //   await createProduct(validation.data)
+      // } else {
+      //   const validation = UpdateProductBodySchema.safeParse(formValue)
+
+      //   if (!validation.success) {
+      //     const error = validation.error.issues[0].message
+      //     toast.error(error, {
+      //       autoClose: 500,
+      //       theme: 'colored',
+      //     })
+      //     return
+      //   }
+
+      //   await updateProduct({
+      //     id: validation.data.id,
+      //     body: validation.data,
+      //   })
+      // }
+
+      //       profitAmount: toNumber(parsedValue.profitAmount),
       // const parsedValue = ProductDetailSchema.parse(value)
       // if (mode === 'add') {
       //   if (parsedValue.trackStock === false) {
@@ -212,8 +284,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
     },
     validateOnChange: false,
   })
-
-  const mode: 'add' | 'edit' = product ? 'edit' : 'add'
 
   const showDescription = () => {
     navigate(ScreenPath.Description)
@@ -325,9 +395,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
           {/* Cost per Unit */}
           {values.isBulkCost && (
-            <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-primary p-2 py-1 text-white">
+            <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-gray-200 p-2 py-1 text-black ">
               <p className="font-bold">Cost:</p>
-
               <div className="flex flex-row">
                 <p className="font-bold">
                   ₱ {getActiveBatch(values.batches).costPerUnit}
@@ -509,6 +578,20 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 {errors.profitAmount}&nbsp;
               </span>
             </div>
+          </div>
+
+          {/* For Sale */}
+          <div className="form-control flex w-full flex-row justify-between py-2">
+            <span>I want to use it for Recipe Only</span>
+            <input
+              {...getFieldProps('forSale')}
+              type="checkbox"
+              onChange={(e) => {
+                setFieldValue('forSale', !e.target.checked)
+              }}
+              checked={!values.forSale}
+              className="toggle toggle-primary"
+            />
           </div>
 
           {/* Images */}

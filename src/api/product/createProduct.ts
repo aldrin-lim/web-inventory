@@ -1,20 +1,22 @@
 import { AxiosResponse } from 'axios'
-import { Product, ProductBatchSchema, ProductSchema } from 'types/product.types'
+import { Product, ProductSchema } from 'types/product.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 
-export default async (param: AddProductSchema) => {
+export default async (param: CreateProductBodySchema) => {
   const result = await httpClient
-    .post<AddProductSchema, AxiosResponse<Product>>(`/products`, param)
+    .post<CreateProductBodySchema, AxiosResponse<Product>>(`/products`, param)
     .then((res) => res.data)
   return result
 }
 
 // Schema and Types
-type AddProductSchema = z.infer<typeof AddProductSchema>
+export type CreateProductBodySchema = z.infer<typeof CreateProductBodySchema>
 
-export const AddProductSchema = ProductSchema.partial({
+export const CreateProductBodySchema = ProductSchema.omit({
   id: true,
-}).extend({
-  batches: z.array(ProductBatchSchema.partial({ id: true })),
+  activeBatch: true,
+  outOfStock: true,
+  availability: true,
+  totalQuantity: true,
 })

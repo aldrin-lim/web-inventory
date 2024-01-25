@@ -10,8 +10,39 @@ export const ProductDetailSchema = ProductSchema.partial({
     })
     .positive('Must be greater than 0'),
   activeBatch: ProductBatchSchema.optional(),
-  batches: z.array(ProductBatchSchema.partial({ id: true })),
 })
 export const StockDetailSchema = ProductDetailSchema
+
+export const AddProductDetailSchema = ProductSchema.omit({
+  id: true,
+  activeBatch: true,
+}).extend({
+  cost: z
+    .number({
+      coerce: true,
+      required_error: 'Cost is required',
+    })
+    .positive('Must be greater than 0'),
+})
+
+export const ViewProductDetailSchema = ProductSchema.extend({
+  cost: z
+    .number({
+      coerce: true,
+      required_error: 'Cost is required',
+    })
+    .positive('Must be greater than 0'),
+})
+
+export const ProductDetailFormValidationSchema = ProductSchema.omit({
+  id: true,
+  activeBatch: true,
+  outOfStock: true,
+  availability: true,
+  totalQuantity: true,
+})
+
+export type ViewProductDetailSchema = z.infer<typeof ViewProductDetailSchema>
+export type AddProductDetailSchema = z.infer<typeof AddProductDetailSchema>
 
 export type StockDetail = z.infer<typeof StockDetailSchema>

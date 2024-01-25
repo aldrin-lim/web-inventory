@@ -90,13 +90,23 @@ export const BaseProductSchema = z.object({
       invalid_type_error: 'Category must be a string',
     })
     .optional(),
-  trackStock: z.boolean().default(false),
-  isBulkCost: z.boolean().default(false),
+  trackStock: z
+    .boolean({
+      required_error: 'Track Stock is required',
+    })
+    .default(false),
+  isBulkCost: z
+    .boolean({
+      required_error: 'Is Bulk Cost is required',
+    })
+    .default(false),
   soldBy: z.nativeEnum(ProductSoldBy).default(ProductSoldBy.Pieces),
-  forSale: z.boolean().default(true),
-  outOfStock: z.boolean().default(false),
-  availability: z.string().default(''),
-  totalQuantity: z.number().default(0),
+  forSale: z
+    .boolean({
+      required_error: 'For Sale is required',
+    })
+    .default(true),
+
   allowBackOrder: z
     .boolean({
       invalid_type_error: 'Allow back order must be a boolean',
@@ -105,6 +115,11 @@ export const BaseProductSchema = z.object({
   batches: z
     .array(ProductBatchSchema)
     .min(1, 'Batches must have at least 1 item'),
+
+  // Read only
+  outOfStock: z.boolean().default(false),
+  availability: z.string().default(''),
+  totalQuantity: z.number().default(0),
   activeBatch: ProductBatchSchema,
 })
 
