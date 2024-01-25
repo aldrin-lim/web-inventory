@@ -50,7 +50,7 @@ html, body {
   }
 
   .hidden-screen {
-    @apply min-h-screen overflow-hidden
+    @apply h-0 overflow-hidden
   }
   
 
