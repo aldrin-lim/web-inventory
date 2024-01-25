@@ -35,9 +35,9 @@ import {
 import { ProductDetailSchema } from './ProductDetail.types'
 import Big from 'big.js'
 import CurrencyInput from 'react-currency-input-field'
+import { useCustomRoute } from 'util/route'
 
-enum ActiveScreen {
-  None = 'none',
+enum ScreenPath {
   Description = 'description',
   StockDetail = 'stockDetail',
 }
@@ -60,6 +60,10 @@ const defaultValue = {
   soldBy: ProductSoldBy.Pieces,
   allowBackOrder: false,
   isBulkCost: false,
+  availability: '',
+  forSale: true,
+  outOfStock: false,
+  totalQuantity: 0,
   batches: [
     {
       name: 'Batch 1',
@@ -99,7 +103,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const { product } = props
   const navigate = useNavigate()
 
-  const [activeScreen, setActiveScreen] = useState(ActiveScreen.None)
+  const { currentScreen, isParentScreen, navigateToParent } =
+    useCustomRoute(ScreenPath)
 
   const { createProduct, isCreating } = useCreateProduct()
   const { deleteProduct, isDeleting } = useDeleteProduct()
@@ -129,81 +134,81 @@ export const ProductDetail = (props: ProductDetailProps) => {
     enableReinitialize: true,
     validateOnBlur: false,
     onSubmit: async (value) => {
-      const parsedValue = ProductDetailSchema.parse(value)
-      if (mode === 'add') {
-        if (parsedValue.trackStock === false) {
-          const requestBody: z.infer<typeof AddProductSchema> = {
-            name: parsedValue.name,
-            price: toNumber(parsedValue.price),
-            profitPercentage: toNumber(parsedValue.profitPercentage),
-            profitAmount: toNumber(parsedValue.profitAmount),
-            soldBy: ProductSoldBy.Pieces,
-            category: parsedValue.category,
-            description: parsedValue.description,
-            images: parsedValue.images,
-            batches: [
-              {
-                ...defaultValue.batches[0],
-                quantity: 1,
-                cost: parsedValue.cost ?? 0,
-              },
-            ],
-            allowBackOrder: false,
-            trackStock: false,
-            isBulkCost: false,
-          }
-          await createProduct(requestBody)
-        } else {
-          const requestBody: z.infer<typeof AddProductSchema> = {
-            name: parsedValue.name,
-            price: toNumber(parsedValue.price),
-            profitPercentage: toNumber(parsedValue.profitPercentage),
-            profitAmount: toNumber(parsedValue.profitAmount),
-            soldBy: parsedValue.soldBy,
-            category: parsedValue.category,
-            description: parsedValue.description,
-            images: parsedValue.images,
-            batches: parsedValue.batches,
-            allowBackOrder: parsedValue.allowBackOrder,
-            trackStock: parsedValue.trackStock,
-            isBulkCost: parsedValue.isBulkCost,
-          }
-          await createProduct(requestBody)
-        }
-        navigate(AppPath.Product)
-      } else {
-        const requestBody: z.infer<typeof UpdateProductSchema> = {
-          name: parsedValue.name,
-          price: parsedValue.price as number,
-          profitPercentage: toNumber(parsedValue.profitPercentage),
-          profitAmount: toNumber(parsedValue.profitAmount),
-          soldBy: parsedValue.soldBy,
-          category: parsedValue.category,
-          description: parsedValue.description,
-          images: parsedValue.images,
-          batches: parsedValue.batches as z.infer<
-            typeof UpdateProductSchema
-          >['batches'],
-          allowBackOrder: parsedValue.allowBackOrder,
-          trackStock: parsedValue.trackStock,
-          isBulkCost: parsedValue.isBulkCost,
-        }
-        if (parsedValue.trackStock === false) {
-          requestBody.batches = [
-            {
-              ...defaultValue.batches[0],
-              quantity: 1,
-              cost: parsedValue.cost ?? 0,
-            },
-          ]
-        }
-        if (product) {
-          await updateProduct({
-            id: product.id,
-            product: requestBody,
-          })
-        }
-      }
+      // const parsedValue = ProductDetailSchema.parse(value)
+      // if (mode === 'add') {
+      //   if (parsedValue.trackStock === false) {
+      //     const requestBody: z.infer<typeof AddProductSchema> = {
+      //       name: parsedValue.name,
+      //       price: toNumber(parsedValue.price),
+      //       profitPercentage: toNumber(parsedValue.profitPercentage),
+      //       profitAmount: toNumber(parsedValue.profitAmount),
+      //       soldBy: ProductSoldBy.Pieces,
+      //       category: parsedValue.category,
+      //       description: parsedValue.description,
+      //       images: parsedValue.images,
+      //       batches: [
+      //         {
+      //           ...defaultValue.batches[0],
+      //           quantity: 1,
+      //           cost: parsedValue.cost ?? 0,
+      //         },
+      //       ],
+      //       allowBackOrder: false,
+      //       trackStock: false,
+      //       isBulkCost: false,
+      //     }
+      //     await createProduct(requestBody)
+      //   } else {
+      //     const requestBody: z.infer<typeof AddProductSchema> = {
+      //       name: parsedValue.name,
+      //       price: toNumber(parsedValue.price),
+      //       profitPercentage: toNumber(parsedValue.profitPercentage),
+      //       profitAmount: toNumber(parsedValue.profitAmount),
+      //       soldBy: parsedValue.soldBy,
+      //       category: parsedValue.category,
+      //       description: parsedValue.description,
+      //       images: parsedValue.images,
+      //       batches: parsedValue.batches,
+      //       allowBackOrder: parsedValue.allowBackOrder,
+      //       trackStock: parsedValue.trackStock,
+      //       isBulkCost: parsedValue.isBulkCost,
+      //     }
+      //     await createProduct(requestBody)
+      //   }
+      //   navigate(AppPath.Product)
+      // } else {
+      //   const requestBody: z.infer<typeof UpdateProductSchema> = {
+      //     name: parsedValue.name,
+      //     price: parsedValue.price as number,
+      //     profitPercentage: toNumber(parsedValue.profitPercentage),
+      //     profitAmount: toNumber(parsedValue.profitAmount),
+      //     soldBy: parsedValue.soldBy,
+      //     category: parsedValue.category,
+      //     description: parsedValue.description,
+      //     images: parsedValue.images,
+      //     batches: parsedValue.batches as z.infer<
+      //       typeof UpdateProductSchema
+      //     >['batches'],
+      //     allowBackOrder: parsedValue.allowBackOrder,
+      //     trackStock: parsedValue.trackStock,
+      //     isBulkCost: parsedValue.isBulkCost,
+      //   }
+      //   if (parsedValue.trackStock === false) {
+      //     requestBody.batches = [
+      //       {
+      //         ...defaultValue.batches[0],
+      //         quantity: 1,
+      //         cost: parsedValue.cost ?? 0,
+      //       },
+      //     ]
+      //   }
+      //   if (product) {
+      //     await updateProduct({
+      //       id: product.id,
+      //       product: requestBody,
+      //     })
+      //   }
+      // }
     },
     validateOnChange: false,
   })
@@ -211,11 +216,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const mode: 'add' | 'edit' = product ? 'edit' : 'add'
 
   const showDescription = () => {
-    setActiveScreen(ActiveScreen.Description)
+    navigate(ScreenPath.Description)
   }
 
   const goBackToProductScreen = () => {
-    setActiveScreen(ActiveScreen.None)
+    navigateToParent()
   }
 
   useEffect(() => {
@@ -228,18 +233,18 @@ export const ProductDetail = (props: ProductDetailProps) => {
   }, [mode])
 
   return (
-    <div
-      className={`ProductDetail main-screen ${
-        activeScreen === ActiveScreen.None ? 'h-full' : 'h-screen'
-      }`}
-    >
-      <div className="sub-screen">
+    <>
+      <div
+        className={['screen pb-9', !isParentScreen ? 'hidden-screen' : ''].join(
+          ' ',
+        )}
+      >
         <Toolbar
           items={[
             <ToolbarButton
               key={2}
               icon={<ChevronLeftIcon className="w-6" />}
-              onClick={() => navigate(AppPath.Product)}
+              onClick={() => navigate(AppPath.ProductOverview)}
               disabled={isMutating}
             />,
             <ToolbarTitle
@@ -257,7 +262,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               onDelete={async () => {
                 if (product) {
                   await deleteProduct({ id: product.id })
-                  navigate(AppPath.Product)
+                  navigate(AppPath.ProductOverview)
                 }
               }}
               onSave={function (): void {
@@ -582,10 +587,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
         {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
         {/* <pre className="text-xs">{JSON.stringify(errors, null, 2)}</pre> */}
       </div>
-
       <SlidingTransition
         direction="right"
-        isVisible={activeScreen === ActiveScreen.Description}
+        isVisible={currentScreen === ScreenPath.Description}
         zIndex={11}
       >
         <Description
@@ -599,7 +603,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
       <SlidingTransition
         direction="right"
-        isVisible={activeScreen === ActiveScreen.StockDetail}
+        isVisible={currentScreen === ScreenPath.StockDetail}
         zIndex={11}
       >
         <StockDetail
@@ -669,7 +673,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           }}
         />
       </SlidingTransition>
-    </div>
+    </>
   )
 }
 

@@ -72,7 +72,7 @@ const ProductOverview = () => {
   return (
     <>
       <div
-        className={['screen pb-9', isParentScreen ? 'hidden-screen' : ''].join(
+        className={['screen pb-9', !isParentScreen ? 'hidden-screen' : ''].join(
           ' ',
         )}
       >
