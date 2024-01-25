@@ -22,21 +22,14 @@ export const useCustomRoute = <T extends Record<string, string>>(paths: T) => {
     '',
   ) as T[keyof T]
 
-  const navigateTo = (screen: T[keyof T]) => {
-    navigate(screen)
-  }
-
   const navigateToParent = () => {
     navigate(resolvedPath.pathname)
   }
-
-  console.log('perform')
 
   return {
     path,
     isParentScreen,
     currentScreen,
-    navigateTo,
     navigateToParent,
   }
 }

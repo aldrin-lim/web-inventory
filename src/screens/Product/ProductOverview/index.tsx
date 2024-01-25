@@ -16,14 +16,13 @@ import SlidingTransition from 'components/SlidingTransition'
 import { useCustomRoute } from 'util/route'
 
 enum ScreenPath {
-  None = '',
   List = `list`,
 }
 
 const ProductOverview = () => {
   const navigate = useNavigate()
 
-  const { currentScreen, isParentScreen, navigateTo, navigateToParent } =
+  const { currentScreen, isParentScreen, navigateToParent } =
     useCustomRoute(ScreenPath)
 
   const { products, isLoading } = useAllProducts()
@@ -54,14 +53,14 @@ const ProductOverview = () => {
       <div className="flex flex-col gap-4">
         {/* IN STOCKS */}
         <ProductList
-          onViewAll={() => navigateTo(ScreenPath.List)}
+          onViewAll={() => navigate(ScreenPath.List)}
           onProductSelect={viewProduct}
           products={inStocks}
           orientation={orientation}
         />
 
         <ProductList
-          onViewAll={() => navigateTo(ScreenPath.List)}
+          onViewAll={() => navigate(ScreenPath.List)}
           onProductSelect={viewProduct}
           products={outOfStocks}
           orientation={orientation}
