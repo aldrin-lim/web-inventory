@@ -4,7 +4,6 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import MiddleTruncateText from 'components/MiddleTruncatedText'
-import useAllProducts from 'hooks/useAllProducts'
 import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -73,17 +72,18 @@ const Inventory = (props: InventoryProps) => {
       {!isLoading && (
         <div className="relative flex flex-col gap-4">
           <div className="sticky top-[65px] z-[10] space-y-4 bg-base-100 ">
-            <div
-              role="alert"
-              className="1 alert alert-warning flex flex-row gap-2 rounded-md p-2 text-primary-content"
-            >
-              <InformationCircleIcon className="w-4" />
-              {numberOfNearExpirationProducts > 0 && (
+            {numberOfNearExpirationProducts > 0 && (
+              <div
+                role="alert"
+                className="1 alert alert-warning flex flex-row gap-2 rounded-md p-2 text-primary-content"
+              >
+                <InformationCircleIcon className="w-4" />
                 <span className="text-xs">
-                  {numberOfNearExpirationProducts} item(s) are about to expire
+                  <strong>{numberOfNearExpirationProducts}</strong> item(s) are
+                  about to expire
                 </span>
-              )}
-            </div>
+              </div>
+            )}
             <input
               className="input input-bordered w-full "
               onChange={(e) => setNameFilter(e.target.value)}
