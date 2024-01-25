@@ -2,15 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Home from 'screens/Home'
 import { AppPath } from './AppRoutes.types'
 import ProtectedRoute from './ProtectedRoutes'
-import Profile from 'screens/Profile'
-import Store from 'screens/Store'
-import AddProduct from 'screens/Product/AddProduct'
 import ProductOverview from 'screens/Product/ProductOverview'
-import Error from 'screens/Error'
-import ViewProduct from 'screens/Product/ViewProduct'
-import AddRecipe from 'screens/Recipe/AddRecipe'
-import Staff from 'screens/Staff'
-import ViewRecipe from 'screens/Recipe/ViewRecipe'
 
 const AppRoutes = () => (
   <Routes>

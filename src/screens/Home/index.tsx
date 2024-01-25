@@ -4,12 +4,8 @@ import {
   BookOpenIcon,
   ArchiveBoxIcon,
   RectangleStackIcon,
-  PlusIcon,
-  MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
-import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
-import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
