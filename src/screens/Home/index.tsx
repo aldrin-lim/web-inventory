@@ -17,11 +17,7 @@ import useUser from 'hooks/useUser'
 const ProductMenu = () => {
   const navigate = useNavigate()
   const { logout } = useAuth0()
-  const { error } = useUser()
-
-  if (error) {
-    return <Navigate to={AppPath.Error} />
-  }
+  useUser()
 
   return (
     <div className="screen">
