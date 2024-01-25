@@ -242,7 +242,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
         <Toolbar
           items={[
             <ToolbarButton
-              key={2}
+              key={1}
               icon={<ChevronLeftIcon className="w-6" />}
               onClick={() => navigate(AppPath.ProductOverview)}
               disabled={isMutating}
