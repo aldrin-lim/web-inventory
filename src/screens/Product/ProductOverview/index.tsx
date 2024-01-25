@@ -69,8 +69,8 @@ const ProductOverview = () => {
         className={[
           'screen pb-[100px]',
           location.pathname === '/products/overview'
-            ? 'h-screen overflow-hidden'
-            : '',
+            ? ''
+            : 'min-h-screen overflow-hidden',
         ].join(' ')}
       >
         <Toolbar
