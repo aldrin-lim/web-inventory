@@ -48,28 +48,11 @@ html, body {
   .screen {
     @apply absolute flex w-full flex-col gap-4 min-h-screen
   }
-  /* TEMPORARY WORKAROUND */
-/* 
-  .main-screen {
-    @apply w-full
+
+  .hidden-screen {
+    @apply min-h-screen overflow-hidden
   }
-  .main-screen:not(.ToolbarContainer) {
-    @apply px-3 w-full
-  } */
-
-  /* .sub-screen {
-    @apply w-full
-  }
-  .sub-screen:not(.ToolbarContainer) {
-    @apply px-3 w-full
-  } */
-
-
-
-
-  /* .section {
-    @apply  absolute flex min-h-screen w-full flex-col bg-base-100 gap-4
-  } */
+  
 
   .form-control {
     @apply text-left
@@ -78,14 +61,6 @@ html, body {
   .form-control-error {
     @apply text-left text-xs text-red-500
   }
-
-  /* .main-screen {
-    @apply flex min-h-screen w-full flex-col gap-4 overflow-hidden bg-base-100
-  } */
-
-  /* .sub-screen {
-    @apply p-6 pt-0 flex min-h-screen w-full flex-col bg-base-100 gap-4
-  } */
 
   .clickable {
     @apply duration-200 ease-out;

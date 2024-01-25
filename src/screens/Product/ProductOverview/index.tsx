@@ -14,6 +14,11 @@ import { Product } from 'types/product.types'
 import Inventory from 'screens/Inventory'
 import SlidingTransition from 'components/SlidingTransition'
 
+enum Screen {
+  None = `${AppPath.ProductOverview}`,
+  List = `${AppPath.ProductOverview}/list`,
+}
+
 const ProductOverview = () => {
   const navigate = useNavigate()
 
@@ -47,14 +52,14 @@ const ProductOverview = () => {
       <div className="flex flex-col gap-4">
         {/* IN STOCKS */}
         <ProductList
-          onViewAll={() => navigate('list', { replace: true })}
+          onViewAll={() => navigate(Screen.List)}
           onProductSelect={viewProduct}
           products={inStocks}
           orientation={orientation}
         />
 
         <ProductList
-          onViewAll={() => navigate('list', { replace: true })}
+          onViewAll={() => navigate(Screen.List)}
           onProductSelect={viewProduct}
           products={outOfStocks}
           orientation={orientation}
@@ -68,9 +73,7 @@ const ProductOverview = () => {
       <div
         className={[
           'screen pb-[100px]',
-          location.pathname === '/products/overview'
-            ? ''
-            : 'min-h-screen overflow-hidden',
+          location.pathname !== Screen.None ? 'hidden-screen' : '',
         ].join(' ')}
       >
         <Toolbar
@@ -93,12 +96,12 @@ const ProductOverview = () => {
       </div>
       <SlidingTransition
         direction="right"
-        isVisible={location.pathname === '/products/overview/list'}
+        isVisible={location.pathname === Screen.List}
         zIndex={11}
       >
         <Inventory
           products={products}
-          onBack={() => navigate('', { replace: true })}
+          onBack={() => navigate(Screen.None, { replace: true })}
           onProductSelect={viewProduct}
         />
       </SlidingTransition>

@@ -16,45 +16,13 @@ import RecipeOverview from 'screens/Recipe/RecipeOverview'
 import AddRecipe from 'screens/Recipe/AddRecipe'
 import Staff from 'screens/Staff'
 import ViewRecipe from 'screens/Recipe/ViewRecipe'
-import { PropsWithChildren } from 'react'
-
-const Header = ({ children }: PropsWithChildren) => {
-  return (
-    <div className="sticky left-0 right-0 top-0  h-[50px] w-full border-b-2 border-black">
-      {children}
-    </div>
-  )
-}
-
-const TestComponent = () => {
-  return (
-    <div className="relative h-screen w-full">
-      <div className="absolute h-[2000px] w-1/3 bg-red-300 ">
-        <Header>Header 1</Header>
-        <p className="text-2xl">First screen</p>
-      </div>
-      <div className="absolute right-0 h-[2000px] w-1/3 bg-blue-300 ">
-        <Header>Header 2</Header>
-
-        <p className="text-2xl">Second screen</p>
-      </div>
-      {/* <div className="absolute right-0 h-[2000px] w-1/3 bg-red-300 ">
-        <div className="fixed left-0 right-0 top-0 mb-[50px] h-[50px] w-full border-b-2">
-          Header
-        </div>
-        <p className="text-2xl">First screen</p>
-      </div> */}
-    </div>
-  )
-}
 
 const AppRoutes = () => (
   <Routes>
     <Route
-      path={'/products/overview/*'}
+      path={`${AppPath.ProductOverview}/*`}
       element={<ProtectedRoute element={<ProductOverview />} />}
     />
-    <Route path="/test" element={<TestComponent />} />
     <Route path="/" element={<ProtectedRoute element={<Layout />} />}>
       <Route index element={<ProductMenu />} />
       <Route path={AppPath.Home} element={<Home />} />

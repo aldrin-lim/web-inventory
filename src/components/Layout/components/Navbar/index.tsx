@@ -53,6 +53,7 @@ const Navbar = () => {
       {buttons.map((button) => (
         <div className="Navbar_ButtonContainer" key={button.name}>
           <Link
+            replace={true}
             to={button.path}
             key={button.name}
             className={`Navbar_Button btn  ${
