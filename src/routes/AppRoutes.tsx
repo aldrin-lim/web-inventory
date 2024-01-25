@@ -6,7 +6,10 @@ import ProductOverview from 'screens/Product/ProductOverview'
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<ProtectedRoute element={<Home />} />} />
+    <Route
+      path={AppPath.Root}
+      element={<ProtectedRoute element={<Home />} />}
+    />
     <Route
       path={`${AppPath.Products}/*`}
       element={<ProtectedRoute element={<ProductOverview />} />}

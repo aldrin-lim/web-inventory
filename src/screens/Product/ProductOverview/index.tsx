@@ -81,7 +81,7 @@ const ProductOverview = () => {
             <ToolbarButton
               key={1}
               icon={<ChevronLeftIcon className="w-6" />}
-              onClick={() => navigate(AppPath.Products)}
+              onClick={() => navigate(AppPath.Root)}
             />,
 
             <ToolbarTitle key="title" title="Products" />,
