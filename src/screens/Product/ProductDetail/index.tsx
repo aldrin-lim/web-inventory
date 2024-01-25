@@ -170,7 +170,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           }
           await createProduct(requestBody)
         }
-        navigate(AppPath.ProductOverview)
+        navigate(AppPath.Product)
       } else {
         const requestBody: z.infer<typeof UpdateProductSchema> = {
           name: parsedValue.name,
@@ -239,7 +239,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             <ToolbarButton
               key={2}
               icon={<ChevronLeftIcon className="w-6" />}
-              onClick={() => navigate(AppPath.ProductOverview)}
+              onClick={() => navigate(AppPath.Product)}
               disabled={isMutating}
             />,
             <ToolbarTitle
@@ -257,7 +257,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               onDelete={async () => {
                 if (product) {
                   await deleteProduct({ id: product.id })
-                  navigate(AppPath.ProductOverview)
+                  navigate(AppPath.Product)
                 }
               }}
               onSave={function (): void {

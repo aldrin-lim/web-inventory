@@ -1,9 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
-import Layout from 'components/Layout'
 import Home from 'screens/Home'
 import { AppPath } from './AppRoutes.types'
-import Orders from 'screens/Orders'
-import ProductMenu from 'screens/Product/ProductMenu'
 import ProtectedRoute from './ProtectedRoutes'
 import Profile from 'screens/Profile'
 import Store from 'screens/Store'
@@ -11,19 +8,18 @@ import AddProduct from 'screens/Product/AddProduct'
 import ProductOverview from 'screens/Product/ProductOverview'
 import Error from 'screens/Error'
 import ViewProduct from 'screens/Product/ViewProduct'
-import Settings from 'screens/Settings'
-import RecipeOverview from 'screens/Recipe/RecipeOverview'
 import AddRecipe from 'screens/Recipe/AddRecipe'
 import Staff from 'screens/Staff'
 import ViewRecipe from 'screens/Recipe/ViewRecipe'
 
 const AppRoutes = () => (
   <Routes>
+    <Route path="/" element={<ProtectedRoute element={<Home />} />} />
     <Route
-      path={`${AppPath.ProductOverview}/*`}
+      path={`${AppPath.Products}/*`}
       element={<ProtectedRoute element={<ProductOverview />} />}
     />
-    <Route path="/" element={<ProtectedRoute element={<Layout />} />}>
+    {/* <Route path="/" element={<ProtectedRoute element={<Layout />} />}>
       <Route index element={<ProductMenu />} />
       <Route path={AppPath.Home} element={<Home />} />
       <Route path={AppPath.Orders} element={<Orders />} />
@@ -36,9 +32,9 @@ const AppRoutes = () => (
         path={AppPath.Settings}
         element={<ProtectedRoute element={<Settings />} />}
       />
-    </Route>
+    </Route> */}
     {/* <Route path={AppPath.Products} element={<Products />} /> */}
-    <Route
+    {/* <Route
       path={AppPath.Profile}
       element={<ProtectedRoute element={<Profile />} />}
     />
@@ -70,7 +66,7 @@ const AppRoutes = () => (
     <Route
       path={AppPath.Error}
       element={<ProtectedRoute element={<Error />} />}
-    />
+    /> */}
   </Routes>
 )
 

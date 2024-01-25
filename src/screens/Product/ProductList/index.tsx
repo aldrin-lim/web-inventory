@@ -125,7 +125,7 @@ const ProductList = () => {
           <ToolbarButton
             key="back"
             label="Back"
-            onClick={() => navigate(AppPath.ProductOverview)}
+            onClick={() => navigate(AppPath.Product)}
           />,
           <ToolbarTitle key="title" title="Inventory" />,
           <div key={1} />,
