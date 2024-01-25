@@ -47,6 +47,8 @@ const StockDetail = (props: StockDetailProps) => {
           batches: true,
           isBulkCost: true,
           soldBy: true,
+        }).extend({
+          batches: ProductBatchSchema.array(),
         }),
       ),
       initialValues: props.value,

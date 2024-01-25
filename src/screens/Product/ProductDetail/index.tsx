@@ -112,10 +112,13 @@ export const ProductDetail = (props: ProductDetailProps) => {
     if (!props.product) {
       return undefined
     }
-    return {
-      ...props.product,
-      cost: getActiveBatch(props.product.batches).costPerUnit,
-    } as ViewProductDetailSchema
+
+    const updatedProduct = props.product as ViewProductDetailSchema
+
+    if (updatedProduct.isBulkCost === false) {
+      updatedProduct.cost = getActiveBatch(props.product.batches).cost
+    }
+    return updatedProduct
   }, [props.product])
 
   const mode: 'add' | 'edit' = product ? 'edit' : 'add'
@@ -151,6 +154,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
       formValue.price = toNumber(formValue.price)
       formValue.profitPercentage = toNumber(formValue.profitPercentage)
       formValue.profitAmount = toNumber(formValue.profitAmount)
+
+      if (formValue.isBulkCost === false) {
+        formValue.batches = formValue.batches.map((batch) => {
+          return {
+            ...batch,
+            cost: toNumber(formValue.cost),
+          }
+        })
+      }
 
       const validation = (
         product ? CreateProductBodySchema : UpdateProductBodySchema
