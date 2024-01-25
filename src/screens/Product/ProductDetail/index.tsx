@@ -529,7 +529,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               onChange={(e) => {
                 setFieldValue('trackStock', e.target.checked)
                 if (values.trackStock === false && e.target.checked === true) {
-                  setActiveScreen(ActiveScreen.StockDetail)
+                  navigate(ScreenPath.StockDetail)
                 }
                 if (e.target.checked === true) {
                   if (mode === 'edit') {
@@ -573,7 +573,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           {/* Manage Stock */}
           {values.trackStock && (
             <button
-              onClick={() => setActiveScreen(ActiveScreen.StockDetail)}
+              onClick={() => navigate(ScreenPath.StockDetail)}
               className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap justify-between "
             >
               <div className="flex flex-row items-center gap-2">

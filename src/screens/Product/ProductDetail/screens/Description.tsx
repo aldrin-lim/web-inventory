@@ -14,7 +14,7 @@ const Description = (props: DescriptionProps) => {
   const { onBack, onComplete } = props
   const [description, setDescription] = useState(props.description)
   return (
-    <div className="sub-screen">
+    <div className="screen">
       <Toolbar
         items={[
           <ToolbarButton
@@ -27,17 +27,21 @@ const Description = (props: DescriptionProps) => {
             key={1}
             onClick={() => {
               onBack()
-              onComplete(description)
+              onComplete(description ?? '')
             }}
             label="Done"
           />,
         ]}
       />
-      <textarea
-        className="input input-bordered h-full w-full p-4"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+      <div>
+        <textarea
+          className="input input-bordered h-full w-full p-4"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={5}
+          placeholder="Write a description for your product..."
+        />
+      </div>
     </div>
   )
 }

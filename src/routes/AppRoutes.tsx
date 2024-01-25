@@ -4,6 +4,7 @@ import { AppPath } from './AppRoutes.types'
 import ProtectedRoute from './ProtectedRoutes'
 import ProductOverview from 'screens/Product/ProductOverview'
 import AddProduct from 'screens/Product/AddProduct'
+import ViewProduct from 'screens/Product/ViewProduct'
 
 const AppRoutes = () => (
   <Routes>
@@ -22,6 +23,10 @@ const AppRoutes = () => (
     <Route
       path={`${AppPath.AddProduct}/*`}
       element={<ProtectedRoute element={<AddProduct />} />}
+    />
+    <Route
+      path={`${AppPath.ViewProduct}/*`}
+      element={<ProtectedRoute element={<ViewProduct />} />}
     />
     {/* <Route path="/" element={<ProtectedRoute element={<Layout />} />}>
       <Route index element={<ProductMenu />} />
