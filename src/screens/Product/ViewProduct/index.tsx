@@ -7,7 +7,7 @@ import ProductDetail from 'screens/Product/ProductDetail'
 import { ProductDetailProvider } from 'screens/Product/contexts/ProductDetailContext'
 
 const Skeleton = () => (
-  <div className="section relative flex flex-col gap-4 pt-0">
+  <div className="screen">
     <Toolbar
       items={[
         <ToolbarButton key="cancel" label="Cancel" disabled />,
@@ -16,11 +16,13 @@ const Skeleton = () => (
       ]}
     />
 
-    <div className="skeleton h-[47px] w-full rounded-md" />
-    <div className="skeleton h-[24px] w-full rounded-md" />
-    <div className="skeleton h-[96px] w-full rounded-md" />
-    <div className="skeleton h-[154px] w-full rounded-md" />
-    <div className="skeleton h-[47px] w-full rounded-md" />
+    <div className="flex flex-col gap-4">
+      <div className="skeleton h-[47px] w-full rounded-md" />
+      <div className="skeleton h-[24px] w-full rounded-md" />
+      <div className="skeleton h-[96px] w-full rounded-md" />
+      <div className="skeleton h-[154px] w-full rounded-md" />
+      <div className="skeleton h-[47px] w-full rounded-md" />
+    </div>
   </div>
 )
 
