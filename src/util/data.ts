@@ -3,7 +3,6 @@ import moment from 'moment'
 // Expiration time in seconds (one week)
 
 export function isWithinExpiration(inputDate?: Date | null) {
-  console.log(inputDate)
   // Check if the input date is null
   if (!inputDate) {
     return false

@@ -2,7 +2,7 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import useAllProducts from 'hooks/useAllProducts'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 
@@ -13,16 +13,18 @@ import GetStarted from './components/GetStarted'
 import { Product } from 'types/product.types'
 import Inventory from 'screens/Inventory'
 import SlidingTransition from 'components/SlidingTransition'
+import { useCustomRoute } from 'util/route'
 
-enum Screen {
-  None = `${AppPath.ProductOverview}`,
-  List = `${AppPath.ProductOverview}/list`,
+enum ScreenPath {
+  None = '',
+  List = `list`,
 }
 
 const ProductOverview = () => {
   const navigate = useNavigate()
 
-  const location = useLocation()
+  const { currentScreen, isParentScreen, navigateTo, navigateToParent } =
+    useCustomRoute(ScreenPath)
 
   const { products, isLoading } = useAllProducts()
 
@@ -52,14 +54,14 @@ const ProductOverview = () => {
       <div className="flex flex-col gap-4">
         {/* IN STOCKS */}
         <ProductList
-          onViewAll={() => navigate(Screen.List)}
+          onViewAll={() => navigateTo(ScreenPath.List)}
           onProductSelect={viewProduct}
           products={inStocks}
           orientation={orientation}
         />
 
         <ProductList
-          onViewAll={() => navigate(Screen.List)}
+          onViewAll={() => navigateTo(ScreenPath.List)}
           onProductSelect={viewProduct}
           products={outOfStocks}
           orientation={orientation}
@@ -71,10 +73,9 @@ const ProductOverview = () => {
   return (
     <>
       <div
-        className={[
-          'screen pb-9',
-          location.pathname !== Screen.None ? 'hidden-screen' : '',
-        ].join(' ')}
+        className={['screen pb-9', isParentScreen ? 'hidden-screen' : ''].join(
+          ' ',
+        )}
       >
         <Toolbar
           items={[
@@ -96,12 +97,12 @@ const ProductOverview = () => {
       </div>
       <SlidingTransition
         direction="right"
-        isVisible={location.pathname === Screen.List}
+        isVisible={currentScreen === ScreenPath.List}
         zIndex={11}
       >
         <Inventory
           products={products}
-          onBack={() => navigate(Screen.None, { replace: true })}
+          onBack={() => navigateToParent()}
           onProductSelect={viewProduct}
         />
       </SlidingTransition>
