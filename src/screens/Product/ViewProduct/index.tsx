@@ -1,3 +1,4 @@
+import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
@@ -15,8 +16,8 @@ const Skeleton = () => {
       <Toolbar
         items={[
           <ToolbarButton
-            key="cancel"
-            label="Cancel"
+            key={1}
+            icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => navigate(AppPath.ProductOverview)}
           />,
           <ToolbarTitle key="title" title="View Product" />,
