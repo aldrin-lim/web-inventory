@@ -72,7 +72,7 @@ const ProductOverview = () => {
     <>
       <div
         className={[
-          'screen pb-[100px]',
+          'screen pb-9',
           location.pathname !== Screen.None ? 'hidden-screen' : '',
         ].join(' ')}
       >
