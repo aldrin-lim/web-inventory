@@ -4,15 +4,25 @@ import {
   BookOpenIcon,
   ArchiveBoxIcon,
   RectangleStackIcon,
+  ArrowLeftOnRectangleIcon,
 } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 
 import logo from '../../../public/logo.svg'
+import { useAuth0 } from '@auth0/auth0-react'
+import useUser from 'hooks/useUser'
 const ProductMenu = () => {
   const navigate = useNavigate()
+  const { logout } = useAuth0()
+  const { error } = useUser()
+
+  if (error) {
+    return <Navigate to={AppPath.Error} />
+  }
+
   return (
     <div className="screen">
       <Toolbar
@@ -64,6 +74,27 @@ const ProductMenu = () => {
               <ChevronRightIcon className="ml-auto h-6 w-6 " />
             </button>
           </li>
+          <li>
+            <button
+              className="btn btn-ghost w-full justify-start px-1 "
+              onClick={async () => {
+                await logout({
+                  logoutParams: {
+                    returnTo: window.location.origin,
+                  },
+                })
+              }}
+            >
+              <ArrowLeftOnRectangleIcon className="h-6 w-6" />
+              Sign Out
+            </button>
+          </li>
+
+          {/* await logout({
+                logoutParams: {
+                  returnTo: window.location.origin,
+                },
+              }) */}
         </ul>
       </div>
     </div>

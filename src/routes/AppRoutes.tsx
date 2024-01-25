@@ -5,6 +5,7 @@ import ProtectedRoute from './ProtectedRoutes'
 import ProductOverview from 'screens/Product/ProductOverview'
 import AddProduct from 'screens/Product/AddProduct'
 import ViewProduct from 'screens/Product/ViewProduct'
+import Error from 'screens/Error'
 
 const AppRoutes = () => (
   <Routes>
@@ -76,6 +77,10 @@ const AppRoutes = () => (
       path={AppPath.Error}
       element={<ProtectedRoute element={<Error />} />}
     /> */}
+    <Route
+      path={AppPath.Error}
+      element={<ProtectedRoute element={<Error />} />}
+    />
   </Routes>
 )
 
