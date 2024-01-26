@@ -31,7 +31,6 @@ const useDeleteRecipe = () => {
         theme: 'colored',
       })
       await queryClient.invalidateQueries(['recipes'])
-      x
     },
   })
 
