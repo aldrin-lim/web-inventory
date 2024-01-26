@@ -181,41 +181,40 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
         />
 
         <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-4">
-            <div className="mb-2">
-              <ProductImages
-                disabled={isMutating}
-                size="sm"
-                images={values.images ?? []}
-                onImagesChange={(images) => {
-                  setFieldValue('images', images)
-                }}
-              />
+          <div className="mb-4">
+            <ProductImages
+              disabled={isMutating}
+              size="sm"
+              images={values.images ?? []}
+              onImagesChange={(images) => {
+                setFieldValue('images', images)
+              }}
+            />
+          </div>
+          {/* Recipe Name */}
+          <label className="form-control w-full ">
+            <div className="form-control-label  ">
+              <span className="label-text-alt text-gray-400">Recipe Name</span>
             </div>
-            {/* Recipe Name */}
-            <label className="form-control w-full ">
-              <div className="form-control-label  ">
-                <span className="label-text-alt text-gray-400">
-                  Recipe Name
+            <input
+              {...getFieldProps('name')}
+              disabled={isMutating}
+              type="text"
+              placeholder="(e.g., Cookies, Tea, etc.)"
+              className="input input-bordered w-full"
+              tabIndex={1}
+            />
+            {errors && errors.name && (
+              <div className="label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  {errors.name}
                 </span>
               </div>
-              <input
-                {...getFieldProps('name')}
-                disabled={isMutating}
-                type="text"
-                placeholder="(e.g., Cookies, Tea, etc.)"
-                className="input input-bordered w-full"
-                tabIndex={1}
-              />
-              {errors && errors.name && (
-                <div className="label py-0">
-                  <span className="label-text-alt text-xs text-red-400">
-                    {errors.name}
-                  </span>
-                </div>
-              )}
-            </label>
+            )}
+          </label>
 
+          {/* Cost and Profit */}
+          <div className="sticky top-[50px]  z-[11] flex flex-col gap-4 bg-base-100 py-2 pt-4">
             {/* Cost */}
             <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
               <p>Cost</p>
@@ -360,42 +359,42 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Materials */}
-            <div className="flex flex-row justify-between">
-              <h1>Materials</h1>
-              {values.materials.length > 0 && (
-                <button
-                  onClick={() => navigate(ScreenPath.List)}
-                  className="btn btn-ghost btn-sm text-blue-400"
-                >
-                  <PlusIcon className="w-5 " />
-                  Add
-                </button>
-              )}
-            </div>
-
-            {/* Materials Card */}
-            {values.materials.length === 0 && (
+          {/* Materials */}
+          <div className="flex flex-row justify-between">
+            <h1>Materials</h1>
+            {values.materials.length > 0 && (
               <button
                 onClick={() => navigate(ScreenPath.List)}
-                className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
+                className="btn btn-ghost btn-sm text-blue-400"
               >
-                <PlusIcon className="w-8 text-success" />
+                <PlusIcon className="w-5 " />
+                Add
               </button>
             )}
-
-            {errors &&
-              values.materials.length === 0 &&
-              errors.materials &&
-              typeof errors.materials === 'string' && (
-                <div className="label py-0">
-                  <span className="label-text-alt text-xs text-red-400">
-                    {errors.materials}
-                  </span>
-                </div>
-              )}
           </div>
+
+          {/* Materials Card */}
+          {values.materials.length === 0 && (
+            <button
+              onClick={() => navigate(ScreenPath.List)}
+              className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
+            >
+              <PlusIcon className="w-8 text-success" />
+            </button>
+          )}
+
+          {errors &&
+            values.materials.length === 0 &&
+            errors.materials &&
+            typeof errors.materials === 'string' && (
+              <div className="label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  {errors.materials}
+                </span>
+              </div>
+            )}
 
           <div className="mt-[0]">
             {values.materials.length > 0 && (
@@ -454,6 +453,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 product,
               } as Material,
             ])
+            navigateToParent()
           }}
         />
       </SlidingTransition>
