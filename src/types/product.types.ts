@@ -5,11 +5,6 @@ export type ProductVariantAttribute = {
   values: Array<string>
 }
 
-export enum ProductType {
-  Material = 'material',
-  Regular = 'regular',
-}
-
 export enum ProductSoldBy {
   Pieces = 'pieces',
   Weight = 'weight',

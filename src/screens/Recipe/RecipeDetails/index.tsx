@@ -1,7 +1,12 @@
 import SlidingTransition from 'components/SlidingTransition'
 import { useEffect } from 'react'
 import { z } from 'zod'
-import { Material, Recipe, RecipeSchema } from 'types/recipe.types'
+import {
+  Material,
+  MaterialType,
+  Recipe,
+  RecipeSchema,
+} from 'types/recipe.types'
 import { ChevronLeftIcon, PlusIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
@@ -28,9 +33,11 @@ import useCloneRecipe from 'hooks/useCloneRecipe'
 import { useCustomRoute } from 'util/route'
 import Inventory from 'screens/Inventory'
 import useAllProducts from 'hooks/useAllProducts'
+import { v4 } from 'uuid'
 
 enum ScreenPath {
-  List = `list`,
+  Ingredients = `select-ingredients`,
+  Others = `select-others`,
 }
 
 type RecipeDetailsProps = {
@@ -131,6 +138,14 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       values.materials.filter((_, i) => i !== index),
     )
   }
+
+  const ingredients = values.materials.filter(
+    (material) => material.type === MaterialType.Ingredient,
+  )
+
+  const others = values.materials.filter(
+    (material) => material.type === MaterialType.Other,
+  )
 
   return (
     <>
@@ -362,30 +377,6 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             </div>
           </div>
 
-          {/* Materials */}
-          <div className="flex flex-row justify-between">
-            <h1>Materials</h1>
-            {values.materials.length > 0 && (
-              <button
-                onClick={() => navigate(ScreenPath.List)}
-                className="btn btn-ghost btn-sm text-blue-400"
-              >
-                <PlusIcon className="w-5 " />
-                Add
-              </button>
-            )}
-          </div>
-
-          {/* Materials Card */}
-          {values.materials.length === 0 && (
-            <button
-              onClick={() => navigate(ScreenPath.List)}
-              className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
-            >
-              <PlusIcon className="w-8 text-success" />
-            </button>
-          )}
-
           {errors &&
             values.materials.length === 0 &&
             errors.materials &&
@@ -397,10 +388,34 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
               </div>
             )}
 
+          {/* Ingredients */}
+          <div className="flex flex-row justify-between">
+            <h1>Materials</h1>
+            {ingredients.length > 0 && (
+              <button
+                onClick={() => navigate(ScreenPath.Ingredients)}
+                className="btn btn-ghost btn-sm text-blue-400"
+              >
+                <PlusIcon className="w-5 " />
+                Add
+              </button>
+            )}
+          </div>
+
+          {ingredients.length === 0 && (
+            <button
+              onClick={() => navigate(ScreenPath.Ingredients)}
+              className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
+            >
+              <PlusIcon className="w-8 text-success" />
+            </button>
+          )}
+
+          {/* Ingredients Card */}
           <div className="mt-[0]">
-            {values.materials.length > 0 && (
+            {ingredients.length > 0 && (
               <div className="grid grid-cols-2 gap-x-4 gap-y-4 overflow-x-auto sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                {values.materials.map((material, index) => (
+                {ingredients.map((material, index) => (
                   <RecipeMaterialCard
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     errors={errors.materials as any}
@@ -410,12 +425,68 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                       onRecipeMaterialRemove(index)
                     }}
                     onChange={(param) => {
+                      const materialIndex = values.materials.findIndex(
+                        (m) => m.id === material.id,
+                      )
                       const newMaterial = {
                         ...param,
                         quantity: toNumber(param.quantity),
                       }
 
-                      setFieldValue(`materials.${index}`, newMaterial)
+                      setFieldValue(`materials.${materialIndex}`, newMaterial)
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Others */}
+          <div className="flex flex-row justify-between">
+            <h1>Others</h1>
+            {others.length > 0 && (
+              <button
+                onClick={() => navigate(ScreenPath.Others)}
+                className="btn btn-ghost btn-sm text-blue-400"
+              >
+                <PlusIcon className="w-5 " />
+                Add
+              </button>
+            )}
+          </div>
+
+          {others.length === 0 && (
+            <button
+              onClick={() => navigate(ScreenPath.Others)}
+              className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
+            >
+              <PlusIcon className="w-8 text-success" />
+            </button>
+          )}
+
+          {/* Others Card */}
+          <div className="mt-[0]">
+            {others.length > 0 && (
+              <div className="grid grid-cols-2 gap-x-4 gap-y-4 overflow-x-auto sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                {others.map((material, index) => (
+                  <RecipeMaterialCard
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    errors={errors.materials as any}
+                    key={index}
+                    material={material}
+                    onRemove={() => {
+                      onRecipeMaterialRemove(index)
+                    }}
+                    onChange={(param) => {
+                      const materialIndex = values.materials.findIndex(
+                        (m) => m.id === material.id,
+                      )
+                      const newMaterial = {
+                        ...param,
+                        quantity: toNumber(param.quantity),
+                      }
+
+                      setFieldValue(`materials.${materialIndex}`, newMaterial)
                     }}
                   />
                 ))}
@@ -424,9 +495,10 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           </div>
         </div>
       </div>
+      {/* Ingredients Screens */}
       <SlidingTransition
         direction="bottom"
-        isVisible={currentScreen === ScreenPath.List}
+        isVisible={currentScreen === ScreenPath.Ingredients}
         zIndex={10}
       >
         <Inventory
@@ -447,11 +519,51 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             setFieldValue('materials', [
               ...values.materials,
               {
+                id: v4(),
                 quantity: 0,
                 cost,
                 unitOfMeasurement: getActiveBatch(product.batches)
                   .unitOfMeasurement,
                 product,
+                type: MaterialType.Ingredient,
+              } as Material,
+            ])
+            navigateToParent()
+          }}
+        />
+      </SlidingTransition>
+
+      {/* Others Screens */}
+      <SlidingTransition
+        direction="bottom"
+        isVisible={currentScreen === ScreenPath.Others}
+        zIndex={10}
+      >
+        <Inventory
+          isLoading={isProductsLoading}
+          products={products.filter(
+            (product) =>
+              !values.materials.find(
+                (material) => material.product.id === product.id,
+              ),
+          )}
+          onBack={() => navigateToParent()}
+          onProductSelect={(product) => {
+            const activeBatch = getActiveBatch(product.batches)
+            const cost = product.isBulkCost
+              ? toNumber(activeBatch.costPerUnit)
+              : toNumber(activeBatch.cost)
+
+            setFieldValue('materials', [
+              ...values.materials,
+              {
+                id: v4(),
+                quantity: 0,
+                cost,
+                unitOfMeasurement: getActiveBatch(product.batches)
+                  .unitOfMeasurement,
+                product,
+                type: MaterialType.Other,
               } as Material,
             ])
             navigateToParent()

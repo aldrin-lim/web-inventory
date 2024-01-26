@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import { ProductSchema } from './product.types'
 
+export enum MaterialType {
+  Ingredient = 'ingredient',
+  Other = 'other',
+}
+
 export const MaterialSchema = z.object({
   id: z.string().optional(),
   quantity: z.number({
@@ -13,6 +18,7 @@ export const MaterialSchema = z.object({
       required_error: 'Measurement is required',
     })
     .min(1),
+  type: z.nativeEnum(MaterialType).default(MaterialType.Ingredient),
 })
 
 export type Material = z.infer<typeof MaterialSchema>
