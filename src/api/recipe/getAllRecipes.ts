@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios'
 import { PaginationOptions } from 'types/api.types'
-import { ProductSchema } from 'types/product.types'
 import { RecipeSchema } from 'types/recipe.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
@@ -17,7 +16,7 @@ export default async (
   const result = await httpClient
     .get<unknown, AxiosResponse<null, GetAllRecipeResponseSchema>>(url)
     .then((res) => res.data)
-  return GetAllRecipeResponseSchema.parse(result)
+  return result ?? []
 }
 
 // Schema and Types

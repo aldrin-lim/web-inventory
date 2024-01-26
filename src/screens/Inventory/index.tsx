@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import { Product } from 'types/product.types'
 import { isWithinExpiration } from 'util/data'
+import GetStarted from './components/GetStarted'
 
 type InventoryProps = {
   showAddProduct?: boolean
@@ -67,9 +68,10 @@ const Inventory = (props: InventoryProps) => {
           ),
         ]}
       />
-      {isLoading ? <Skeleton /> : null}
 
-      {!isLoading && (
+      {isLoading ? <Skeleton /> : null}
+      {!isLoading && products.length === 0 && <GetStarted />}
+      {!isLoading && products.length > 0 && (
         <div className="relative flex flex-col gap-4">
           <div className="sticky top-[65px] z-[10] space-y-4 bg-base-100 ">
             {numberOfNearExpirationProducts > 0 && (

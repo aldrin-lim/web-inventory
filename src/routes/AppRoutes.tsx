@@ -6,6 +6,9 @@ import ProductOverview from 'screens/Product/ProductOverview'
 import AddProduct from 'screens/Product/AddProduct'
 import ViewProduct from 'screens/Product/ViewProduct'
 import Error from 'screens/Error'
+import RecipeOverview from 'screens/Recipe/RecipeOverview'
+import AddRecipe from 'screens/Recipe/AddRecipe'
+import ViewRecipe from 'screens/Recipe/ViewRecipe'
 
 const AppRoutes = () => (
   <Routes>
@@ -28,6 +31,18 @@ const AppRoutes = () => (
     <Route
       path={`${AppPath.ViewProduct}/*`}
       element={<ProtectedRoute element={<ViewProduct />} />}
+    />
+    <Route
+      path={`${AppPath.RecipeOverview}/*`}
+      element={<ProtectedRoute element={<RecipeOverview />} />}
+    />
+    <Route
+      path={`${AppPath.AddRecipe}/*`}
+      element={<ProtectedRoute element={<AddRecipe />} />}
+    />
+    <Route
+      path={`${AppPath.ViewRecipe}/*`}
+      element={<ProtectedRoute element={<ViewRecipe />} />}
     />
     {/* <Route path="/" element={<ProtectedRoute element={<Layout />} />}>
       <Route index element={<ProductMenu />} />
