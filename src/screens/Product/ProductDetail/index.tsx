@@ -51,37 +51,6 @@ type ProductDetailProps = {
   product?: z.infer<typeof GetProductSchema>
 }
 
-const defaultValue = {
-  name: '',
-  price: 0,
-  cost: 0,
-  images: [],
-  profitAmount: 0,
-  profitPercentage: 0,
-  trackStock: false,
-  description: '',
-  profit: 0,
-  category: '',
-  soldBy: ProductSoldBy.Pieces,
-  allowBackOrder: false,
-  isBulkCost: false,
-  availability: '',
-  forSale: true,
-  outOfStock: false,
-  totalQuantity: 0,
-  batches: [
-    {
-      id: v4(),
-      name: 'Batch 1',
-      cost: 0,
-      costPerUnit: 0,
-      quantity: 1,
-      unitOfMeasurement: 'pieces',
-      expirationDate: null,
-    },
-  ],
-} as AddProductDetailSchema
-
 const GetActiveBatchParam = z.union([
   ProductBatchSchema,
   ProductBatchSchema.partial({ id: true }),
@@ -106,6 +75,38 @@ export const getActiveBatch = (batches: GetActiveBatchParam) => {
 }
 
 export const ProductDetail = (props: ProductDetailProps) => {
+  const defaultValue = useMemo(() => {
+    return {
+      name: '',
+      price: 0,
+      cost: 0,
+      images: [],
+      profitAmount: 0,
+      profitPercentage: 0,
+      trackStock: false,
+      description: '',
+      profit: 0,
+      category: '',
+      soldBy: ProductSoldBy.Pieces,
+      allowBackOrder: false,
+      isBulkCost: false,
+      availability: '',
+      forSale: true,
+      outOfStock: false,
+      totalQuantity: 0,
+      batches: [
+        {
+          id: v4(),
+          name: 'Batch 1',
+          cost: 0,
+          costPerUnit: 0,
+          quantity: 1,
+          unitOfMeasurement: 'pieces',
+          expirationDate: null,
+        },
+      ],
+    } as AddProductDetailSchema
+  }, [])
   const navigate = useNavigate()
 
   const product = useMemo(() => {
