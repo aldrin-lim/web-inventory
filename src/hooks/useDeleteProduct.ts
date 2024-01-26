@@ -1,9 +1,11 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import * as API from 'api/product'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
 const useDeleteProduct = () => {
+  const queryClient = useQueryClient()
+
   const {
     mutateAsync: deleteProduct,
     isLoading: isDeleting,
@@ -23,11 +25,12 @@ const useDeleteProduct = () => {
         theme: 'colored',
       })
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success('Product successfully deleted ', {
         autoClose: 500,
         theme: 'colored',
       })
+      await queryClient.invalidateQueries(['products'])
     },
   })
 

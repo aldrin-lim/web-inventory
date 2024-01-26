@@ -1,9 +1,11 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import * as API from 'api/recipe'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
 const useDeleteRecipe = () => {
+  const queryClient = useQueryClient()
+
   const {
     mutateAsync: deleteRecipe,
     isLoading: isDeleting,
@@ -23,11 +25,13 @@ const useDeleteRecipe = () => {
         theme: 'colored',
       })
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success('Recipe successfully deleted ', {
         autoClose: 500,
         theme: 'colored',
       })
+      await queryClient.invalidateQueries(['recipes'])
+      x
     },
   })
 

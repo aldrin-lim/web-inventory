@@ -78,6 +78,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       onSubmit: async (formValue) => {
         if (mode === 'add') {
           await createRecipe(formValue)
+          navigate(AppPath.RecipeOverview)
         } else {
           await updateRecipe({
             id: formValue.id as string,

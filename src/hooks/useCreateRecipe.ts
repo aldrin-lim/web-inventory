@@ -28,12 +28,12 @@ const useCreateRecipe = () => {
       })
       setError(error)
     },
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       toast.success('Recipe successfully created! ', {
         autoClose: 500,
         theme: 'colored',
       })
-      await queryClient.invalidateQueries(['recipe', data.id])
+      await queryClient.invalidateQueries(['recipes'])
     },
   })
 
