@@ -9,6 +9,7 @@ import Error from 'screens/Error'
 import RecipeOverview from 'screens/Recipe/RecipeOverview'
 import AddRecipe from 'screens/Recipe/AddRecipe'
 import ViewRecipe from 'screens/Recipe/ViewRecipe'
+import Inventory from 'screens/Product/Inventory'
 
 const AppRoutes = () => (
   <Routes>
@@ -43,6 +44,10 @@ const AppRoutes = () => (
     <Route
       path={`${AppPath.ViewRecipe}/*`}
       element={<ProtectedRoute element={<ViewRecipe />} />}
+    />
+    <Route
+      path={`${AppPath.Inventory}/*`}
+      element={<ProtectedRoute element={<Inventory />} />}
     />
     {/* <Route path="/" element={<ProtectedRoute element={<Layout />} />}>
       <Route index element={<ProductMenu />} />

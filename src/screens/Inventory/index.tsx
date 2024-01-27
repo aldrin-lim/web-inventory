@@ -43,7 +43,7 @@ const Inventory = (props: InventoryProps) => {
   ).length
 
   return (
-    <div className="screen pb-[100px]">
+    <div className="screen gap-0 pb-[100px]">
       <Toolbar
         items={[
           <ToolbarButton
@@ -72,8 +72,8 @@ const Inventory = (props: InventoryProps) => {
       {isLoading ? <Skeleton /> : null}
       {!isLoading && products.length === 0 && <GetStarted />}
       {!isLoading && products.length > 0 && (
-        <div className="relative flex flex-col gap-4">
-          <div className="sticky top-[65px] z-[10] space-y-4 bg-base-100 ">
+        <div className="relative flex flex-col gap-0">
+          <div className="shadow-xs sticky top-[49px] z-[10] space-y-4 border-b border-b-slate-100 bg-base-100 py-4 ">
             {numberOfNearExpirationProducts > 0 && (
               <div
                 role="alert"
