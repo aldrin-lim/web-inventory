@@ -7,7 +7,7 @@ export enum MaterialType {
 }
 
 export const MaterialSchema = z.object({
-  id: z.string().optional(),
+  id: z.string(),
   quantity: z.number({
     required_error: 'Material quantity is required',
   }),

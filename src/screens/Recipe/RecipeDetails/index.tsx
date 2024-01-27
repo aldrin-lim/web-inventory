@@ -132,10 +132,10 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
     setFieldValue('cost', totalCost)
   }, [values.materials])
 
-  const onRecipeMaterialRemove = (index: number) => {
+  const onRecipeMaterialRemove = (materialId: string) => {
     setFieldValue(
       'materials',
-      values.materials.filter((_, i) => i !== index),
+      values.materials.filter((material) => material.id !== materialId),
     )
   }
 
@@ -230,7 +230,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           </label>
 
           {/* Cost and Profit */}
-          <div className="sticky top-[50px]  z-[10] flex flex-col gap-4 bg-base-100 py-2 pt-4">
+          <div className="sticky top-[50px] z-[1] flex flex-col gap-4 bg-base-100 py-2 pt-4">
             {/* Cost */}
             <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
               <p>Cost</p>
@@ -422,7 +422,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                     key={index}
                     material={material}
                     onRemove={() => {
-                      onRecipeMaterialRemove(index)
+                      onRecipeMaterialRemove(material.id as string)
                     }}
                     onChange={(param) => {
                       const materialIndex = values.materials.findIndex(
@@ -475,7 +475,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                     key={index}
                     material={material}
                     onRemove={() => {
-                      onRecipeMaterialRemove(index)
+                      onRecipeMaterialRemove(material.id as string)
                     }}
                     onChange={(param) => {
                       const materialIndex = values.materials.findIndex(
