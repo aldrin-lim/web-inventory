@@ -9,7 +9,7 @@ type RecipeMaterialCardProps = {
 
 const RecipeCard = (props: RecipeMaterialCardProps) => {
   const { recipe, onClick } = props
-  const { name, cost } = recipe
+  const { name, cost, quantity } = recipe
   const image = recipe.images && recipe.images[0]
 
   return (
@@ -27,7 +27,7 @@ const RecipeCard = (props: RecipeMaterialCardProps) => {
 
         <div className="flex flex-row gap-1  text-xs">
           <span className="overflow-hidden truncate text-ellipsis">
-            ?? available
+            {quantity} available
           </span>
         </div>
       </div>

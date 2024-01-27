@@ -41,6 +41,10 @@ export const RecipeSchema = z.object({
     coerce: true,
     required_error: 'Cost is required',
   }),
+  quantity: z.number({
+    coerce: true,
+    required_error: 'Cost is required',
+  }),
   price: z.coerce.number({
     required_error: 'Price is required',
     invalid_type_error: 'Price is must be number',
