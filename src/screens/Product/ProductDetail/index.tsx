@@ -18,7 +18,7 @@ import useCreateProduct from 'hooks/useCreateProduct'
 import SlidingTransition from 'components/SlidingTransition'
 import Description from './screens/Description'
 import StockDetail from './screens/StockDetail'
-import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
+import { ProductSoldBy } from 'types/product.types'
 import { GetProductSchema } from 'api/product/getProductById'
 import useDeleteProduct from 'hooks/useDeleteProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
@@ -41,6 +41,7 @@ import { useCustomRoute } from 'util/route'
 import { CreateProductBodySchema } from 'api/product/createProduct'
 import { toast } from 'react-toastify'
 import { UpdateProductBodySchema } from 'api/product/updateProduct'
+import { getActiveBatch } from 'util/products'
 
 enum ScreenPath {
   Description = 'description',
@@ -49,29 +50,6 @@ enum ScreenPath {
 
 type ProductDetailProps = {
   product?: z.infer<typeof GetProductSchema>
-}
-
-const GetActiveBatchParam = z.union([
-  ProductBatchSchema,
-  ProductBatchSchema.partial({ id: true }),
-])
-type GetActiveBatchParam = z.infer<typeof GetActiveBatchParam>[]
-export const getActiveBatch = (batches: GetActiveBatchParam) => {
-  // Find the first batch that has quantity > 0
-  // Check if it has expiration date, if it has, check if its not expired
-  // Batch is active when quantity > 0 and not expired or no expiration date
-  const activeBatch = batches.find(
-    (batch) =>
-      batch.quantity > 0 &&
-      (!batch.expirationDate || new Date(batch.expirationDate) > new Date()),
-  )
-
-  // If no active batch found, get the first batch
-  if (!activeBatch) {
-    return batches[0]
-  }
-
-  return activeBatch
 }
 
 export const ProductDetail = (props: ProductDetailProps) => {

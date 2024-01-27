@@ -14,7 +14,6 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import PrimaryAction from '../../Product/ProductDetail/components/ProductDetailPrimaryAction'
 import ProductImages from '../../Product/ProductDetail/components/ProductImages'
 import RecipeMaterialCard from './RecipeDetailsForm/components/RecipeMaterialCard'
-import { getActiveBatch } from '../../Product/ProductDetail'
 import {
   computeProfitAmount,
   computeProfitPercentage,
@@ -34,6 +33,7 @@ import { useCustomRoute } from 'util/route'
 import Inventory from 'screens/Inventory'
 import useAllProducts from 'hooks/useAllProducts'
 import { v4 } from 'uuid'
+import { getActiveBatch } from 'util/products'
 
 enum ScreenPath {
   Ingredients = `select-ingredients`,

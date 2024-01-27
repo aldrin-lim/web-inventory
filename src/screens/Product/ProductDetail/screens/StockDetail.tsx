@@ -10,7 +10,7 @@ import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { v4 } from 'uuid'
 import { type StockDetail, StockDetailSchema } from '../ProductDetail.types'
-import { getActiveBatch } from '..'
+import { getActiveBatch } from 'util/products'
 
 type StockDetailProps = {
   onBack: () => void

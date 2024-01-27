@@ -3,7 +3,6 @@ import ImageLoader from 'components/ImageLoader'
 import convert, { Measure, Unit } from 'convert-units'
 import { FormikErrors, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { getActiveBatch } from 'screens/Product/ProductDetail'
 import MeasurementSelect from 'screens/Product/ProductDetail/components/MeasurementSelect'
 import { ProductSoldBy } from 'types/product.types'
 import { Material } from 'types/recipe.types'
@@ -11,6 +10,7 @@ import { measurementOptions, pieceMesurement } from 'util/measurement'
 import { toNumber } from 'util/number'
 import Big from 'big.js'
 import QuantityInput from 'components/QuantityInput'
+import { getActiveBatch } from 'util/products'
 
 type RecipeMaterialCardProps = {
   material: Material
