@@ -47,7 +47,6 @@ export const RecipeSchema = z.object({
   }),
   description: z.string().optional(),
   images: z.array(z.string()).optional(),
-  measurement: z.string(),
   materials: z
     .array(MaterialSchema)
     .min(1, 'Materials must have at least 1 item'),

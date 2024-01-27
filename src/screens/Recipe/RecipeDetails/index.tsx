@@ -54,7 +54,6 @@ const initialValue = {
   profitAmount: 0,
   profitPercentage: 0,
   profit: 0,
-  measurement: 'pieces',
   quantity: 0,
   materials: [],
 } as z.infer<typeof RecipeDetailSchema>
@@ -98,6 +97,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       validateOnBlur: false,
       validateOnChange: false,
     })
+  console.log(errors)
 
   useEffect(() => {
     if (mode === 'add') {
