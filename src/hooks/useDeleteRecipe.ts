@@ -26,11 +26,11 @@ const useDeleteRecipe = () => {
       })
     },
     onSuccess: async () => {
+      await queryClient.invalidateQueries(['recipes'])
       toast.success('Recipe successfully deleted ', {
         autoClose: 500,
         theme: 'colored',
       })
-      await queryClient.invalidateQueries(['recipes'])
     },
   })
 

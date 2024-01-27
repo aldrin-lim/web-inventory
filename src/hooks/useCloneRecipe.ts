@@ -25,11 +25,11 @@ const useCloneRecipe = () => {
       setError(error)
     },
     onSuccess: async () => {
+      await queryClient.invalidateQueries(['recipes'])
       toast.success('Recipe successfully cloned! ', {
         autoClose: 500,
         theme: 'colored',
       })
-      await queryClient.invalidateQueries(['recipes'])
     },
   })
 

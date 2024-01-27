@@ -26,12 +26,12 @@ const useUpdateProduct = () => {
       setError(error)
     },
     onSuccess: async (_, param) => {
+      await queryClient.invalidateQueries(['products'])
+      await queryClient.invalidateQueries(['product', param.id])
       toast.success('Product successfully updated! ', {
         autoClose: 500,
         theme: 'colored',
       })
-      await queryClient.invalidateQueries(['products'])
-      await queryClient.invalidateQueries(['product', param.id])
     },
   })
 

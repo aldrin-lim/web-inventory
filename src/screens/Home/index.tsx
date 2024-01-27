@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 
 import logo from '../../../public/logo.svg'

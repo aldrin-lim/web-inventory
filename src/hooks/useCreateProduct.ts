@@ -29,11 +29,11 @@ const useCreateProduct = () => {
       setError(error)
     },
     onSuccess: async (data) => {
+      await queryClient.invalidateQueries(['products'])
       toast.success('Product successfully created! ', {
         autoClose: 500,
         theme: 'colored',
       })
-      await queryClient.invalidateQueries(['products'])
       navigate(`${AppPath.Products}/${data.id}`)
     },
   })

@@ -26,11 +26,11 @@ const useDeleteProduct = () => {
       })
     },
     onSuccess: async () => {
+      await queryClient.invalidateQueries(['products'])
       toast.success('Product successfully deleted ', {
         autoClose: 500,
         theme: 'colored',
       })
-      await queryClient.invalidateQueries(['products'])
     },
   })
 
