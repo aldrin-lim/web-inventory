@@ -234,7 +234,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             {/* Cost */}
             <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
               <p>Cost</p>
-              <p>₱ {values.cost}</p>
+              <p>₱ {values.cost.toFixed(2)}</p>
             </div>
             {errors && errors.cost && (
               <div className="label py-0">
