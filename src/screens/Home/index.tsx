@@ -20,7 +20,7 @@ const ProductMenu = () => {
   useUser()
 
   return (
-    <div className="screen">
+    <div className="absolute flex w-full flex-col gap-4">
       <Toolbar
         items={[
           <div key="1" />,
