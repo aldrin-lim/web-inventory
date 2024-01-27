@@ -80,7 +80,7 @@ const AutocompleteSelect = (props: AutoCompleteProps) => {
       classNamePrefix="select"
       placeholder="Select "
       isSearchable
-      menuPlacement="auto"
+      menuPlacement="top"
     />
   )
 }
