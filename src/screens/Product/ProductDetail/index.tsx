@@ -35,7 +35,7 @@ import { CreateProductBodySchema } from 'api/product/createProduct'
 import { toast } from 'react-toastify'
 import { UpdateProductBodySchema } from 'api/product/updateProduct'
 import { getActiveBatch } from 'util/products'
-import ManageStockComponent from './components/ProductForm'
+import ProductForm from './components/ProductForm'
 
 export enum ScreenPath {
   Description = 'description',
@@ -224,7 +224,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             />,
           ]}
         />
-        <ManageStockComponent
+        <ProductForm
           // FormikProps
           getFieldProps={getFieldProps}
           values={values}

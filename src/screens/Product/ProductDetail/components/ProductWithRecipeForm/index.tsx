@@ -49,9 +49,11 @@ interface AdditionalProps {
   defaultValue: AddProductDetailSchema
 }
 
-type ProductFormProps = FormikProps & ComponentStateProps & AdditionalProps
+type ProductWithRecipeFormProps = FormikProps &
+  ComponentStateProps &
+  AdditionalProps
 
-const ProductForm: React.FC<ProductFormProps> = ({
+const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
   isMutating,
   getFieldProps,
   values,
@@ -378,4 +380,4 @@ const ProductForm: React.FC<ProductFormProps> = ({
   )
 }
 
-export default ProductForm
+export default ProductWithRecipeForm
