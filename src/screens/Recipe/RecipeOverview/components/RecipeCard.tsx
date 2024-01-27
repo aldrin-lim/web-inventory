@@ -15,7 +15,7 @@ const RecipeCard = (props: RecipeMaterialCardProps) => {
   return (
     <div
       onClick={onClick}
-      className="card card-compact w-[155px] cursor-pointer border border-gray-300 bg-base-100"
+      className="card card-compact w-[155px] cursor-pointer justify-self-center border border-gray-300 bg-base-100"
     >
       <figure className="h-[155px] w-[155px] bg-gray-300">
         <ImageLoader src={image} iconClassName="w-24 text-gray-400" />
