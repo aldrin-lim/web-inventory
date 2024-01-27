@@ -32,7 +32,7 @@ const useCloneProduct = () => {
         autoClose: 500,
         theme: 'colored',
       })
-      await queryClient.invalidateQueries(['product', data.id])
+      await queryClient.invalidateQueries(['products'])
       navigate(`${AppPath.Products}/${data.id}`)
     },
   })

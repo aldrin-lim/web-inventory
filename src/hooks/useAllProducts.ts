@@ -11,6 +11,7 @@ const useAllProducts = () => {
     queryFn: () => API.getAllProducts(),
     retry: 0,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
   })
 
   return {

@@ -28,12 +28,13 @@ const useUpdateRecipe = () => {
       })
       setError(error)
     },
-    onSuccess: (_, param) => {
+    onSuccess: async (_, param) => {
       toast.success('Recipe successfully updated! ', {
         autoClose: 500,
         theme: 'colored',
       })
-      queryClient.invalidateQueries(['recipe', param.id])
+      await queryClient.invalidateQueries(['recipes'])
+      await queryClient.invalidateQueries(['recipe', param.id])
     },
   })
 
