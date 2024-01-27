@@ -6,7 +6,6 @@ import useGetProduct from 'hooks/useGetProduct'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import ProductDetail from 'screens/Product/ProductDetail'
-import { ProductDetailProvider } from 'screens/Product/contexts/ProductDetailContext'
 
 const Skeleton = () => {
   const navigate = useNavigate()
@@ -45,11 +44,7 @@ const ViewProduct = () => {
     return <Skeleton />
   }
 
-  return (
-    <ProductDetailProvider productDetails={product} mode="edit">
-      <ProductDetail product={product} />
-    </ProductDetailProvider>
-  )
+  return <ProductDetail product={product} />
 }
 
 export default ViewProduct

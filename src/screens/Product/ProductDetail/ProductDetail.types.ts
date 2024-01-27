@@ -46,3 +46,10 @@ export type ViewProductDetailSchema = z.infer<typeof ViewProductDetailSchema>
 export type AddProductDetailSchema = z.infer<typeof AddProductDetailSchema>
 
 export type StockDetail = z.infer<typeof StockDetailSchema>
+
+export const FormikValuesSchema = z.union([
+  AddProductDetailSchema,
+  ViewProductDetailSchema,
+])
+
+export type ProductDetailFormikValue = z.infer<typeof FormikValuesSchema>
