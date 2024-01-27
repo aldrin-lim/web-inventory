@@ -26,7 +26,7 @@ const ProductMenu = () => {
           <div key="1" />,
           <div
             key="title"
-            className="flex flex-row gap-3 self-center py-3 text-center"
+            className="mx-auto flex flex-row gap-3 self-center py-3 text-center"
           >
             <img key="logo " className="w-6 self-center" src={logo} />
             <h1 className="font-bold">Qrafter</h1>
@@ -34,7 +34,7 @@ const ProductMenu = () => {
           null,
         ]}
       />
-      <div className="flex flex-col gap-4 ">
+      <div className="flex flex-col gap-4 px-2">
         <ul>
           <li>
             <button
