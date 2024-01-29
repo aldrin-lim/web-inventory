@@ -160,7 +160,7 @@ export const RecipeSchema = z.object({
 
 const Product = BaseProduct.extend({
   recipe: RecipeSchema.nullable().optional(),
-  activeBatch: BaseProduct,
+  activeBatch: ProductBatchSchema,
 })
 export const ProductSchema = Product
 

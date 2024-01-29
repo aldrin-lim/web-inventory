@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { ProductBatchSchema, ProductSchema } from 'types/product.types'
+import { ProductSchema } from 'types/product.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 
@@ -12,6 +12,4 @@ export default async (id: string) => {
   return result || []
 }
 
-export const GetProductSchema = ProductSchema.extend({
-  activeBatch: ProductBatchSchema,
-})
+export const GetProductSchema = ProductSchema
