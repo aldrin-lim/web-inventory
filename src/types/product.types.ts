@@ -152,7 +152,9 @@ export const RecipeSchema = z.object({
           })
           .min(1),
         type: z.nativeEnum(MaterialType).default(MaterialType.Ingredient),
-        product: BaseProduct,
+        product: BaseProduct.extend({
+          activeBatch: ProductBatchSchema.optional(),
+        }),
       }),
     )
     .min(1, 'Materials must have at least 1 item'),

@@ -3,7 +3,6 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import useAllRecipes from 'hooks/useAllRecipes'
-import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
 import { useMemo, useState } from 'react'
 import GetStarted from 'screens/Recipe/RecipeOverview/GetStarted'
 import { RecipeSchema } from 'types/product.types'
@@ -18,8 +17,6 @@ const RecipeList = (props: RecipeListProps) => {
   const { onRecipeSelect, onBack } = props
 
   const { recipes, isLoading } = useAllRecipes()
-
-  const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
 
   const [nameFilter, setNameFilter] = useState('')
 
@@ -121,21 +118,6 @@ const Skeleton = () => {
       </div>
     </div>
   )
-}
-
-const getTruncateSize = (size: ScreenSize) => {
-  switch (size) {
-    case 'xs':
-      return 10
-    case 'sm':
-      return 20
-    case 'md':
-      return 200
-    case 'lg':
-      return 200
-    default:
-      return 500
-  }
 }
 
 export default RecipeList

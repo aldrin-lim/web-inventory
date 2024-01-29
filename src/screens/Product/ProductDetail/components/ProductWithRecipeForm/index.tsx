@@ -44,6 +44,7 @@ interface AdditionalProps {
   showDescription: () => void
   defaultValue: AddProductDetailSchema
   removeRecipe: () => void
+  showRecipeDetail: () => void
 }
 
 type ProductWithRecipeFormProps = FormikProps &
@@ -59,6 +60,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
   mode,
   showDescription,
   removeRecipe,
+  showRecipeDetail,
 }) => {
   return (
     <div className="flex flex-col items-start gap-2">
@@ -108,7 +110,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
         {mode === 'edit' && (
           <button
             disabled={isMutating}
-            onClick={removeRecipe}
+            onClick={showRecipeDetail}
             className="btn btn-primary btn-xs max-w-xs  self-start rounded-[5px] text-left"
           >
             <span className="text-xs">View Recipe</span>

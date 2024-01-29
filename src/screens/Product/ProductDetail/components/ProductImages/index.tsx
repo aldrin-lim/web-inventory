@@ -3,23 +3,24 @@ import { PhotoIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
 
 type ProductImagesProps = {
   images: Array<string>
-  onImagesChange: (images: Array<string>) => void
+  onImagesChange?: (images: Array<string>) => void
   disabled?: boolean
   size?: 'sm' | 'default'
+  readOnly?: boolean
 }
 
 const defaultSize = '130px'
 const smSize = '100px'
 
 const ProductImages = (props: ProductImagesProps) => {
-  const { size = 'default' } = props
+  const { size = 'default', readOnly = false } = props
   const imageSize = size === 'sm' ? smSize : defaultSize
 
   const [images, setImages] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const onChange = (images: string[]) => {
-    props.onImagesChange(images)
+    props.onImagesChange?.(images)
   }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +44,7 @@ const ProductImages = (props: ProductImagesProps) => {
   }
 
   const onClick = () => {
-    if (inputRef.current) {
+    if (inputRef.current && !readOnly) {
       inputRef.current.click()
     }
   }
@@ -58,7 +59,7 @@ const ProductImages = (props: ProductImagesProps) => {
   }
 
   const showAddImageButton = images.length > 0 && images.length < 5
-  const showInitialImageButton = images.length === 0
+  const showInitialImageButton = images.length === 0 || readOnly
 
   useEffect(() => {
     if (props.images) {
@@ -98,7 +99,7 @@ const ProductImages = (props: ProductImagesProps) => {
             }}
           >
             <PhotoIcon className="w-14 " />
-            <span className="text-xs ">Upload</span>
+            {!readOnly && <span className="text-xs ">Upload</span>}
           </button>
         )}
       </div>
@@ -114,12 +115,14 @@ const ProductImages = (props: ProductImagesProps) => {
             >
               <img src={image} alt="Uploaded preview" />
             </div>
-            <button
-              onClick={() => deleteImage(index)}
-              className="btn btn-circle btn-ghost btn-xs absolute right-2 top-2 bg-purple-300"
-            >
-              <TrashIcon className="w-4 text-white" />
-            </button>
+            {!readOnly && (
+              <button
+                onClick={() => deleteImage(index)}
+                className="btn btn-circle btn-ghost btn-xs absolute right-2 top-2 bg-purple-300"
+              >
+                <TrashIcon className="w-4 text-white" />
+              </button>
+            )}
           </div>
         ))}
       </div>

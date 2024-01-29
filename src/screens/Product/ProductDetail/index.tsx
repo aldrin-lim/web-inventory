@@ -38,6 +38,7 @@ import { getActiveBatch } from 'util/products'
 import ProductForm from './components/ProductForm'
 import RecipeList from './screens/RecipeList'
 import ProductWithRecipeForm from './components/ProductWithRecipeForm'
+import RecipeDetails from './screens/RecipeDetails'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -45,6 +46,7 @@ export enum ScreenPath {
   Description = 'description',
   StockDetail = 'stock-detail',
   SelectRecipe = 'select-recipe',
+  RecipeDetail = 'recipe-details',
 }
 
 type ProductDetailProps = {
@@ -283,6 +285,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             // AdditionalProps
             defaultValue={defaultValue}
             showDescription={showDescription}
+            showRecipeDetail={() => navigate(ScreenPath.RecipeDetail)}
           />
         )}
       </div>
@@ -380,6 +383,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
       >
         <RecipeList onBack={navigateToParent} onRecipeSelect={onRecipeSelect} />
       </SlidingTransition>
+      {values.recipe && (
+        <SlidingTransition
+          direction="right"
+          isVisible={currentScreen === ScreenPath.RecipeDetail}
+          zIndex={11}
+        >
+          <RecipeDetails onBack={navigateToParent} recipe={values.recipe} />
+        </SlidingTransition>
+      )}
     </>
   )
 }
