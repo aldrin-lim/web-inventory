@@ -280,6 +280,19 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
         }}
         images={values.images ?? []}
       />
+
+      <div className="mt-2 flex flex-col gap-4 rounded-md bg-gray-200 p-4">
+        <div className="flex flex-row items-center gap-6">
+          <p>Quantity</p>
+          <div className="w-full rounded-md bg-gray-300 p-1 text-center">
+            {values.recipe?.quantity}
+          </div>
+        </div>
+        <div className="hint text-primary">
+          Quantity is auto-calculated based on recipe&apos;s available crafting
+          materials in your inventory.
+        </div>
+      </div>
     </div>
   )
 }
