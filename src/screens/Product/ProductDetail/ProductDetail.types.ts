@@ -40,6 +40,12 @@ export const ProductDetailFormValidationSchema = ProductSchema.omit({
   outOfStock: true,
   availability: true,
   totalQuantity: true,
+}).extend({
+  recipe: z
+    .object({
+      id: z.string(),
+    })
+    .optional(),
 })
 
 export type ViewProductDetailSchema = z.infer<typeof ViewProductDetailSchema>

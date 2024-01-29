@@ -1,11 +1,14 @@
 import { AxiosResponse } from 'axios'
-import { Product, ProductSchema } from 'types/product.types'
+import { ProductSchema } from 'types/product.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 
 export default async (param: CreateProductBodySchema) => {
   const result = await httpClient
-    .post<CreateProductBodySchema, AxiosResponse<Product>>(`/products`, param)
+    .post<
+      CreateProductBodySchema,
+      AxiosResponse<z.infer<typeof ProductSchema>>
+    >(`/products`, param)
     .then((res) => res.data)
   return result
 }
@@ -19,4 +22,10 @@ export const CreateProductBodySchema = ProductSchema.omit({
   outOfStock: true,
   availability: true,
   totalQuantity: true,
+}).extend({
+  recipe: z
+    .object({
+      id: z.string(),
+    })
+    .optional(),
 })

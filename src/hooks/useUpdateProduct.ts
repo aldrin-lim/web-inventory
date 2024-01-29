@@ -14,6 +14,7 @@ const useUpdateProduct = () => {
     retry: 0,
     onError: (error) => {
       let errorMessage = "We're sorry, we've encountered an issue. "
+      console.log(error)
       if (axios.isAxiosError(error)) {
         if (error.response?.data?.message) {
           errorMessage = error.response?.data?.message

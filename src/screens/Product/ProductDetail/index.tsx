@@ -93,8 +93,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
     const updatedProduct = props.product as ViewProductDetailSchema
 
-    if (updatedProduct.isBulkCost === false) {
+    if (updatedProduct.isBulkCost === false && !props.product.recipe) {
       updatedProduct.cost = getActiveBatch(props.product.batches).cost
+    }
+
+    if (props.product.recipe) {
+      updatedProduct.cost = props.product.recipe.cost
     }
     return updatedProduct
   }, [props.product])
@@ -143,11 +147,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
       }
 
       const validation = (
-        product ? CreateProductBodySchema : UpdateProductBodySchema
+        product ? UpdateProductBodySchema : CreateProductBodySchema
       ).safeParse(formValue)
 
       if (!validation.success) {
         const error = validation.error.issues[0].message
+        console.log(validation.error)
         toast.error(error, {
           autoClose: 500,
           theme: 'colored',

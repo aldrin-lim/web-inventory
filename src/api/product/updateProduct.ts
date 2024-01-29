@@ -26,6 +26,7 @@ export const UpdateProductBodySchema = ProductSchema.omit({
   outOfStock: true,
   availability: true,
   totalQuantity: true,
+  recipe: true,
 }).partial()
 
 export type UpdateProductRequestScheam = z.infer<typeof UpdateProductBodySchema>
