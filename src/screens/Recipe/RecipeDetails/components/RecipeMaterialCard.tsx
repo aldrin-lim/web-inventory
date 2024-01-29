@@ -49,12 +49,6 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
     )
   }, [values.quantity])
 
-  // useEffect(() => {
-  //   if (onChange) {
-  //     onChange(values)
-  //   }
-  // }, [values.cost, values.quantity])
-
   useEffect(() => {
     // using convertible-units, change the cost per unit base from the values.unitOfMeasurement
     // by converting it
@@ -89,6 +83,10 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
     )
 
     setFieldValue('cost', newCostPerUnit)
+    onChange?.({
+      ...values,
+      cost: newCostPerUnit,
+    })
   }, [values.unitOfMeasurement])
 
   return (
