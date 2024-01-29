@@ -28,7 +28,9 @@ import Inventory from 'screens/Inventory'
 import useAllProducts from 'hooks/useAllProducts'
 import { v4 } from 'uuid'
 import { getActiveBatch } from 'util/products'
-import { MaterialType, RecipeSchema } from 'types/product.types'
+import { MaterialSchema, MaterialType, RecipeSchema } from 'types/product.types'
+
+type Material = z.infer<typeof MaterialSchema>
 
 enum ScreenPath {
   Ingredients = `select-ingredients`,
@@ -92,7 +94,6 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       validateOnBlur: false,
       validateOnChange: false,
     })
-  console.log(errors)
 
   useEffect(() => {
     if (mode === 'add') {

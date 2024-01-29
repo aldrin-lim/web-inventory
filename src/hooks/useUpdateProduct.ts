@@ -28,7 +28,7 @@ const useUpdateProduct = () => {
     onSuccess: async (_, param) => {
       await queryClient.invalidateQueries(['products'])
       await queryClient.invalidateQueries(['recipes'])
-      await queryClient.invalidateQueries(['recipe'])
+      await queryClient.refetchQueries(['recipe'])
 
       await queryClient.invalidateQueries(['product', param.id])
       toast.success('Product successfully updated! ', {

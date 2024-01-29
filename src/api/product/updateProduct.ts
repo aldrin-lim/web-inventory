@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { Product, ProductSchema } from 'types/product.types'
+import { ProductSchema } from 'types/product.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 
@@ -11,7 +11,10 @@ export default async (param: {
   const url = `/products/${id}`
 
   const result = await httpClient
-    .patch<UpdateProductRequestScheam, AxiosResponse<Product>>(url, product)
+    .patch<
+      UpdateProductRequestScheam,
+      AxiosResponse<z.infer<typeof ProductSchema>>
+    >(url, product)
     .then((res) => res.data)
   return result || []
 }
