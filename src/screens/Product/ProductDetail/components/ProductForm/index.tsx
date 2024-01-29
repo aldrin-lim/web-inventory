@@ -42,6 +42,7 @@ interface ComponentStateProps {
   isMutating: boolean
   mode: string
   setIsStockReset: React.Dispatch<React.SetStateAction<boolean>>
+  showRecipeList: () => void
 }
 
 interface AdditionalProps {
@@ -62,6 +63,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   setValues,
   showDescription,
   defaultValue,
+  showRecipeList,
 }) => {
   const navigate = useNavigate()
   return (
@@ -90,12 +92,15 @@ const ProductForm: React.FC<ProductFormProps> = ({
       </label>
 
       {/* Recipe CTA */}
-      <button
-        disabled={isMutating}
-        className="btn btn-primary btn-xs max-w-xs  self-start rounded-[5px] text-left"
-      >
-        Create product using a recipe
-      </button>
+      {mode === 'add' && (
+        <button
+          onClick={showRecipeList}
+          disabled={isMutating}
+          className="btn btn-primary btn-xs max-w-xs  self-start rounded-[5px] text-left"
+        >
+          Create product using a recipe
+        </button>
+      )}
 
       {/* Set Description CTA */}
       <button

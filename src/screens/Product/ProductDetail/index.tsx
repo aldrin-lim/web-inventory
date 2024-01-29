@@ -13,7 +13,7 @@ import useCreateProduct from 'hooks/useCreateProduct'
 import SlidingTransition from 'components/SlidingTransition'
 import Description from './screens/Description'
 import StockDetail from './screens/StockDetail'
-import { ProductSoldBy } from 'types/product.types'
+import { ProductSoldBy, RecipeSchema } from 'types/product.types'
 import { GetProductSchema } from 'api/product/getProductById'
 import useDeleteProduct from 'hooks/useDeleteProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
@@ -36,10 +36,15 @@ import { toast } from 'react-toastify'
 import { UpdateProductBodySchema } from 'api/product/updateProduct'
 import { getActiveBatch } from 'util/products'
 import ProductForm from './components/ProductForm'
+import RecipeList from './screens/RecipeList'
+import ProductWithRecipeForm from './components/ProductWithRecipeForm'
+
+type Recipe = z.infer<typeof RecipeSchema>
 
 export enum ScreenPath {
   Description = 'description',
-  StockDetail = 'stockDetail',
+  StockDetail = 'stock-detail',
+  SelectRecipe = 'select-recipe',
 }
 
 type ProductDetailProps = {
@@ -180,6 +185,22 @@ export const ProductDetail = (props: ProductDetailProps) => {
     }
   }, [mode])
 
+  const showRecipeList = () => {
+    navigate(ScreenPath.SelectRecipe)
+  }
+
+  const onRecipeSelect = async (recipe: Recipe) => {
+    navigateToParent()
+    await setValues(initialValues)
+    setFieldValue('recipe', recipe)
+    setFieldValue('name', recipe.name)
+    setFieldValue('cost', recipe.cost)
+  }
+
+  const removeRecipe = () => {
+    setValues(initialValues)
+  }
+
   return (
     <>
       <div
@@ -224,21 +245,41 @@ export const ProductDetail = (props: ProductDetailProps) => {
             />,
           ]}
         />
-        <ProductForm
-          // FormikProps
-          getFieldProps={getFieldProps}
-          values={values}
-          errors={errors}
-          setFieldValue={setFieldValue}
-          setValues={setValues}
-          // ComponentStateProps
-          isMutating={isMutating}
-          mode={mode}
-          setIsStockReset={setIsStockReset}
-          // AdditionalProps
-          defaultValue={defaultValue}
-          showDescription={showDescription}
-        />
+        {!values.recipe && (
+          <ProductForm
+            // FormikProps
+            getFieldProps={getFieldProps}
+            values={values}
+            errors={errors}
+            setFieldValue={setFieldValue}
+            setValues={setValues}
+            // ComponentStateProps
+            showRecipeList={showRecipeList}
+            isMutating={isMutating}
+            mode={mode}
+            setIsStockReset={setIsStockReset}
+            // AdditionalProps
+            defaultValue={defaultValue}
+            showDescription={showDescription}
+          />
+        )}
+        {values.recipe && (
+          <ProductWithRecipeForm
+            // FormikProps
+            getFieldProps={getFieldProps}
+            values={values}
+            errors={errors}
+            setFieldValue={setFieldValue}
+            setValues={setValues}
+            // ComponentStateProps
+            isMutating={isMutating}
+            mode={mode}
+            removeRecipe={removeRecipe}
+            // AdditionalProps
+            defaultValue={defaultValue}
+            showDescription={showDescription}
+          />
+        )}
       </div>
       <SlidingTransition
         direction="right"
@@ -325,6 +366,14 @@ export const ProductDetail = (props: ProductDetailProps) => {
             }
           }}
         />
+      </SlidingTransition>
+
+      <SlidingTransition
+        direction="right"
+        isVisible={currentScreen === ScreenPath.SelectRecipe}
+        zIndex={11}
+      >
+        <RecipeList onBack={navigateToParent} onRecipeSelect={onRecipeSelect} />
       </SlidingTransition>
     </>
   )

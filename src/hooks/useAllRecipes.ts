@@ -16,7 +16,7 @@ const useAllRecipes = (param?: PaginationOptions) => {
   })
 
   return {
-    recipes: data,
+    recipes: data ?? [],
     error,
     isLoading,
   }
