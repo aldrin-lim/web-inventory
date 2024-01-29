@@ -159,6 +159,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             <ToolbarButton
               key={1}
               icon={<ChevronLeftIcon className="w-6" />}
+              disabled={isMutating}
               onClick={() => {
                 navigate(AppPath.RecipeOverview)
               }}
@@ -168,6 +169,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
               title={recipe ? 'View Recipe' : 'Add Recipe'}
             />,
             <PrimaryAction
+              disabled={isMutating}
               key="primaryAction"
               mode={mode}
               onCreate={() => {
