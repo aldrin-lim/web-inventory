@@ -4,13 +4,15 @@ import convert, { Measure, Unit } from 'convert-units'
 import { FormikErrors, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import MeasurementSelect from 'screens/Product/ProductDetail/components/MeasurementSelect'
-import { ProductSoldBy } from 'types/product.types'
-import { Material } from 'types/recipe.types'
+import { MaterialSchema, ProductSoldBy } from 'types/product.types'
 import { measurementOptions, pieceMesurement } from 'util/measurement'
 import { toNumber } from 'util/number'
 import Big from 'big.js'
 import QuantityInput from 'components/QuantityInput'
 import { getActiveBatch } from 'util/products'
+import { z } from 'zod'
+
+type Material = z.infer<typeof MaterialSchema>
 
 type RecipeMaterialCardProps = {
   material: Material

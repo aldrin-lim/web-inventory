@@ -1,9 +1,10 @@
 import ImageLoader from 'components/ImageLoader'
 import MiddleTruncatedText from 'components/MiddleTruncatedText'
-import { Recipe } from 'types/recipe.types'
+import { RecipeSchema } from 'types/product.types'
+import { z } from 'zod'
 
 type RecipeMaterialCardProps = {
-  recipe: Recipe
+  recipe: z.infer<typeof RecipeSchema>
   onClick?: () => void
 }
 

@@ -1,25 +1,15 @@
+import { PIECES } from 'constants copy/measurement'
 import { z } from 'zod'
 
-export type ProductVariantAttribute = {
-  option: string
-  values: Array<string>
+export enum MaterialType {
+  Ingredient = 'ingredient',
+  Other = 'other',
 }
 
 export enum ProductSoldBy {
-  Pieces = 'pieces',
+  Pieces = PIECES,
   Weight = 'weight',
 }
-
-export const OptionSchema = z.object({
-  option: z.string({
-    required_error: 'Variant Option name is required',
-    invalid_type_error: 'Variant Option name must be a string',
-  }),
-  value: z.string({
-    required_error: 'Variant Option value is required',
-    invalid_type_error: 'Variant Option value must be a string',
-  }),
-})
 
 export const ProductBatchSchema = z.object({
   id: z.string(),
@@ -52,7 +42,7 @@ export const ProductBatchSchema = z.object({
     .nullable(),
 })
 
-export const BaseProductSchema = z.object({
+const BaseProduct = z.object({
   id: z.string(),
   name: z.string({
     required_error: 'Name is required',
@@ -115,9 +105,63 @@ export const BaseProductSchema = z.object({
   outOfStock: z.boolean().default(false),
   availability: z.string().default(''),
   totalQuantity: z.number().default(0),
-  activeBatch: ProductBatchSchema,
 })
 
-export const ProductSchema = BaseProductSchema
+export const RecipeSchema = z.object({
+  id: z.string({ required_error: 'Recipe id is required' }),
+  name: z.string({
+    required_error: 'Recipe name is required',
+    invalid_type_error: 'Recipe name is must be a string',
+  }),
+  price: z.number({
+    coerce: true,
+    required_error: 'Recipe price is required',
+    invalid_type_error: 'Recipe price must be a number',
+  }),
+  profitAmount: z.number({
+    required_error: 'Profit Amount is required',
+    invalid_type_error: 'Profit Amount must be a number',
+    coerce: true,
+  }),
+  profitPercentage: z.number({
+    required_error: 'Profit Percentage is required',
+    invalid_type_error: 'Profit Percentage must be a number',
+    coerce: true,
+  }),
+  description: z.string().optional(),
+  images: z.array(z.string()),
+  cost: z.number(),
+  quantity: z.number(),
+  materials: z
+    .array(
+      // Material
+      z.object({
+        id: z
+          .string({
+            required_error: 'Material id is required',
+            invalid_type_error: 'Material id must be a string',
+          })
+          .optional(),
+        quantity: z.number({
+          required_error: 'Material quantity is required',
+        }),
+        cost: z.number({ required_error: 'Cost is required' }),
+        unitOfMeasurement: z
+          .string({
+            required_error: 'Measurement is required',
+          })
+          .min(1),
+        type: z.nativeEnum(MaterialType).default(MaterialType.Ingredient),
+        product: BaseProduct,
+      }),
+    )
+    .min(1, 'Materials must have at least 1 item'),
+})
 
-export type Product = z.infer<typeof ProductSchema>
+const Product = BaseProduct.extend({
+  recipe: RecipeSchema.nullable().optional(),
+  activeBatch: BaseProduct,
+})
+export const ProductSchema = Product
+
+export const MaterialSchema = RecipeSchema.shape.materials.element

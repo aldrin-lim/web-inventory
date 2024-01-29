@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios'
-import { RecipeSchema } from 'types/recipe.types'
+import { RecipeSchema } from 'types/product.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 

@@ -1,6 +1,9 @@
 import { AxiosResponse } from 'axios'
-import { ProductBatchSchema, ProductSchema } from 'types/product.types'
-import { RecipeSchema } from 'types/recipe.types'
+import {
+  ProductBatchSchema,
+  ProductSchema,
+  RecipeSchema,
+} from 'types/product.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 

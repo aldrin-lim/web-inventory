@@ -1,14 +1,7 @@
 import RecipeDetails from '../RecipeDetails'
-import { RecipeDetailContextProvider } from '../../Product/contexts/RecipeDetailContext'
 
 const AddRecipe = () => {
-  return (
-    <>
-      <RecipeDetailContextProvider>
-        <RecipeDetails />
-      </RecipeDetailContextProvider>
-    </>
-  )
+  return <RecipeDetails />
 }
 
 export default AddRecipe

@@ -1,19 +1,13 @@
 import SlidingTransition from 'components/SlidingTransition'
 import { useEffect } from 'react'
 import { z } from 'zod'
-import {
-  Material,
-  MaterialType,
-  Recipe,
-  RecipeSchema,
-} from 'types/recipe.types'
 import { ChevronLeftIcon, PlusIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import PrimaryAction from '../../Product/ProductDetail/components/ProductDetailPrimaryAction'
 import ProductImages from '../../Product/ProductDetail/components/ProductImages'
-import RecipeMaterialCard from './RecipeDetailsForm/components/RecipeMaterialCard'
+import RecipeMaterialCard from './components/RecipeMaterialCard'
 import {
   computeProfitAmount,
   computeProfitPercentage,
@@ -34,6 +28,7 @@ import Inventory from 'screens/Inventory'
 import useAllProducts from 'hooks/useAllProducts'
 import { v4 } from 'uuid'
 import { getActiveBatch } from 'util/products'
+import { MaterialType, RecipeSchema } from 'types/product.types'
 
 enum ScreenPath {
   Ingredients = `select-ingredients`,
@@ -41,7 +36,7 @@ enum ScreenPath {
 }
 
 type RecipeDetailsProps = {
-  recipe?: Recipe
+  recipe?: z.infer<typeof RecipeSchema>
 }
 
 const initialValue = {

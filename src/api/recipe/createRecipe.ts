@@ -1,6 +1,9 @@
 import { AxiosResponse } from 'axios'
-import { ProductSchema } from 'types/product.types'
-import { MaterialSchema, RecipeSchema } from 'types/recipe.types'
+import {
+  MaterialSchema,
+  ProductSchema,
+  RecipeSchema,
+} from 'types/product.types'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 
