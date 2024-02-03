@@ -165,5 +165,6 @@ const Product = BaseProduct.extend({
   activeBatch: ProductBatchSchema,
 })
 export const ProductSchema = Product
+export type Product = z.infer<typeof ProductSchema>
 
 export const MaterialSchema = RecipeSchema.shape.materials.element
