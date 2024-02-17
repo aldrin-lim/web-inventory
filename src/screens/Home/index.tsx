@@ -5,7 +5,10 @@ import {
   ArchiveBoxIcon,
   RectangleStackIcon,
   ArrowLeftOnRectangleIcon,
-} from '@heroicons/react/24/solid'
+  Cog6ToothIcon,
+  BuildingStorefrontIcon,
+  UserIcon,
+} from '@heroicons/react/24/outline'
 import Toolbar from 'components/Layout/components/Toolbar'
 
 import { useNavigate } from 'react-router-dom'
@@ -66,13 +69,28 @@ const ProductMenu = () => {
               <ChevronRightIcon className="ml-auto h-6 w-6 " />
             </button>
           </li>
+
           <li>
-            <button className="btn btn-ghost w-full justify-start px-1 ">
-              <RectangleStackIcon className="h-6 w-6" />
-              Collection
+            <button
+              onClick={() => navigate(AppPath.Store)}
+              className="btn btn-ghost w-full justify-start px-1 "
+            >
+              <BuildingStorefrontIcon className="h-6 w-6" />
+              Store
               <ChevronRightIcon className="ml-auto h-6 w-6 " />
             </button>
           </li>
+          <li>
+            <button
+              onClick={() => navigate(AppPath.Profile)}
+              className="btn btn-ghost w-full justify-start px-1 "
+            >
+              <UserIcon className="h-6 w-6" />
+              User Profile
+              <ChevronRightIcon className="ml-auto h-6 w-6 " />
+            </button>
+          </li>
+
           <li>
             <button
               className="btn btn-ghost w-full justify-start px-1 "

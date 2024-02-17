@@ -1,5 +1,8 @@
 import Toolbar from 'components/Layout/components/Toolbar'
-import { ArrowSmallLeftIcon } from '@heroicons/react/24/outline'
+import {
+  ArrowSmallLeftIcon,
+  ChevronLeftIcon,
+} from '@heroicons/react/24/outline'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import useUser from 'hooks/useUser'
@@ -12,6 +15,7 @@ import { Business, UpdateUserBusinessSchema } from 'types/business.type'
 import Skeleton from './Skeleton'
 import { useFormik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
+import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 
 const StoreDetail = () => {
   const navigate = useNavigate()
@@ -82,16 +86,15 @@ const StoreDetail = () => {
   }, [isLoading, user?.businesses])
 
   return (
-    <div className="section w-full pt-0">
+    <div className="screen">
       <Toolbar
         items={[
-          <label
-            key="12"
-            className="btn btn-square btn-ghost drawer-button -ml-4"
-            onClick={() => navigate(AppPath.Settings)}
-          >
-            <ArrowSmallLeftIcon className="w-6 text-blue-400" />
-          </label>,
+          <ToolbarButton
+            key={1}
+            icon={<ChevronLeftIcon className="w-6" />}
+            onClick={() => navigate(AppPath.Root)}
+            disabled={isMutating}
+          />,
         ]}
       />
       <h1>

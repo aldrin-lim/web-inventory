@@ -10,45 +10,55 @@ import RecipeOverview from 'screens/Recipe/RecipeOverview'
 import AddRecipe from 'screens/Recipe/AddRecipe'
 import ViewRecipe from 'screens/Recipe/ViewRecipe'
 import Inventory from 'screens/Product/Inventory'
+import Layout from 'components/Layout'
+import Store from 'screens/Store'
+import Profile from 'screens/Profile'
 
 const AppRoutes = () => (
   <Routes>
-    <Route
-      path={AppPath.Root}
-      element={<ProtectedRoute element={<Home />} />}
-    />
-    <Route
-      path={`${AppPath.Products}`}
-      element={<ProtectedRoute element={<ProductOverview />} />}
-    />
-    <Route
-      path={`${AppPath.ProductOverview}/*`}
-      element={<ProtectedRoute element={<ProductOverview />} />}
-    />
-    <Route
-      path={`${AppPath.AddProduct}/*`}
-      element={<ProtectedRoute element={<AddProduct />} />}
-    />
-    <Route
-      path={`${AppPath.ViewProduct}/*`}
-      element={<ProtectedRoute element={<ViewProduct />} />}
-    />
-    <Route
-      path={`${AppPath.RecipeOverview}/*`}
-      element={<ProtectedRoute element={<RecipeOverview />} />}
-    />
-    <Route
-      path={`${AppPath.AddRecipe}/*`}
-      element={<ProtectedRoute element={<AddRecipe />} />}
-    />
-    <Route
-      path={`${AppPath.ViewRecipe}/*`}
-      element={<ProtectedRoute element={<ViewRecipe />} />}
-    />
-    <Route
-      path={`${AppPath.Inventory}/*`}
-      element={<ProtectedRoute element={<Inventory />} />}
-    />
+    <Route path={AppPath.Root} element={<Layout />}>
+      <Route index element={<ProtectedRoute element={<Home />} />} />
+      <Route
+        path={`${AppPath.Products}`}
+        element={<ProtectedRoute element={<ProductOverview />} />}
+      />
+      <Route
+        path={`${AppPath.ProductOverview}/*`}
+        element={<ProtectedRoute element={<ProductOverview />} />}
+      />
+      <Route
+        path={`${AppPath.AddProduct}/*`}
+        element={<ProtectedRoute element={<AddProduct />} />}
+      />
+      <Route
+        path={`${AppPath.ViewProduct}/*`}
+        element={<ProtectedRoute element={<ViewProduct />} />}
+      />
+      <Route
+        path={`${AppPath.RecipeOverview}/*`}
+        element={<ProtectedRoute element={<RecipeOverview />} />}
+      />
+      <Route
+        path={`${AppPath.AddRecipe}/*`}
+        element={<ProtectedRoute element={<AddRecipe />} />}
+      />
+      <Route
+        path={`${AppPath.ViewRecipe}/*`}
+        element={<ProtectedRoute element={<ViewRecipe />} />}
+      />
+      <Route
+        path={`${AppPath.Inventory}/*`}
+        element={<ProtectedRoute element={<Inventory />} />}
+      />
+      <Route
+        path={AppPath.Store}
+        element={<ProtectedRoute element={<Store />} />}
+      />
+      <Route
+        path={AppPath.Profile}
+        element={<ProtectedRoute element={<Profile />} />}
+      />
+    </Route>
     {/* <Route path="/" element={<ProtectedRoute element={<Layout />} />}>
       <Route index element={<ProductMenu />} />
       <Route path={AppPath.Home} element={<Home />} />
@@ -68,10 +78,7 @@ const AppRoutes = () => (
       path={AppPath.Profile}
       element={<ProtectedRoute element={<Profile />} />}
     />
-    <Route
-      path={AppPath.Store}
-      element={<ProtectedRoute element={<Store />} />}
-    />
+    
     <Route
       path={AppPath.Staff}
       element={<ProtectedRoute element={<Staff />} />}

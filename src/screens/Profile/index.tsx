@@ -1,11 +1,16 @@
 import Toolbar from 'components/Layout/components/Toolbar'
-import { ArrowSmallLeftIcon } from '@heroicons/react/24/outline'
+import {
+  ArrowSmallLeftIcon,
+  ChevronLeftIcon,
+} from '@heroicons/react/24/outline'
 import { useNavigate } from 'react-router-dom'
 import useUser from 'hooks/useUser'
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { updateUser } from 'api/users.api'
 import { AppPath } from 'routes/AppRoutes.types'
+import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
+import { toast } from 'react-toastify'
 
 const Profile = () => {
   const navigate = useNavigate()
@@ -16,6 +21,18 @@ const Profile = () => {
 
   const { mutateAsync, isLoading: isMutating } = useMutation({
     mutationFn: updateUser,
+    onSuccess: async () => {
+      toast.success('Profile Updated ', {
+        autoClose: 500,
+        theme: 'colored',
+      })
+    },
+    onError: () => {
+      toast.error('Profile Update Failed ', {
+        autoClose: 500,
+        theme: 'colored',
+      })
+    },
   })
 
   useEffect(() => {
@@ -28,16 +45,15 @@ const Profile = () => {
   }
 
   return (
-    <div className="section w-full pt-0">
+    <div className="screen">
       <Toolbar
         items={[
-          <label
-            key="12"
-            className="btn btn-square btn-ghost drawer-button -ml-4"
-            onClick={() => navigate(AppPath.Settings)}
-          >
-            <ArrowSmallLeftIcon className="w-6 text-blue-400" />
-          </label>,
+          <ToolbarButton
+            key={1}
+            icon={<ChevronLeftIcon className="w-6" />}
+            onClick={() => navigate(AppPath.Root)}
+            disabled={isMutating}
+          />,
         ]}
       />
       <div>Profile</div>
