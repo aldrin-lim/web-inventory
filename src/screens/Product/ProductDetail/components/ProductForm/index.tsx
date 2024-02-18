@@ -137,7 +137,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
             <span className="label-text-alt text-gray-400">Cost</span>
           </div>
           <CurrencyInput
-            decimalsLimit={2}
+            decimalsLimit={4}
             prefix="₱"
             disabled={isMutating}
             name={getFieldProps('cost').name}
@@ -179,7 +179,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
             <span className="label-text-alt text-gray-400">Price</span>
           </div>
           <CurrencyInput
-            decimalsLimit={2}
+            decimalsLimit={4}
             prefix="₱"
             disabled={isMutating}
             onBlur={getFieldProps('price').onBlur}
@@ -220,7 +220,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
             <span className="label-text-alt text-gray-400">Profit</span>
           </div>
           <CurrencyInput
-            decimalsLimit={2}
+            decimalsLimit={4}
             disabled={isMutating}
             onBlur={getFieldProps('profitPercentage').onBlur}
             name={getFieldProps('profitPercentage').name}
@@ -252,7 +252,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           />
           <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
           <CurrencyInput
-            decimalsLimit={2}
+            decimalsLimit={4}
             prefix="₱"
             disabled={isMutating}
             onBlur={getFieldProps('profitAmount').onBlur}

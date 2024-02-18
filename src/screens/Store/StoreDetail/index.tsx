@@ -1,8 +1,5 @@
 import Toolbar from 'components/Layout/components/Toolbar'
-import {
-  ArrowSmallLeftIcon,
-  ChevronLeftIcon,
-} from '@heroicons/react/24/outline'
+import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import useUser from 'hooks/useUser'
@@ -16,6 +13,7 @@ import Skeleton from './Skeleton'
 import { useFormik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
+import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 
 const StoreDetail = () => {
   const navigate = useNavigate()
@@ -95,11 +93,9 @@ const StoreDetail = () => {
             onClick={() => navigate(AppPath.Root)}
             disabled={isMutating}
           />,
+          <ToolbarTitle key={2} title="Store Settings" />,
         ]}
       />
-      <h1>
-        <strong>Store Detail</strong>
-      </h1>
       {isLoading && <Skeleton />}
       {!isLoading && (
         <div className="mt-3 flex flex-col gap-2">

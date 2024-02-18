@@ -76,7 +76,7 @@ const ProductMenu = () => {
               className="btn btn-ghost w-full justify-start px-1 "
             >
               <BuildingStorefrontIcon className="h-6 w-6" />
-              Store
+              Store Settings
               <ChevronRightIcon className="ml-auto h-6 w-6 " />
             </button>
           </li>

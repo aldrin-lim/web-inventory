@@ -24,7 +24,7 @@ const QuantityInput = (props: QuantityInputProps) => {
         -
       </button>
       <CurrencyInput
-        decimalsLimit={40}
+        decimalsLimit={4}
         value={value}
         onValueChange={(value) => {
           if (onChange) {

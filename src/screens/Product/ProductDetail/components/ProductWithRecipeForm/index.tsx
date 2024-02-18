@@ -151,7 +151,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
             <span className="label-text-alt text-gray-400">Price</span>
           </div>
           <CurrencyInput
-            decimalsLimit={2}
+            decimalsLimit={4}
             prefix="₱"
             disabled={isMutating}
             onBlur={getFieldProps('price').onBlur}
@@ -192,7 +192,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
             <span className="label-text-alt text-gray-400">Profit</span>
           </div>
           <CurrencyInput
-            decimalsLimit={2}
+            decimalsLimit={4}
             disabled={isMutating}
             onBlur={getFieldProps('profitPercentage').onBlur}
             name={getFieldProps('profitPercentage').name}
@@ -224,7 +224,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
           />
           <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
           <CurrencyInput
-            decimalsLimit={2}
+            decimalsLimit={4}
             prefix="₱"
             disabled={isMutating}
             onBlur={getFieldProps('profitAmount').onBlur}

@@ -250,7 +250,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                   <span className="label-text-alt text-gray-400">Price</span>
                 </div>
                 <CurrencyInput
-                  decimalsLimit={2}
+                  decimalsLimit={4}
                   prefix="₱"
                   disabled={isMutating}
                   onBlur={getFieldProps('price').onBlur}
@@ -295,7 +295,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                     <span className="label-text-alt text-gray-400">Profit</span>
                   </div>
                   <CurrencyInput
-                    decimalsLimit={2}
+                    decimalsLimit={4}
                     disableGroupSeparators
                     disabled={isMutating}
                     onBlur={getFieldProps('profitPercentage').onBlur}
@@ -332,7 +332,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                   />
                   <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
                   <CurrencyInput
-                    decimalsLimit={2}
+                    decimalsLimit={4}
                     prefix="₱"
                     disabled={isMutating}
                     onBlur={getFieldProps('profitAmount').onBlur}

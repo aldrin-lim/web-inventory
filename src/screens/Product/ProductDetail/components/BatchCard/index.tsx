@@ -134,6 +134,7 @@ const BatchCard = (props: BatchCardProps) => {
                 <span className="label-text">Bulk Cost</span>
               </div>
               <CurrencyInput
+                decimalsLimit={4}
                 disabled={disabled}
                 onBlur={getFieldProps('cost').onBlur}
                 name={getFieldProps('cost').name}

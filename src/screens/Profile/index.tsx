@@ -11,6 +11,7 @@ import { updateUser } from 'api/users.api'
 import { AppPath } from 'routes/AppRoutes.types'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import { toast } from 'react-toastify'
+import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 
 const Profile = () => {
   const navigate = useNavigate()
@@ -54,9 +55,9 @@ const Profile = () => {
             onClick={() => navigate(AppPath.Root)}
             disabled={isMutating}
           />,
+          <ToolbarTitle key={2} title="User Profile" />,
         ]}
       />
-      <div>Profile</div>
       <div className="mt-3 flex flex-col gap-2">
         <div className="form-control w-full">
           <label className="label">
