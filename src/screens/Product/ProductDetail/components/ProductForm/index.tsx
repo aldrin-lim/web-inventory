@@ -243,7 +243,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
               // const newPrice = cost * (1 + newProfitPercentage / 100)
               const newPrice = new Big(cost)
                 .times(new Big(1).plus(new Big(newProfitPercentage).div(100)))
-                .round(2)
                 .toNumber()
               const newProfitAmount = computeProfitAmount(newPrice, cost)
 
@@ -274,7 +273,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
               // const newPrice = cost + newProfitAmount
               const newPrice = new Big(cost)
                 .plus(new Big(newProfitAmount))
-                .round(2)
                 .toNumber()
               const newProfitPercentage = computeProfitPercentage(
                 newPrice,

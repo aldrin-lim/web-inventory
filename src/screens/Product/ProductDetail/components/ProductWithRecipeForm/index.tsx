@@ -137,7 +137,9 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
       <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-gray-200 p-2 py-1 text-black ">
         <p className="font-bold">Cost:</p>
         <div className="flex flex-row">
-          <p className="font-bold">₱ {values.recipe?.cost.toFixed(2)}</p>
+          <p className="font-bold">
+            ₱ {new Big(values.recipe?.cost ?? 0).toNumber()}
+          </p>
         </div>
       </div>
 
@@ -213,7 +215,6 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
               // const newPrice = cost * (1 + newProfitPercentage / 100)
               const newPrice = new Big(cost)
                 .times(new Big(1).plus(new Big(newProfitPercentage).div(100)))
-                .round(2)
                 .toNumber()
               const newProfitAmount = computeProfitAmount(newPrice, cost)
 
@@ -244,7 +245,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
               // const newPrice = cost + newProfitAmount
               const newPrice = new Big(cost)
                 .plus(new Big(newProfitAmount))
-                .round(2)
+
                 .toNumber()
               const newProfitPercentage = computeProfitPercentage(
                 newPrice,

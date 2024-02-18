@@ -76,10 +76,7 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
       .toNumber()
 
     setTotalCost(
-      new Big(values.quantity)
-        .times(new Big(newCostPerUnit))
-        .round(2)
-        .toNumber(),
+      new Big(values.quantity).times(new Big(newCostPerUnit)).toNumber(),
     )
 
     setFieldValue('cost', newCostPerUnit)

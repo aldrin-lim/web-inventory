@@ -6,6 +6,9 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import './index.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from 'contexts/AuthContext.tsx'
+import Big from 'big.js'
+
+Big.DP = 4
 
 const queryClient = new QueryClient()
 

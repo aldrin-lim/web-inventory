@@ -16,11 +16,7 @@ export function toNumber(x: unknown) {
 export const computeProfitPercentage = (price: number, cost: number) => {
   const profitAmount = new Big(price).minus(cost)
   try {
-    const profitPercentage = profitAmount
-      .div(cost)
-      .times(100)
-      .round(2)
-      .toNumber()
+    const profitPercentage = profitAmount.div(cost).times(100).toNumber()
     return profitPercentage
   } catch (error) {
     return 0
@@ -28,7 +24,7 @@ export const computeProfitPercentage = (price: number, cost: number) => {
 }
 
 export const computeProfitAmount = (price: number, cost: number) => {
-  const profitAmount = new Big(price).minus(cost).round(2).toNumber()
+  const profitAmount = new Big(price).minus(cost).toNumber()
 
   return profitAmount
 }
