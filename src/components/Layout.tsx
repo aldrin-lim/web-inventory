@@ -1,8 +1,14 @@
 import useUser from 'hooks/useUser'
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
+import { AppPath } from 'routes/AppRoutes.types'
 
 const Layout = () => {
-  useUser()
+  const { error } = useUser()
+
+  if (error) {
+    return <Navigate to={AppPath.Error} replace />
+  }
+
   return (
     <>
       <Outlet />

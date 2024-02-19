@@ -3,9 +3,7 @@ import {
   TagIcon,
   BookOpenIcon,
   ArchiveBoxIcon,
-  RectangleStackIcon,
   ArrowLeftOnRectangleIcon,
-  Cog6ToothIcon,
   BuildingStorefrontIcon,
   UserIcon,
 } from '@heroicons/react/24/outline'
@@ -16,11 +14,9 @@ import { AppPath } from 'routes/AppRoutes.types'
 
 import logo from '../../../public/logo.svg'
 import { useAuth0 } from '@auth0/auth0-react'
-import useUser from 'hooks/useUser'
 const ProductMenu = () => {
   const navigate = useNavigate()
   const { logout } = useAuth0()
-  useUser()
 
   return (
     <div className="absolute flex w-full flex-col gap-4">
@@ -106,12 +102,6 @@ const ProductMenu = () => {
               Sign Out
             </button>
           </li>
-
-          {/* await logout({
-                logoutParams: {
-                  returnTo: window.location.origin,
-                },
-              }) */}
         </ul>
       </div>
     </div>

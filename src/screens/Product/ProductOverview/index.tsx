@@ -2,7 +2,7 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import useAllProducts from 'hooks/useAllProducts'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 
@@ -25,7 +25,7 @@ const ProductOverview = () => {
   const { currentScreen, isParentScreen, navigateToParent } =
     useCustomRoute(ScreenPath)
 
-  const { products, isLoading } = useAllProducts()
+  const { products, isLoading, error } = useAllProducts()
 
   const outOfStocks = products.filter((product) => product.outOfStock === true)
 
@@ -67,6 +67,10 @@ const ProductOverview = () => {
         />
       </div>
     )
+  }
+
+  if (error) {
+    return <Navigate to={AppPath.Error} replace />
   }
 
   return (
