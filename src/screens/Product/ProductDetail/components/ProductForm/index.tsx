@@ -20,6 +20,7 @@ import { v4 } from 'uuid'
 import ProductImages from '../ProductImages'
 import { useNavigate } from 'react-router-dom'
 import { ScreenPath } from '../..'
+import CategoryDropdown from '../CategoryDropdown'
 
 interface FormikProps {
   getFieldProps: (
@@ -290,6 +291,28 @@ const ProductForm: React.FC<ProductFormProps> = ({
           </span>
         </div>
       </div>
+
+      {/* Category */}
+      <label className="form-control w-full ">
+        <div className=" ">
+          <span className="label-text-alt text-gray-400">Category</span>
+        </div>
+        <CategoryDropdown
+          value={values.category}
+          onChange={(option) => {
+            console.log(option)
+            setFieldValue('category', option?.value)
+          }}
+        />
+
+        {errors.name && (
+          <div className="label py-0">
+            <span className="label-text-alt text-xs text-red-400">
+              {errors.name}
+            </span>
+          </div>
+        )}
+      </label>
 
       {/* For Sale */}
       <div className="form-control flex w-full flex-row justify-between py-2">

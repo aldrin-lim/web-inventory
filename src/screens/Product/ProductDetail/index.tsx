@@ -135,6 +135,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     enableReinitialize: true,
     validateOnBlur: false,
     onSubmit: async (formValue) => {
+      console.log(formValue)
       formValue.price = toNumber(formValue.price)
       formValue.profitPercentage = toNumber(formValue.profitPercentage)
       formValue.profitAmount = toNumber(formValue.profitAmount)

@@ -17,6 +17,7 @@ import {
 import { getActiveBatch } from 'util/products'
 import ProductImages from '../ProductImages'
 import { InformationCircleIcon } from '@heroicons/react/24/outline'
+import CategoryDropdown from '../CategoryDropdown'
 
 interface FormikProps {
   getFieldProps: (
@@ -263,6 +264,25 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
           </span>
         </div>
       </div>
+
+      {/* Category */}
+      <label className="form-control w-full ">
+        <div className=" ">
+          <span className="label-text-alt text-gray-400">Category</span>
+        </div>
+        <CategoryDropdown
+          value={values.category}
+          onChange={(option) => setFieldValue('category', option?.value)}
+        />
+
+        {errors.name && (
+          <div className="label py-0">
+            <span className="label-text-alt text-xs text-red-400">
+              {errors.name}
+            </span>
+          </div>
+        )}
+      </label>
 
       {/* For Sale */}
       <div className="form-control flex w-full flex-row justify-between py-2">
