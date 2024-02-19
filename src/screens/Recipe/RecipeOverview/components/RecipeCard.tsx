@@ -2,6 +2,7 @@ import Big from 'big.js'
 import ImageLoader from 'components/ImageLoader'
 import MiddleTruncatedText from 'components/MiddleTruncatedText'
 import { RecipeSchema } from 'types/product.types'
+import { formatToPeso } from 'util/currency'
 import { z } from 'zod'
 
 type RecipeMaterialCardProps = {
@@ -34,7 +35,7 @@ const RecipeCard = (props: RecipeMaterialCardProps) => {
         </div>
       </div>
       <div className="absolute right-2 top-2 rounded-sm bg-purple-300 p-1 text-white">
-        {new Big(cost).toNumber()}
+        {formatToPeso(new Big(cost).toNumber())}
       </div>
     </div>
   )

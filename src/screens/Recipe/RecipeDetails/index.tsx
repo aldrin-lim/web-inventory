@@ -521,12 +521,14 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       >
         <Inventory
           isLoading={isProductsLoading}
-          products={products.filter(
-            (product) =>
-              !values.materials.find(
-                (material) => material.product.id === product.id,
-              ),
-          )}
+          products={products
+            .filter((product) => !product.recipe)
+            .filter(
+              (product) =>
+                !values.materials.find(
+                  (material) => material.product.id === product.id,
+                ),
+            )}
           onBack={() => navigateToParent()}
           onProductSelect={(product) => {
             const activeBatch = getActiveBatch(product.batches)
@@ -559,12 +561,14 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       >
         <Inventory
           isLoading={isProductsLoading}
-          products={products.filter(
-            (product) =>
-              !values.materials.find(
-                (material) => material.product.id === product.id,
-              ),
-          )}
+          products={products
+            .filter((product) => !product.recipe)
+            .filter(
+              (product) =>
+                !values.materials.find(
+                  (material) => material.product.id === product.id,
+                ),
+            )}
           onBack={() => navigateToParent()}
           onProductSelect={(product) => {
             const activeBatch = getActiveBatch(product.batches)
