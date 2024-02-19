@@ -17,7 +17,7 @@ export type AutoCompleteProps = {
 }
 
 const AutocompleteSelect = (props: AutoCompleteProps) => {
-  const { options, defaultValue, value, maxMenuHeight = 120, disabled } = props
+  const { options, defaultValue, value, maxMenuHeight = 145, disabled } = props
 
   // Function to transform a string or OptionsValue to the required format
   const transformOption = (option: string | OptionsValue) => {

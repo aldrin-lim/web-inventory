@@ -1,5 +1,5 @@
 import SlidingTransition from 'components/SlidingTransition'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { ChevronLeftIcon, PlusIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
@@ -65,6 +65,8 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
   const mode = recipe ? 'edit' : 'add'
 
+  const [backorderError, setBackorderError] = useState('')
+
   const { products, isLoading: isProductsLoading } = useAllProducts()
   const { isCreating, createRecipe } = useCreateRecipe()
   const { isUpdating, updateRecipe } = useUpdateRecipe()
@@ -79,6 +81,19 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
     useFormik({
       initialValues: formikValues,
       onSubmit: async (formValue) => {
+        // Check if materials are allowed backorder
+        // If one of the matarial has backorder allowed, all materials must be allowed backorder
+        setBackorderError('')
+        const hasBackorder = formValue.materials.some(
+          (material) => material.product.allowBackOrder,
+        )
+        if (hasBackorder) {
+          setBackorderError(
+            'One material is allowed for backorder, all materials must be for allowed backorder.',
+          )
+          return
+        }
+
         if (mode === 'add') {
           await createRecipe(formValue)
           navigate(AppPath.RecipeOverview)
@@ -371,18 +386,25 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 </div>
               </div>
             </div>
-          </div>
+            {errors &&
+              values.materials.length === 0 &&
+              errors.materials &&
+              typeof errors.materials === 'string' && (
+                <div className="label py-0">
+                  <span className="label-text-alt text-xs text-red-400">
+                    {errors.materials}
+                  </span>
+                </div>
+              )}
 
-          {errors &&
-            values.materials.length === 0 &&
-            errors.materials &&
-            typeof errors.materials === 'string' && (
+            {backorderError && (
               <div className="label py-0">
                 <span className="label-text-alt text-xs text-red-400">
-                  {errors.materials}
+                  {backorderError}
                 </span>
               </div>
             )}
+          </div>
 
           {/* Ingredients */}
           <div className="flex flex-row justify-between">
