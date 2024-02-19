@@ -41,12 +41,12 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     user: auth0User,
     error: auth0Error,
     loginWithRedirect,
+    logout,
   } = useAuth0()
 
   const [isStateLoading, setIsStateLoading] = useState(true)
 
   useEffect(() => {
-    console.log('aas')
     const getAccessTokenAndUser = async () => {
       try {
         if (isAuth0Loading === false && isAuthenticated) {
@@ -66,6 +66,18 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
           await new Promise((resolve) => {
             httpClient.defaults.headers.common['Authorization'] =
               `Bearer ${token}`
+
+            httpClient.interceptors.response.use(
+              (config) => config,
+              (error) => {
+                if (error.response && error.response.status === 401) {
+                  logout({})
+                }
+                // Optionally handle other error statuses or log errors.
+
+                return Promise.reject(error)
+              },
+            )
             setTimeout(() => {
               setIsStateLoading(false)
               resolve(null)
