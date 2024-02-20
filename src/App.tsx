@@ -1,9 +1,16 @@
+import { useEffect } from 'react'
+import { themeChange } from 'theme-change'
+
 import './App.css'
 import 'react-toastify/dist/ReactToastify.css'
 import AppRoutes from './routes/AppRoutes'
 import { ToastContainer } from 'react-toastify'
 
 function App() {
+  useEffect(() => {
+    themeChange(false)
+  }, [])
+
   return (
     <div className="App mx-auto flex w-full" data-theme="">
       <ToastContainer
