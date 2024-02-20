@@ -8,7 +8,7 @@ import { ToastContainer } from 'react-toastify'
 
 function App() {
   useEffect(() => {
-    themeChange(false)
+    themeChange(true)
   }, [])
 
   return (
