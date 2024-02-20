@@ -16,4 +16,5 @@ export enum AppPath {
   Store = '/store',
   Staff = '/staff',
   Error = '/error',
+  Signout = '/signout',
 }

@@ -13,6 +13,7 @@ import Inventory from 'screens/Product/Inventory'
 import Layout from 'components/Layout'
 import Store from 'screens/Store'
 import Profile from 'screens/Profile'
+import SignoutScreen from 'components/SignoutScreen'
 
 const AppRoutes = () => (
   <Routes>
@@ -59,6 +60,7 @@ const AppRoutes = () => (
         element={<ProtectedRoute element={<Profile />} />}
       />
     </Route>
+    <Route path={AppPath.Signout} element={<SignoutScreen />} />
     <Route path="*" element={<Navigate to={AppPath.Root} />} />
     <Route
       path={AppPath.Error}
