@@ -36,15 +36,40 @@ const ProductCard = (props: ProductCardProps) => {
             <MiddleTruncatedText text={name} maxLength={18} />
           </h2>
 
-          <div className="flex flex-row gap-1  text-xs">
-            <span
-              className={`overflow-hidden truncate text-ellipsis ${
-                outOfStock ? 'text-red-400' : ''
-              }`}
-            >
-              {totalQuantity} {unitOfMeasurement} available
-            </span>
-          </div>
+          {product.trackStock && (
+            <div className="flex flex-row gap-1  text-xs">
+              <span
+                className={`overflow-hidden truncate text-ellipsis ${
+                  outOfStock ? 'text-red-400' : ''
+                }`}
+              >
+                {totalQuantity} {unitOfMeasurement} available
+              </span>
+            </div>
+          )}
+          {product.recipe && (
+            <div className="flex flex-row gap-1  text-xs">
+              <span
+                className={`overflow-hidden truncate text-ellipsis ${
+                  outOfStock ? 'text-red-400' : ''
+                }`}
+              >
+                {totalQuantity} {unitOfMeasurement} available
+              </span>
+            </div>
+          )}
+          {/* TODO: Fix this via css */}
+          {!product?.recipe && !product.trackStock && (
+            <div className="flex flex-row gap-1  text-xs">
+              <span
+                className={`overflow-hidden truncate text-ellipsis ${
+                  outOfStock ? 'text-red-400' : ''
+                }`}
+              >
+                &nbsp;
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
