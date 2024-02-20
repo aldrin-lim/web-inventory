@@ -4,26 +4,28 @@ export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   plugins: [require('daisyui')],
   theme: {
-    primary: "#856AD4",
-    secondary: "#3A9E92",
-    warning: "FF7300",
-    "primary-content": "#ffffff",
-    "secondary-content": "#ffffff",
-    "accent-content": "#ffffff",
+    colors: {
+      primary: "#856AD4",
+      secondary: "#3A9E92",
+      warning: "FF7300",
+      "primary-content": "#ffffff",
+      "secondary-content": "#ffffff",
+      "accent-content": "#ffffff",
+    }
   },
   daisyui: {
     themes: [
       {
-        light: {
-          ...require("daisyui/src/theming/themes")["light"],
-          primary: "#856AD4",
-          secondary: "#3A9E92",
-          warning: "FF7300",
-          "primary-content": "#ffffff",
-          "secondary-content": "#ffffff",
-          "accent-content": "#ffffff",
+        // light: {
+        //   ...require("daisyui/src/theming/themes")["light"],
+        //   primary: "#856AD4",
+        //   secondary: "#3A9E92",
+        //   warning: "FF7300",
+        //   "primary-content": "#ffffff",
+        //   "secondary-content": "#ffffff",
+        //   "accent-content": "#ffffff",
 
-        },
+        // },
       },
       // "dark",
       // "cupcake",
