@@ -14,6 +14,7 @@ import Layout from 'components/Layout'
 import Store from 'screens/Store'
 import Profile from 'screens/Profile'
 import SignoutScreen from 'components/SignoutScreen'
+import Dashboard from 'screens/Report/Dashboard'
 
 const AppRoutes = () => (
   <Routes>
@@ -50,6 +51,10 @@ const AppRoutes = () => (
       <Route
         path={`${AppPath.Inventory}/*`}
         element={<ProtectedRoute element={<Inventory />} />}
+      />
+      <Route
+        path={AppPath.Dashboard}
+        element={<ProtectedRoute element={<Dashboard />} />}
       />
       <Route
         path={AppPath.Store}
