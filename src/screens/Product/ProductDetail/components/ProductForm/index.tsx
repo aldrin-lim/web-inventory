@@ -172,125 +172,129 @@ const ProductForm: React.FC<ProductFormProps> = ({
         </label>
       )}
 
-      {/* Price and Profit */}
-      <div className="flex w-full flex-row gap-2">
-        {/* Price Input */}
-        <label className="form-control ">
-          <div className="form-control-label  ">
-            <span className="label-text-alt text-gray-400">Price</span>
-          </div>
-          <CurrencyInput
-            decimalsLimit={4}
-            prefix="₱"
-            disabled={isMutating}
-            onBlur={getFieldProps('price').onBlur}
-            name={getFieldProps('price').name}
-            value={values.price}
-            type="text"
-            tabIndex={2}
-            className="input input-bordered w-full"
-            placeholder="₱0"
-            inputMode="decimal"
-            onValueChange={(value) => {
-              setFieldValue('price', value)
-              const newPrice = toNumber(value)
-              const cost = values.isBulkCost
-                ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                : toNumber(values.cost)
-              const newProfitAmount = computeProfitAmount(newPrice, cost)
-              const newProfitPercentage = computeProfitPercentage(
-                newPrice,
-                cost,
-              )
-              setFieldValue('profitAmount', toNumber(newProfitAmount))
-              setFieldValue('profitPercentage', toNumber(newProfitPercentage))
-            }}
-          />
-          <div className="label py-0">
-            <span className="label-text-alt text-xs text-red-400">
-              {errors.price}&nbsp;
-            </span>
-          </div>
-        </label>
-      </div>
+      {/* Price*/}
+      {values.forSale && (
+        <div className="flex w-full flex-row gap-2">
+          {/* Price Input */}
+          <label className="form-control ">
+            <div className="form-control-label  ">
+              <span className="label-text-alt text-gray-400">Price</span>
+            </div>
+            <CurrencyInput
+              decimalsLimit={4}
+              prefix="₱"
+              disabled={isMutating}
+              onBlur={getFieldProps('price').onBlur}
+              name={getFieldProps('price').name}
+              value={values.price}
+              type="text"
+              tabIndex={2}
+              className="input input-bordered w-full"
+              placeholder="₱0"
+              inputMode="decimal"
+              onValueChange={(value) => {
+                setFieldValue('price', value)
+                const newPrice = toNumber(value)
+                const cost = values.isBulkCost
+                  ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                  : toNumber(values.cost)
+                const newProfitAmount = computeProfitAmount(newPrice, cost)
+                const newProfitPercentage = computeProfitPercentage(
+                  newPrice,
+                  cost,
+                )
+                setFieldValue('profitAmount', toNumber(newProfitAmount))
+                setFieldValue('profitPercentage', toNumber(newProfitPercentage))
+              }}
+            />
+            <div className="label py-0">
+              <span className="label-text-alt text-xs text-red-400">
+                {errors.price}&nbsp;
+              </span>
+            </div>
+          </label>
+        </div>
+      )}
 
       {/* Profit */}
-      <div className="form-control">
-        <div className="form-control input input-bordered relative flex flex-row items-center">
-          <div className="form-control-label  ">
-            <span className="label-text-alt text-gray-400">Profit</span>
+      {values.forSale && (
+        <div className="form-control">
+          <div className="form-control input input-bordered relative flex flex-row items-center">
+            <div className="form-control-label  ">
+              <span className="label-text-alt text-gray-400">Profit</span>
+            </div>
+            <CurrencyInput
+              decimalsLimit={4}
+              disabled={isMutating}
+              onBlur={getFieldProps('profitPercentage').onBlur}
+              name={getFieldProps('profitPercentage').name}
+              value={values.profitPercentage}
+              placeholder="70"
+              type="text"
+              tabIndex={4}
+              disableGroupSeparators={true}
+              inputMode="decimal"
+              className={[
+                'input w-1/2 border-none bg-transparent px-0 text-left focus:outline-none',
+                profitPercentageColor(values.profitPercentage),
+              ].join(' ')}
+              onValueChange={(value) => {
+                setFieldValue('profitPercentage', value)
+                const newProfitPercentage = toNumber(value)
+                const cost = values.isBulkCost
+                  ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                  : toNumber(values.cost)
+                // const newPrice = cost * (1 + newProfitPercentage / 100)
+                const newPrice = new Big(cost)
+                  .times(new Big(1).plus(new Big(newProfitPercentage).div(100)))
+                  .toNumber()
+                const newProfitAmount = computeProfitAmount(newPrice, cost)
+
+                setFieldValue('price', newPrice)
+                setFieldValue('profitAmount', newProfitAmount)
+              }}
+            />
+            <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
+            <CurrencyInput
+              decimalsLimit={4}
+              prefix="₱"
+              disabled={isMutating}
+              onBlur={getFieldProps('profitAmount').onBlur}
+              name={getFieldProps('profitAmount').name}
+              value={values.profitAmount}
+              type="text"
+              tabIndex={5}
+              className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
+              placeholder="₱0"
+              inputMode="decimal"
+              onValueChange={(value) => {
+                setFieldValue('profitAmount', value)
+                const newProfitAmount = toNumber(value)
+                const cost = values.isBulkCost
+                  ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                  : toNumber(values.cost)
+
+                // const newPrice = cost + newProfitAmount
+                const newPrice = new Big(cost)
+                  .plus(new Big(newProfitAmount))
+                  .toNumber()
+                const newProfitPercentage = computeProfitPercentage(
+                  newPrice,
+                  cost,
+                )
+
+                setFieldValue('price', newPrice)
+                setFieldValue('profitPercentage', newProfitPercentage)
+              }}
+            />
           </div>
-          <CurrencyInput
-            decimalsLimit={4}
-            disabled={isMutating}
-            onBlur={getFieldProps('profitPercentage').onBlur}
-            name={getFieldProps('profitPercentage').name}
-            value={values.profitPercentage}
-            placeholder="70"
-            type="text"
-            tabIndex={4}
-            disableGroupSeparators={true}
-            inputMode="decimal"
-            className={[
-              'input w-1/2 border-none bg-transparent px-0 text-left focus:outline-none',
-              profitPercentageColor(values.profitPercentage),
-            ].join(' ')}
-            onValueChange={(value) => {
-              setFieldValue('profitPercentage', value)
-              const newProfitPercentage = toNumber(value)
-              const cost = values.isBulkCost
-                ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                : toNumber(values.cost)
-              // const newPrice = cost * (1 + newProfitPercentage / 100)
-              const newPrice = new Big(cost)
-                .times(new Big(1).plus(new Big(newProfitPercentage).div(100)))
-                .toNumber()
-              const newProfitAmount = computeProfitAmount(newPrice, cost)
-
-              setFieldValue('price', newPrice)
-              setFieldValue('profitAmount', newProfitAmount)
-            }}
-          />
-          <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
-          <CurrencyInput
-            decimalsLimit={4}
-            prefix="₱"
-            disabled={isMutating}
-            onBlur={getFieldProps('profitAmount').onBlur}
-            name={getFieldProps('profitAmount').name}
-            value={values.profitAmount}
-            type="text"
-            tabIndex={5}
-            className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
-            placeholder="₱0"
-            inputMode="decimal"
-            onValueChange={(value) => {
-              setFieldValue('profitAmount', value)
-              const newProfitAmount = toNumber(value)
-              const cost = values.isBulkCost
-                ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                : toNumber(values.cost)
-
-              // const newPrice = cost + newProfitAmount
-              const newPrice = new Big(cost)
-                .plus(new Big(newProfitAmount))
-                .toNumber()
-              const newProfitPercentage = computeProfitPercentage(
-                newPrice,
-                cost,
-              )
-
-              setFieldValue('price', newPrice)
-              setFieldValue('profitPercentage', newProfitPercentage)
-            }}
-          />
+          <div className="label py-0">
+            <span className="label-text-alt text-xs text-red-400">
+              {errors.profitAmount}&nbsp;
+            </span>
+          </div>
         </div>
-        <div className="label py-0">
-          <span className="label-text-alt text-xs text-red-400">
-            {errors.profitAmount}&nbsp;
-          </span>
-        </div>
-      </div>
+      )}
 
       {/* Category */}
       <label className="form-control w-full ">
