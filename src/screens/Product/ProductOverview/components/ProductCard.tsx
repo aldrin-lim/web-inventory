@@ -23,15 +23,28 @@ const ProductCard = (props: ProductCardProps) => {
       <div className="absolute top-2 z-[9] flex w-full items-center justify-between px-2">
         {product.isBulkCost === false && (
           <div className="bg-primary/50 p-1 text-sm text-white">
-            {formatToPeso(new Big(product.price).toNumber())}
+            {formatToPeso(
+              new Big(
+                product.forSale
+                  ? product.price
+                  : product.activeBatch?.cost ?? 0,
+              ).toNumber(),
+            )}
           </div>
         )}
         {product.isBulkCost === true && (
           <div className="bg-primary/50 p-1 text-sm text-white">
-            {formatToPeso(new Big(product.price).toNumber())} /
-            {unitAbbrevationsToLabel(unitOfMeasurement)}
+            {formatToPeso(
+              new Big(
+                product.forSale
+                  ? product.price
+                  : product.activeBatch.costPerUnit ?? 0,
+              ).toNumber(),
+            )}{' '}
+            /{unitAbbrevationsToLabel(unitOfMeasurement)}
           </div>
         )}
+        {}
       </div>
       <div
         className={`ProductCard card card-compact relative w-[155px] cursor-pointer border border-gray-300  bg-base-100 `}
