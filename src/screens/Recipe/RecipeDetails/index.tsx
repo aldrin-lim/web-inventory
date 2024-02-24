@@ -245,10 +245,12 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           {/* Cost and Profit */}
           <div className="sticky top-[50px] z-[1] flex flex-col gap-4 bg-base-100 py-2 pt-4">
             {/* Cost */}
-            <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
-              <p>Cost</p>
-              <p>₱ {new Big(values.cost ?? 0).toNumber()}</p>
-            </div>
+            {values.materials.length > 0 && (
+              <div className="flex w-full flex-row justify-between rounded-md bg-primary p-2 text-right font-bold text-primary-content">
+                <p>Cost</p>
+                <p>₱ {new Big(values.cost ?? 0).toNumber()}</p>
+              </div>
+            )}
             {errors && errors.cost && (
               <div className="label py-0">
                 <span className="label-text-alt text-xs text-red-400">
@@ -257,135 +259,6 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
               </div>
             )}
 
-            {/* Price and Profit */}
-            <div className="flex w-full flex-row gap-2">
-              {/* Price Input */}
-              <label className="form-control max-w-[40%]">
-                <div className="form-control-label  ">
-                  <span className="label-text-alt text-gray-400">Price</span>
-                </div>
-                <CurrencyInput
-                  decimalsLimit={4}
-                  prefix="₱"
-                  disabled={isMutating}
-                  onBlur={getFieldProps('price').onBlur}
-                  name={getFieldProps('price').name}
-                  value={values.price || ''}
-                  type="text"
-                  tabIndex={2}
-                  className="input input-bordered w-full"
-                  placeholder="₱0"
-                  inputMode="decimal"
-                  onValueChange={(value) => {
-                    setFieldValue('price', value)
-                    if (values.cost > 0) {
-                      const newPrice = toNumber(value)
-                      const cost = values.cost
-                      const newProfitAmount = computeProfitAmount(
-                        newPrice,
-                        cost,
-                      )
-                      const newProfitPercentage = computeProfitPercentage(
-                        newPrice,
-                        cost,
-                      )
-                      setFieldValue('profitAmount', toNumber(newProfitAmount))
-                      setFieldValue(
-                        'profitPercentage',
-                        toNumber(newProfitPercentage),
-                      )
-                    }
-                  }}
-                />
-                <div className="label py-0">
-                  <span className="label-text-alt text-xs text-red-400">
-                    {errors.price}&nbsp;
-                  </span>
-                </div>
-              </label>
-              {/* Profit */}
-              <div className="form-control">
-                <div className="form-control input input-bordered relative flex flex-row items-center">
-                  <div className="form-control-label  ">
-                    <span className="label-text-alt text-gray-400">Profit</span>
-                  </div>
-                  <CurrencyInput
-                    decimalsLimit={4}
-                    disableGroupSeparators
-                    disabled={isMutating}
-                    onBlur={getFieldProps('profitPercentage').onBlur}
-                    name={getFieldProps('profitPercentage').name}
-                    value={values.profitPercentage || ''}
-                    type="text"
-                    tabIndex={4}
-                    inputMode="decimal"
-                    placeholder="70%"
-                    className={[
-                      'input w-[40px] border-none bg-transparent px-0 text-center focus:outline-none',
-                    ].join(' ')}
-                    onChange={({ target: { value } }) => {
-                      setFieldValue('profitPercentage', value)
-                      if (values.cost > 0) {
-                        const newProfitPercentage = toNumber(value)
-                        const cost = values.cost
-                        const newPrice = new Big(cost)
-                          .times(
-                            new Big(1).plus(
-                              new Big(newProfitPercentage).div(100),
-                            ),
-                          )
-                          .toNumber()
-
-                        const newProfitAmount = computeProfitAmount(
-                          newPrice,
-                          cost,
-                        )
-                        setFieldValue('price', newPrice)
-                        setFieldValue('profitAmount', newProfitAmount)
-                      }
-                    }}
-                  />
-                  <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
-                  <CurrencyInput
-                    decimalsLimit={4}
-                    prefix="₱"
-                    disabled={isMutating}
-                    onBlur={getFieldProps('profitAmount').onBlur}
-                    name={getFieldProps('profitAmount').name}
-                    value={values.profitAmount || ''}
-                    type="text"
-                    tabIndex={5}
-                    className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
-                    placeholder="₱0"
-                    inputMode="decimal"
-                    onValueChange={(value) => {
-                      setFieldValue('profitAmount', value)
-                      if (values.cost > 0) {
-                        const newProfitAmount = toNumber(value)
-                        const cost = values.cost
-
-                        // const newPrice = cost + newProfitAmount
-                        const newPrice = new Big(cost)
-                          .plus(new Big(newProfitAmount))
-                          .toNumber()
-                        const newProfitPercentage = computeProfitPercentage(
-                          newPrice,
-                          cost,
-                        )
-
-                        setFieldValue('price', newPrice)
-                        setFieldValue('profitPercentage', newProfitPercentage)
-                      }
-                    }}
-                  />
-                </div>
-                <div className="label py-0">
-                  <span className="label-text-alt text-xs text-red-400">
-                    {errors.profitAmount || errors.profitPercentage}&nbsp;
-                  </span>
-                </div>
-              </div>
-            </div>
             {errors &&
               values.materials.length === 0 &&
               errors.materials &&
@@ -603,25 +476,29 @@ const RecipeDetailSchema = RecipeSchema.extend({
       required_error: 'Profit % is required',
       invalid_type_error: 'Profit  % is required',
     })
-    .positive('Must be greater than 0'),
+    .optional()
+    .default(0),
   profitAmount: z.coerce
     .number({
       required_error: 'Profit is required',
       invalid_type_error: 'Profit is required',
     })
-    .positive('Must be greater than 0'),
+    .optional()
+    .default(0),
   cost: z
     .number({
       coerce: true,
       required_error: 'Cost is required',
     })
-    .positive('Must be greater than 0'),
+    .optional()
+    .default(0),
   price: z.coerce
     .number({
       required_error: 'Price is required',
       invalid_type_error: 'Price is must be number',
     })
-    .positive('Must be greater than 0'),
+    .optional()
+    .default(0),
 })
 
 export default RecipeDetails
