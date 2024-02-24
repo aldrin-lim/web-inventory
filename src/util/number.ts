@@ -38,3 +38,11 @@ export const profitPercentageColor = (amount: string | number) => {
   }
   return ''
 }
+
+export function padWithZeros(input: number, maxLength: number = 6) {
+  // Convert the input to a string to use the padStart method
+  const inputString = input.toString()
+  // Pad the input with zeros at the start to ensure it is 6 characters long
+  const paddedInput = inputString.padStart(maxLength, '0')
+  return paddedInput
+}

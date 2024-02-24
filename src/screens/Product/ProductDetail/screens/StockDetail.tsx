@@ -12,6 +12,7 @@ import { v4 } from 'uuid'
 import { type StockDetail, StockDetailSchema } from '../ProductDetail.types'
 import { getActiveBatch } from 'util/products'
 import { useState } from 'react'
+import { padWithZeros } from 'util/number'
 
 type StockDetailProps = {
   onBack: () => void
@@ -77,7 +78,7 @@ const StockDetail = (props: StockDetailProps) => {
     // get measurement from exiting batch
     const newBatch = {
       id: v4(),
-      name: `Batch ${values.batches.length + 1} `,
+      name: `Batch #${padWithZeros(values.batches.length + 1)} `,
       cost: values.isBulkCost ? 0 : Number(values.cost),
       costPerUnit: 0,
       quantity: 1,
@@ -237,12 +238,15 @@ const StockDetail = (props: StockDetailProps) => {
                 setFieldValue('batches', newBatches)
               }}
               onChange={async (updatedBatch) => {
-                await setFieldValue(`batches.${index}`, updatedBatch)
+                // await setFieldValue(`batches.${index}`, updatedBatch)
 
                 // Make all of measurment the same from the latest changes on batch
                 await setFieldValue(
                   'batches',
                   values.batches.map((batch) => {
+                    if (batch.id !== updatedBatch.id) {
+                      return batch
+                    }
                     return {
                       ...batch,
                       unitOfMeasurement: updatedBatch.unitOfMeasurement,

@@ -10,6 +10,7 @@ import { useDebounce } from '@uidotdev/usehooks'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
+import { CheckIcon } from '@heroicons/react/24/solid'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -95,20 +96,37 @@ const BatchCard = (props: BatchCardProps) => {
   const isExpired =
     values.expirationDate && new Date(values.expirationDate) < new Date()
 
+  const expiredStyle = 'border-warning/40 !bg-warning/10'
+  const activeStyle = 'border-primary/60 bg-primary/10'
+
+  const additionalStyle = useMemo(() => {
+    if (isExpired) {
+      return expiredStyle
+    }
+
+    if (active) {
+      return activeStyle
+    }
+
+    return ''
+  }, [active, activeStyle, expiredStyle, isExpired])
+
   return (
     <div>
-      <div className={`flex flex-col gap-2 border-double bg-gray-100  p-2 `}>
+      <div
+        className={`flex flex-col gap-2 rounded-lg border border-neutral/30 p-2 py-4 ${additionalStyle}`}
+      >
         {active && (
           <span className="text-xs font-bold text-primary">
-            (Currently used)
+            (CURRENTLY USED)
           </span>
         )}
         {isExpired && (
           <span className="text-xs font-bold text-warning">(EXPIRED)</span>
         )}
         <div className="flex flex-row justify-between">
-          <p className="text-sm uppercase tracking-wider">
-            Batch {batch.id?.slice(0, 6)}
+          <p className="flex flex-row items-center gap-2 text-sm uppercase tracking-wider">
+            {batch.name}
           </p>
           <button
             type="button"

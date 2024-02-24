@@ -13,6 +13,7 @@ import { ProductSoldBy } from 'types/product.types'
 import {
   computeProfitAmount,
   computeProfitPercentage,
+  padWithZeros,
   profitPercentageColor,
 } from 'util/number'
 import { getActiveBatch } from 'util/products'
@@ -381,6 +382,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                     quantity: 1,
                     id: v4(),
                     cost: toNumber(values.cost),
+                    name: `Batch #${padWithZeros(1)}`,
                   },
                 ],
               })

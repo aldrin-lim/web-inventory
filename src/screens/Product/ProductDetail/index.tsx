@@ -22,6 +22,7 @@ import useCloneProduct from 'hooks/useCloneProduct'
 import {
   computeProfitAmount,
   computeProfitPercentage,
+  padWithZeros,
   toNumber,
 } from 'util/number'
 import {
@@ -76,7 +77,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
       batches: [
         {
           id: v4(),
-          name: 'Batch 1',
+          name: `Batch #${padWithZeros(1)}`,
           cost: 0,
           costPerUnit: 0,
           quantity: 1,
@@ -327,6 +328,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 id: v4(),
                 quantity: 1,
                 cost,
+                name: `Batch #${padWithZeros(1)}`,
               }
               const newProfitAmount = computeProfitAmount(
                 toNumber(values.price),
