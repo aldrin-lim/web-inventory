@@ -1,5 +1,5 @@
 import QuantityInput from 'components/QuantityInput'
-import { useFormik } from 'formik'
+import { FormikErrors, useFormik } from 'formik'
 import CurrencyInput from 'react-currency-input-field'
 import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { measurementOptions } from 'util/measurement'
@@ -9,6 +9,7 @@ import { useEffect, useMemo } from 'react'
 import { useDebounce } from '@uidotdev/usehooks'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
+import { toFormikValidationSchema } from 'zod-formik-adapter'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -20,6 +21,18 @@ type BatchCardProps = {
   onRemove: () => void
   disabled?: boolean
   active?: boolean
+  error?:
+    | string
+    | string[]
+    | FormikErrors<{
+        id: string
+        name: string
+        cost: number
+        quantity: number
+        unitOfMeasurement: string
+        expirationDate: Date | null
+        costPerUnit?: number | undefined
+      }>[]
 }
 
 const BatchCard = (props: BatchCardProps) => {
@@ -30,6 +43,7 @@ const BatchCard = (props: BatchCardProps) => {
     onRemove,
     disabled = false,
     active = false,
+    error,
   } = props
 
   const formValue = batch
@@ -40,6 +54,13 @@ const BatchCard = (props: BatchCardProps) => {
     initialValues: {
       ...formValue,
     },
+    validationSchema: toFormikValidationSchema(
+      z.object({
+        cost: z
+          .number({ required_error: 'Cost is required' })
+          .min(0, 'Cost must be greater than 0'),
+      }),
+    ),
     enableReinitialize: true,
   })
 
@@ -137,16 +158,24 @@ const BatchCard = (props: BatchCardProps) => {
                 decimalsLimit={4}
                 onBlur={getFieldProps('cost').onBlur}
                 name={getFieldProps('cost').name}
-                value={getFieldProps('cost').value}
+                value={getFieldProps('cost').value || ''}
                 type="text"
                 tabIndex={2}
                 className="input input-bordered w-full"
                 prefix="₱"
+                placeholder="Enter total cost for bulk purchase"
                 onValueChange={(value) => {
                   setFieldValue('cost', value)
                 }}
                 allowNegativeValue={false}
               />
+              {error?.cost && (
+                <div className="label py-0">
+                  <span className="label-text-alt text-xs text-red-400">
+                    {error.cost}
+                  </span>
+                </div>
+              )}
             </label>
             <p className={`${costPerUnitColor}`}>
               Cost: ₱

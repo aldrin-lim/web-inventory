@@ -11,6 +11,7 @@ import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { v4 } from 'uuid'
 import { type StockDetail, StockDetailSchema } from '../ProductDetail.types'
 import { getActiveBatch } from 'util/products'
+import { useState } from 'react'
 
 type StockDetailProps = {
   onBack: () => void
@@ -33,8 +34,23 @@ type StockDetailProps = {
 // TODO:
 // For UPDATE PRODUCT, if batch is active and quantity is zero, find the next active batch.
 // If there is no active batch, dont allow update
+
+const getValidationSchema = (isBulkCost: boolean) => {
+  if (isBulkCost) {
+    return ProductBatchSchema.extend({
+      cost: z
+        .number({ required_error: 'Cost is required' })
+        .positive('Cost must be greater than 0'),
+    }).array()
+  }
+
+  return ProductBatchSchema.array()
+}
+
 const StockDetail = (props: StockDetailProps) => {
   const { onBack, onComplete, disabled = false } = props
+
+  const [isBulkCost, setIsBulkCost] = useState(props.value.isBulkCost)
 
   const { getFieldProps, values, setFieldValue, submitForm, errors } =
     useFormik<StockDetail>({
@@ -48,11 +64,13 @@ const StockDetail = (props: StockDetailProps) => {
           isBulkCost: true,
           soldBy: true,
         }).extend({
-          batches: ProductBatchSchema.array(),
+          batches: getValidationSchema(isBulkCost),
         }),
       ),
       initialValues: props.value,
       enableReinitialize: true,
+      validateOnChange: false,
+      validateOnBlur: false,
     })
 
   const addNewBatch = () => {
@@ -181,6 +199,7 @@ const StockDetail = (props: StockDetailProps) => {
                 checked={values.isBulkCost}
                 onChange={(e) => {
                   setFieldValue('isBulkCost', e.target.checked)
+                  setIsBulkCost(e.target.checked)
                   if (e.target.checked) {
                     setFieldValue(
                       'batches',
@@ -231,6 +250,7 @@ const StockDetail = (props: StockDetailProps) => {
                   }),
                 )
               }}
+              error={errors.batches && (errors.batches[index] as never)}
               batch={batch}
               key={index}
               soldBy={values.soldBy}
