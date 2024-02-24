@@ -15,7 +15,7 @@ const Inventory = () => {
         products={products}
         onBack={() => navigate(AppPath.Root)}
         onProductSelect={(product) => {
-          navigate(`${AppPath.Inventory}/${product.id}`)
+          navigate(`${AppPath.ViewProduct}/${product.id}`)
         }}
       />
     </>
