@@ -10,7 +10,6 @@ import { useDebounce } from '@uidotdev/usehooks'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
-import { CheckIcon } from '@heroicons/react/24/solid'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -22,18 +21,15 @@ type BatchCardProps = {
   onRemove: () => void
   disabled?: boolean
   active?: boolean
-  error?:
-    | string
-    | string[]
-    | FormikErrors<{
-        id: string
-        name: string
-        cost: number
-        quantity: number
-        unitOfMeasurement: string
-        expirationDate: Date | null
-        costPerUnit?: number | undefined
-      }>[]
+  error?: FormikErrors<{
+    id: string
+    name: string
+    cost: number
+    quantity: number
+    unitOfMeasurement: string
+    expirationDate: Date | null
+    costPerUnit?: number | undefined
+  }>
 }
 
 const BatchCard = (props: BatchCardProps) => {
@@ -58,7 +54,7 @@ const BatchCard = (props: BatchCardProps) => {
     validationSchema: toFormikValidationSchema(
       z.object({
         cost: z
-          .number({ required_error: 'Cost is required' })
+          .number({ required_error: 'Cost is required', coerce: true })
           .min(0, 'Cost must be greater than 0'),
       }),
     ),

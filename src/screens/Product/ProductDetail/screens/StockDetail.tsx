@@ -40,7 +40,7 @@ const getValidationSchema = (isBulkCost: boolean) => {
   if (isBulkCost) {
     return ProductBatchSchema.extend({
       cost: z
-        .number({ required_error: 'Cost is required' })
+        .number({ required_error: 'Cost is required', coerce: true })
         .positive('Cost must be greater than 0'),
     }).array()
   }
@@ -238,14 +238,11 @@ const StockDetail = (props: StockDetailProps) => {
                 setFieldValue('batches', newBatches)
               }}
               onChange={async (updatedBatch) => {
-                // await setFieldValue(`batches.${index}`, updatedBatch)
-
-                // Make all of measurment the same from the latest changes on batch
                 await setFieldValue(
                   'batches',
                   values.batches.map((batch) => {
-                    if (batch.id !== updatedBatch.id) {
-                      return batch
+                    if (batch.id === updatedBatch.id) {
+                      return updatedBatch
                     }
                     return {
                       ...batch,

@@ -327,6 +327,11 @@ const ProductForm: React.FC<ProductFormProps> = ({
           type="checkbox"
           onChange={(e) => {
             setFieldValue('forSale', !e.target.checked)
+            if (e.target.checked === true) {
+              setFieldValue('price', 0)
+              setFieldValue('profitAmount', 0)
+              setFieldValue('profitPercentage', 0)
+            }
           }}
           checked={!values.forSale}
           className="toggle toggle-primary"
