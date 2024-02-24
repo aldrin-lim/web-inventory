@@ -2,6 +2,8 @@ import MiddleTruncatedText from 'components/MiddleTruncatedText'
 import ImageLoader from 'components/ImageLoader'
 import { Product } from 'types/product.types'
 import Big from 'big.js'
+import { formatToPeso } from 'util/currency'
+import { unitAbbrevationsToLabel } from 'util/measurement'
 
 type ProductCardProps = {
   product: Product
@@ -19,9 +21,17 @@ const ProductCard = (props: ProductCardProps) => {
   return (
     <div className="relative  justify-self-center">
       <div className="absolute top-2 z-[9] flex w-full items-center justify-between px-2">
-        <div className="bg-primary/50 p-1 text-sm text-white">
-          ₱{new Big(product.price).toNumber()}
-        </div>
+        {product.isBulkCost === false && (
+          <div className="bg-primary/50 p-1 text-sm text-white">
+            {formatToPeso(new Big(product.price).toNumber())}
+          </div>
+        )}
+        {product.isBulkCost === true && (
+          <div className="bg-primary/50 p-1 text-sm text-white">
+            {formatToPeso(new Big(product.price).toNumber())} /
+            {unitAbbrevationsToLabel(unitOfMeasurement)}
+          </div>
+        )}
       </div>
       <div
         className={`ProductCard card card-compact relative w-[155px] cursor-pointer border border-gray-300  bg-base-100 `}
@@ -43,7 +53,13 @@ const ProductCard = (props: ProductCardProps) => {
                   outOfStock ? 'text-red-400' : ''
                 }`}
               >
-                {totalQuantity} {unitOfMeasurement} available
+                {outOfStock ? (
+                  'Out of stock'
+                ) : (
+                  <>
+                    {totalQuantity} {unitOfMeasurement} available
+                  </>
+                )}
               </span>
             </div>
           )}
@@ -54,7 +70,13 @@ const ProductCard = (props: ProductCardProps) => {
                   outOfStock ? 'text-red-400' : ''
                 }`}
               >
-                {totalQuantity} {unitOfMeasurement} available
+                {outOfStock ? (
+                  'Out of stock'
+                ) : (
+                  <>
+                    {totalQuantity} {unitOfMeasurement} available
+                  </>
+                )}
               </span>
             </div>
           )}

@@ -25,3 +25,15 @@ export function getAllMeasurementUnits(
   return measurementOptions
 }
 export const measurementOptions = getAllMeasurementUnits()
+
+export const unitAbbrevationsToLabel = (unit: string) => {
+  if (['piece', 'pc', 'pcs', 'piece(s)', 'pieces'].includes(unit)) {
+    return 'pc(s)'
+  }
+
+  const unitInfo = convert().describe(unit as Unit)
+  if (unitInfo.abbr === 'l') {
+    return 'L'
+  }
+  return unitInfo.abbr
+}
