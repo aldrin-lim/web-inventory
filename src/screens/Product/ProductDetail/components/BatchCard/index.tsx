@@ -135,7 +135,6 @@ const BatchCard = (props: BatchCardProps) => {
               </div>
               <CurrencyInput
                 decimalsLimit={4}
-                disabled={disabled}
                 onBlur={getFieldProps('cost').onBlur}
                 name={getFieldProps('cost').name}
                 value={getFieldProps('cost').value}
@@ -171,7 +170,6 @@ const BatchCard = (props: BatchCardProps) => {
             className="input input-bordered w-full"
           />
         </label>
-        {/* <pre className="text-xs">{JSON.stringify(values, null, 2)}</pre> */}
       </div>
     </div>
   )

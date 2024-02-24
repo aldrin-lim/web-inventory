@@ -217,8 +217,19 @@ const StockDetail = (props: StockDetailProps) => {
                 newBatches.splice(index, 1)
                 setFieldValue('batches', newBatches)
               }}
-              onChange={(batch) => {
-                setFieldValue(`batches.${index}`, batch)
+              onChange={async (updatedBatch) => {
+                await setFieldValue(`batches.${index}`, updatedBatch)
+
+                // Make all of measurment the same from the latest changes on batch
+                await setFieldValue(
+                  'batches',
+                  values.batches.map((batch) => {
+                    return {
+                      ...batch,
+                      unitOfMeasurement: updatedBatch.unitOfMeasurement,
+                    }
+                  }),
+                )
               }}
               batch={batch}
               key={index}
