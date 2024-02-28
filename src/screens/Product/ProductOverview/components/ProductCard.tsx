@@ -40,11 +40,10 @@ const ProductCard = (props: ProductCardProps) => {
                   ? product.price
                   : product.activeBatch.costPerUnit ?? 0,
               ).toNumber(),
-            )}{' '}
+            )}
             /{unitAbbrevationsToLabel(unitOfMeasurement)}
           </div>
         )}
-        {}
       </div>
       <div
         className={`ProductCard card card-compact relative w-[155px] cursor-pointer border border-gray-300  bg-base-100 `}

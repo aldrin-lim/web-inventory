@@ -9,6 +9,7 @@ import { AuthProvider } from 'contexts/AuthContext.tsx'
 import Big from 'big.js'
 import { ErrorBoundary } from 'react-error-boundary'
 import Error from 'screens/Error/index.tsx'
+
 Big.DP = 4
 
 const queryClient = new QueryClient()

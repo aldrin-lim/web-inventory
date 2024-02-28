@@ -48,12 +48,12 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           <ProductImages readOnly size="sm" images={recipe.images ?? []} />
         </div>
         <p>{recipe.name}</p>
-        <p>Cost: ₱ {recipe.cost}</p>
+        {/* <p>Cost: ₱ {recipe.cost}</p>
         <p>Price: ₱ {recipe.price}</p>
         <p>
           Profit: {recipe.profitPercentage}% | ₱{' '}
           <span>{recipe.profitAmount}</span>
-        </p>
+        </p> */}
 
         {/* Igredients */}
 
@@ -97,11 +97,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                               maxLength={getTruncateSize(currentBreakpoint)}
                             />
                           </h1>
-                          {product.outOfStock === false ? (
-                            <p className="text-xs">{product.availability}</p>
-                          ) : (
-                            <p className="text-xs text-red-500">Out of stock</p>
-                          )}
+                          <p className="text-xs">
+                            {material.quantity} {material.unitOfMeasurement}
+                          </p>
                         </div>
                       </div>
                       {product.isBulkCost && (
@@ -175,11 +173,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                               maxLength={getTruncateSize(currentBreakpoint)}
                             />
                           </h1>
-                          {product.outOfStock === false ? (
-                            <p className="text-xs">{product.availability}</p>
-                          ) : (
-                            <p className="text-xs text-red-500">Out of stock</p>
-                          )}
+                          <p className="text-xs">
+                            {material.quantity} {material.unitOfMeasurement}
+                          </p>
                         </div>
                       </div>
                       {product.isBulkCost && (
