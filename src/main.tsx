@@ -9,14 +9,22 @@ import { AuthProvider } from 'contexts/AuthContext.tsx'
 import Big from 'big.js'
 import { ErrorBoundary } from 'react-error-boundary'
 import Error from 'screens/Error/index.tsx'
-
+import * as Sentry from '@sentry/react'
+import { Analytics } from 'util/analytics.ts'
 Big.DP = 4
+
+Analytics.init()
 
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ErrorBoundary fallback={<Error />}>
+    <ErrorBoundary
+      onError={(error) => {
+        Sentry.captureException(error)
+      }}
+      fallback={<Error />}
+    >
       <Auth0Provider
         domain={import.meta.env.VITE_AUTH0_DOMAIN}
         clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}

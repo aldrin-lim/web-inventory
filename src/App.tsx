@@ -5,11 +5,21 @@ import './App.css'
 import 'react-toastify/dist/ReactToastify.css'
 import AppRoutes from './routes/AppRoutes'
 import { ToastContainer } from 'react-toastify'
+import useUser from 'hooks/useUser'
+import { Analytics } from 'util/analytics'
 
 function App() {
+  useUser()
+
+  const { user } = useUser()
+
   useEffect(() => {
-    themeChange(true)
+    themeChange(false)
   }, [])
+
+  useEffect(() => {
+    user?.email && Analytics.identify(user.email)
+  }, [user])
 
   return (
     <div className="App mx-auto flex w-full">
