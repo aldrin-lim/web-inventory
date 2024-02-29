@@ -155,3 +155,8 @@ thumb
 sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/node,react
+# Sentry Config File
+.env.sentry-build-plugin
+
+# Sentry Config File
+.env.sentry-build-plugin
