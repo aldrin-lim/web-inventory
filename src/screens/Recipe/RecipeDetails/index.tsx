@@ -281,7 +281,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
           {/* Ingredients */}
           <div className="flex flex-row justify-between">
-            <h1>Materials</h1>
+            <h1>Ingredients/Materials</h1>
             {ingredients.length > 0 && (
               <button
                 onClick={() => navigate(ScreenPath.Ingredients)}

@@ -59,7 +59,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
         <div className="flex flex-col gap-2">
           <div className="flex w-full flex-row justify-between bg-gray-200 p-2">
-            <p className="uppercase">Materials</p>
+            <p className="uppercase">Ingredients/Materials</p>
             <p className="uppercase">COST</p>
           </div>
           <ul className="menu w-full border-b p-0 [&_li>*]:rounded-md [&_li>*]:border-b">

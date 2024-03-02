@@ -70,7 +70,11 @@ const Inventory = (props: InventoryProps) => {
       />
 
       {isLoading ? <Skeleton /> : null}
-      {!isLoading && products.length === 0 && <GetStarted />}
+      {!isLoading && products.length === 0 && (
+        <div className="py-4">
+          <GetStarted />
+        </div>
+      )}
       {!isLoading && products.length > 0 && (
         <div className="relative flex flex-col gap-0">
           <div className="shadow-xs sticky top-[49px] z-[10] space-y-4 border-b border-b-slate-100 bg-base-100 py-4 ">
