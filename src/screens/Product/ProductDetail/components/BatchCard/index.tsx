@@ -10,6 +10,7 @@ import { useDebounce } from '@uidotdev/usehooks'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
+import { XMarkIcon } from '@heroicons/react/24/outline'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -206,16 +207,30 @@ const BatchCard = (props: BatchCardProps) => {
         )}
 
         {/* Expiration */}
-        <label className="form-control w-full ">
+        <label className="form-control w-full">
           <div className="">
             <span className="label-text-alt ">Expiration</span>
           </div>
-          <input
-            {...getFieldProps('expirationDate')}
-            type="date"
-            placeholder="Expiration Date"
-            className="input input-bordered w-full"
-          />
+          <div className="flex flex-row gap-1">
+            <input
+              {...getFieldProps('expirationDate')}
+              type="date"
+              disabled={disabled}
+              placeholder="Expiration Date"
+              className="input input-bordered w-full"
+            />
+            {!disabled && (
+              <button
+                onClick={async () => {
+                  await setFieldValue('expirationDate', '')
+                  setFieldValue('expirationDate', null)
+                }}
+                className="btn btn-ghost"
+              >
+                <XMarkIcon className="w-6" />
+              </button>
+            )}
+          </div>
         </label>
       </div>
     </div>

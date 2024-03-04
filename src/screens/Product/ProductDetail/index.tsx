@@ -83,6 +83,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           quantity: 1,
           unitOfMeasurement: 'pieces',
           expirationDate: null,
+          isDeducted: false,
         },
       ],
     } as AddProductDetailSchema
