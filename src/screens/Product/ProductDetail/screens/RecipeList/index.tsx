@@ -56,7 +56,7 @@ const RecipeList = (props: RecipeListProps) => {
           </div>
 
           <div className="flex w-full flex-row justify-between bg-gray-200 p-2">
-            <p className="uppercase">PRODUCT</p>
+            <p className="uppercase">RECIPE</p>
             <p className="uppercase">COST</p>
           </div>
           <ul className="menu w-full border-b p-0 [&_li>*]:rounded-md [&_li>*]:border-b">
