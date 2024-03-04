@@ -9,7 +9,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import { Product } from 'types/product.types'
-import { isWithinExpiration } from 'util/data'
+import { isExpired, isWithinExpiration } from 'util/data'
 import GetStarted from './components/GetStarted'
 
 type InventoryProps = {
@@ -41,6 +41,32 @@ const Inventory = (props: InventoryProps) => {
   const numberOfNearExpirationProducts = products.filter((product) =>
     isWithinExpiration(product.activeBatch.expirationDate),
   ).length
+
+  // const quantity = useMemo(
+  //   (product: Product) => {
+  //     // {product.outOfStock === false ? (
+  //     //   <p className="text-xs">{product.availability}</p>
+  //     // ) : (
+  //     //   <p className="text-xs text-red-500">Out of stock</p>
+  //     // )}
+  //     const statuses = []
+  //     if (isExpired(product.activeBatch.expirationDate)) {
+  //      return <p className="text-xs text-orange-500">Expired</p>
+  //     }
+  //   },
+  //   [products],
+  // )
+
+  const renderQuantity = (product: Product) => {
+    if (isExpired(product.activeBatch.expirationDate)) {
+      return <p className="text-xs text-orange-500">Expired</p>
+    }
+    if (product.outOfStock === true) {
+      return <p className="text-xs text-red-500">Out of stock</p>
+    }
+
+    return <p className="text-xs">{product.availability}</p>
+  }
 
   return (
     <div className="screen gap-0 pb-[100px]">
@@ -138,11 +164,7 @@ const Inventory = (props: InventoryProps) => {
                             maxLength={getTruncateSize(currentBreakpoint)}
                           />
                         </h1>
-                        {product.outOfStock === false ? (
-                          <p className="text-xs">{product.availability}</p>
-                        ) : (
-                          <p className="text-xs text-red-500">Out of stock</p>
-                        )}
+                        {renderQuantity(product)}
                       </div>
                     </div>
                     {product.isBulkCost && (
