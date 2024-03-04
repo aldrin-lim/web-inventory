@@ -64,6 +64,9 @@ const BatchCard = (props: BatchCardProps) => {
   // const costPerUnit = isBulkCost ? Number(values.cost) / values.quantity : 0
   const costPerUnit = useMemo(() => {
     try {
+      if (values.isDeducted) {
+        return isBulkCost ? values.costPerUnit ?? 0 : values.cost ?? 0
+      }
       const newCost = isBulkCost
         ? new Big(values.cost ?? 0).div(values.quantity ?? 0).toNumber()
         : 0
@@ -181,6 +184,7 @@ const BatchCard = (props: BatchCardProps) => {
                 onValueChange={(value) => {
                   setFieldValue('cost', value)
                 }}
+                disabled={values.isDeducted}
                 allowNegativeValue={false}
               />
               {error?.cost && (

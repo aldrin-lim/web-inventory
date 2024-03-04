@@ -37,6 +37,7 @@ export const ProductBatchSchema = z.object({
     required_error: 'Measurement is required',
     invalid_type_error: 'Measurement must be a number',
   }),
+  isDeducted: z.boolean().default(false),
   expirationDate: z
     .date({ invalid_type_error: 'Expiration  must be a data', coerce: true })
     .nullable(),
