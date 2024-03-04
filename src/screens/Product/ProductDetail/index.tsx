@@ -40,6 +40,7 @@ import ProductForm from './components/ProductForm'
 import RecipeList from './screens/RecipeList'
 import ProductWithRecipeForm from './components/ProductWithRecipeForm'
 import RecipeDetails from './screens/RecipeDetails'
+import App from 'App'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -178,7 +179,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           navigate(location.state.from)
           return
         }
-        navigate(-1)
+        navigate(AppPath.ProductOverview)
       }
     },
     validateOnChange: false,
