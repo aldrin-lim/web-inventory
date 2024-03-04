@@ -85,7 +85,7 @@ const StockDetail = (props: StockDetailProps) => {
       unitOfMeasurement:
         values.soldBy === ProductSoldBy.Pieces
           ? 'pieces'
-          : values.batches[0].unitOfMeasurement ?? 'g',
+          : values.batches[0]?.unitOfMeasurement ?? 'g',
       expirationDate: null,
     } as z.infer<typeof ProductBatchSchema>
     setFieldValue('batches', [...values.batches, newBatch])
