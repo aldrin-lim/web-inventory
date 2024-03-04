@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { PhotoIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid'
-
+import EXIF from 'exif-js'
 type ProductImagesProps = {
   images: Array<string>
   onImagesChange?: (images: Array<string>) => void
@@ -23,22 +23,59 @@ const ProductImages = (props: ProductImagesProps) => {
     props.onImagesChange?.(images)
   }
 
+  const correctImageOrientation = (
+    file: File,
+    callback: (data: string) => void,
+  ) => {
+    EXIF.getData(file, function () {
+      const orientation = EXIF.getTag(this, 'Orientation')
+      const reader = new FileReader()
+      reader.onload = function (e) {
+        const img = new Image()
+        img.onload = function () {
+          const width = img.width
+          const height = img.height
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
+
+          // Set canvas size to image size
+          canvas.width = width
+          canvas.height = height
+
+          // Correct orientation if necessary
+          if ([5, 6, 7, 8].indexOf(orientation) > -1) {
+            canvas.width = height
+            canvas.height = width
+            ctx?.translate(canvas.width / 2, canvas.height / 2)
+            ctx?.rotate((90 * Math.PI) / 180)
+            ctx?.drawImage(img, -width / 2, -height / 2, width, height)
+          } else {
+            ctx?.drawImage(img, 0, 0, width, height)
+          }
+
+          callback(canvas.toDataURL())
+        }
+        img.src = e.target.result
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files) {
       const newImageSrcs: string[] = []
       Array.from(files).forEach((file) => {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          newImageSrcs.push(reader.result as string)
+        correctImageOrientation(file, (correctedImage) => {
+          newImageSrcs.push(correctedImage)
           if (newImageSrcs.length === files.length) {
             setImages((prev) => {
-              onChange([...prev, ...newImageSrcs])
-              return [...prev, ...newImageSrcs]
+              const updatedImages = [...prev, ...newImageSrcs]
+              onChange(updatedImages)
+              return updatedImages
             })
           }
-        }
-        reader.readAsDataURL(file)
+        })
       })
     }
   }
