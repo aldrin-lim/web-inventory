@@ -1,11 +1,16 @@
 import { AppPath } from 'routes/AppRoutes.types'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const GetStarted = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const onAddProduct = () => {
     localStorage.setItem('productAdded', 'true')
-    navigate(AppPath.AddProduct)
+    navigate(AppPath.AddProduct, {
+      state: {
+        from: location.pathname,
+      },
+    })
   }
   return (
     <div className="section flex w-full flex-col items-center justify-center gap-4 text-center">

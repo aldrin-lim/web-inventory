@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
@@ -55,6 +55,8 @@ type ProductDetailProps = {
 }
 
 export const ProductDetail = (props: ProductDetailProps) => {
+  const location = useLocation()
+
   const defaultValue = useMemo(() => {
     return {
       name: '',
@@ -172,6 +174,10 @@ export const ProductDetail = (props: ProductDetailProps) => {
         })
       } else {
         await createProduct(validation.data as CreateProductBodySchema)
+        if (location.state?.from) {
+          navigate(location.state.from)
+          return
+        }
         navigate(-1)
       }
     },
@@ -211,6 +217,14 @@ export const ProductDetail = (props: ProductDetailProps) => {
     setValues(initialValues)
   }
 
+  const goBack = () => {
+    if (location.state?.from) {
+      navigate(location.state.from)
+      return
+    }
+    navigate(AppPath.ProductOverview)
+  }
+
   return (
     <>
       <div
@@ -223,7 +237,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             <ToolbarButton
               key={1}
               icon={<ChevronLeftIcon className="w-6" />}
-              onClick={() => navigate(AppPath.ProductOverview)}
+              onClick={goBack}
               disabled={isMutating}
             />,
             <ToolbarTitle
