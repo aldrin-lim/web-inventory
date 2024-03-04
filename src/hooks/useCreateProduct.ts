@@ -3,12 +3,9 @@ import * as API from 'api/product'
 import { CreateProductBodySchema } from 'api/product/createProduct'
 import axios from 'axios'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { AppPath } from 'routes/AppRoutes.types'
 
 const useCreateProduct = () => {
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [error, setError] = useState<unknown | undefined | null>(null)
 
@@ -28,13 +25,12 @@ const useCreateProduct = () => {
       })
       setError(error)
     },
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries(['products'])
       toast.success('Product successfully created! ', {
         autoClose: 500,
         theme: 'colored',
       })
-      navigate(`${AppPath.Products}/${data.id}`)
     },
   })
 

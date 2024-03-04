@@ -172,7 +172,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
         })
       } else {
         await createProduct(validation.data as CreateProductBodySchema)
-        navigate(AppPath.ProductOverview)
+        navigate(-1)
       }
     },
     validateOnChange: false,
