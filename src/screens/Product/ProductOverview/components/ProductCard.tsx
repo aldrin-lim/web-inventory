@@ -34,8 +34,14 @@ const ProductCard = (props: ProductCardProps) => {
         )}
         {product.isBulkCost === true && (
           <div className="bg-primary/50 p-1 text-sm text-white">
-            {formatToPeso(new Big(product.activeBatch.costPerUnit).toNumber())}/
-            {unitAbbrevationsToLabel(unitOfMeasurement)}
+            {formatToPeso(
+              new Big(
+                product.forSale
+                  ? product.price
+                  : product.activeBatch.costPerUnit ?? 0,
+              ).toNumber(),
+            )}
+            /{unitAbbrevationsToLabel(unitOfMeasurement)}
           </div>
         )}
       </div>
