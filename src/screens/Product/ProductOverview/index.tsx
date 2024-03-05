@@ -60,6 +60,7 @@ const ProductOverview = () => {
         />
 
         <ProductList
+          title="Out of Stock"
           onViewAll={() => navigate(ScreenPath.List)}
           onProductSelect={viewProduct}
           products={outOfStocks}
