@@ -137,23 +137,25 @@ const ProductForm: React.FC<ProductFormProps> = ({
       </button>
 
       {/* For Sale */}
-      <div className="form-control flex w-full flex-row gap-2 py-2">
-        <input
-          {...getFieldProps('forSale')}
-          type="checkbox"
-          onChange={(e) => {
-            setFieldValue('forSale', !e.target.checked)
-            if (e.target.checked === true) {
-              setFieldValue('price', 0)
-              setFieldValue('profitAmount', 0)
-              setFieldValue('profitPercentage', 0)
-            }
-          }}
-          checked={!values.forSale}
-          className="toggle toggle-primary"
-        />
-        <span>For ingredients purposes only</span>
-      </div>
+      {mode === 'add' && (
+        <div className="form-control flex w-full flex-row gap-2 py-2">
+          <input
+            {...getFieldProps('forSale')}
+            type="checkbox"
+            onChange={(e) => {
+              setFieldValue('forSale', !e.target.checked)
+              if (e.target.checked === true) {
+                setFieldValue('price', 0)
+                setFieldValue('profitAmount', 0)
+                setFieldValue('profitPercentage', 0)
+              }
+            }}
+            checked={!values.forSale}
+            className="toggle toggle-primary"
+          />
+          <span>For ingredients purposes only</span>
+        </div>
+      )}
 
       {/* Cost per Unit */}
       {values.isBulkCost && (

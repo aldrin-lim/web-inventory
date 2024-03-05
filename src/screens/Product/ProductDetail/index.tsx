@@ -235,6 +235,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
           !isParentScreen ? 'hidden-screen' : '',
         ].join(' ')}
       >
+        {isMutating && (
+          <div className="fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
+            <span className="loading loading-ring loading-lg"></span>
+          </div>
+        )}
         <Toolbar
           items={[
             <ToolbarButton
@@ -310,6 +315,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
         )}
         {!values.recipe && (
           <StockDetail
+            mode={mode}
             disabled={
               isStockReset === false &&
               mode === 'edit' &&
