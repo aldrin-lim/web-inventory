@@ -123,7 +123,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
       <button
         onClick={showDescription}
         disabled={isMutating}
-        className="flex-start btn btn-ghost w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0"
+        className="flex-start btn btn-ghost btn-xs w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0"
       >
         <p className="text-overflow-ellipsis overflow-hidden truncate whitespace-nowrap break-words text-left">
           <span className="text-gray-400">
@@ -178,11 +178,13 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
               setFieldValue('profitPercentage', toNumber(newProfitPercentage))
             }}
           />
-          <div className="label py-0">
-            <span className="label-text-alt text-xs text-red-400">
-              {errors.price}&nbsp;
-            </span>
-          </div>
+          {errors.price && (
+            <div className="label py-0">
+              <span className="label-text-alt text-xs text-red-400">
+                {errors.price}
+              </span>
+            </div>
+          )}
         </label>
       </div>
 
@@ -258,11 +260,13 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
             }}
           />
         </div>
-        <div className="label py-0">
-          <span className="label-text-alt text-xs text-red-400">
-            {errors.profitAmount}&nbsp;
-          </span>
-        </div>
+        {errors.profitAmount && (
+          <div className="label py-0">
+            <span className="label-text-alt text-xs text-red-400">
+              {errors.profitAmount}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Category */}
@@ -275,10 +279,10 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
           onChange={(option) => setFieldValue('category', option?.value)}
         />
 
-        {errors.name && (
+        {errors.category && (
           <div className="label py-0">
             <span className="label-text-alt text-xs text-red-400">
-              {errors.name}
+              {errors.category}
             </span>
           </div>
         )}

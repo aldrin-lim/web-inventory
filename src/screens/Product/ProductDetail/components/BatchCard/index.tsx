@@ -2,9 +2,7 @@ import QuantityInput from 'components/QuantityInput'
 import { FormikErrors, useFormik } from 'formik'
 import CurrencyInput from 'react-currency-input-field'
 import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
-import { measurementOptions } from 'util/measurement'
 import { z } from 'zod'
-import MeasurementSelect from '../MeasurementSelect'
 import { useEffect, useMemo } from 'react'
 import { useDebounce } from '@uidotdev/usehooks'
 import { TrashIcon } from '@heroicons/react/24/solid'
@@ -22,6 +20,7 @@ type BatchCardProps = {
   onRemove: () => void
   disabled?: boolean
   active?: boolean
+  forSale?: boolean
   error?: FormikErrors<{
     id: string
     name: string
@@ -42,6 +41,7 @@ const BatchCard = (props: BatchCardProps) => {
     disabled = false,
     active = false,
     error,
+    forSale,
   } = props
 
   const formValue = batch
@@ -144,7 +144,7 @@ const BatchCard = (props: BatchCardProps) => {
           }}
           className="w-full"
         />
-        {soldBy === 'weight' && (
+        {/* {soldBy === 'weight' && (
           <label className="form-control w-full ">
             <div className="">
               <span className="label-text-alt ">Unit of Measurement</span>
@@ -163,7 +163,7 @@ const BatchCard = (props: BatchCardProps) => {
               }}
             />
           </label>
-        )}
+        )} */}
 
         {/* If sold by weight */}
         {isBulkCost && (
@@ -203,6 +203,39 @@ const BatchCard = (props: BatchCardProps) => {
                 : costPerUnit}
               /{values.unitOfMeasurement}
             </p>
+          </>
+        )}
+
+        {!forSale && (
+          <>
+            <label className="form-control w-full ">
+              <div className="">
+                <span className="label-text">Cost</span>
+              </div>
+              <CurrencyInput
+                decimalsLimit={4}
+                onBlur={getFieldProps('cost').onBlur}
+                name={getFieldProps('cost').name}
+                value={getFieldProps('cost').value || ''}
+                type="text"
+                tabIndex={2}
+                className="input input-bordered w-full"
+                prefix="₱"
+                placeholder="₱0"
+                onValueChange={(value) => {
+                  setFieldValue('cost', value)
+                }}
+                disabled={values.isDeducted}
+                allowNegativeValue={false}
+              />
+              {error?.cost && (
+                <div className="label py-0">
+                  <span className="label-text-alt text-xs text-red-400">
+                    {error.cost}
+                  </span>
+                </div>
+              )}
+            </label>
           </>
         )}
 

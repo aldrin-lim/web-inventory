@@ -40,7 +40,6 @@ import ProductForm from './components/ProductForm'
 import RecipeList from './screens/RecipeList'
 import ProductWithRecipeForm from './components/ProductWithRecipeForm'
 import RecipeDetails from './screens/RecipeDetails'
-import App from 'App'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -66,7 +65,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
       images: [],
       profitAmount: 0,
       profitPercentage: 0,
-      trackStock: false,
+      trackStock: true,
       description: '',
       profit: 0,
       category: '',
@@ -226,12 +225,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
     navigate(AppPath.ProductOverview)
   }
 
+  console.log(values.batches)
+
   return (
     <>
       <div
-        className={['screen pb-9', !isParentScreen ? 'hidden-screen' : ''].join(
-          ' ',
-        )}
+        className={[
+          'screen  pb-9',
+          !isParentScreen ? 'hidden-screen' : '',
+        ].join(' ')}
       >
         <Toolbar
           items={[
@@ -243,7 +245,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             />,
             <ToolbarTitle
               key="title"
-              title={product ? 'View Product' : 'Add Product'}
+              title={product ? 'Edit Product' : 'New Product'}
             />,
             <PrimaryAction
               mode={product ? 'edit' : 'add'}
@@ -306,7 +308,77 @@ export const ProductDetail = (props: ProductDetailProps) => {
             showRecipeDetail={() => navigate(ScreenPath.RecipeDetail)}
           />
         )}
+        {!values.recipe && (
+          <StockDetail
+            disabled={
+              isStockReset === false &&
+              mode === 'edit' &&
+              values.trackStock === true
+            }
+            activeBatch={props.product?.activeBatch}
+            value={values}
+            onBack={goBackToProductScreen}
+            onComplete={async (value) => {
+              if (value.batches.length === 0) {
+                setIsStockReset(true)
+                const cost = toNumber(values.cost)
+                const newBatch = {
+                  ...defaultValue.batches[0],
+                  id: v4(),
+                  quantity: 1,
+                  cost,
+                  name: `Batch #${padWithZeros(1)}`,
+                }
+                const newProfitAmount = computeProfitAmount(
+                  toNumber(values.price),
+                  cost,
+                )
+                const newProfitPercentage = computeProfitPercentage(
+                  toNumber(values.price),
+                  cost,
+                )
+                await setValues({
+                  ...values,
+                  allowBackOrder: false,
+                  trackStock: false,
+                  isBulkCost: false,
+                  soldBy: ProductSoldBy.Pieces,
+                  profitPercentage: newProfitPercentage,
+                  profitAmount: newProfitAmount,
+                  batches: [newBatch],
+                })
+              } else {
+                const cost = value.isBulkCost
+                  ? toNumber(getActiveBatch(value.batches).costPerUnit)
+                  : toNumber(values.cost)
+
+                const updatedValues = {
+                  ...values,
+                  allowBackOrder: value.allowBackOrder,
+                  batches: value.batches,
+                  soldBy: value.soldBy,
+                  cost,
+                  isBulkCost: value.isBulkCost,
+                }
+
+                if (values.price) {
+                  updatedValues.profitAmount = computeProfitAmount(
+                    toNumber(values.price),
+                    cost,
+                  )
+                  updatedValues.profitPercentage = computeProfitPercentage(
+                    toNumber(values.price),
+                    cost,
+                  )
+                }
+
+                await setValues(updatedValues)
+              }
+            }}
+          />
+        )}
       </div>
+
       <SlidingTransition
         direction="right"
         isVisible={currentScreen === ScreenPath.Description}
@@ -317,80 +389,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
           onBack={goBackToProductScreen}
           onComplete={(desription) => {
             setFieldValue('description', desription)
-          }}
-        />
-      </SlidingTransition>
-
-      <SlidingTransition
-        direction="right"
-        isVisible={currentScreen === ScreenPath.StockDetail}
-        zIndex={11}
-      >
-        <StockDetail
-          disabled={
-            isStockReset === false &&
-            mode === 'edit' &&
-            values.trackStock === true
-          }
-          activeBatch={props.product?.activeBatch}
-          value={values}
-          onBack={goBackToProductScreen}
-          onComplete={async (value) => {
-            if (value.batches.length === 0) {
-              setIsStockReset(true)
-              const cost = toNumber(values.cost)
-              const newBatch = {
-                ...defaultValue.batches[0],
-                id: v4(),
-                quantity: 1,
-                cost,
-                name: `Batch #${padWithZeros(1)}`,
-              }
-              const newProfitAmount = computeProfitAmount(
-                toNumber(values.price),
-                cost,
-              )
-              const newProfitPercentage = computeProfitPercentage(
-                toNumber(values.price),
-                cost,
-              )
-              await setValues({
-                ...values,
-                allowBackOrder: false,
-                trackStock: false,
-                isBulkCost: false,
-                soldBy: ProductSoldBy.Pieces,
-                profitPercentage: newProfitPercentage,
-                profitAmount: newProfitAmount,
-                batches: [newBatch],
-              })
-            } else {
-              const cost = value.isBulkCost
-                ? toNumber(getActiveBatch(value.batches).costPerUnit)
-                : toNumber(values.cost)
-
-              const updatedValues = {
-                ...values,
-                allowBackOrder: value.allowBackOrder,
-                batches: value.batches,
-                soldBy: value.soldBy,
-                cost,
-                isBulkCost: value.isBulkCost,
-              }
-
-              if (values.price) {
-                updatedValues.profitAmount = computeProfitAmount(
-                  toNumber(values.price),
-                  cost,
-                )
-                updatedValues.profitPercentage = computeProfitPercentage(
-                  toNumber(values.price),
-                  cost,
-                )
-              }
-
-              await setValues(updatedValues)
-            }
           }}
         />
       </SlidingTransition>

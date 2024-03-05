@@ -10,7 +10,7 @@ const AddProductDescriptionButton = (props: AddProductDescriptionButton) => {
   return (
     <button
       onClick={onClick}
-      className="btn btn-ghost btn-primary btn-xs -mt-[10px]  flex w-full flex-row justify-between p-0 normal-case"
+      className="btn  btn-primary btn-sm flex w-full flex-row justify-between p-0 normal-case"
     >
       <span className="col-span-11 w-4/5 truncate overflow-ellipsis text-left text-gray-400">
         {description || 'Add Description'}

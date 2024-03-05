@@ -1,26 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldConfig, FieldInputProps, FormikErrors } from 'formik'
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
   AddProductDetailSchema,
   ProductDetailFormikValue,
 } from '../../ProductDetail.types'
-import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
-import { toNumber } from 'lodash'
+import { isArray, toNumber } from 'lodash'
 import CurrencyInput from 'react-currency-input-field'
-import { ProductSoldBy } from 'types/product.types'
 import {
   computeProfitAmount,
   computeProfitPercentage,
-  padWithZeros,
   profitPercentageColor,
 } from 'util/number'
 import { getActiveBatch } from 'util/products'
-import { v4 } from 'uuid'
 import ProductImages from '../ProductImages'
-import { useNavigate } from 'react-router-dom'
-import { ScreenPath } from '../..'
 import CategoryDropdown from '../CategoryDropdown'
 
 interface FormikProps {
@@ -61,13 +56,35 @@ const ProductForm: React.FC<ProductFormProps> = ({
   errors,
   setFieldValue,
   mode,
-  setIsStockReset,
-  setValues,
   showDescription,
-  defaultValue,
   showRecipeList,
 }) => {
-  const navigate = useNavigate()
+  const costError = useMemo(() => {
+    const batchErrors =
+      errors.batches as unknown as ProductDetailFormikValue['batches']
+    if (isArray(batchErrors)) {
+      const costErrors = batchErrors.filter((batch) => batch.cost)
+      console.log(costErrors)
+      if (costErrors.length > 0) {
+        return costErrors[0].cost
+      }
+    }
+    return ''
+  }, [errors.batches])
+
+  const showCostInput = () => {
+    // If product is for is not ingredient, show
+    if (!values.forSale) {
+      return false
+    }
+
+    if (values.isBulkCost) {
+      return false
+    }
+
+    return true
+  }
+
   return (
     <div className="flex flex-col items-start gap-2">
       {/* Product Name */}
@@ -100,7 +117,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           disabled={isMutating}
           className="btn btn-primary btn-xs max-w-xs  self-start rounded-[5px] text-left"
         >
-          Create product using a recipe
+          Use a recipe
         </button>
       )}
 
@@ -108,7 +125,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       <button
         onClick={showDescription}
         disabled={isMutating}
-        className="flex-start btn btn-ghost w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0"
+        className="flex-start btn btn-ghost btn-xs w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0"
       >
         <p className="text-overflow-ellipsis overflow-hidden truncate whitespace-nowrap break-words text-left">
           <span className="text-gray-400">
@@ -118,6 +135,25 @@ const ProductForm: React.FC<ProductFormProps> = ({
         </p>
         <ChevronRightIcon className="w-5 flex-shrink-0 text-secondary" />
       </button>
+
+      {/* For Sale */}
+      <div className="form-control flex w-full flex-row gap-2 py-2">
+        <input
+          {...getFieldProps('forSale')}
+          type="checkbox"
+          onChange={(e) => {
+            setFieldValue('forSale', !e.target.checked)
+            if (e.target.checked === true) {
+              setFieldValue('price', 0)
+              setFieldValue('profitAmount', 0)
+              setFieldValue('profitPercentage', 0)
+            }
+          }}
+          checked={!values.forSale}
+          className="toggle toggle-primary"
+        />
+        <span>For ingredients purposes only</span>
+      </div>
 
       {/* Cost per Unit */}
       {values.isBulkCost && (
@@ -132,8 +168,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         </div>
       )}
 
-      {/* Cost */}
-      {values.isBulkCost === false && (
+      {showCostInput() && (
         <label className="form-control">
           <div className="form-control-label  ">
             <span className="label-text-alt text-gray-400">Cost</span>
@@ -143,7 +178,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
             prefix="₱"
             disabled={isMutating}
             name={getFieldProps('cost').name}
-            value={values.cost}
+            value={values.cost || ''}
             type="text"
             tabIndex={3}
             className="input input-bordered w-full"
@@ -165,11 +200,13 @@ const ProductForm: React.FC<ProductFormProps> = ({
               }
             }}
           />
-          <div className="label py-0">
-            <span className="label-text-alt text-xs text-red-400">
-              {errors.cost}&nbsp;
-            </span>
-          </div>
+          {costError && (
+            <div className="label py-0">
+              <span className="label-text-alt text-xs text-red-400">
+                {costError}
+              </span>
+            </div>
+          )}
         </label>
       )}
 
@@ -208,11 +245,13 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 setFieldValue('profitPercentage', toNumber(newProfitPercentage))
               }}
             />
-            <div className="label py-0">
-              <span className="label-text-alt text-xs text-red-400">
-                {errors.price}&nbsp;
-              </span>
-            </div>
+            {errors.price && (
+              <div className="label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  {errors.price}
+                </span>
+              </div>
+            )}
           </label>
         </div>
       )}
@@ -289,11 +328,13 @@ const ProductForm: React.FC<ProductFormProps> = ({
               }}
             />
           </div>
-          <div className="label py-0">
-            <span className="label-text-alt text-xs text-red-400">
-              {errors.profitAmount}&nbsp;
-            </span>
-          </div>
+          {errors.profitAmount && (
+            <div className="label py-0">
+              <span className="label-text-alt text-xs text-red-400">
+                {errors.profitAmount}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -310,33 +351,14 @@ const ProductForm: React.FC<ProductFormProps> = ({
           }}
         />
 
-        {errors.name && (
+        {errors.category && (
           <div className="label py-0">
             <span className="label-text-alt text-xs text-red-400">
-              {errors.name}
+              {errors.category}
             </span>
           </div>
         )}
       </label>
-
-      {/* For Sale */}
-      <div className="form-control flex w-full flex-row justify-between py-2">
-        <span>I want to use it for Recipe Only</span>
-        <input
-          {...getFieldProps('forSale')}
-          type="checkbox"
-          onChange={(e) => {
-            setFieldValue('forSale', !e.target.checked)
-            if (e.target.checked === true) {
-              setFieldValue('price', 0)
-              setFieldValue('profitAmount', 0)
-              setFieldValue('profitPercentage', 0)
-            }
-          }}
-          checked={!values.forSale}
-          className="toggle toggle-primary"
-        />
-      </div>
 
       {/* Images */}
       <ProductImages
@@ -346,71 +368,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
         }}
         images={values.images ?? []}
       />
-
-      {/* Track Stock */}
-      <div className="form-control flex w-full flex-row justify-between py-2">
-        <span>Track Stock</span>
-        <input
-          {...getFieldProps('trackStock')}
-          type="checkbox"
-          onChange={(e) => {
-            setFieldValue('trackStock', e.target.checked)
-            if (values.trackStock === false && e.target.checked === true) {
-              navigate(ScreenPath.StockDetail)
-            }
-            if (e.target.checked === true) {
-              if (mode === 'edit') {
-                setIsStockReset(true)
-              }
-            }
-            if (e.target.checked === false) {
-              setIsStockReset(true)
-              const newProfitAmount = computeProfitAmount(
-                toNumber(values.price),
-                toNumber(values.cost),
-              )
-              const newProfitPercentage = computeProfitPercentage(
-                toNumber(values.price),
-                toNumber(values.cost),
-              )
-              setValues({
-                ...values,
-                allowBackOrder: false,
-                isBulkCost: false,
-                soldBy: ProductSoldBy.Pieces,
-                profitAmount: newProfitAmount,
-                profitPercentage: newProfitPercentage,
-                trackStock: false,
-                batches: [
-                  {
-                    ...defaultValue.batches[0],
-                    quantity: 1,
-                    id: v4(),
-                    cost: toNumber(values.cost),
-                    name: `Batch #${padWithZeros(1)}`,
-                  },
-                ],
-              })
-            }
-          }}
-          checked={values.trackStock}
-          className="toggle toggle-primary"
-        />
-      </div>
-
-      {/* Manage Stock */}
-      {values.trackStock && (
-        <button
-          onClick={() => navigate(ScreenPath.StockDetail)}
-          className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap justify-between "
-        >
-          <div className="flex flex-row items-center gap-2">
-            <HomeIcon className="w-5 flex-shrink-0 " />
-            <p className="">Manage Stock</p>
-          </div>
-          <ChevronRightIcon className="w-5 flex-shrink-0 " />
-        </button>
-      )}
     </div>
   )
 }
