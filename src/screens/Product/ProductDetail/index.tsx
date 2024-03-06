@@ -450,10 +450,13 @@ export const ProductDetail = (props: ProductDetailProps) => {
     if (!showMore) {
       setShowMore(true)
     }
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 200))
     const lastBatchElement = document.querySelector('#add-batch-button')
     if (lastBatchElement) {
-      lastBatchElement.scrollIntoView()
+      window.scrollTo({
+        top: 9999,
+        behavior: 'smooth', // Optional: Adds smooth scrolling
+      })
     }
 
     if (!activeBatch) {
