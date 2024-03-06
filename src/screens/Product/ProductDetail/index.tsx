@@ -1056,7 +1056,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
           )}
 
           {/* Active Batch */}
-          {activeBatch &&
+          {mode === 'edit' &&
+            activeBatch &&
             [activeBatch].map((batch, index) => {
               return (
                 <motion.div
@@ -1106,26 +1107,77 @@ export const ProductDetail = (props: ProductDetailProps) => {
             })}
 
           {/* Non active batches */}
-          <div
-            className={`collapse collapse-arrow rounded-sm bg-base-100 ${
-              showMore ? 'collapse-open' : 'collapse-close'
-            }`}
-          >
+          {mode === 'edit' && (
             <div
-              onClick={() => setShowMore(!showMore)}
-              className="collapse-title mx-auto w-[160px] px-0 text-center"
+              className={`collapse collapse-arrow rounded-sm bg-base-100 ${
+                showMore ? 'collapse-open' : 'collapse-close'
+              }`}
             >
-              Show {showMore ? 'Less' : 'More'}
+              <div
+                onClick={() => setShowMore(!showMore)}
+                className="collapse-title mx-auto w-[160px] px-0 text-center"
+              >
+                Show {showMore ? 'Less' : 'More'}
+              </div>
+              <div className="BatchesContainer collapse-content space-y-4 p-0">
+                {nonActiveBatches.length === 0 && (
+                  <div>
+                    <p className="text-center text-gray-400">
+                      No additional batches to show
+                    </p>
+                  </div>
+                )}
+                {nonActiveBatches.map((batch, index) => {
+                  return (
+                    <BatchCard
+                      key={batch.id}
+                      mode={mode}
+                      onRemove={async (batchId) => {
+                        const newBatches = [...values.batches]
+                        const updatedBatches = newBatches.filter(
+                          (batch) => batch.id !== batchId,
+                        )
+                        await setFieldValue('batches', updatedBatches)
+                      }}
+                      onChange={async (updatedBatch) => {
+                        await setFieldValue(
+                          'batches',
+                          values.batches.map((batch) => {
+                            if (batch.id === updatedBatch.id) {
+                              return updatedBatch
+                            }
+                            return batch
+                          }),
+                        )
+                      }}
+                      error={
+                        errors.batches &&
+                        (errors.batches[
+                          values.batches.findIndex((b) => b.id === batch.id)
+                        ] as never)
+                      }
+                      batch={batch}
+                      soldBy={values.soldBy}
+                      isBulkCost={values.isBulkCost}
+                      forSale={values.forSale}
+                    />
+                  )
+                })}
+              </div>
             </div>
-            <div className="BatchesContainer collapse-content space-y-4 p-0">
-              {nonActiveBatches.length === 0 && (
+          )}
+
+          {/* Add Batch */}
+          {mode === 'add' && (
+            <div className="BatchesContainer space-y-4 p-0">
+              {values.batches.length === 0 && (
                 <div>
                   <p className="text-center text-gray-400">
                     No additional batches to show
                   </p>
                 </div>
               )}
-              {nonActiveBatches.map((batch, index) => {
+              {values.batches.map((batch) => {
                 return (
                   <BatchCard
                     key={batch.id}
@@ -1162,7 +1214,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 )
               })}
             </div>
-          </div>
+          )}
 
           <button
             onClick={addNewBatch}
