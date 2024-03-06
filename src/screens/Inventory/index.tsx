@@ -12,6 +12,7 @@ import { Product } from 'types/product.types'
 import { isExpired, isWithinExpiration } from 'util/data'
 import GetStarted from './components/GetStarted'
 import { toNumber } from 'lodash'
+import { unitAbbrevationsToLabel } from 'util/measurement'
 
 type InventoryProps = {
   showAddProduct?: boolean
@@ -37,7 +38,9 @@ const Inventory = (props: InventoryProps) => {
   const filteredProducts = useMemo(() => {
     if (filter === 'lowStock') {
       return products.filter(
-        (product) => toNumber(product.stockWarning) >= product.totalQuantity,
+        (product) =>
+          toNumber(product.stockWarning) >= product.totalQuantity &&
+          !product.outOfStock,
       )
     }
 
@@ -71,14 +74,12 @@ const Inventory = (props: InventoryProps) => {
 
   const renderQuantity = (product: Product) => {
     const activeBatch = product.activeBatch
-
+    const lowStock = toNumber(product.stockWarning) >= product.totalQuantity
     if (!activeBatch) {
       return <p className="text-xs text-orange-500">No Batches Found</p>
     }
 
     if (product.recipe) {
-      const lowStock = toNumber(product.stockWarning) >= product.totalQuantity
-
       return (
         <p className={`text-xs ${lowStock ? 'text-orange-400' : ''}`}>
           {product.totalQuantity} pc(s) {lowStock ? 'Low Stock' : ''}
@@ -91,6 +92,18 @@ const Inventory = (props: InventoryProps) => {
     }
     if (product.outOfStock === true) {
       return <p className="text-xs text-red-500">Out of stock</p>
+    }
+
+    if (lowStock) {
+      return (
+        <p className={`text-xs ${lowStock ? 'text-orange-400' : ''}`}>
+          {product.totalQuantity}{' '}
+          {unitAbbrevationsToLabel(
+            product.activeBatch?.unitOfMeasurement ?? '',
+          )}{' '}
+          {lowStock ? 'Low Stock' : ''}
+        </p>
+      )
     }
 
     return <p className="text-xs">{product.availability}</p>
