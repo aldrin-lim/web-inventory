@@ -11,6 +11,7 @@ import { AppPath } from 'routes/AppRoutes.types'
 import { Product } from 'types/product.types'
 import { isExpired, isWithinExpiration } from 'util/data'
 import GetStarted from './components/GetStarted'
+import { toNumber } from 'lodash'
 
 type InventoryProps = {
   showAddProduct?: boolean
@@ -31,12 +32,23 @@ const Inventory = (props: InventoryProps) => {
   const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
 
   const [nameFilter, setNameFilter] = useState('')
+  const [filter, setFilter] = useState('all')
 
   const filteredProducts = useMemo(() => {
+    if (filter === 'lowStock') {
+      return products.filter(
+        (product) => toNumber(product.stockWarning) > product.totalQuantity,
+      )
+    }
+
+    if (filter === 'outOfStock') {
+      return products.filter((product) => product.outOfStock)
+    }
+
     return products.filter((product) =>
       product.name.toLowerCase().includes(nameFilter.toLowerCase()),
     )
-  }, [nameFilter, products])
+  }, [nameFilter, products, filter])
 
   const numberOfNearExpirationProducts = products.filter((product) =>
     isWithinExpiration(product.activeBatch.expirationDate),
@@ -121,12 +133,40 @@ const Inventory = (props: InventoryProps) => {
               onChange={(e) => setNameFilter(e.target.value)}
               placeholder="Search Product by Name"
             />
+            {/* Filter */}
+            <ul className="menu menu-horizontal my-2 bg-base-100 ">
+              <li>
+                <a
+                  className={filter === 'all' ? 'active' : ''}
+                  onClick={() => setFilter('all')}
+                >
+                  All
+                </a>
+              </li>
+              <li>
+                <a
+                  className={filter === 'lowStock' ? 'active' : ''}
+                  onClick={() => setFilter('lowStock')}
+                >
+                  Low Stock
+                </a>
+              </li>
+              <li>
+                <a
+                  className={filter === 'outOfStock' ? 'active' : ''}
+                  onClick={() => setFilter('outOfStock')}
+                >
+                  Out of Stock
+                </a>
+              </li>
+            </ul>
+
+            <div className="flex w-full flex-row justify-between bg-gray-200 p-2">
+              <p className="uppercase">PRODUCT</p>
+              <p className="uppercase">COST</p>
+            </div>
           </div>
 
-          <div className="flex w-full flex-row justify-between bg-gray-200 p-2">
-            <p className="uppercase">PRODUCT</p>
-            <p className="uppercase">COST</p>
-          </div>
           <ul className="menu w-full border-b p-0 [&_li>*]:rounded-md [&_li>*]:border-b">
             {filteredProducts.map((product) => (
               <li

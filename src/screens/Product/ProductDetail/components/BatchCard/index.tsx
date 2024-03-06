@@ -243,8 +243,8 @@ const BatchCard = (props: BatchCardProps) => {
           </div>
           <div className={`ExpirationDatePicker flex flex-row gap-1`}>
             <DatePicker
-              disablePast
-              disabled={mode === 'edit'}
+              // disablePast
+              // disabled={mode === 'edit'}
               sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
               slotProps={{
                 textField: {
