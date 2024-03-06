@@ -51,7 +51,7 @@ export const ProductDetailFormValidationSchema = ProductSchema.omit({
         invalid_type_error: 'Cost must be a number',
         coerce: true,
       })
-      .positive('Cost must be greater than 0')
+      .positive('2Cost must be greater than 0')
       .optional(),
   })
 
@@ -61,37 +61,13 @@ export type AddProductDetailSchema = z.infer<typeof AddProductDetailSchema>
 export type StockDetail = z.infer<typeof StockDetailSchema>
 
 export const FormikValuesSchema = ProductSchema.extend({
-  price: z
-    .number({
-      coerce: true,
-      required_error: 'Price is required',
-      invalid_type_error: 'Price must be a number',
-    })
-    .positive('Price must be greater than 0')
-    .optional(),
-  profitAmount: z
-    .number({
-      required_error: 'Profit Amount is required',
-      invalid_type_error: 'Profit Amount must be a number',
-      coerce: true,
-    })
-    .positive('Profit Amount must be greater than 0')
-    .optional(),
-  profitPercentage: z
-    .number({
-      required_error: 'Profit Percentage is required',
-      invalid_type_error: 'Profit Percentage must be a number',
-      coerce: true,
-    })
-    .positive('Profit Percentage must be greater than 0')
-    .optional(),
   overallCost: z
     .number({
       required_error: 'Cost is required',
       invalid_type_error: 'Cost must be a number',
       coerce: true,
     })
-    .positive('Cost must be greater than 0')
+    .positive('3Cost must be greater than 0')
     .optional(),
 })
 

@@ -1,6 +1,6 @@
 import QuantityInput from 'components/QuantityInput'
 import { FormikErrors, useFormik } from 'formik'
-import CurrencyInput from 'react-currency-input-field'
+import CurrencyInput, { formatValue } from 'react-currency-input-field'
 import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { z } from 'zod'
 import { useEffect, useMemo } from 'react'
@@ -49,27 +49,11 @@ const BatchCard = (props: BatchCardProps) => {
     error,
     forSale,
     mode = 'add',
+    onChange,
   } = props
 
-  const formValue = batch
-  const { getFieldProps, values, setFieldValue } = useFormik({
-    onSubmit: () => {
-      // TODO: When bulk cost is disabled, reset bulk cost to 0 and unit of measurement to pieces
-    },
-    initialValues: {
-      ...formValue,
-    },
-    validationSchema: toFormikValidationSchema(
-      z.object({
-        cost: z
-          .number({ required_error: 'Cost is required', coerce: true })
-          .min(0, 'Cost must be greater than 0'),
-      }),
-    ),
-    enableReinitialize: true,
-  })
+  const values = batch
 
-  // const costPerUnit = isBulkCost ? Number(values.cost) / values.quantity : 0
   const costPerUnit = useMemo(() => {
     try {
       if (mode === 'edit') {
@@ -81,27 +65,24 @@ const BatchCard = (props: BatchCardProps) => {
       const newCost = isBulkCost
         ? new Big(values.cost ?? 0).div(values.quantity ?? 0).toNumber()
         : 0
+      console.log('paaso', newCost)
       return newCost
     } catch {
       return 0
     }
-  }, [values.cost, values.quantity])
+  }, [
+    isBulkCost,
+    mode,
+    values.cost,
+    values.costPerUnit,
+    values.isDeducted,
+    values.quantity,
+  ])
+
   const costPerUnitColor =
     costPerUnit > 0 && costPerUnit !== Infinity
       ? 'text-green-500'
       : 'text-gray-400'
-
-  const debouncedValue = useDebounce(values, 300)
-  useEffect(() => {
-    props.onChange?.({
-      ...debouncedValue,
-      costPerUnit,
-    })
-  }, [debouncedValue])
-
-  useEffect(() => {
-    setFieldValue('costPerUnit', costPerUnit)
-  }, [costPerUnit])
 
   const isExpired =
     values.expirationDate && new Date(values.expirationDate) < new Date()
@@ -153,7 +134,7 @@ const BatchCard = (props: BatchCardProps) => {
           <QuantityInput
             value={values.quantity}
             onChange={(newValue) => {
-              setFieldValue('quantity', newValue)
+              onChange?.({ ...values, quantity: newValue })
             }}
             className="w-full"
           />
@@ -196,16 +177,15 @@ const BatchCard = (props: BatchCardProps) => {
               </div>
               <CurrencyInput
                 decimalsLimit={4}
-                onBlur={getFieldProps('cost').onBlur}
-                name={getFieldProps('cost').name}
-                value={getFieldProps('cost').value || ''}
+                value={values.cost}
                 type="text"
                 tabIndex={2}
                 className="input input-bordered w-full"
                 prefix="₱"
                 placeholder="Enter total cost for bulk purchase"
                 onValueChange={(value) => {
-                  setFieldValue('cost', value)
+                  onChange?.({ ...values, cost: value, costPerUnit })
+                  // setFieldValue('cost', value)
                 }}
                 disabled={values.isDeducted || mode === 'edit'}
                 allowNegativeValue={false}
@@ -219,8 +199,7 @@ const BatchCard = (props: BatchCardProps) => {
               )}
             </label>
             <p className={`${costPerUnitColor}`}>
-              Cost: {formatToPeso(values.costPerUnit ?? 0)}/
-              {values.unitOfMeasurement}
+              Cost: {costPerUnit}/{values.unitOfMeasurement}
             </p>
           </>
         )}
@@ -233,24 +212,23 @@ const BatchCard = (props: BatchCardProps) => {
               </div>
               <CurrencyInput
                 decimalsLimit={4}
-                onBlur={getFieldProps('cost').onBlur}
-                name={getFieldProps('cost').name}
-                value={getFieldProps('cost').value || ''}
+                value={values.cost}
                 type="text"
                 tabIndex={2}
                 className="input input-bordered w-full"
                 prefix="₱"
                 placeholder="₱0"
                 onValueChange={(value) => {
-                  setFieldValue('cost', value)
+                  onChange?.({ ...values, cost: value, costPerUnit: value })
+                  // setFieldValue('costPerUnit', value)
                 }}
                 disabled={values.isDeducted || mode === 'edit'}
                 allowNegativeValue={false}
               />
-              {error?.cost && (
+              {error?.costPerUnit && (
                 <div className="label py-0">
                   <span className="label-text-alt text-xs text-red-400">
-                    {error.cost}
+                    {error.costPerUnit}
                   </span>
                 </div>
               )}
@@ -263,13 +241,14 @@ const BatchCard = (props: BatchCardProps) => {
           <div className="">
             <span className="label-text-alt ">Expiration(Optional)</span>
           </div>
-          <div className="ExpirationDatePicker flex flex-row gap-1">
+          <div className={`ExpirationDatePicker flex flex-row gap-1`}>
             <DatePicker
               disabled={mode === 'edit'}
-              sx={{ width: '100%' }}
+              sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
               slotProps={{
                 textField: {
                   variant: 'outlined',
+                  color: 'secondary',
                   className: '',
                 },
                 actionBar: {
@@ -279,31 +258,18 @@ const BatchCard = (props: BatchCardProps) => {
               value={moment(values.expirationDate)}
               onChange={(date) => {
                 if (date) {
-                  setFieldValue('expirationDate', moment(date).toDate())
+                  onChange?.({
+                    ...values,
+                    expirationDate: moment(date).toDate(),
+                  })
                 } else {
-                  setFieldValue('expirationDate', null)
+                  onChange?.({ ...values, expirationDate: null })
                 }
               }}
-              className="bg-base-100"
+              className={` border-none outline-none ${
+                mode === 'edit' ? 'input-disabled' : 'bg-base-100'
+              }`}
             />
-            {/* <input
-              {...getFieldProps('expirationDate')}
-              disabled={mode === 'edit'}
-              type="date"
-              placeholder="Expiration Date"
-              className="input input-bordered w-full"
-            /> */}
-            {mode === 'add' && (
-              <button
-                onClick={async () => {
-                  await setFieldValue('expirationDate', '')
-                  setFieldValue('expirationDate', null)
-                }}
-                className="btn btn-ghost"
-              >
-                <XMarkIcon className="w-6" />
-              </button>
-            )}
           </div>
         </label>
       </div>

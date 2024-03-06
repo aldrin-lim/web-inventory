@@ -1,11 +1,10 @@
 import CurrencyInput from 'react-currency-input-field'
 
-type QuantityInputProps = React.DetailedHTMLProps<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  HTMLInputElement
-> & {
+type QuantityInputProps = {
   value?: number
   onChange?: (string?: string) => void
+  className: string
+  disabled?: boolean
 }
 
 const QuantityInput = (props: QuantityInputProps) => {

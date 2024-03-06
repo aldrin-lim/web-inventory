@@ -68,6 +68,8 @@ type ProductDetailProps = {
 
 export type ProductAction = 'add' | 'edit'
 
+// TODO: Disble show more on add
+
 export const ProductDetail = (props: ProductDetailProps) => {
   const { product } = props
   const location = useLocation()
@@ -105,9 +107,103 @@ export const ProductDetail = (props: ProductDetailProps) => {
           isDeducted: false,
         },
       ],
-    } as ProductDetailFormikValue
+    } satisfies ProductDetailFormikValue
   }, [])
   const navigate = useNavigate()
+
+  const ValidationSchema = FormikValuesSchema.superRefine(async (data, ctx) => {
+    // TODO: Rename isForSale to isIngredient
+    const isIngredient = data.forSale === false
+    // If ingredient, no need to validate overall cost
+    if (!isIngredient) {
+      const priceValidation = z
+        .number({
+          coerce: true,
+          required_error: 'Price is required',
+          invalid_type_error: 'Price must be a number',
+        })
+        .positive('Price must be greater than 0')
+        .safeParse(toNumber(data.price))
+      const profitAmountValidation = z
+        .number({
+          required_error: 'Profit Amount is required',
+          invalid_type_error: 'Profit Amount must be a number',
+          coerce: true,
+        })
+        .positive('Profit Amount must be greater than 0')
+        .safeParse(toNumber(data.profitAmount))
+      const profitPercentageValidation = z
+        .number({
+          required_error: 'Profit Percentage is required',
+          invalid_type_error: 'Profit Percentage must be a number',
+          coerce: true,
+        })
+        .positive('Profit Percentage must be greater than 0')
+        .safeParse(toNumber(data.profitPercentage))
+      if (priceValidation.success === false) {
+        ctx.addIssue({
+          path: ['price'], // Path to the field
+          message: priceValidation.error.issues[0].message,
+          code: 'custom',
+        })
+      }
+      if (profitAmountValidation.success === false) {
+        ctx.addIssue({
+          path: ['profitAmount'], // Path to the field
+          message: profitAmountValidation.error.issues[0].message,
+          code: 'custom',
+        })
+      }
+      if (profitPercentageValidation.success === false) {
+        ctx.addIssue({
+          path: ['profitPercentage'], // Path to the field
+          message: profitPercentageValidation.error.issues[0].message,
+          code: 'custom',
+        })
+      }
+
+      if (data.isBulkCost === false) {
+        const overallCostValidation = z
+          .number({
+            required_error: 'Cost is required',
+            invalid_type_error: 'Cost must be a number',
+            coerce: true,
+          })
+          .positive('1Cost must be greater than 0')
+          .safeParse(toNumber(data.overallCost))
+        if (overallCostValidation.success === false) {
+          ctx.addIssue({
+            path: ['overallCost'], // Path to the field
+            message: overallCostValidation.error.issues[0].message,
+            code: 'custom',
+          })
+        }
+      }
+    }
+
+    // Validate batches
+
+    if (mode === 'add') {
+      data.batches.forEach((batch) => {
+        const quantityValidation = z
+          .number({
+            coerce: true,
+            required_error: 'Quantity is required',
+            invalid_type_error: 'Quantity must be a number',
+          })
+          .positive('Quantity must be greater than 0')
+          .safeParse(batch.quantity)
+        if (quantityValidation.success === false) {
+          const index = data.batches.findIndex((b) => b.id === batch.id)
+          ctx.addIssue({
+            path: ['batches', index, 'quantity'], // Path to the field
+            message: quantityValidation.error.issues[0].message,
+            code: 'custom',
+          })
+        }
+      })
+    }
+  })
 
   // const product = useMemo(() => {
   //   if (!props.product) {
@@ -175,118 +271,21 @@ export const ProductDetail = (props: ProductDetailProps) => {
       ...initialValues,
       overallCost,
     },
-    validationSchema: toFormikValidationSchema(
-      FormikValuesSchema.superRefine(async (data, ctx) => {
-        // TODO: Rename isForSale to isIngredient
-        const isIngredient = data.forSale === false
-        // If ingredient, no need to validate overall cost
-        if (!isIngredient) {
-          const priceValidation = z
-            .number({
-              coerce: true,
-              required_error: 'Price is required',
-              invalid_type_error: 'Price must be a number',
-            })
-            .positive('Price must be greater than 0')
-            .safeParse(toNumber(data.price))
-          const profitAmountValidation = z
-            .number({
-              required_error: 'Profit Amount is required',
-              invalid_type_error: 'Profit Amount must be a number',
-              coerce: true,
-            })
-            .positive('Profit Amount must be greater than 0')
-            .safeParse(toNumber(data.profitAmount))
-          const profitPercentageValidation = z
-            .number({
-              required_error: 'Profit Percentage is required',
-              invalid_type_error: 'Profit Percentage must be a number',
-              coerce: true,
-            })
-            .positive('Profit Percentage must be greater than 0')
-            .safeParse(toNumber(data.profitPercentage))
-          if (priceValidation.success === false) {
-            ctx.addIssue({
-              path: ['price'], // Path to the field
-              message: priceValidation.error.issues[0].message,
-              code: 'custom',
-            })
-          }
-          if (profitAmountValidation.success === false) {
-            ctx.addIssue({
-              path: ['profitAmount'], // Path to the field
-              message: profitAmountValidation.error.issues[0].message,
-              code: 'custom',
-            })
-          }
-          if (profitPercentageValidation.success === false) {
-            ctx.addIssue({
-              path: ['profitPercentage'], // Path to the field
-              message: profitPercentageValidation.error.issues[0].message,
-              code: 'custom',
-            })
-          }
-
-          if (data.isBulkCost === false) {
-            const overallCostValidation = z
-              .number({
-                required_error: 'Cost is required',
-                invalid_type_error: 'Cost must be a number',
-                coerce: true,
-              })
-              .positive('Cost must be greater than 0')
-              .safeParse(toNumber(data.overallCost))
-            if (overallCostValidation.success === false) {
-              ctx.addIssue({
-                path: ['overallCost'], // Path to the field
-                message: overallCostValidation.error.issues[0].message,
-                code: 'custom',
-              })
-            }
-          }
-        }
-
-        // Validate batches
-
-        if (mode === 'add') {
-          data.batches.forEach((batch) => {
-            const quantityValidation = z
-              .number({
-                coerce: true,
-                required_error: 'Quantity is required',
-                invalid_type_error: 'Quantity must be a number',
-              })
-              .positive('Quantity must be greater than 0')
-              .safeParse(batch.quantity)
-            if (quantityValidation.success === false) {
-              const index = data.batches.findIndex((b) => b.id === batch.id)
-              ctx.addIssue({
-                path: ['batches', index, 'quantity'], // Path to the field
-                message: quantityValidation.error.issues[0].message,
-                code: 'custom',
-              })
-            }
-          })
-        }
-      }),
-    ),
+    validationSchema: toFormikValidationSchema(ValidationSchema),
     enableReinitialize: false,
     validateOnBlur: false,
     onSubmit: async (formValue) => {
       formValue.price = toNumber(formValue.price)
       formValue.profitPercentage = toNumber(formValue.profitPercentage)
       formValue.profitAmount = toNumber(formValue.profitAmount)
-      if (formValue.isBulkCost === false) {
-        formValue.batches = formValue.batches.map((batch) => {
-          return {
-            ...batch,
-            cost: toNumber(formValue.overallCost),
-          }
-        })
-      }
-      const validation = (
-        product ? UpdateProductBodySchema : CreateProductBodySchema
-      ).safeParse(formValue)
+      formValue.batches = formValue.batches.map((batch) => {
+        return {
+          ...batch,
+          cost: toNumber(formValue.overallCost || batch.cost),
+          costPerUnit: toNumber(batch.costPerUnit),
+        }
+      })
+      const validation = await ValidationSchema.safeParseAsync(formValue)
       if (!validation.success) {
         const error = validation.error.issues[0].message
         console.log(validation.error)
@@ -296,6 +295,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
         })
         return
       }
+      console.log('validation', validation.data)
+
       if (product) {
         await updateProduct({
           id: product.id,
@@ -335,7 +336,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const checkUnsavedChanges = () => {
     const hasUnsavedChanges =
-      JSON.stringify(initialValues) !== JSON.stringify(values)
+      JSON.stringify(initialValues) !==
+      JSON.stringify({ ...values, overallCost: undefined })
 
     if (hasUnsavedChanges) {
       setShowUnsavedChangesDialog(true)
@@ -456,6 +458,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
       }
     }
   }, [activeBatch, showMore])
+
+  console.log('errors', errors)
+  console.log('values', values.batches)
 
   return (
     <>
@@ -1123,6 +1128,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               {nonActiveBatches.map((batch, index) => {
                 return (
                   <BatchCard
+                    key={batch.id}
                     mode={mode}
                     onRemove={async (batchId) => {
                       const newBatches = [...values.batches]
@@ -1138,10 +1144,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                           if (batch.id === updatedBatch.id) {
                             return updatedBatch
                           }
-                          return {
-                            ...batch,
-                            unitOfMeasurement: updatedBatch.unitOfMeasurement,
-                          }
+                          return batch
                         }),
                       )
                     }}
@@ -1152,7 +1155,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       ] as never)
                     }
                     batch={batch}
-                    key={index}
                     soldBy={values.soldBy}
                     isBulkCost={values.isBulkCost}
                     forSale={values.forSale}

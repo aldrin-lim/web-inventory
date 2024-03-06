@@ -17,13 +17,11 @@ export const ProductBatchSchema = z.object({
     required_error: 'Name is required',
     invalid_type_error: 'Name must be a string',
   }),
-  cost: z
-    .number({
-      coerce: true,
-      required_error: 'Cost is required',
-      invalid_type_error: 'Cost must be a number',
-    })
-    .positive('Cost must be greater than 0'),
+  cost: z.number({
+    coerce: true,
+    required_error: 'Cost is required',
+    invalid_type_error: 'Cost must be a number',
+  }),
   costPerUnit: z
     .number({
       coerce: true,
@@ -57,21 +55,27 @@ const BaseProduct = z.object({
       invalid_type_error: 'Description must be a string',
     })
     .optional(),
-  profitAmount: z.number({
-    required_error: 'Profit Amount is required',
-    invalid_type_error: 'Profit Amount must be a number',
-    coerce: true,
-  }),
-  profitPercentage: z.number({
-    required_error: 'Profit Percentage is required',
-    invalid_type_error: 'Profit Percentage must be a number',
-    coerce: true,
-  }),
-  price: z.number({
-    required_error: 'Price is required',
-    invalid_type_error: 'Price must be a number',
-    coerce: true,
-  }),
+  profitAmount: z
+    .number({
+      required_error: 'Profit Amount is required',
+      invalid_type_error: 'Profit Amount must be a number',
+      coerce: true,
+    })
+    .default(0),
+  profitPercentage: z
+    .number({
+      required_error: 'Profit Percentage is required',
+      invalid_type_error: 'Profit Percentage must be a number',
+      coerce: true,
+    })
+    .default(0),
+  price: z
+    .number({
+      required_error: 'Price is required',
+      invalid_type_error: 'Price must be a number',
+      coerce: true,
+    })
+    .default(0),
   images: z.array(z.string()),
   category: z
     .string({

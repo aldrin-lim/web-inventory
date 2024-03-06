@@ -41,7 +41,7 @@ const getValidationSchema = (isBulkCost: boolean) => {
     return ProductBatchSchema.extend({
       cost: z
         .number({ required_error: 'Cost is required', coerce: true })
-        .positive('Cost must be greater than 0'),
+        .positive('4Cost must be greater than 0'),
     }).array()
   }
 
@@ -77,8 +77,6 @@ const StockDetail = (props: StockDetailProps) => {
     })
 
   const addNewBatch = async () => {
-    // get measurement from exiting batch
-
     const newBatch = {
       id: v4(),
       name: `Batch #${padWithZeros(values.batches.length + 1)} `,
@@ -156,8 +154,6 @@ const StockDetail = (props: StockDetailProps) => {
       </div>
 
       {/* Sell by */}
-
-      {/* RESET the batches every time this changes */}
       <p>Use/Sell By:</p>
       <div className="bg-gray-100  p-2">
         <div className="form-control ">
