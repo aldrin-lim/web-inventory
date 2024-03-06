@@ -12,7 +12,7 @@ import {
   ChevronRightIcon,
   InformationCircleIcon,
   PlusIcon,
-} from '@heroicons/react/24/solid'
+} from '@heroicons/react/24/outline'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
@@ -586,6 +586,16 @@ export const ProductDetail = (props: ProductDetailProps) => {
               </div>
             )}
           </label>
+
+          {/* Recipe label */}
+          {mode === 'edit' && values.recipe && (
+            <button
+              disabled={isMutating}
+              className="btn no-animation btn-xs max-w-xs  self-start rounded-[5px] text-left"
+            >
+              Recipe Used: {values.recipe.name}
+            </button>
+          )}
 
           {/* Recipe CTA */}
           {mode === 'add' && !values.recipe && (
