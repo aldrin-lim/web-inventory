@@ -61,6 +61,7 @@ import { PIECES } from 'constants copy/measurement'
 import RecipeList from './screens/RecipeList'
 import { PhotoIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { formatToPeso } from 'util/currency'
+import { disable } from 'mixpanel-browser'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -1268,6 +1269,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
               {mode === 'edit' &&
                 activeBatch &&
                 [activeBatch].map((batch, index) => {
+                  const disabled =
+                    mode === 'edit' &&
+                    // Check if the batch is already in the initial form values
+                    initialFormValues.batches.findIndex(
+                      (b) => b.id === batch.id,
+                    ) >= 0
                   return (
                     <motion.div
                       key={batch.id}
@@ -1276,13 +1283,16 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       transition={{ ease: 'easeInOut', duration: 0.4 }}
                     >
                       <BatchCard
+                        disabled={disabled}
                         active={true}
                         onRemove={async (batchId) => {
-                          const newBatches = [...values.batches]
-                          const updatedBatches = newBatches.filter(
-                            (batch) => batch.id !== batchId,
-                          )
-                          await setFieldValue('batches', updatedBatches)
+                          if (!disabled) {
+                            const newBatches = [...values.batches]
+                            const updatedBatches = newBatches.filter(
+                              (batch) => batch.id !== batchId,
+                            )
+                            await setFieldValue('batches', updatedBatches)
+                          }
                         }}
                         onChange={async (updatedBatch) => {
                           await setFieldValue(
@@ -1337,22 +1347,25 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       </div>
                     )}
                     {nonActiveBatches.map((batch) => {
+                      const disabled =
+                        mode === 'edit' &&
+                        // Check if the batch is already in the initial form values
+                        initialFormValues.batches.findIndex(
+                          (b) => b.id === batch.id,
+                        ) >= 0
                       return (
                         <BatchCard
-                          disabled={
-                            mode === 'edit' &&
-                            initialFormValues.batches.findIndex(
-                              (b) => b.id === batch.id,
-                            ) >= 0
-                          }
+                          disabled={disabled}
                           key={batch.id}
                           mode={mode}
                           onRemove={async (batchId) => {
-                            const newBatches = [...values.batches]
-                            const updatedBatches = newBatches.filter(
-                              (batch) => batch.id !== batchId,
-                            )
-                            await setFieldValue('batches', updatedBatches)
+                            if (!disabled) {
+                              const newBatches = [...values.batches]
+                              const updatedBatches = newBatches.filter(
+                                (batch) => batch.id !== batchId,
+                              )
+                              await setFieldValue('batches', updatedBatches)
+                            }
                           }}
                           onChange={async (updatedBatch) => {
                             await setFieldValue(
