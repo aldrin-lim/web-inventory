@@ -13,6 +13,7 @@ import { isExpired, isWithinExpiration } from 'util/data'
 import GetStarted from './components/GetStarted'
 import { toNumber } from 'lodash'
 import { unitAbbrevationsToLabel } from 'util/measurement'
+import { formatToPeso } from 'util/currency'
 
 type InventoryProps = {
   showAddProduct?: boolean
@@ -222,7 +223,7 @@ const Inventory = (props: InventoryProps) => {
                           className={[
                             'text-base',
                             isWithinExpiration(
-                              product.activeBatch.expirationDate,
+                              product.activeBatch?.expirationDate,
                             )
                               ? 'text-orange-400'
                               : '',
@@ -239,10 +240,12 @@ const Inventory = (props: InventoryProps) => {
                     {product.isBulkCost && (
                       <div className="text-right">
                         <p className="text-base font-medium">
-                          ₱ {product.activeBatch.costPerUnit}{' '}
+                          ₱ {product.activeBatch?.costPerUnit}/{' '}
+                          {product.activeBatch?.unitOfMeasurement}
                         </p>
                         <p className="text-xs">
-                          / {product.activeBatch.unitOfMeasurement}
+                          Bulk Cost:{' '}
+                          {formatToPeso(product.activeBatch?.cost ?? 0)}
                         </p>
                       </div>
                     )}
@@ -250,8 +253,11 @@ const Inventory = (props: InventoryProps) => {
                     {!product.isBulkCost && (
                       <div className="text-right">
                         <p className="text-base font-medium">
-                          ₱{' '}
-                          {Intl.NumberFormat().format(product.activeBatch.cost)}
+                          {formatToPeso(
+                            product.recipe
+                              ? product.recipe.cost
+                              : product.activeBatch?.cost ?? 0,
+                          )}
                         </p>
                       </div>
                     )}
