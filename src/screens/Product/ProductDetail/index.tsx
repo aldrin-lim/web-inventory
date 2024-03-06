@@ -1286,6 +1286,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       transition={{ ease: 'easeInOut', duration: 0.4 }}
                     >
                       <BatchCard
+                        productId={product?.id}
                         disabled={disabled}
                         active={true}
                         onRemove={async (batchId) => {
@@ -1358,6 +1359,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         ) >= 0
                       return (
                         <BatchCard
+                          productId={product?.id}
                           disabled={disabled}
                           key={batch.id}
                           mode={mode}
@@ -1411,6 +1413,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   {values.batches.map((batch) => {
                     return (
                       <BatchCard
+                        productId={product?.id}
                         key={batch.id}
                         mode={mode}
                         onRemove={async (batchId) => {

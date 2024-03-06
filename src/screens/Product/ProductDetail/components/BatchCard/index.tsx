@@ -1,21 +1,16 @@
 import QuantityInput from 'components/QuantityInput'
-import { FormikErrors, useFormik } from 'formik'
-import CurrencyInput, { formatValue } from 'react-currency-input-field'
+import { FormikErrors } from 'formik'
+import CurrencyInput from 'react-currency-input-field'
 import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { z } from 'zod'
-import { useEffect, useMemo, useState } from 'react'
-import { useDebounce } from '@uidotdev/usehooks'
+import { useMemo, useState } from 'react'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
-import { toFormikValidationSchema } from 'zod-formik-adapter'
-import { XMarkIcon } from '@heroicons/react/24/outline'
-import { formatToPeso } from 'util/currency'
 import { ProductAction } from '../..'
 import { DatePicker } from '@mui/x-date-pickers'
 
 import './styles.css'
 import moment from 'moment'
-import { disable } from 'mixpanel-browser'
 import AdjustmentDialog from './components/AdjustmentDialog'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
@@ -40,6 +35,7 @@ type BatchCardProps = {
     expirationDate: Date | null
     costPerUnit?: number | undefined
   }>
+  productId: string
 }
 
 const BatchCard = (props: BatchCardProps) => {
@@ -51,6 +47,7 @@ const BatchCard = (props: BatchCardProps) => {
     error,
     forSale,
     disabled,
+    productId,
     onChange,
   } = props
 
@@ -110,6 +107,7 @@ const BatchCard = (props: BatchCardProps) => {
       {/* Adjustment dialog */}
       {showAdjustmentDialog && (
         <AdjustmentDialog
+          productId={productId}
           batch={batch}
           onClose={() => setShowAdjustmentDialog(false)}
         />

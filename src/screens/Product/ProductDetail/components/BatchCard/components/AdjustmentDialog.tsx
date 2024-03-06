@@ -1,5 +1,6 @@
 import { useFormik } from 'formik'
-import { useEffect, useState } from 'react'
+import useAdjustBatch from 'hooks/useAdjustBatch'
+import { useState } from 'react'
 import CurrencyInput from 'react-currency-input-field'
 import { ProductBatchSchema } from 'types/product.types'
 import { z } from 'zod'
@@ -10,11 +11,13 @@ type AdjustmentDialogProps = {
   onClose?: () => void
   onSave?: () => void
   batch: z.infer<typeof BatchSchema>
+  productId: string
 }
 
 const AdjustmentDialog = (props: AdjustmentDialogProps) => {
-  const { onClose, onSave, batch } = props
-  const [quantity, setQuantity] = useState(batch.quantity ?? 0)
+  const { onClose, batch } = props
+  const { isLoading, adjustBatch } = useAdjustBatch(props.productId)
+
   const [reason, setReason] = useState('')
 
   const { values, errors, setFieldValue, getFieldProps, submitForm } =
@@ -45,7 +48,16 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
       ),
       validateOnChange: false,
       validateOnBlur: false,
-      onSubmit: () => {
+      onSubmit: async () => {
+        await adjustBatch({
+          batchId: batch.id ?? '',
+          newBatch: {
+            cost: values.cost,
+            quantity: values.quantity,
+          },
+          reason: values.reason,
+        })
+        onClose?.()
         // console.log('submit')
       },
     })
@@ -65,6 +77,7 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
               <span className="label-text-alt text-gray-400">Quantity</span>
             </div>
             <CurrencyInput
+              disabled={isLoading}
               onBlur={getFieldProps('quantity').onBlur}
               name={getFieldProps('quantity').name}
               decimalsLimit={4}
@@ -86,11 +99,12 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
               </div>
             )}
           </label>
-          <label className="form-control w-full ">
+          {/* <label className="form-control w-full ">
             <div className="form-control-label  ">
               <span className="label-text-alt text-gray-400">Cost</span>
             </div>
             <CurrencyInput
+              disabled={isLoading}
               onBlur={getFieldProps('cost').onBlur}
               name={getFieldProps('cost').name}
               decimalsLimit={4}
@@ -112,8 +126,9 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
                 </span>
               </div>
             )}
-          </label>
+          </label> */}
           <select
+            disabled={isLoading}
             tabIndex={3}
             className="select select-bordered w-full max-w-xs"
             onChange={(e) => {
@@ -134,6 +149,7 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
           </select>
           {reason === 'others' && (
             <textarea
+              disabled={isLoading}
               tabIndex={4}
               className="textarea textarea-bordered w-full"
               placeholder="Enter reason"
@@ -151,10 +167,11 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
           )}
         </div>
         <div className="font-sm modal-action">
-          <button onClick={onClose} className="btn">
+          <button disabled={isLoading} onClick={onClose} className="btn">
             Cancel
           </button>
           <button
+            disabled={isLoading}
             onClick={submitForm}
             type="button"
             className="btn btn-primary"
