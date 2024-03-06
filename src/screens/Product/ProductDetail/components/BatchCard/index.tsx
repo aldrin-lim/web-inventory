@@ -9,6 +9,8 @@ import { TrashIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import { formatToPeso } from 'util/currency'
+import { ProductAction } from '../..'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -17,10 +19,12 @@ type BatchCardProps = {
   soldBy: ProductSoldBy
   isBulkCost?: boolean
   onChange?: (batch: z.infer<typeof BatchSchema>) => void
-  onRemove: () => void
+  onRemove?: (batchId: string) => void
   disabled?: boolean
   active?: boolean
   forSale?: boolean
+  computeCostPerUnit?: boolean
+  mode?: ProductAction
   error?: FormikErrors<{
     id: string
     name: string
@@ -35,13 +39,12 @@ type BatchCardProps = {
 const BatchCard = (props: BatchCardProps) => {
   const {
     batch,
-    soldBy,
     isBulkCost = false,
     onRemove,
-    disabled = false,
     active = false,
     error,
     forSale,
+    mode = 'add',
   } = props
 
   const formValue = batch
@@ -65,6 +68,9 @@ const BatchCard = (props: BatchCardProps) => {
   // const costPerUnit = isBulkCost ? Number(values.cost) / values.quantity : 0
   const costPerUnit = useMemo(() => {
     try {
+      if (mode === 'edit') {
+        return isBulkCost ? values.costPerUnit ?? 0 : values.cost ?? 0
+      }
       if (values.isDeducted) {
         return isBulkCost ? values.costPerUnit ?? 0 : values.cost ?? 0
       }
@@ -112,7 +118,7 @@ const BatchCard = (props: BatchCardProps) => {
   }, [active, activeStyle, expiredStyle, isExpired])
 
   return (
-    <div>
+    <div id={active ? 'active-batch-card' : ''}>
       <div
         className={`flex flex-col gap-2 rounded-lg border border-neutral/30 p-2 py-4 ${additionalStyle}`}
       >
@@ -128,22 +134,34 @@ const BatchCard = (props: BatchCardProps) => {
           <p className="flex flex-row items-center gap-2 text-sm uppercase tracking-wider">
             {batch.name}
           </p>
-          <button
-            type="button"
-            className="btn btn-ghost btn-xs"
-            onClick={onRemove}
-          >
-            <TrashIcon className="w-5 text-primary" />
-          </button>
+          {onRemove && (
+            <button
+              type="button"
+              className="btn btn-ghost btn-xs"
+              onClick={() => onRemove(batch?.id ?? '')}
+            >
+              <TrashIcon className="w-5 text-primary" />
+            </button>
+          )}
         </div>
-        <p>Quantity</p>
-        <QuantityInput
-          value={values.quantity}
-          onChange={(newValue) => {
-            setFieldValue('quantity', newValue)
-          }}
-          className="w-full"
-        />
+        <div>
+          <p>Quantity</p>
+          <QuantityInput
+            value={values.quantity}
+            onChange={(newValue) => {
+              setFieldValue('quantity', newValue)
+            }}
+            className="w-full"
+          />
+          {error?.quantity && (
+            <div className="label py-0">
+              <span className="label-text-alt text-xs text-red-400">
+                {error.quantity}
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* {soldBy === 'weight' && (
           <label className="form-control w-full ">
             <div className="">
@@ -185,7 +203,7 @@ const BatchCard = (props: BatchCardProps) => {
                 onValueChange={(value) => {
                   setFieldValue('cost', value)
                 }}
-                disabled={values.isDeducted}
+                disabled={values.isDeducted || mode === 'edit'}
                 allowNegativeValue={false}
               />
               {error?.cost && (
@@ -197,16 +215,13 @@ const BatchCard = (props: BatchCardProps) => {
               )}
             </label>
             <p className={`${costPerUnitColor}`}>
-              Cost: ₱
-              {isNaN(costPerUnit) || costPerUnit == Infinity
-                ? '0.00'
-                : costPerUnit}
-              /{values.unitOfMeasurement}
+              Cost: {formatToPeso(values.costPerUnit ?? 0)}/
+              {values.unitOfMeasurement}
             </p>
           </>
         )}
 
-        {!forSale && (
+        {!forSale && !isBulkCost && (
           <>
             <label className="form-control w-full ">
               <div className="">
@@ -225,7 +240,7 @@ const BatchCard = (props: BatchCardProps) => {
                 onValueChange={(value) => {
                   setFieldValue('cost', value)
                 }}
-                disabled={values.isDeducted}
+                disabled={values.isDeducted || mode === 'edit'}
                 allowNegativeValue={false}
               />
               {error?.cost && (
@@ -247,11 +262,12 @@ const BatchCard = (props: BatchCardProps) => {
           <div className="flex flex-row gap-1">
             <input
               {...getFieldProps('expirationDate')}
+              disabled={mode === 'edit'}
               type="date"
               placeholder="Expiration Date"
               className="input input-bordered w-full"
             />
-            {!disabled && (
+            {mode === 'add' && (
               <button
                 onClick={async () => {
                   await setFieldValue('expirationDate', '')

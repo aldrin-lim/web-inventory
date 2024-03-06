@@ -108,6 +108,7 @@ const BaseProduct = z.object({
   outOfStock: z.boolean().default(false),
   availability: z.string().default(''),
   totalQuantity: z.number().default(0),
+  isExpired: z.boolean().default(false),
 })
 
 export const RecipeSchema = z.object({
@@ -165,7 +166,7 @@ export const RecipeSchema = z.object({
 
 const Product = BaseProduct.extend({
   recipe: RecipeSchema.nullable().optional(),
-  activeBatch: ProductBatchSchema,
+  activeBatch: ProductBatchSchema.optional(),
 })
 export const ProductSchema = Product
 export type Product = z.infer<typeof ProductSchema>

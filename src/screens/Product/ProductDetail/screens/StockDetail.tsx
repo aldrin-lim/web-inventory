@@ -8,7 +8,7 @@ import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { v4 } from 'uuid'
 import { type StockDetail, StockDetailSchema } from '../ProductDetail.types'
 import { getActiveBatch } from 'util/products'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { padWithZeros } from 'util/number'
 import { measurementOptions } from 'util/measurement'
 import MeasurementSelect from '../components/MeasurementSelect'
@@ -51,6 +51,8 @@ const getValidationSchema = (isBulkCost: boolean) => {
 const StockDetail = (props: StockDetailProps) => {
   const { onBack, onComplete, disabled = false, mode } = props
 
+  const [showMore, setShowMore] = useState(false)
+
   const [isBulkCost, setIsBulkCost] = useState(props.value.isBulkCost)
 
   const { getFieldProps, values, setFieldValue, errors } =
@@ -74,8 +76,9 @@ const StockDetail = (props: StockDetailProps) => {
       validateOnBlur: false,
     })
 
-  const addNewBatch = () => {
+  const addNewBatch = async () => {
     // get measurement from exiting batch
+
     const newBatch = {
       id: v4(),
       name: `Batch #${padWithZeros(values.batches.length + 1)} `,
@@ -88,7 +91,18 @@ const StockDetail = (props: StockDetailProps) => {
           : values.batches[0]?.unitOfMeasurement ?? 'g',
       expirationDate: null,
     } as z.infer<typeof ProductBatchSchema>
-    setFieldValue('batches', [...values.batches, newBatch])
+
+    await setFieldValue('batches', [...values.batches, newBatch])
+    if (!showMore) {
+      setShowMore(true)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    const lastBatchElement = document.querySelector(
+      '.BatchesContainer > div:last-child',
+    )
+    if (lastBatchElement) {
+      scrollTo(0, 99999)
+    }
   }
 
   const activeBatchId = getActiveBatch(values.batches)?.id
@@ -96,6 +110,10 @@ const StockDetail = (props: StockDetailProps) => {
   useEffect(() => {
     onComplete(values)
   }, [values])
+
+  const activeBatch = useMemo(() => {
+    return getActiveBatch(values.batches)
+  }, [values.batches])
 
   const batches = useMemo(() => {
     if (mode === 'edit') {
@@ -106,12 +124,23 @@ const StockDetail = (props: StockDetailProps) => {
 
   const otherBatches = useMemo(() => {
     if (mode === 'edit') {
-      return values.batches.filter(
-        (batch) => batch.id !== values.activeBatch.id,
-      )
+      return values.batches.filter((batch) => batch.id !== activeBatch?.id)
     }
     return values.batches
-  }, [mode, values.activeBatch, values.batches])
+  }, [mode, values.batches, activeBatch])
+
+  const onToggleShowMore = () => {
+    setShowMore(!showMore)
+  }
+
+  const removeBatch = useCallback(
+    async (batchId: string) => {
+      const newBatches = [...values.batches]
+      const updatedBatches = newBatches.filter((batch) => batch.id !== batchId)
+      await setFieldValue('batches', updatedBatches)
+    },
+    [setFieldValue, values.batches],
+  )
 
   return (
     <div className="flex flex-col gap-4">
@@ -258,52 +287,53 @@ const StockDetail = (props: StockDetailProps) => {
       {errors.batches && typeof errors.batches === 'string' && (
         <p className="text-xs text-error">{errors.batches}</p>
       )}
-      {mode === 'add' &&
-        values.batches.map((batch, index) => {
-          return (
-            <BatchCard
-              active={batch.id === activeBatchId}
-              disabled={disabled}
-              onRemove={() => {
-                const newBatches = [...values.batches]
-                newBatches.splice(index, 1)
-                setFieldValue('batches', newBatches)
-              }}
-              onChange={async (updatedBatch) => {
-                await setFieldValue(
-                  'batches',
-                  values.batches.map((batch) => {
-                    if (batch.id === updatedBatch.id) {
-                      return updatedBatch
-                    }
-                    return {
-                      ...batch,
-                      unitOfMeasurement: updatedBatch.unitOfMeasurement,
-                    }
-                  }),
-                )
-              }}
-              error={errors.batches && (errors.batches[index] as never)}
-              batch={batch}
-              key={index}
-              soldBy={values.soldBy}
-              isBulkCost={values.isBulkCost}
-              forSale={values.forSale}
-            />
-          )
-        })}
+      <div className="BatchesContainer flex flex-col gap-4">
+        {mode === 'add' &&
+          values.batches.map((batch, index) => {
+            return (
+              <BatchCard
+                active={batch.id === activeBatchId}
+                disabled={disabled}
+                onRemove={values.batches.length > 1 ? removeBatch : undefined}
+                onChange={async (updatedBatch) => {
+                  await setFieldValue(
+                    'batches',
+                    values.batches.map((batch) => {
+                      if (batch.id === updatedBatch.id) {
+                        return updatedBatch
+                      }
+                      return {
+                        ...batch,
+                        unitOfMeasurement: updatedBatch.unitOfMeasurement,
+                      }
+                    }),
+                  )
+                }}
+                error={errors.batches && (errors.batches[index] as never)}
+                batch={batch}
+                key={index}
+                soldBy={values.soldBy}
+                isBulkCost={values.isBulkCost}
+                forSale={values.forSale}
+              />
+            )
+          })}
+      </div>
+
+      {mode === 'edit' && !activeBatch && (
+        <div className="mt-4 text-center text-gray-400">
+          No batch available for use. Please add a batch to continue.
+        </div>
+      )}
 
       {mode === 'edit' &&
-        [values.activeBatch].map((batch, index) => {
+        activeBatch &&
+        [activeBatch].map((batch, index) => {
           return (
             <BatchCard
               active={true}
               disabled={disabled}
-              onRemove={() => {
-                const newBatches = [...values.batches]
-                newBatches.splice(index, 1)
-                setFieldValue('batches', newBatches)
-              }}
+              onRemove={removeBatch}
               onChange={async (updatedBatch) => {
                 await setFieldValue(
                   'batches',
@@ -329,22 +359,23 @@ const StockDetail = (props: StockDetailProps) => {
         })}
 
       {mode === 'edit' && otherBatches.length > 0 && (
-        <div className="collapse collapse-arrow rounded-sm bg-base-100">
-          <input type="checkbox" />
-          <div className="collapse-title mx-auto w-[160px] px-0 text-center">
-            Show more
+        <div
+          className={`collapse collapse-arrow rounded-sm bg-base-100 ${
+            showMore ? 'collapse-open' : 'collapse-close'
+          }`}
+        >
+          <div
+            onClick={onToggleShowMore}
+            className="collapse-title mx-auto w-[160px] px-0 text-center"
+          >
+            Show {showMore ? 'Less' : 'More'}
           </div>
-          <div className="collapse-content space-y-4 p-0">
+          <div className="BatchesContainer collapse-content space-y-4 p-0">
             {otherBatches.map((batch, index) => {
               return (
                 <BatchCard
-                  active={batch.id === activeBatchId}
                   disabled={disabled}
-                  onRemove={() => {
-                    const newBatches = [...values.batches]
-                    newBatches.splice(index, 1)
-                    setFieldValue('batches', newBatches)
-                  }}
+                  onRemove={removeBatch}
                   onChange={async (updatedBatch) => {
                     await setFieldValue(
                       'batches',

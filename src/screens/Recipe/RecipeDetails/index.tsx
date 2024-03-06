@@ -405,6 +405,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           onBack={() => navigateToParent()}
           onProductSelect={(product) => {
             const activeBatch = getActiveBatch(product.batches)
+            if (!activeBatch) {
+              throw new Error('No active batch found')
+            }
             const cost = product.isBulkCost
               ? toNumber(activeBatch.costPerUnit)
               : toNumber(activeBatch.cost)
@@ -415,8 +418,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 id: v4(),
                 quantity: 0,
                 cost,
-                unitOfMeasurement: getActiveBatch(product.batches)
-                  .unitOfMeasurement,
+                unitOfMeasurement: activeBatch.unitOfMeasurement,
                 product,
                 type: MaterialType.Ingredient,
               } as Material,
@@ -445,6 +447,9 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           onBack={() => navigateToParent()}
           onProductSelect={(product) => {
             const activeBatch = getActiveBatch(product.batches)
+            if (!activeBatch) {
+              throw new Error('No active batch found')
+            }
             const cost = product.isBulkCost
               ? toNumber(activeBatch.costPerUnit)
               : toNumber(activeBatch.cost)
@@ -455,8 +460,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                 id: v4(),
                 quantity: 0,
                 cost,
-                unitOfMeasurement: getActiveBatch(product.batches)
-                  .unitOfMeasurement,
+                unitOfMeasurement: activeBatch.unitOfMeasurement,
                 product,
                 type: MaterialType.Other,
               } as Material,

@@ -167,7 +167,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
               setFieldValue('price', value)
               const newPrice = toNumber(value)
               const cost = values.isBulkCost
-                ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                ? toNumber(getActiveBatch(values.batches)?.costPerUnit ?? 0)
                 : toNumber(values.cost)
               const newProfitAmount = computeProfitAmount(newPrice, cost)
               const newProfitPercentage = computeProfitPercentage(
@@ -213,7 +213,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
               setFieldValue('profitPercentage', value)
               const newProfitPercentage = toNumber(value)
               const cost = values.isBulkCost
-                ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                ? toNumber(getActiveBatch(values.batches)?.costPerUnit ?? 0)
                 : toNumber(values.cost)
               // const newPrice = cost * (1 + newProfitPercentage / 100)
               const newPrice = new Big(cost)
@@ -242,7 +242,7 @@ const ProductWithRecipeForm: React.FC<ProductWithRecipeFormProps> = ({
               setFieldValue('profitAmount', value)
               const newProfitAmount = toNumber(value)
               const cost = values.isBulkCost
-                ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                ? toNumber(getActiveBatch(values.batches)?.costPerUnit ?? 0)
                 : toNumber(values.cost)
 
               // const newPrice = cost + newProfitAmount

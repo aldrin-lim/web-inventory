@@ -4,6 +4,7 @@ import { Product } from 'types/product.types'
 import Big from 'big.js'
 import { formatToPeso } from 'util/currency'
 import { unitAbbrevationsToLabel } from 'util/measurement'
+import { isExpired } from 'util/data'
 
 type ProductCardProps = {
   product: Product
@@ -17,6 +18,51 @@ const ProductCard = (props: ProductCardProps) => {
   const { unitOfMeasurement } = product.activeBatch
 
   const image = product.images?.[0] || ''
+
+  const renderStockInfo = () => {
+    if (isExpired(product.activeBatch?.expirationDate)) {
+      return (
+        <div className="flex flex-row gap-1  text-xs">
+          <span
+            className={`overflow-hidden truncate text-ellipsis text-orange-400`}
+          >
+            Expired
+          </span>
+        </div>
+      )
+    }
+    if (product.trackStock || product.recipe) {
+      return (
+        <div className="flex flex-row gap-1  text-xs">
+          <span
+            className={`overflow-hidden truncate text-ellipsis ${
+              outOfStock ? 'text-red-400' : ''
+            }`}
+          >
+            {outOfStock ? (
+              'Out of stock'
+            ) : (
+              <>
+                {totalQuantity} {unitOfMeasurement} available
+              </>
+            )}
+          </span>
+        </div>
+      )
+    } else {
+      return (
+        <div className="flex flex-row gap-1  text-xs">
+          <span
+            className={`overflow-hidden truncate text-ellipsis ${
+              outOfStock ? 'text-red-400' : ''
+            }`}
+          >
+            &nbsp;
+          </span>
+        </div>
+      )
+    }
+  }
 
   return (
     <div className="relative  justify-self-center">
@@ -58,52 +104,7 @@ const ProductCard = (props: ProductCardProps) => {
             <MiddleTruncatedText text={name} maxLength={18} />
           </h2>
 
-          {product.trackStock && (
-            <div className="flex flex-row gap-1  text-xs">
-              <span
-                className={`overflow-hidden truncate text-ellipsis ${
-                  outOfStock ? 'text-red-400' : ''
-                }`}
-              >
-                {outOfStock ? (
-                  'Out of stock'
-                ) : (
-                  <>
-                    {totalQuantity} {unitOfMeasurement} available
-                  </>
-                )}
-              </span>
-            </div>
-          )}
-          {product.recipe && (
-            <div className="flex flex-row gap-1  text-xs">
-              <span
-                className={`overflow-hidden truncate text-ellipsis ${
-                  outOfStock ? 'text-red-400' : ''
-                }`}
-              >
-                {outOfStock ? (
-                  'Out of stock'
-                ) : (
-                  <>
-                    {totalQuantity} {unitOfMeasurement} available
-                  </>
-                )}
-              </span>
-            </div>
-          )}
-          {/* TODO: Fix this via css */}
-          {!product?.recipe && !product.trackStock && (
-            <div className="flex flex-row gap-1  text-xs">
-              <span
-                className={`overflow-hidden truncate text-ellipsis ${
-                  outOfStock ? 'text-red-400' : ''
-                }`}
-              >
-                &nbsp;
-              </span>
-            </div>
-          )}
+          {renderStockInfo()}
         </div>
       </div>
     </div>

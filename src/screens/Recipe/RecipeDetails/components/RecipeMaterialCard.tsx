@@ -54,36 +54,40 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
     // by converting it
     // then set the cost per unit
     const activeBatch = getActiveBatch(values.product.batches)
-    const cost = values.product.isBulkCost
-      ? toNumber(activeBatch.costPerUnit)
-      : toNumber(activeBatch.cost)
+    if (activeBatch) {
+      const cost = values.product.isBulkCost
+        ? toNumber(activeBatch?.costPerUnit ?? 0)
+        : toNumber(activeBatch?.cost ?? 0)
 
-    const fromUnit = activeBatch.unitOfMeasurement
-    const toUnit = values.unitOfMeasurement
+      const fromUnit = activeBatch.unitOfMeasurement
+      const toUnit = values.unitOfMeasurement
 
-    // Calculate the conversion factor from the product's unit to the material's unit
-    let conversionFactor = 1
+      // Calculate the conversion factor from the product's unit to the material's unit
+      let conversionFactor = 1
 
-    if (values.product.soldBy === ProductSoldBy.Weight) {
-      conversionFactor = convert(1)
-        .from(fromUnit as Unit)
-        .to(toUnit as Unit)
+      if (values.product.soldBy === ProductSoldBy.Weight) {
+        conversionFactor = convert(1)
+          .from(fromUnit as Unit)
+          .to(toUnit as Unit)
+      }
+
+      const newCostPerUnit = new Big(cost)
+        .div(new Big(conversionFactor))
+        // .round(2)
+        .toNumber()
+
+      setTotalCost(
+        new Big(values.quantity).times(new Big(newCostPerUnit)).toNumber(),
+      )
+
+      setFieldValue('cost', newCostPerUnit)
+      onChange?.({
+        ...values,
+        cost: newCostPerUnit,
+      })
+    } else {
+      throw new Error('No active batch found')
     }
-
-    const newCostPerUnit = new Big(cost)
-      .div(new Big(conversionFactor))
-      // .round(2)
-      .toNumber()
-
-    setTotalCost(
-      new Big(values.quantity).times(new Big(newCostPerUnit)).toNumber(),
-    )
-
-    setFieldValue('cost', newCostPerUnit)
-    onChange?.({
-      ...values,
-      cost: newCostPerUnit,
-    })
   }, [values.unitOfMeasurement])
 
   return (
