@@ -15,6 +15,7 @@ import { DatePicker } from '@mui/x-date-pickers'
 
 import './styles.css'
 import moment from 'moment'
+import { disable } from 'mixpanel-browser'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -48,7 +49,7 @@ const BatchCard = (props: BatchCardProps) => {
     active = false,
     error,
     forSale,
-    mode = 'add',
+    disabled,
     onChange,
   } = props
 
@@ -56,7 +57,7 @@ const BatchCard = (props: BatchCardProps) => {
 
   const costPerUnit = useMemo(() => {
     try {
-      if (mode === 'edit') {
+      if (disabled) {
         return isBulkCost ? values.costPerUnit ?? 0 : values.cost ?? 0
       }
       if (values.isDeducted) {
@@ -65,14 +66,13 @@ const BatchCard = (props: BatchCardProps) => {
       const newCost = isBulkCost
         ? new Big(values.cost ?? 0).div(values.quantity ?? 0).toNumber()
         : 0
-      console.log('paaso', newCost)
       return newCost
     } catch {
       return 0
     }
   }, [
     isBulkCost,
-    mode,
+    disabled,
     values.cost,
     values.costPerUnit,
     values.isDeducted,
@@ -136,6 +136,7 @@ const BatchCard = (props: BatchCardProps) => {
             onChange={(newValue) => {
               onChange?.({ ...values, quantity: newValue })
             }}
+            disabled={disabled}
             className="w-full"
           />
           {error?.quantity && (
@@ -187,7 +188,7 @@ const BatchCard = (props: BatchCardProps) => {
                   onChange?.({ ...values, cost: value, costPerUnit })
                   // setFieldValue('cost', value)
                 }}
-                disabled={values.isDeducted || mode === 'edit'}
+                disabled={disabled}
                 allowNegativeValue={false}
               />
               {error?.cost && (
@@ -222,7 +223,7 @@ const BatchCard = (props: BatchCardProps) => {
                   onChange?.({ ...values, cost: value, costPerUnit: value })
                   // setFieldValue('costPerUnit', value)
                 }}
-                disabled={values.isDeducted || mode === 'edit'}
+                disabled={values.isDeducted}
                 allowNegativeValue={false}
               />
               {error?.costPerUnit && (
@@ -244,7 +245,7 @@ const BatchCard = (props: BatchCardProps) => {
           <div className={`ExpirationDatePicker flex flex-row gap-1`}>
             <DatePicker
               disablePast
-              disabled={mode === 'edit'}
+              disabled={disabled}
               sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
               slotProps={{
                 textField: {
@@ -268,7 +269,7 @@ const BatchCard = (props: BatchCardProps) => {
                 }
               }}
               className={` border-none outline-none ${
-                mode === 'edit' ? 'input-disabled' : 'bg-base-100'
+                disabled ? 'input-disabled' : 'bg-base-100'
               }`}
             />
           </div>

@@ -30,6 +30,7 @@ const QuantityInput = (props: QuantityInputProps) => {
             onChange(value)
           }
         }}
+        disabled={props.disabled}
         disableGroupSeparators={true}
         inputMode="decimal"
         className={`join-item text-center text-base ${props.className}`}

@@ -1276,7 +1276,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       transition={{ ease: 'easeInOut', duration: 0.4 }}
                     >
                       <BatchCard
-                        mode={mode}
                         active={true}
                         onRemove={async (batchId) => {
                           const newBatches = [...values.batches]
@@ -1337,9 +1336,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         </p>
                       </div>
                     )}
-                    {nonActiveBatches.map((batch, index) => {
+                    {nonActiveBatches.map((batch) => {
                       return (
                         <BatchCard
+                          disabled={
+                            mode === 'edit' &&
+                            initialFormValues.batches.findIndex(
+                              (b) => b.id === batch.id,
+                            ) >= 0
+                          }
                           key={batch.id}
                           mode={mode}
                           onRemove={async (batchId) => {
