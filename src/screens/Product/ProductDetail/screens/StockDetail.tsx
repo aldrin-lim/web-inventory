@@ -41,7 +41,7 @@ const getValidationSchema = (isBulkCost: boolean) => {
     return ProductBatchSchema.extend({
       cost: z
         .number({ required_error: 'Cost is required', coerce: true })
-        .positive('4Cost must be greater than 0'),
+        .positive('Cost must be greater than 0'),
     }).array()
   }
 

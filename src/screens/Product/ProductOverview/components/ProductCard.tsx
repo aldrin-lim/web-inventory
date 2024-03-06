@@ -23,7 +23,21 @@ const ProductCard = (props: ProductCardProps) => {
   const image = product.images?.[0] || ''
 
   const renderStockInfo = () => {
-    if (isExpired(product.activeBatch?.expirationDate)) {
+    const activeBatch = product.activeBatch
+
+    if (!activeBatch) {
+      return (
+        <div className="flex flex-row gap-1  text-xs">
+          <span
+            className={`overflow-hidden truncate text-ellipsis text-red-400`}
+          >
+            No Batches Found
+          </span>
+        </div>
+      )
+    }
+
+    if (isExpired(activeBatch.expirationDate)) {
       return (
         <div className="flex flex-row gap-1  text-xs">
           <span
@@ -34,13 +48,24 @@ const ProductCard = (props: ProductCardProps) => {
         </div>
       )
     }
-    if (toNumber(product.stockWarning) > product.totalQuantity) {
+    if (toNumber(product.stockWarning) >= product.totalQuantity) {
+      if (product.outOfStock) {
+        return (
+          <div className="flex flex-row gap-1  text-xs">
+            <span
+              className={`overflow-hidden truncate text-ellipsis text-red-400`}
+            >
+              Out of stock
+            </span>
+          </div>
+        )
+      }
       return (
         <div className="flex flex-row gap-1  text-xs">
           <span
             className={`overflow-hidden truncate text-ellipsis text-orange-400`}
           >
-            Low Stock
+            Low Stock ({product.totalQuantity} {unitOfMeasurement} available)
           </span>
         </div>
       )

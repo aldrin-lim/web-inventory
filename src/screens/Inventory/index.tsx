@@ -37,7 +37,7 @@ const Inventory = (props: InventoryProps) => {
   const filteredProducts = useMemo(() => {
     if (filter === 'lowStock') {
       return products.filter(
-        (product) => toNumber(product.stockWarning) > product.totalQuantity,
+        (product) => toNumber(product.stockWarning) >= product.totalQuantity,
       )
     }
 
@@ -70,7 +70,23 @@ const Inventory = (props: InventoryProps) => {
   // )
 
   const renderQuantity = (product: Product) => {
-    if (isExpired(product.activeBatch.expirationDate)) {
+    const activeBatch = product.activeBatch
+
+    if (!activeBatch) {
+      return <p className="text-xs text-orange-500">No Batches Found</p>
+    }
+
+    if (product.recipe) {
+      const lowStock = toNumber(product.stockWarning) >= product.totalQuantity
+
+      return (
+        <p className={`text-xs ${lowStock ? 'text-orange-400' : ''}`}>
+          {product.totalQuantity} pc(s) {lowStock ? 'Low Stock' : ''}
+        </p>
+      )
+    }
+
+    if (isExpired(activeBatch.expirationDate)) {
       return <p className="text-xs text-orange-500">Expired</p>
     }
     if (product.outOfStock === true) {

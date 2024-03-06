@@ -51,7 +51,7 @@ export const ProductDetailFormValidationSchema = ProductSchema.omit({
         invalid_type_error: 'Cost must be a number',
         coerce: true,
       })
-      .positive('2Cost must be greater than 0')
+      .positive('Cost must be greater than 0')
       .optional(),
   })
 
@@ -67,7 +67,7 @@ export const FormikValuesSchema = ProductSchema.extend({
       invalid_type_error: 'Cost must be a number',
       coerce: true,
     })
-    .positive('3Cost must be greater than 0')
+    .positive('Cost must be greater than 0')
     .optional(),
 })
 

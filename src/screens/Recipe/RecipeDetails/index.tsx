@@ -165,6 +165,11 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           ' ',
         )}
       >
+        {isMutating && (
+          <div className="fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
+            <span className="loading loading-ring loading-lg"></span>
+          </div>
+        )}
         <Toolbar
           items={[
             <ToolbarButton
