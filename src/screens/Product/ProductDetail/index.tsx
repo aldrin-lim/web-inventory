@@ -52,6 +52,7 @@ import MeasurementSelect from './components/MeasurementSelect'
 import { motion } from 'framer-motion'
 import { CreateProductBodySchema } from 'api/product/createProduct'
 import { UpdateProductBodySchema } from 'api/product/updateProduct'
+import { PIECES } from 'constants copy/measurement'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -234,10 +235,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const isMutating = isCreating || isDeleting || isUpdating || isCloning
 
-  const overallMeasurment =
-    product?.soldBy === ProductSoldBy.Pieces
+  const overallMeasurment = useMemo(() => {
+    if (!product) {
+      return PIECES
+    }
+
+    return product.soldBy === ProductSoldBy.Pieces
       ? 'pieces'
       : product?.batches[0]?.unitOfMeasurement ?? 'g'
+  }, [product])
 
   const [unitOfMeasurement, setUnitOfMeasurement] = useState(overallMeasurment)
   const [showMore, setShowMore] = useState(false)
