@@ -3,7 +3,7 @@ import { FormikErrors, useFormik } from 'formik'
 import CurrencyInput, { formatValue } from 'react-currency-input-field'
 import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { z } from 'zod'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDebounce } from '@uidotdev/usehooks'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
@@ -16,6 +16,7 @@ import { DatePicker } from '@mui/x-date-pickers'
 import './styles.css'
 import moment from 'moment'
 import { disable } from 'mixpanel-browser'
+import AdjustmentDialog from './components/AdjustmentDialog'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -52,6 +53,8 @@ const BatchCard = (props: BatchCardProps) => {
     disabled,
     onChange,
   } = props
+
+  const [showAdjustmentDialog, setShowAdjustmentDialog] = useState(false)
 
   const values = batch
 
@@ -103,52 +106,70 @@ const BatchCard = (props: BatchCardProps) => {
   }, [active, activeStyle, expiredStyle, isExpired])
 
   return (
-    <div id={active ? 'active-batch-card' : ''}>
-      <div
-        className={`flex flex-col gap-2 rounded-lg border border-neutral/30 p-2 py-4 ${additionalStyle}`}
-      >
-        {active && (
-          <span className="text-xs font-bold text-primary">
-            (CURRENTLY USED)
-          </span>
-        )}
-        {isExpired && (
-          <span className="text-xs font-bold text-warning">(EXPIRED)</span>
-        )}
-        <div className="flex flex-row justify-between">
-          <p className="flex flex-row items-center gap-2 text-sm uppercase tracking-wider">
-            {batch.name}
-          </p>
-          {onRemove && (
-            <button
-              type="button"
-              className="btn btn-ghost btn-xs"
-              onClick={() => onRemove(batch?.id ?? '')}
-            >
-              <TrashIcon className="w-5 text-primary" />
-            </button>
+    <>
+      {/* Adjustment dialog */}
+      {showAdjustmentDialog && (
+        <AdjustmentDialog
+          batch={batch}
+          onClose={() => setShowAdjustmentDialog(false)}
+        />
+      )}
+      <div id={active ? 'active-batch-card' : ''}>
+        <div
+          className={`flex flex-col gap-2 rounded-lg border border-neutral/30 p-2 py-4 ${additionalStyle}`}
+        >
+          {active && (
+            <span className="text-xs font-bold text-primary">
+              (CURRENTLY USED)
+            </span>
           )}
-        </div>
-        <div>
-          <p>Quantity</p>
-          <QuantityInput
-            value={values.quantity}
-            onChange={(newValue) => {
-              onChange?.({ ...values, quantity: newValue })
-            }}
-            disabled={disabled}
-            className="w-full"
-          />
-          {error?.quantity && (
-            <div className="label py-0">
-              <span className="label-text-alt text-xs text-red-400">
-                {error.quantity}
-              </span>
-            </div>
+          {isExpired && (
+            <span className="text-xs font-bold text-warning">(EXPIRED)</span>
           )}
-        </div>
+          <div className="flex flex-row justify-between">
+            <p className="flex flex-row items-center gap-2 text-sm uppercase tracking-wider">
+              {batch.name}
+            </p>
+            {onRemove && (
+              <button
+                type="button"
+                className="btn btn-ghost btn-xs"
+                onClick={() => onRemove(batch?.id ?? '')}
+              >
+                <TrashIcon className="w-5 text-primary" />
+              </button>
+            )}
+          </div>
+          <div>
+            <p>Quantity</p>
+            <QuantityInput
+              value={values.quantity}
+              onChange={(newValue) => {
+                onChange?.({ ...values, quantity: newValue })
+              }}
+              onAdd={() => {
+                if (disabled) {
+                  setShowAdjustmentDialog(true)
+                }
+              }}
+              onSubtract={() => {
+                if (disabled) {
+                  setShowAdjustmentDialog(true)
+                }
+              }}
+              // disabled={disabled}
+              className="w-full"
+            />
+            {error?.quantity && (
+              <div className="label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  {error.quantity}
+                </span>
+              </div>
+            )}
+          </div>
 
-        {/* {soldBy === 'weight' && (
+          {/* {soldBy === 'weight' && (
           <label className="form-control w-full ">
             <div className="">
               <span className="label-text-alt ">Unit of Measurement</span>
@@ -169,113 +190,114 @@ const BatchCard = (props: BatchCardProps) => {
           </label>
         )} */}
 
-        {/* If sold by weight */}
-        {isBulkCost && (
-          <>
-            <label className="form-control w-full ">
-              <div className="">
-                <span className="label-text">Bulk Cost</span>
-              </div>
-              <CurrencyInput
-                decimalsLimit={4}
-                value={values.cost}
-                type="text"
-                tabIndex={2}
-                className="input input-bordered w-full"
-                prefix="₱"
-                placeholder="Enter total cost for bulk purchase"
-                onValueChange={(value) => {
-                  onChange?.({ ...values, cost: value, costPerUnit })
-                  // setFieldValue('cost', value)
-                }}
+          {/* If sold by weight */}
+          {isBulkCost && (
+            <>
+              <label className="form-control w-full ">
+                <div className="">
+                  <span className="label-text">Bulk Cost</span>
+                </div>
+                <CurrencyInput
+                  decimalsLimit={4}
+                  value={values.cost}
+                  type="text"
+                  tabIndex={2}
+                  className="input input-bordered w-full"
+                  prefix="₱"
+                  placeholder="Enter total cost for bulk purchase"
+                  onValueChange={(value) => {
+                    onChange?.({ ...values, cost: value, costPerUnit })
+                    // setFieldValue('cost', value)
+                  }}
+                  disabled={disabled}
+                  allowNegativeValue={false}
+                />
+                {error?.cost && (
+                  <div className="label py-0">
+                    <span className="label-text-alt text-xs text-red-400">
+                      {error.cost}
+                    </span>
+                  </div>
+                )}
+              </label>
+              <p className={`${costPerUnitColor}`}>
+                Cost: {costPerUnit}/{values.unitOfMeasurement}
+              </p>
+            </>
+          )}
+
+          {!forSale && !isBulkCost && (
+            <>
+              <label className="form-control w-full ">
+                <div className="">
+                  <span className="label-text">Cost</span>
+                </div>
+                <CurrencyInput
+                  decimalsLimit={4}
+                  value={values.cost}
+                  type="text"
+                  tabIndex={2}
+                  className="input input-bordered w-full"
+                  prefix="₱"
+                  placeholder="₱0"
+                  onValueChange={(value) => {
+                    onChange?.({ ...values, cost: value, costPerUnit: value })
+                    // setFieldValue('costPerUnit', value)
+                  }}
+                  disabled={values.isDeducted}
+                  allowNegativeValue={false}
+                />
+                {error?.costPerUnit && (
+                  <div className="label py-0">
+                    <span className="label-text-alt text-xs text-red-400">
+                      {error.costPerUnit}
+                    </span>
+                  </div>
+                )}
+              </label>
+            </>
+          )}
+
+          {/* Expiration */}
+          <label className="form-control w-full">
+            <div className="">
+              <span className="label-text-alt ">Expiration(Optional)</span>
+            </div>
+            <div className={`ExpirationDatePicker flex flex-row gap-1`}>
+              <DatePicker
+                disablePast
                 disabled={disabled}
-                allowNegativeValue={false}
-              />
-              {error?.cost && (
-                <div className="label py-0">
-                  <span className="label-text-alt text-xs text-red-400">
-                    {error.cost}
-                  </span>
-                </div>
-              )}
-            </label>
-            <p className={`${costPerUnitColor}`}>
-              Cost: {costPerUnit}/{values.unitOfMeasurement}
-            </p>
-          </>
-        )}
-
-        {!forSale && !isBulkCost && (
-          <>
-            <label className="form-control w-full ">
-              <div className="">
-                <span className="label-text">Cost</span>
-              </div>
-              <CurrencyInput
-                decimalsLimit={4}
-                value={values.cost}
-                type="text"
-                tabIndex={2}
-                className="input input-bordered w-full"
-                prefix="₱"
-                placeholder="₱0"
-                onValueChange={(value) => {
-                  onChange?.({ ...values, cost: value, costPerUnit: value })
-                  // setFieldValue('costPerUnit', value)
+                sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
+                slotProps={{
+                  textField: {
+                    variant: 'outlined',
+                    color: 'secondary',
+                    className: '',
+                  },
+                  actionBar: {
+                    actions: ['clear', 'accept', 'cancel'],
+                  },
                 }}
-                disabled={values.isDeducted}
-                allowNegativeValue={false}
+                value={moment(values.expirationDate)}
+                onAccept={(date) => {
+                  if (date) {
+                    onChange?.({
+                      ...values,
+                      expirationDate: moment(date).toDate(),
+                    })
+                  } else {
+                    onChange?.({ ...values, expirationDate: null })
+                  }
+                }}
+                className={` border-none outline-none ${
+                  disabled ? 'input-disabled' : 'bg-base-100'
+                }`}
               />
-              {error?.costPerUnit && (
-                <div className="label py-0">
-                  <span className="label-text-alt text-xs text-red-400">
-                    {error.costPerUnit}
-                  </span>
-                </div>
-              )}
-            </label>
-          </>
-        )}
-
-        {/* Expiration */}
-        <label className="form-control w-full">
-          <div className="">
-            <span className="label-text-alt ">Expiration(Optional)</span>
-          </div>
-          <div className={`ExpirationDatePicker flex flex-row gap-1`}>
-            <DatePicker
-              disablePast
-              disabled={disabled}
-              sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
-              slotProps={{
-                textField: {
-                  variant: 'outlined',
-                  color: 'secondary',
-                  className: '',
-                },
-                actionBar: {
-                  actions: ['clear', 'accept', 'cancel'],
-                },
-              }}
-              value={moment(values.expirationDate)}
-              onAccept={(date) => {
-                if (date) {
-                  onChange?.({
-                    ...values,
-                    expirationDate: moment(date).toDate(),
-                  })
-                } else {
-                  onChange?.({ ...values, expirationDate: null })
-                }
-              }}
-              className={` border-none outline-none ${
-                disabled ? 'input-disabled' : 'bg-base-100'
-              }`}
-            />
-          </div>
-        </label>
+            </div>
+          </label>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

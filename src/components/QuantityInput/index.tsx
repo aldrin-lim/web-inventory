@@ -1,45 +1,49 @@
+import { toNumber } from 'lodash'
 import CurrencyInput from 'react-currency-input-field'
 
 type QuantityInputProps = {
-  value?: number
-  onChange?: (string?: string) => void
-  className: string
   disabled?: boolean
+  className: string
+  value?: string
+  onChange?: (string?: string) => void
+  onAdd?: (string?: string) => void
+  onSubtract?: (string?: string) => void
 }
 
 const QuantityInput = (props: QuantityInputProps) => {
-  const { value = 0, onChange } = props
+  const { value = 0, onChange, onAdd, onSubtract } = props
   return (
-    <div className="join flex max-w-sm border  border-gray-300">
+    <div className="join flex  border  border-gray-300">
       <button
         disabled={props.disabled}
         className="join-itm  btn"
         onClick={() => {
-          if (value > 0) {
+          if (toNumber(value) > 0) {
             onChange && onChange(`${+value - 1}`)
           }
+          onSubtract && onSubtract(`${+value - 1}`)
         }}
       >
         -
       </button>
       <CurrencyInput
-        decimalsLimit={4}
+        decimalsLimit={40}
         value={value}
         onValueChange={(value) => {
           if (onChange) {
             onChange(value)
           }
         }}
-        disabled={props.disabled}
         disableGroupSeparators={true}
         inputMode="decimal"
-        className={`join-item text-center text-base ${props.className} disabled:bg-gray-200 disabled:text-black/40`}
+        className={`join-item text-center text-base ${props.className}`}
       />
       <button
         disabled={props.disabled}
         className="btn join-item"
         onClick={() => {
           onChange && onChange(`${+value + 1}`)
+          onAdd && onAdd(`${+value + 1}`)
         }}
       >
         +
