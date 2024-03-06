@@ -11,6 +11,10 @@ import { toFormikValidationSchema } from 'zod-formik-adapter'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { formatToPeso } from 'util/currency'
 import { ProductAction } from '../..'
+import { DatePicker } from '@mui/x-date-pickers'
+
+import './styles.css'
+import moment from 'moment'
 
 const BatchSchema = ProductBatchSchema.partial({ id: true })
 
@@ -257,16 +261,38 @@ const BatchCard = (props: BatchCardProps) => {
         {/* Expiration */}
         <label className="form-control w-full">
           <div className="">
-            <span className="label-text-alt ">Expiration</span>
+            <span className="label-text-alt ">Expiration(Optional)</span>
           </div>
-          <div className="flex flex-row gap-1">
-            <input
+          <div className="ExpirationDatePicker flex flex-row gap-1">
+            <DatePicker
+              disabled={mode === 'edit'}
+              sx={{ width: '100%' }}
+              slotProps={{
+                textField: {
+                  variant: 'outlined',
+                  className: '',
+                },
+                actionBar: {
+                  actions: ['clear', 'accept'],
+                },
+              }}
+              value={moment(values.expirationDate)}
+              onChange={(date) => {
+                if (date) {
+                  setFieldValue('expirationDate', moment(date).toDate())
+                } else {
+                  setFieldValue('expirationDate', null)
+                }
+              }}
+              className="bg-base-100"
+            />
+            {/* <input
               {...getFieldProps('expirationDate')}
               disabled={mode === 'edit'}
               type="date"
               placeholder="Expiration Date"
               className="input input-bordered w-full"
-            />
+            /> */}
             {mode === 'add' && (
               <button
                 onClick={async () => {
