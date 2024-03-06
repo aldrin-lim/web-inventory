@@ -272,13 +272,14 @@ export const ProductDetail = (props: ProductDetailProps) => {
     setValues,
     setFieldError,
     dirty,
+    initialValues: initialFormValues,
   } = useFormik<ProductDetailFormikValue>({
     initialValues: {
       ...initialValues,
       overallCost,
     },
     validationSchema: toFormikValidationSchema(ValidationSchema),
-    enableReinitialize: false,
+    enableReinitialize: true,
     validateOnBlur: false,
     onSubmit: async (formValue) => {
       formValue.price = toNumber(formValue.price)
@@ -301,7 +302,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
         })
         return
       }
-      console.log('validation', validation.data)
 
       if (product) {
         await updateProduct({
@@ -342,8 +342,10 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const checkUnsavedChanges = () => {
     const hasUnsavedChanges =
-      JSON.stringify(initialValues) !==
-      JSON.stringify({ ...values, overallCost: undefined })
+      JSON.stringify({
+        ...initialFormValues,
+        overallCost: undefined,
+      }) !== JSON.stringify({ ...values, overallCost: undefined })
 
     if (hasUnsavedChanges) {
       setShowUnsavedChangesDialog(true)
@@ -464,9 +466,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
       }
     }
   }, [activeBatch, showMore])
-
-  console.log('errors', errors)
-  console.log('values', values.batches)
 
   return (
     <>
