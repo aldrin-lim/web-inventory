@@ -847,6 +847,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               </div>
             </>
           )}
+          {console.log('category', values.category)}
 
           {/* Category */}
           <label className="form-control w-full ">
@@ -856,8 +857,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             <CategoryDropdown
               value={values.category}
               onChange={(option) => {
-                console.log(option)
-                setFieldValue('category', option?.value)
+                setFieldValue('category', option?.value ?? '')
               }}
             />
 
