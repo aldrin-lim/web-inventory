@@ -104,6 +104,13 @@ const BaseProduct = z.object({
     .array(ProductBatchSchema)
     .min(1, 'Batches must have at least 1 item'),
 
+  stockWarning: z
+    .number({
+      coerce: true,
+      invalid_type_error: 'Stock warning must be a number',
+    })
+    .optional(),
+
   // Read only
   outOfStock: z.boolean().default(false),
   availability: z.string().default(''),

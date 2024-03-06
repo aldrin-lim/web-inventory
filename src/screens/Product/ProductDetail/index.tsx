@@ -50,6 +50,8 @@ import { measurementOptions, unitAbbrevationsToLabel } from 'util/measurement'
 import BatchCard from './components/BatchCard'
 import MeasurementSelect from './components/MeasurementSelect'
 import { motion } from 'framer-motion'
+import { CreateProductBodySchema } from 'api/product/createProduct'
+import { UpdateProductBodySchema } from 'api/product/updateProduct'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -143,6 +145,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const [unitOfMeasurement, setUnitOfMeasurement] = useState(overallMeasurment)
   const [showMore, setShowMore] = useState(false)
+  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] =
+    useState(false)
 
   const overallCostFromBatches: number | undefined =
     product &&
@@ -165,6 +169,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     values,
     setValues,
     setFieldError,
+    dirty,
   } = useFormik<ProductDetailFormikValue>({
     initialValues: {
       ...initialValues,
@@ -265,45 +270,45 @@ export const ProductDetail = (props: ProductDetailProps) => {
         }
       }),
     ),
-    enableReinitialize: true,
+    enableReinitialize: false,
     validateOnBlur: false,
     onSubmit: async (formValue) => {
-      // formValue.price = toNumber(formValue.price)
-      // formValue.profitPercentage = toNumber(formValue.profitPercentage)
-      // formValue.profitAmount = toNumber(formValue.profitAmount)
-      // if (formValue.isBulkCost === false) {
-      //   formValue.batches = formValue.batches.map((batch) => {
-      //     return {
-      //       ...batch,
-      //       cost: toNumber(formValue.cost),
-      //     }
-      //   })
-      // }
-      // const validation = (
-      //   product ? UpdateProductBodySchema : CreateProductBodySchema
-      // ).safeParse(formValue)
-      // if (!validation.success) {
-      //   const error = validation.error.issues[0].message
-      //   console.log(validation.error)
-      //   toast.error(error, {
-      //     autoClose: 500,
-      //     theme: 'colored',
-      //   })
-      //   return
-      // }
-      // if (product) {
-      //   await updateProduct({
-      //     id: product.id,
-      //     body: validation.data,
-      //   })
-      // } else {
-      //   await createProduct(validation.data as CreateProductBodySchema)
-      //   if (location.state?.from) {
-      //     navigate(location.state.from)
-      //     return
-      //   }
-      //   navigate(AppPath.ProductOverview)
-      // }
+      formValue.price = toNumber(formValue.price)
+      formValue.profitPercentage = toNumber(formValue.profitPercentage)
+      formValue.profitAmount = toNumber(formValue.profitAmount)
+      if (formValue.isBulkCost === false) {
+        formValue.batches = formValue.batches.map((batch) => {
+          return {
+            ...batch,
+            cost: toNumber(formValue.overallCost),
+          }
+        })
+      }
+      const validation = (
+        product ? UpdateProductBodySchema : CreateProductBodySchema
+      ).safeParse(formValue)
+      if (!validation.success) {
+        const error = validation.error.issues[0].message
+        console.log(validation.error)
+        toast.error(error, {
+          autoClose: 500,
+          theme: 'colored',
+        })
+        return
+      }
+      if (product) {
+        await updateProduct({
+          id: product.id,
+          body: validation.data,
+        })
+      } else {
+        await createProduct(validation.data as CreateProductBodySchema)
+        if (location.state?.from) {
+          navigate(location.state.from)
+          return
+        }
+        navigate(AppPath.ProductOverview)
+      }
     },
     validateOnChange: false,
   })
@@ -311,15 +316,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const showDescription = () => {
     navigate(ScreenPath.Description)
   }
-
-  // useEffect(() => {
-  //   if (mode === 'add') {
-  //     setFieldValue('cost', '')
-  //     setFieldValue('price', '')
-  //     setFieldValue('profitAmount', '')
-  //     setFieldValue('profitPercentage', '')
-  //   }
-  // }, [mode])
 
   const showRecipeList = () => {
     navigate(ScreenPath.SelectRecipe)
@@ -337,24 +333,23 @@ export const ProductDetail = (props: ProductDetailProps) => {
     setValues(initialValues)
   }
 
+  const checkUnsavedChanges = () => {
+    const hasUnsavedChanges =
+      JSON.stringify(initialValues) !== JSON.stringify(values)
+
+    if (hasUnsavedChanges) {
+      setShowUnsavedChangesDialog(true)
+      return
+    }
+    goBack()
+  }
+
   const goBack = () => {
     if (location.state?.from) {
       navigate(location.state.from)
       return
     }
     navigate(AppPath.ProductOverview)
-  }
-
-  const hideCost = () => {
-    if (values.forSale === false) {
-      return true
-    }
-
-    if (values.isBulkCost === true) {
-      return true
-    }
-
-    return false
   }
 
   // Memoized values
@@ -393,7 +388,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     }
 
     return 0
-  }, [])
+  }, [activeBatch, values.isBulkCost, values.overallCost])
 
   const nonActiveBatches = useMemo(() => {
     return values.batches.filter((batch) => batch.id !== activeBatch?.id)
@@ -454,14 +449,13 @@ export const ProductDetail = (props: ProductDetailProps) => {
   }
 
   useEffect(() => {
-    console.log('activeBatch', activeBatch)
     // Prevent confusion when the there are no active batches
     if (!activeBatch) {
       if (!showMore) {
         setShowMore(true)
       }
     }
-  }, [activeBatch])
+  }, [activeBatch, showMore])
 
   return (
     <>
@@ -471,6 +465,33 @@ export const ProductDetail = (props: ProductDetailProps) => {
           !isParentScreen ? 'hidden-screen' : '',
         ].join(' ')}
       >
+        <dialog
+          open={showUnsavedChangesDialog}
+          id="unsaved-changes-dialog"
+          className="modal bg-black/30"
+        >
+          <div className="modal-box px-4">
+            <h3 className="text-lg font-bold">Unsaved Changes</h3>
+            <p className="py-4">
+              There are unsaved changes. Do you want to leave without saving?
+            </p>
+            <div className="font-sm modal-action">
+              <button
+                onClick={() => setShowUnsavedChangesDialog(false)}
+                className="btn"
+              >
+                Keep editing
+              </button>
+              <button
+                onClick={goBack}
+                type="button"
+                className="btn btn-primary"
+              >
+                Leave without saving
+              </button>
+            </div>
+          </div>
+        </dialog>
         {isMutating && (
           <div className="fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
             <span className="loading loading-ring loading-lg"></span>
@@ -481,7 +502,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             <ToolbarButton
               key={1}
               icon={<ChevronLeftIcon className="w-6" />}
-              onClick={goBack}
+              onClick={checkUnsavedChanges}
               disabled={isMutating}
             />,
             <ToolbarTitle
@@ -503,7 +524,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 }
               }}
               onSave={function (): void {
-                console.log('active', getActiveBatch(values.batches))
                 if (!getActiveBatch(values.batches)) {
                   toast.error('No batch usable found', {
                     autoClose: 1000,
@@ -511,7 +531,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   })
                   return
                 }
-                // submitForm()
+                submitFormikForm()
               }}
               onClone={async () => {
                 if (product) {
@@ -528,6 +548,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             </div>
             <input
               {...getFieldProps('name')}
+              autoComplete="off"
               type="text"
               placeholder="(e.g., Milk Tea, Coffee, etc.)"
               className="input input-bordered w-full"
@@ -575,6 +596,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             <div className="form-control flex w-full flex-row gap-2 py-2">
               <input
                 {...getFieldProps('forSale')}
+                autoComplete="off"
                 type="checkbox"
                 onChange={(e) => {
                   setFieldValue('forSale', !e.target.checked)
@@ -632,6 +654,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 <span className="label-text-alt text-gray-400">Cost</span>
               </div>
               <CurrencyInput
+                autoComplete="off"
                 decimalsLimit={4}
                 prefix="₱"
                 disabled={isMutating}
@@ -642,8 +665,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 className="input input-bordered w-full"
                 placeholder="₱0"
                 inputMode="decimal"
-                onValueChange={(value) => {
-                  setFieldValue('overallCost', value)
+                onValueChange={async (value) => {
+                  await setFieldValue('overallCost', value)
                   const cost = toNumber(value)
                   if (values.price && values.price > 0) {
                     const price = toNumber(values.price)
@@ -652,8 +675,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       price,
                       cost,
                     )
-                    setFieldValue('profitAmount', newProfitAmount)
-                    setFieldValue('profitPercentage', newProfitPercentage)
+                    await setFieldValue('profitAmount', newProfitAmount)
+                    await setFieldValue('profitPercentage', newProfitPercentage)
                   }
 
                   // Set the cost of all batches
@@ -661,10 +684,10 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   const updatedBatches = batches.map((batch) => {
                     return {
                       ...batch,
-                      cost: toNumber(overallCost),
+                      cost: toNumber(value),
                     }
                   })
-                  setFieldValue('batches', updatedBatches)
+                  await setFieldValue('batches', updatedBatches)
                 }}
               />
               {errors.overallCost && (
@@ -687,6 +710,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     <span className="label-text-alt text-gray-400">Price</span>
                   </div>
                   <CurrencyInput
+                    autoComplete="off"
                     decimalsLimit={4}
                     prefix="₱"
                     disabled={isMutating}
@@ -734,6 +758,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     <span className="label-text-alt text-gray-400">Profit</span>
                   </div>
                   <CurrencyInput
+                    autoComplete="off"
                     decimalsLimit={4}
                     disabled={isMutating}
                     onBlur={getFieldProps('profitPercentage').onBlur}
@@ -771,6 +796,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   />
                   <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
                   <CurrencyInput
+                    autoComplete="off"
                     decimalsLimit={4}
                     prefix="₱"
                     disabled={isMutating}
@@ -844,18 +870,19 @@ export const ProductDetail = (props: ProductDetailProps) => {
           />
           {/* Low Stock warning */}
           <label className="form-control w-full ">
-            <div className="form-control-label z-10 ">
+            <div className="form-control-label z-[09] ">
               <span className="label-text-alt text-gray-400">
                 Warn when quantity is below
               </span>
             </div>
             <div className="join w-full">
               <CurrencyInput
+                autoComplete="off"
                 decimalsLimit={4}
                 disabled={isMutating}
                 onBlur={getFieldProps('stockWarning').onBlur}
                 name={getFieldProps('stockWarning').name}
-                value={values.profitAmount}
+                value={values.stockWarning}
                 type="text"
                 className="input join-item input-bordered w-full"
                 inputMode="decimal"
@@ -876,6 +903,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           <div className="form-control flex w-full flex-row gap-2 py-2">
             <input
               {...getFieldProps('allowBackOrder')}
+              autoComplete="off"
               checked={values.allowBackOrder}
               type="checkbox"
               className="toggle toggle-primary"
@@ -890,6 +918,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <label className="label cursor-pointer justify-start gap-4">
                 <input
                   {...getFieldProps('soldBy')}
+                  autoComplete="off"
                   type="radio"
                   className="radio-primary radio"
                   name="soldBy"
@@ -918,6 +947,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <label className="label cursor-pointer justify-start gap-4">
                 <input
                   {...getFieldProps('soldBy')}
+                  autoComplete="off"
                   type="radio"
                   className="radio-primary radio"
                   name="soldBy"
@@ -987,6 +1017,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
               <div className="flex flex-row gap-2">
                 <input
                   {...getFieldProps('isBulkCost')}
+                  autoComplete="off"
                   checked={values.isBulkCost}
                   disabled={mode === 'edit'}
                   onChange={(e) => {
@@ -1070,62 +1101,66 @@ export const ProductDetail = (props: ProductDetailProps) => {
             })}
 
           {/* Non active batches */}
-
-          {nonActiveBatches.length > 0 && (
+          <div
+            className={`collapse collapse-arrow rounded-sm bg-base-100 ${
+              showMore ? 'collapse-open' : 'collapse-close'
+            }`}
+          >
             <div
-              className={`collapse collapse-arrow rounded-sm bg-base-100 ${
-                showMore ? 'collapse-open' : 'collapse-close'
-              }`}
+              onClick={() => setShowMore(!showMore)}
+              className="collapse-title mx-auto w-[160px] px-0 text-center"
             >
-              <div
-                onClick={() => setShowMore(!showMore)}
-                className="collapse-title mx-auto w-[160px] px-0 text-center"
-              >
-                Show {showMore ? 'Less' : 'More'}
-              </div>
-              <div className="BatchesContainer collapse-content space-y-4 p-0">
-                {nonActiveBatches.map((batch, index) => {
-                  return (
-                    <BatchCard
-                      mode={mode}
-                      onRemove={async (batchId) => {
-                        const newBatches = [...values.batches]
-                        const updatedBatches = newBatches.filter(
-                          (batch) => batch.id !== batchId,
-                        )
-                        await setFieldValue('batches', updatedBatches)
-                      }}
-                      onChange={async (updatedBatch) => {
-                        await setFieldValue(
-                          'batches',
-                          values.batches.map((batch) => {
-                            if (batch.id === updatedBatch.id) {
-                              return updatedBatch
-                            }
-                            return {
-                              ...batch,
-                              unitOfMeasurement: updatedBatch.unitOfMeasurement,
-                            }
-                          }),
-                        )
-                      }}
-                      error={
-                        errors.batches &&
-                        (errors.batches[
-                          values.batches.findIndex((b) => b.id === batch.id)
-                        ] as never)
-                      }
-                      batch={batch}
-                      key={index}
-                      soldBy={values.soldBy}
-                      isBulkCost={values.isBulkCost}
-                      forSale={values.forSale}
-                    />
-                  )
-                })}
-              </div>
+              Show {showMore ? 'Less' : 'More'}
             </div>
-          )}
+            <div className="BatchesContainer collapse-content space-y-4 p-0">
+              {nonActiveBatches.length === 0 && (
+                <div>
+                  <p className="text-center text-gray-400">
+                    No additional batches to show
+                  </p>
+                </div>
+              )}
+              {nonActiveBatches.map((batch, index) => {
+                return (
+                  <BatchCard
+                    mode={mode}
+                    onRemove={async (batchId) => {
+                      const newBatches = [...values.batches]
+                      const updatedBatches = newBatches.filter(
+                        (batch) => batch.id !== batchId,
+                      )
+                      await setFieldValue('batches', updatedBatches)
+                    }}
+                    onChange={async (updatedBatch) => {
+                      await setFieldValue(
+                        'batches',
+                        values.batches.map((batch) => {
+                          if (batch.id === updatedBatch.id) {
+                            return updatedBatch
+                          }
+                          return {
+                            ...batch,
+                            unitOfMeasurement: updatedBatch.unitOfMeasurement,
+                          }
+                        }),
+                      )
+                    }}
+                    error={
+                      errors.batches &&
+                      (errors.batches[
+                        values.batches.findIndex((b) => b.id === batch.id)
+                      ] as never)
+                    }
+                    batch={batch}
+                    key={index}
+                    soldBy={values.soldBy}
+                    isBulkCost={values.isBulkCost}
+                    forSale={values.forSale}
+                  />
+                )
+              })}
+            </div>
+          </div>
 
           <button
             onClick={addNewBatch}
