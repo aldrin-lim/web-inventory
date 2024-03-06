@@ -5,6 +5,7 @@ import Big from 'big.js'
 import { formatToPeso } from 'util/currency'
 import { unitAbbrevationsToLabel } from 'util/measurement'
 import { isExpired } from 'util/data'
+import { toNumber } from 'lodash'
 
 type ProductCardProps = {
   product: Product
@@ -15,7 +16,9 @@ const ProductCard = (props: ProductCardProps) => {
   const { product, onClick } = props
   const { name, outOfStock, totalQuantity } = product
 
-  const { unitOfMeasurement } = product.activeBatch
+  const activeBatch = product.activeBatch
+
+  const { unitOfMeasurement } = activeBatch
 
   const image = product.images?.[0] || ''
 
@@ -27,6 +30,17 @@ const ProductCard = (props: ProductCardProps) => {
             className={`overflow-hidden truncate text-ellipsis text-orange-400`}
           >
             Expired
+          </span>
+        </div>
+      )
+    }
+    if (toNumber(product.stockWarning) > product.totalQuantity) {
+      return (
+        <div className="flex flex-row gap-1  text-xs">
+          <span
+            className={`overflow-hidden truncate text-ellipsis text-orange-400`}
+          >
+            Low Stock
           </span>
         </div>
       )

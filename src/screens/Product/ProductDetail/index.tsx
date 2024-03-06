@@ -877,7 +877,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           <label className="form-control w-full ">
             <div className="form-control-label z-[09] ">
               <span className="label-text-alt text-gray-400">
-                Warn when quantity is below
+                Low stock warning level
               </span>
             </div>
             <div className="join w-full">
@@ -891,7 +891,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 type="text"
                 className="input join-item input-bordered w-full"
                 inputMode="decimal"
-                placeholder="Quantity"
+                placeholder="Quantity (Optional)"
                 onValueChange={(value) => {
                   setFieldValue('stockWarning', value)
                 }}
