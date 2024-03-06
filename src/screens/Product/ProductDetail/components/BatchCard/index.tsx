@@ -243,8 +243,8 @@ const BatchCard = (props: BatchCardProps) => {
           </div>
           <div className={`ExpirationDatePicker flex flex-row gap-1`}>
             <DatePicker
-              // disablePast
-              // disabled={mode === 'edit'}
+              disablePast
+              disabled={mode === 'edit'}
               sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
               slotProps={{
                 textField: {
@@ -253,11 +253,11 @@ const BatchCard = (props: BatchCardProps) => {
                   className: '',
                 },
                 actionBar: {
-                  actions: ['clear', 'accept'],
+                  actions: ['clear', 'accept', 'cancel'],
                 },
               }}
               value={moment(values.expirationDate)}
-              onChange={(date) => {
+              onAccept={(date) => {
                 if (date) {
                   onChange?.({
                     ...values,
