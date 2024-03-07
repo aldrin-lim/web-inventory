@@ -14,121 +14,16 @@ type ProductCardProps = {
 
 const ProductCard = (props: ProductCardProps) => {
   const { product, onClick } = props
-  const { name, outOfStock, totalQuantity } = product
-
-  const activeBatch = product.activeBatch
-
-  const { unitOfMeasurement } = activeBatch
+  const { name } = product
 
   const image = product.images?.[0] || ''
-
-  const renderStockInfo = () => {
-    const activeBatch = product.activeBatch
-
-    if (!activeBatch) {
-      return (
-        <div className="flex flex-row gap-1  text-xs">
-          <span
-            className={`overflow-hidden truncate text-ellipsis text-red-400`}
-          >
-            No Batches Found
-          </span>
-        </div>
-      )
-    }
-
-    if (isExpired(activeBatch.expirationDate)) {
-      return (
-        <div className="flex flex-row gap-1  text-xs">
-          <span
-            className={`overflow-hidden truncate text-ellipsis text-orange-400`}
-          >
-            Expired
-          </span>
-        </div>
-      )
-    }
-    if (toNumber(product.stockWarning) >= product.totalQuantity) {
-      if (product.outOfStock) {
-        return (
-          <div className="flex flex-row gap-1  text-xs">
-            <span
-              className={`overflow-hidden truncate text-ellipsis text-red-400`}
-            >
-              Out of stock
-            </span>
-          </div>
-        )
-      }
-      return (
-        <div className="flex flex-row gap-1  text-xs">
-          <span
-            className={`overflow-hidden truncate text-ellipsis text-orange-400`}
-          >
-            Low Stock ({product.totalQuantity} {unitOfMeasurement} available)
-          </span>
-        </div>
-      )
-    }
-    if (product.trackStock || product.recipe) {
-      return (
-        <div className="flex flex-row gap-1  text-xs">
-          <span
-            className={`overflow-hidden truncate text-ellipsis ${
-              outOfStock ? 'text-red-400' : ''
-            }`}
-          >
-            {outOfStock ? (
-              'Out of stock'
-            ) : (
-              <>
-                {totalQuantity} {unitOfMeasurement} available
-              </>
-            )}
-          </span>
-        </div>
-      )
-    } else {
-      return (
-        <div className="flex flex-row gap-1  text-xs">
-          <span
-            className={`overflow-hidden truncate text-ellipsis ${
-              outOfStock ? 'text-red-400' : ''
-            }`}
-          >
-            &nbsp;
-          </span>
-        </div>
-      )
-    }
-  }
 
   return (
     <div className="relative  justify-self-center">
       <div className="absolute top-2 z-[9] flex w-full items-center justify-between px-2">
-        {product.isBulkCost === false && (
-          <div className="bg-primary/50 p-1 text-sm text-white">
-            {formatToPeso(
-              new Big(
-                product.forSale
-                  ? product.price
-                  : product.activeBatch?.cost ?? 0,
-              ).toNumber(),
-            )}
-          </div>
-        )}
-        {product.isBulkCost === true && (
-          <div className="bg-primary/50 p-1 text-sm text-white">
-            {formatToPeso(
-              new Big(
-                product.forSale
-                  ? product.price
-                  : product.activeBatch.costPerUnit ?? 0,
-              ).toNumber(),
-            )}
-            /{unitAbbrevationsToLabel(unitOfMeasurement)}
-          </div>
-        )}
+        <div className="bg-primary/50 p-1 text-sm text-white">
+          {renderPrice(product)}
+        </div>
       </div>
       <div
         className={`ProductCard card card-compact relative w-[155px] cursor-pointer border border-gray-300  bg-base-100 `}
@@ -143,9 +38,91 @@ const ProductCard = (props: ProductCardProps) => {
             <MiddleTruncatedText text={name} maxLength={18} />
           </h2>
 
-          {renderStockInfo()}
+          {renderStockInfo(product)}
         </div>
       </div>
+    </div>
+  )
+}
+
+const renderPrice = (product: Product) => {
+  const activeBatch = product.activeBatch
+  const cost = activeBatch?.cost ?? 0
+  const measurement = activeBatch?.unitOfMeasurement
+  if (!product.forSale) {
+    // user price for ingredients
+
+    if (product.isBulkCost) {
+      return `${formatToPeso(cost)} ${
+        measurement ? `/${unitAbbrevationsToLabel(measurement)}` : ``
+      }`
+    }
+
+    return formatToPeso(cost)
+  }
+
+  if (product.isBulkCost) {
+    return `${formatToPeso(cost)} ${
+      measurement ? `/${unitAbbrevationsToLabel(measurement)}` : ``
+    }`
+  }
+
+  return formatToPeso(product.price)
+}
+
+const renderStockInfo = (product: Product) => {
+  const activeBatch = product.activeBatch
+  const measurement = unitAbbrevationsToLabel(
+    activeBatch?.unitOfMeasurement ?? '',
+  )
+  if (!activeBatch) {
+    return (
+      <div className="flex flex-row gap-1  text-xs">
+        <span className={`overflow-hidden truncate text-ellipsis text-red-400`}>
+          No Batches Found
+        </span>
+      </div>
+    )
+  }
+
+  if (product.outOfStock) {
+    return (
+      <div className="flex flex-row gap-1  text-xs">
+        <span className={`overflow-hidden truncate text-ellipsis text-red-400`}>
+          Out of stock
+        </span>
+      </div>
+    )
+  }
+
+  if (isExpired(activeBatch.expirationDate)) {
+    return (
+      <div className="flex flex-row gap-1  text-xs">
+        <span
+          className={`overflow-hidden truncate text-ellipsis text-orange-400`}
+        >
+          Expired
+        </span>
+      </div>
+    )
+  }
+  if (toNumber(product.stockWarning) >= product.totalQuantity) {
+    return (
+      <div className="flex flex-row gap-1  text-xs">
+        <span
+          className={`overflow-hidden truncate text-ellipsis text-orange-400`}
+        >
+          Low ({product.totalQuantity} {measurement} available)
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-row gap-1  text-xs">
+      <span className={`overflow-hidden truncate text-ellipsis `}>
+        {product.totalQuantity} {measurement} available
+      </span>
     </div>
   )
 }
