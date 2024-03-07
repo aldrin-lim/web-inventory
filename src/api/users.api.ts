@@ -31,11 +31,20 @@ export const updateUserBussiness = async (param: UpdateUserBusinessSchema) => {
     closingTime,
     openingTime,
     contactNumber,
+    voidPin,
   } = param
   const result = await httpClient
     .patch<Partial<Business>, AxiosResponse<Business>>(
       `/users/me/businesses/${id}`,
-      { description, name, address, closingTime, openingTime, contactNumber },
+      {
+        description,
+        name,
+        address,
+        closingTime,
+        openingTime,
+        contactNumber,
+        voidPin,
+      },
     )
     .then((res) => res.data)
   return result

@@ -22,6 +22,11 @@ export const BusinessSchema = z.object({
   closingTime: z
     .string()
     .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid 24-hour format time'),
+  voidPin: z
+    .string({
+      required_error: 'PIN is required',
+    })
+    .length(6, 'PIN must be 6 characters long'),
 })
 
 export const UpdateUserBusinessSchema = BusinessSchema.pick({
@@ -32,6 +37,7 @@ export const UpdateUserBusinessSchema = BusinessSchema.pick({
   contactNumber: true,
   openingTime: true,
   closingTime: true,
+  voidPin: true,
 })
 
 export type UpdateUserBusinessSchema = z.infer<typeof UpdateUserBusinessSchema>

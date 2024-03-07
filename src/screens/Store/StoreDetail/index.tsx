@@ -1,5 +1,9 @@
 import Toolbar from 'components/Layout/components/Toolbar'
-import { ChevronLeftIcon } from '@heroicons/react/24/outline'
+import {
+  ChevronLeftIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from '@heroicons/react/24/outline'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import useUser from 'hooks/useUser'
@@ -18,6 +22,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 const StoreDetail = () => {
   const navigate = useNavigate()
   const { user, isLoading } = useUser()
+  const [showPin, hidePin] = useState(false)
   const [business, setBusiness] = useState<Business>({
     id: '',
     name: '',
@@ -26,9 +31,17 @@ const StoreDetail = () => {
     closingTime: '00:00',
     openingTime: '00:00',
     contactNumber: '',
+    voidPin: '',
   })
 
-  const { getFieldMeta, getFieldProps, submitForm, errors } = useFormik({
+  const {
+    getFieldMeta,
+    getFieldProps,
+    submitForm,
+    errors,
+    setFieldValue,
+    values,
+  } = useFormik({
     initialValues: business,
     onSubmit: async (values) => {
       await mutateAsync(values)
@@ -100,7 +113,7 @@ const StoreDetail = () => {
       {!isLoading && (
         <div className="mt-3 flex flex-col gap-2">
           <div className="form-control w-full">
-            <label className="label">
+            <label className="form-control-label label">
               <span className="label-text text-xs">Store name</span>
             </label>
             <input
@@ -115,7 +128,7 @@ const StoreDetail = () => {
           </div>
 
           <div className="form-control w-full">
-            <label className="label">
+            <label className="form-control-label label">
               <span className="label-text text-xs">Address</span>
             </label>
             <input
@@ -130,7 +143,7 @@ const StoreDetail = () => {
           </div>
 
           <div className="form-control w-full">
-            <label className="label">
+            <label className="form-control-label label">
               <span className="label-text text-xs">Contact</span>
             </label>
             <input
@@ -144,8 +157,39 @@ const StoreDetail = () => {
             </p>
           </div>
 
+          <div className="join">
+            <div className="form-control  w-full">
+              <label className="form-control-label label">
+                <span className="label-text text-xs">PIN</span>
+              </label>
+              <input
+                {...getFieldProps('voidPin')}
+                disabled={isMutating}
+                type={showPin ? 'text' : 'password'}
+                className="input input-bordered w-full"
+                onChange={(e) => {
+                  // Limit up to 6
+                  if (values.voidPin?.length <= 6) {
+                    setFieldValue('voidPin', e.target.value.slice(0, 6))
+                  }
+                }}
+                inputMode="numeric"
+              />
+              <p className="form-control-error">
+                {getFieldMeta('voidPin').error}&nbsp;
+              </p>
+            </div>
+            <button className="btn join-item ">
+              {showPin ? (
+                <EyeIcon onClick={() => hidePin(false)} className="w-6" />
+              ) : (
+                <EyeSlashIcon onClick={() => hidePin(true)} className="w-6" />
+              )}
+            </button>
+          </div>
+
           <div className="form-control w-full">
-            <label className="label">
+            <label className="form-control-label label">
               <span className="label-text text-xs">Opening Time</span>
             </label>
             <input
@@ -162,7 +206,7 @@ const StoreDetail = () => {
           </div>
 
           <div className="form-control w-full">
-            <label className="label">
+            <label className="form-control-label label">
               <span className="label-text text-xs">Closing Time</span>
             </label>
             <input

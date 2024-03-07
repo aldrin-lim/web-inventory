@@ -1,7 +1,6 @@
 import MiddleTruncatedText from 'components/MiddleTruncatedText'
 import ImageLoader from 'components/ImageLoader'
 import { Product } from 'types/product.types'
-import Big from 'big.js'
 import { formatToPeso } from 'util/currency'
 import { unitAbbrevationsToLabel } from 'util/measurement'
 import { isExpired } from 'util/data'
