@@ -341,7 +341,7 @@ const Inventory = (props: InventoryProps) => {
 
 const Skeleton = () => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="mt-4 flex flex-col gap-4">
       <div className="skeleton h-[48px] rounded-md" />
 
       <div className="skeleton h-[40px] rounded-md" />
