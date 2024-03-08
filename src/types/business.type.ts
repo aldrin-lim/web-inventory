@@ -40,6 +40,7 @@ export const BusinessSchema = z.object({
         required_error: 'Tax type is required',
       }),
     })
+    .nullable()
     .optional(),
 })
 

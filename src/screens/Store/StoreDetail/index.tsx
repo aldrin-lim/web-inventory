@@ -97,6 +97,8 @@ const StoreDetail = () => {
     }
   }, [isLoading, user?.businesses])
 
+  console.log(errors)
+
   return (
     <div className="screen pb-6">
       <Toolbar
@@ -132,11 +134,11 @@ const StoreDetail = () => {
             <label className="form-control-label label">
               <span className="label-text text-xs">Address</span>
             </label>
-            <input
+            <textarea
               {...getFieldProps('address')}
               disabled={isMutating}
               type="text"
-              className="input input-bordered w-full"
+              className="textarea textarea-bordered w-full"
             />
             <p className="form-control-error">
               {getFieldMeta('address').error}&nbsp;
@@ -305,7 +307,7 @@ const StoreDetail = () => {
           </div>
 
           <button
-            disabled={isMutating || Object.keys(errors).length > 0}
+            disabled={isMutating}
             onClick={submitForm}
             className="btn btn-primary btn-active mt-4 w-auto"
           >
