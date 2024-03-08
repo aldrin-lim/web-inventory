@@ -27,6 +27,17 @@ export const BusinessSchema = z.object({
       required_error: 'PIN is required',
     })
     .length(6, 'PIN must be 6 characters long'),
+  tax: z
+    .object({
+      amount: z.number({
+        coerce: true,
+        required_error: 'Tax amount is required',
+      }),
+      type: z.enum(['inclusive', 'exclusive'], {
+        required_error: 'Tax type is required',
+      }),
+    })
+    .optional(),
 })
 
 export const UpdateUserBusinessSchema = BusinessSchema.pick({
@@ -38,6 +49,7 @@ export const UpdateUserBusinessSchema = BusinessSchema.pick({
   openingTime: true,
   closingTime: true,
   voidPin: true,
+  tax: true,
 })
 
 export type UpdateUserBusinessSchema = z.infer<typeof UpdateUserBusinessSchema>

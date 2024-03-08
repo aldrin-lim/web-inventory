@@ -18,6 +18,7 @@ import { useFormik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
+import CurrencyInput from 'react-currency-input-field'
 
 const StoreDetail = () => {
   const navigate = useNavigate()
@@ -97,7 +98,7 @@ const StoreDetail = () => {
   }, [isLoading, user?.businesses])
 
   return (
-    <div className="screen">
+    <div className="screen pb-6">
       <Toolbar
         items={[
           <ToolbarButton
@@ -221,6 +222,85 @@ const StoreDetail = () => {
               {getFieldMeta('closingTime').error}&nbsp;
             </p>
           </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="form-control flex w-full flex-row gap-2 py-2">
+              <input
+                {...getFieldProps('applyTax')}
+                autoComplete="off"
+                type="checkbox"
+                onChange={(e) => {
+                  if (e.target.checked === true) {
+                    setFieldValue('tax', { amount: 12, type: 'inclusive' })
+                    setTimeout(() => {
+                      window.scrollTo(0, 9999)
+                    }, 100)
+                  } else {
+                    setFieldValue('tax', undefined)
+                  }
+                }}
+                checked={!!values.tax}
+                className="toggle toggle-primary"
+              />
+              <span>Apply Tax</span>
+            </div>
+            {values.tax && (
+              <>
+                <div className="">
+                  <label className="label">
+                    <span className="label-text text-xs">Tax Type:</span>
+                  </label>
+                  <div className="join">
+                    <input
+                      {...getFieldProps('tax.type')}
+                      className="btn join-item"
+                      checked={values.tax?.type === 'inclusive'}
+                      type="radio"
+                      name="options"
+                      onChange={() => setFieldValue('tax.type', 'inclusive')}
+                      aria-label="Inclusive"
+                    />
+                    <input
+                      {...getFieldProps('tax.type')}
+                      checked={values.tax?.type === 'exclusive'}
+                      className="btn join-item"
+                      type="radio"
+                      name="options"
+                      onChange={() => setFieldValue('tax.type', 'exclusive')}
+                      aria-label="Exclusive"
+                    />
+                  </div>
+                </div>
+
+                <div className="join w-full">
+                  <CurrencyInput
+                    autoComplete="off"
+                    decimalsLimit={4}
+                    disabled={isMutating}
+                    onBlur={getFieldProps('tax.amount').onBlur}
+                    name={getFieldProps('tax.amount').name}
+                    value={values.tax?.amount}
+                    type="text"
+                    tabIndex={5}
+                    className={`input join-item input-bordered w-[80px] focus:outline-none`}
+                    placeholder="₱0"
+                    inputMode="decimal"
+                    onValueChange={(value) => {
+                      setFieldValue('tax.amount', value)
+                    }}
+                  />
+                  <button className="btn join-item ">%</button>
+                </div>
+                <p className="mt-2 px-2 text-xs">
+                  {values?.tax?.type === 'inclusive' &&
+                    'All products will include VAT based on the current rate you set.'}
+                  {values?.tax?.type === 'exclusive' &&
+                    'All products will have an additional charge based on the current rate you set'}
+                </p>
+              </>
+            )}
+          </div>
+
           <button
             disabled={isMutating || Object.keys(errors).length > 0}
             onClick={submitForm}
