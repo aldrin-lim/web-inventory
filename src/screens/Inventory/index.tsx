@@ -248,6 +248,11 @@ const Inventory = (props: InventoryProps) => {
           </div>
 
           <ul className="menu w-full border-b p-0 [&_li>*]:rounded-md [&_li>*]:border-b">
+            {filteredProducts.length === 0 && (
+              <div className="flex h-32 items-center justify-center">
+                <p className="text-gray-500">No products found</p>
+              </div>
+            )}
             {filteredProducts.map((product) => (
               <li
                 onClick={() => onProductSelect?.(product)}
