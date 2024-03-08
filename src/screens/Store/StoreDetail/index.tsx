@@ -291,6 +291,9 @@ const StoreDetail = () => {
                   />
                   <button className="btn join-item ">%</button>
                 </div>
+                <p className="form-control-error">
+                  {getFieldMeta('tax.amount').error}&nbsp;
+                </p>
                 <p className="mt-2 px-2 text-xs">
                   {values?.tax?.type === 'inclusive' &&
                     'All products will include VAT based on the current rate you set.'}

@@ -33,6 +33,7 @@ export const BusinessSchema = z.object({
         .number({
           coerce: true,
           required_error: 'Tax amount is required',
+          invalid_type_error: 'Tax amount must be greater than 0',
         })
         .positive('Tax amount must be greater than 0'),
       type: z.enum(['inclusive', 'exclusive'], {
