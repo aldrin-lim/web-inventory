@@ -27,9 +27,13 @@ const ProductOverview = () => {
 
   const { products, isLoading, error } = useAllProducts()
 
-  const outOfStocks = products.filter((product) => product.outOfStock === true)
+  const outOfStocks = products.filter(
+    (product) => product.outOfStock === true && product.forSale,
+  )
 
-  const inStocks = products.filter((product) => product.outOfStock === false)
+  const inStocks = products.filter(
+    (product) => product.outOfStock === false && product.forSale,
+  )
 
   const hasOutOfStockProducts = outOfStocks.length > 0
 

@@ -35,27 +35,44 @@ const Inventory = (props: InventoryProps) => {
 
   const [nameFilter, setNameFilter] = useState('')
   const [filter, setFilter] = useState('all')
+  const [subFilter, setSubFilter] = useState('all')
 
   const filteredProducts = useMemo(() => {
+    const subFilterFn = (product: Product) => {
+      if (subFilter === 'ingredients') {
+        return !product.forSale
+      }
+      if (subFilter === 'products') {
+        return product.forSale
+      }
+      return product
+    }
+
     if (filter === 'lowStock') {
-      return products.filter(
-        (product) =>
-          toNumber(product.stockWarning) >= product.totalQuantity &&
-          !product.outOfStock,
-      )
+      return products
+        .filter(
+          (product) =>
+            toNumber(product.stockWarning) >= product.totalQuantity &&
+            !product.outOfStock,
+        )
+        .filter(subFilterFn)
     }
 
     if (filter === 'outOfStock') {
-      return products.filter((product) => product.outOfStock)
+      return products
+        .filter((product) => product.outOfStock)
+        .filter(subFilterFn)
     }
 
-    return products.filter((product) =>
-      product.name.toLowerCase().includes(nameFilter.toLowerCase()),
-    )
-  }, [nameFilter, products, filter])
+    return products
+      .filter((product) =>
+        product.name.toLowerCase().includes(nameFilter.toLowerCase()),
+      )
+      .filter(subFilterFn)
+  }, [filter, products, subFilter, nameFilter])
 
   const numberOfNearExpirationProducts = products.filter((product) =>
-    isWithinExpiration(product.activeBatch.expirationDate),
+    isWithinExpiration(product.activeBatch?.expirationDate ?? ''),
   ).length
 
   // const quantity = useMemo(
@@ -163,36 +180,69 @@ const Inventory = (props: InventoryProps) => {
               onChange={(e) => setNameFilter(e.target.value)}
               placeholder="Search Product by Name"
             />
-            {/* Filter */}
-            <ul className="menu menu-horizontal my-2 bg-base-100 ">
-              <li>
-                <a
-                  className={filter === 'all' ? 'active' : ''}
-                  onClick={() => setFilter('all')}
-                >
-                  All
-                </a>
-              </li>
-              <li>
-                <a
-                  className={filter === 'lowStock' ? 'active' : ''}
-                  onClick={() => setFilter('lowStock')}
-                >
-                  Low Stock
-                </a>
-              </li>
-              <li>
-                <a
-                  className={filter === 'outOfStock' ? 'active' : ''}
-                  onClick={() => setFilter('outOfStock')}
-                >
-                  Out of Stock
-                </a>
-              </li>
-            </ul>
+
+            <div className="flex flex-col gap-1">
+              {/* Filter */}
+              <p className="text-sm">Stock:</p>
+              <ul className="menu  menu-horizontal menu-xs !m-0 my-2 bg-base-100 p-0 pl-3">
+                <li>
+                  <a
+                    className={filter === 'all' ? 'active' : ''}
+                    onClick={() => setFilter('all')}
+                  >
+                    All
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className={filter === 'lowStock' ? 'active' : ''}
+                    onClick={() => setFilter('lowStock')}
+                  >
+                    Low Stock
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className={filter === 'outOfStock' ? 'active' : ''}
+                    onClick={() => setFilter('outOfStock')}
+                  >
+                    Out of Stock
+                  </a>
+                </li>
+              </ul>
+
+              {/* {Sub Filter} */}
+              <p className="text-sm">Type:</p>
+              <ul className="menu menu-horizontal menu-xs !m-0 my-2 bg-base-100 p-0 pl-3">
+                <li>
+                  <a
+                    className={subFilter === 'all' ? 'active' : ''}
+                    onClick={() => setSubFilter('all')}
+                  >
+                    All
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className={subFilter === 'products' ? 'active' : ''}
+                    onClick={() => setSubFilter('products')}
+                  >
+                    Products
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className={subFilter === 'ingredients' ? 'active' : ''}
+                    onClick={() => setSubFilter('ingredients')}
+                  >
+                    Ingredients
+                  </a>
+                </li>
+              </ul>
+            </div>
 
             <div className="flex w-full flex-row justify-between bg-gray-200 p-2">
-              <p className="uppercase">PRODUCT</p>
+              <p className="uppercase">NAME</p>
               <p className="uppercase">COST</p>
             </div>
           </div>
