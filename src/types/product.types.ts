@@ -17,11 +17,13 @@ export const ProductBatchSchema = z.object({
     required_error: 'Name is required',
     invalid_type_error: 'Name must be a string',
   }),
-  cost: z.number({
-    coerce: true,
-    required_error: 'Cost is required',
-    invalid_type_error: 'Cost must be a number',
-  }),
+  cost: z
+    .number({
+      coerce: true,
+      required_error: 'Cost is required',
+      invalid_type_error: 'Cost must be a number',
+    })
+    .positive('Cost must be greater than 0'),
   costPerUnit: z
     .number({
       coerce: true,
@@ -55,21 +57,27 @@ const BaseProduct = z.object({
       invalid_type_error: 'Description must be a string',
     })
     .optional(),
-  profitAmount: z.number({
-    required_error: 'Profit Amount is required',
-    invalid_type_error: 'Profit Amount must be a number',
-    coerce: true,
-  }),
-  profitPercentage: z.number({
-    required_error: 'Profit Percentage is required',
-    invalid_type_error: 'Profit Percentage must be a number',
-    coerce: true,
-  }),
-  price: z.number({
-    required_error: 'Price is required',
-    invalid_type_error: 'Price must be a number',
-    coerce: true,
-  }),
+  profitAmount: z
+    .number({
+      required_error: 'Profit Amount is required',
+      invalid_type_error: 'Profit Amount must be a number',
+      coerce: true,
+    })
+    .default(0),
+  profitPercentage: z
+    .number({
+      required_error: 'Profit Percentage is required',
+      invalid_type_error: 'Profit Percentage must be a number',
+      coerce: true,
+    })
+    .default(0),
+  price: z
+    .number({
+      required_error: 'Price is required',
+      invalid_type_error: 'Price must be a number',
+      coerce: true,
+    })
+    .default(0),
   images: z.array(z.string()),
   category: z
     .string({
@@ -102,10 +110,18 @@ const BaseProduct = z.object({
     .array(ProductBatchSchema)
     .min(1, 'Batches must have at least 1 item'),
 
+  stockWarning: z
+    .number({
+      coerce: true,
+      invalid_type_error: 'Stock warning must be a number',
+    })
+    .optional(),
+
   // Read only
   outOfStock: z.boolean().default(false),
   availability: z.string().default(''),
   totalQuantity: z.number().default(0),
+  isExpired: z.boolean().default(false),
 })
 
 export const RecipeSchema = z.object({
@@ -163,7 +179,7 @@ export const RecipeSchema = z.object({
 
 const Product = BaseProduct.extend({
   recipe: RecipeSchema.nullable().optional(),
-  activeBatch: ProductBatchSchema,
+  activeBatch: ProductBatchSchema.optional(),
 })
 export const ProductSchema = Product
 export type Product = z.infer<typeof ProductSchema>

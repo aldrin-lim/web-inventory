@@ -1,26 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldConfig, FieldInputProps, FormikErrors } from 'formik'
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
   AddProductDetailSchema,
   ProductDetailFormikValue,
 } from '../../ProductDetail.types'
-import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
-import { toNumber } from 'lodash'
+import { isArray, toNumber } from 'lodash'
 import CurrencyInput from 'react-currency-input-field'
-import { ProductSoldBy } from 'types/product.types'
 import {
   computeProfitAmount,
   computeProfitPercentage,
-  padWithZeros,
   profitPercentageColor,
 } from 'util/number'
 import { getActiveBatch } from 'util/products'
-import { v4 } from 'uuid'
 import ProductImages from '../ProductImages'
-import { useNavigate } from 'react-router-dom'
-import { ScreenPath } from '../..'
 import CategoryDropdown from '../CategoryDropdown'
 
 interface FormikProps {
@@ -61,13 +56,35 @@ const ProductForm: React.FC<ProductFormProps> = ({
   errors,
   setFieldValue,
   mode,
-  setIsStockReset,
-  setValues,
   showDescription,
-  defaultValue,
   showRecipeList,
 }) => {
-  const navigate = useNavigate()
+  const costError = useMemo(() => {
+    const batchErrors =
+      errors.batches as unknown as ProductDetailFormikValue['batches']
+    if (isArray(batchErrors)) {
+      const costErrors = batchErrors.filter((batch) => batch.cost)
+      console.log(costErrors)
+      if (costErrors.length > 0) {
+        return costErrors[0].cost
+      }
+    }
+    return ''
+  }, [errors.batches])
+
+  const showCostInput = () => {
+    // If product is for is not ingredient, show
+    if (!values.forSale) {
+      return false
+    }
+
+    if (values.isBulkCost) {
+      return false
+    }
+
+    return true
+  }
+
   return (
     <div className="flex flex-col items-start gap-2">
       {/* Product Name */}
@@ -100,7 +117,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           disabled={isMutating}
           className="btn btn-primary btn-xs max-w-xs  self-start rounded-[5px] text-left"
         >
-          Create product using a recipe
+          Use a recipe
         </button>
       )}
 
@@ -108,7 +125,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       <button
         onClick={showDescription}
         disabled={isMutating}
-        className="flex-start btn btn-ghost w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0"
+        className="flex-start btn btn-ghost btn-xs w-full flex-shrink-0 flex-row flex-nowrap justify-between px-0"
       >
         <p className="text-overflow-ellipsis overflow-hidden truncate whitespace-nowrap break-words text-left">
           <span className="text-gray-400">
@@ -119,183 +136,202 @@ const ProductForm: React.FC<ProductFormProps> = ({
         <ChevronRightIcon className="w-5 flex-shrink-0 text-secondary" />
       </button>
 
-      {/* Cost per Unit */}
-      {values.isBulkCost && (
-        <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-gray-200 p-2 py-1 text-black ">
-          <p className="font-bold">Cost:</p>
-          <div className="flex flex-row">
-            <p className="font-bold">
-              ₱ {getActiveBatch(values.batches).costPerUnit}
-            </p>
-            /<p> {getActiveBatch(values.batches).unitOfMeasurement}</p>
-          </div>
+      {/* For Sale */}
+      {mode === 'add' && (
+        <div className="form-control flex w-full flex-row gap-2 py-2">
+          <input
+            {...getFieldProps('forSale')}
+            type="checkbox"
+            onChange={(e) => {
+              setFieldValue('forSale', !e.target.checked)
+              if (e.target.checked === true) {
+                setFieldValue('price', 0)
+                setFieldValue('profitAmount', 0)
+                setFieldValue('profitPercentage', 0)
+              }
+            }}
+            checked={!values.forSale}
+            className="toggle toggle-primary"
+          />
+          <span>For ingredients purposes only</span>
         </div>
       )}
 
-      {/* Cost */}
-      {values.isBulkCost === false && (
-        <label className="form-control">
+      {/* Cost per Unit */}
+
+      <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-gray-200 p-2 py-1 text-black ">
+        <p className="font-bold">Cost:</p>
+        <div className="flex flex-row">
+          <p className="font-bold">
+            ₱ {getActiveBatch(values.batches)?.costPerUnit ?? 0}
+          </p>
+          /<p> {getActiveBatch(values.batches)?.unitOfMeasurement ?? 0}</p>
+        </div>
+      </div>
+
+      <label className="form-control">
+        <div className="form-control-label  ">
+          <span className="label-text-alt text-gray-400">Cost</span>
+        </div>
+        <CurrencyInput
+          decimalsLimit={4}
+          prefix="₱"
+          disabled={isMutating}
+          name={getFieldProps('cost').name}
+          value={values.cost || ''}
+          type="text"
+          tabIndex={3}
+          className="input input-bordered w-full"
+          placeholder="₱0"
+          inputMode="decimal"
+          onValueChange={(value) => {
+            setFieldValue('cost', value)
+            const cost = toNumber(value)
+            if (values.price > 0) {
+              const price = toNumber(values.price)
+              const newProfitAmount = computeProfitAmount(price, cost)
+              const newProfitPercentage = computeProfitPercentage(price, cost)
+              setFieldValue('profitAmount', newProfitAmount)
+              setFieldValue('profitPercentage', newProfitPercentage)
+            }
+
+            if (values.trackStock === false || values.isBulkCost === false) {
+              setFieldValue('batches.0.cost', toNumber(cost))
+            }
+          }}
+        />
+        {costError && (
+          <div className="label py-0">
+            <span className="label-text-alt text-xs text-red-400">
+              {costError}
+            </span>
+          </div>
+        )}
+      </label>
+
+      {/* Price*/}
+      <div className="flex w-full flex-row gap-2">
+        {/* Price Input */}
+        <label className="form-control ">
           <div className="form-control-label  ">
-            <span className="label-text-alt text-gray-400">Cost</span>
+            <span className="label-text-alt text-gray-400">Price</span>
           </div>
           <CurrencyInput
             decimalsLimit={4}
             prefix="₱"
             disabled={isMutating}
-            name={getFieldProps('cost').name}
-            value={values.cost}
+            onBlur={getFieldProps('price').onBlur}
+            name={getFieldProps('price').name}
+            value={values.price}
             type="text"
-            tabIndex={3}
+            tabIndex={2}
             className="input input-bordered w-full"
             placeholder="₱0"
             inputMode="decimal"
             onValueChange={(value) => {
-              setFieldValue('cost', value)
-              const cost = toNumber(value)
-              if (values.price > 0) {
-                const price = toNumber(values.price)
-                const newProfitAmount = computeProfitAmount(price, cost)
-                const newProfitPercentage = computeProfitPercentage(price, cost)
-                setFieldValue('profitAmount', newProfitAmount)
-                setFieldValue('profitPercentage', newProfitPercentage)
-              }
-
-              if (values.trackStock === false || values.isBulkCost === false) {
-                setFieldValue('batches.0.cost', toNumber(cost))
-              }
+              setFieldValue('price', value)
+              const newPrice = toNumber(value)
+              const cost = values.isBulkCost
+                ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                : toNumber(values.cost)
+              const newProfitAmount = computeProfitAmount(newPrice, cost)
+              const newProfitPercentage = computeProfitPercentage(
+                newPrice,
+                cost,
+              )
+              setFieldValue('profitAmount', toNumber(newProfitAmount))
+              setFieldValue('profitPercentage', toNumber(newProfitPercentage))
             }}
           />
-          <div className="label py-0">
-            <span className="label-text-alt text-xs text-red-400">
-              {errors.cost}&nbsp;
-            </span>
-          </div>
-        </label>
-      )}
-
-      {/* Price*/}
-      {values.forSale && (
-        <div className="flex w-full flex-row gap-2">
-          {/* Price Input */}
-          <label className="form-control ">
-            <div className="form-control-label  ">
-              <span className="label-text-alt text-gray-400">Price</span>
-            </div>
-            <CurrencyInput
-              decimalsLimit={4}
-              prefix="₱"
-              disabled={isMutating}
-              onBlur={getFieldProps('price').onBlur}
-              name={getFieldProps('price').name}
-              value={values.price}
-              type="text"
-              tabIndex={2}
-              className="input input-bordered w-full"
-              placeholder="₱0"
-              inputMode="decimal"
-              onValueChange={(value) => {
-                setFieldValue('price', value)
-                const newPrice = toNumber(value)
-                const cost = values.isBulkCost
-                  ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                  : toNumber(values.cost)
-                const newProfitAmount = computeProfitAmount(newPrice, cost)
-                const newProfitPercentage = computeProfitPercentage(
-                  newPrice,
-                  cost,
-                )
-                setFieldValue('profitAmount', toNumber(newProfitAmount))
-                setFieldValue('profitPercentage', toNumber(newProfitPercentage))
-              }}
-            />
+          {errors.price && (
             <div className="label py-0">
               <span className="label-text-alt text-xs text-red-400">
-                {errors.price}&nbsp;
+                {errors.price}
               </span>
             </div>
-          </label>
-        </div>
-      )}
+          )}
+        </label>
+      </div>
 
       {/* Profit */}
-      {values.forSale && (
-        <div className="form-control">
-          <div className="form-control input input-bordered relative flex flex-row items-center">
-            <div className="form-control-label  ">
-              <span className="label-text-alt text-gray-400">Profit</span>
-            </div>
-            <CurrencyInput
-              decimalsLimit={4}
-              disabled={isMutating}
-              onBlur={getFieldProps('profitPercentage').onBlur}
-              name={getFieldProps('profitPercentage').name}
-              value={values.profitPercentage}
-              placeholder="70"
-              type="text"
-              tabIndex={4}
-              disableGroupSeparators={true}
-              inputMode="decimal"
-              className={[
-                'input w-1/2 border-none bg-transparent px-0 text-left focus:outline-none',
-                profitPercentageColor(values.profitPercentage),
-              ].join(' ')}
-              onValueChange={(value) => {
-                setFieldValue('profitPercentage', value)
-                const newProfitPercentage = toNumber(value)
-                const cost = values.isBulkCost
-                  ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                  : toNumber(values.cost)
-                // const newPrice = cost * (1 + newProfitPercentage / 100)
-                const newPrice = new Big(cost)
-                  .times(new Big(1).plus(new Big(newProfitPercentage).div(100)))
-                  .toNumber()
-                const newProfitAmount = computeProfitAmount(newPrice, cost)
-
-                setFieldValue('price', newPrice)
-                setFieldValue('profitAmount', newProfitAmount)
-              }}
-            />
-            <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
-            <CurrencyInput
-              decimalsLimit={4}
-              prefix="₱"
-              disabled={isMutating}
-              onBlur={getFieldProps('profitAmount').onBlur}
-              name={getFieldProps('profitAmount').name}
-              value={values.profitAmount}
-              type="text"
-              tabIndex={5}
-              className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
-              placeholder="₱0"
-              inputMode="decimal"
-              onValueChange={(value) => {
-                setFieldValue('profitAmount', value)
-                const newProfitAmount = toNumber(value)
-                const cost = values.isBulkCost
-                  ? toNumber(getActiveBatch(values.batches).costPerUnit)
-                  : toNumber(values.cost)
-
-                // const newPrice = cost + newProfitAmount
-                const newPrice = new Big(cost)
-                  .plus(new Big(newProfitAmount))
-                  .toNumber()
-                const newProfitPercentage = computeProfitPercentage(
-                  newPrice,
-                  cost,
-                )
-
-                setFieldValue('price', newPrice)
-                setFieldValue('profitPercentage', newProfitPercentage)
-              }}
-            />
+      <div className="form-control">
+        <div className="form-control input input-bordered relative flex flex-row items-center">
+          <div className="form-control-label  ">
+            <span className="label-text-alt text-gray-400">Profit</span>
           </div>
+          <CurrencyInput
+            decimalsLimit={4}
+            disabled={isMutating}
+            onBlur={getFieldProps('profitPercentage').onBlur}
+            name={getFieldProps('profitPercentage').name}
+            value={values.profitPercentage}
+            placeholder="70"
+            type="text"
+            tabIndex={4}
+            disableGroupSeparators={true}
+            inputMode="decimal"
+            className={[
+              'input w-1/2 border-none bg-transparent px-0 text-left focus:outline-none',
+              profitPercentageColor(values.profitPercentage),
+            ].join(' ')}
+            onValueChange={(value) => {
+              setFieldValue('profitPercentage', value)
+              const newProfitPercentage = toNumber(value)
+              const cost = values.isBulkCost
+                ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                : toNumber(values.cost)
+              // const newPrice = cost * (1 + newProfitPercentage / 100)
+              const newPrice = new Big(cost)
+                .times(new Big(1).plus(new Big(newProfitPercentage).div(100)))
+                .toNumber()
+              const newProfitAmount = computeProfitAmount(newPrice, cost)
+
+              setFieldValue('price', newPrice)
+              setFieldValue('profitAmount', newProfitAmount)
+            }}
+          />
+          <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
+          <CurrencyInput
+            decimalsLimit={4}
+            prefix="₱"
+            disabled={isMutating}
+            onBlur={getFieldProps('profitAmount').onBlur}
+            name={getFieldProps('profitAmount').name}
+            value={values.profitAmount}
+            type="text"
+            tabIndex={5}
+            className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
+            placeholder="₱0"
+            inputMode="decimal"
+            onValueChange={(value) => {
+              setFieldValue('profitAmount', value)
+              const newProfitAmount = toNumber(value)
+              const cost = values.isBulkCost
+                ? toNumber(getActiveBatch(values.batches).costPerUnit)
+                : toNumber(values.cost)
+
+              // const newPrice = cost + newProfitAmount
+              const newPrice = new Big(cost)
+                .plus(new Big(newProfitAmount))
+                .toNumber()
+              const newProfitPercentage = computeProfitPercentage(
+                newPrice,
+                cost,
+              )
+
+              setFieldValue('price', newPrice)
+              setFieldValue('profitPercentage', newProfitPercentage)
+            }}
+          />
+        </div>
+        {errors.profitAmount && (
           <div className="label py-0">
             <span className="label-text-alt text-xs text-red-400">
-              {errors.profitAmount}&nbsp;
+              {errors.profitAmount}
             </span>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Category */}
       <label className="form-control w-full ">
@@ -310,33 +346,14 @@ const ProductForm: React.FC<ProductFormProps> = ({
           }}
         />
 
-        {errors.name && (
+        {errors.category && (
           <div className="label py-0">
             <span className="label-text-alt text-xs text-red-400">
-              {errors.name}
+              {errors.category}
             </span>
           </div>
         )}
       </label>
-
-      {/* For Sale */}
-      <div className="form-control flex w-full flex-row justify-between py-2">
-        <span>I want to use it for Recipe Only</span>
-        <input
-          {...getFieldProps('forSale')}
-          type="checkbox"
-          onChange={(e) => {
-            setFieldValue('forSale', !e.target.checked)
-            if (e.target.checked === true) {
-              setFieldValue('price', 0)
-              setFieldValue('profitAmount', 0)
-              setFieldValue('profitPercentage', 0)
-            }
-          }}
-          checked={!values.forSale}
-          className="toggle toggle-primary"
-        />
-      </div>
 
       {/* Images */}
       <ProductImages
@@ -346,71 +363,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
         }}
         images={values.images ?? []}
       />
-
-      {/* Track Stock */}
-      <div className="form-control flex w-full flex-row justify-between py-2">
-        <span>Track Stock</span>
-        <input
-          {...getFieldProps('trackStock')}
-          type="checkbox"
-          onChange={(e) => {
-            setFieldValue('trackStock', e.target.checked)
-            if (values.trackStock === false && e.target.checked === true) {
-              navigate(ScreenPath.StockDetail)
-            }
-            if (e.target.checked === true) {
-              if (mode === 'edit') {
-                setIsStockReset(true)
-              }
-            }
-            if (e.target.checked === false) {
-              setIsStockReset(true)
-              const newProfitAmount = computeProfitAmount(
-                toNumber(values.price),
-                toNumber(values.cost),
-              )
-              const newProfitPercentage = computeProfitPercentage(
-                toNumber(values.price),
-                toNumber(values.cost),
-              )
-              setValues({
-                ...values,
-                allowBackOrder: false,
-                isBulkCost: false,
-                soldBy: ProductSoldBy.Pieces,
-                profitAmount: newProfitAmount,
-                profitPercentage: newProfitPercentage,
-                trackStock: false,
-                batches: [
-                  {
-                    ...defaultValue.batches[0],
-                    quantity: 1,
-                    id: v4(),
-                    cost: toNumber(values.cost),
-                    name: `Batch #${padWithZeros(1)}`,
-                  },
-                ],
-              })
-            }
-          }}
-          checked={values.trackStock}
-          className="toggle toggle-primary"
-        />
-      </div>
-
-      {/* Manage Stock */}
-      {values.trackStock && (
-        <button
-          onClick={() => navigate(ScreenPath.StockDetail)}
-          className="flex-start btn btn-outline btn-primary btn-md w-full flex-shrink-0 flex-row flex-nowrap justify-between "
-        >
-          <div className="flex flex-row items-center gap-2">
-            <HomeIcon className="w-5 flex-shrink-0 " />
-            <p className="">Manage Stock</p>
-          </div>
-          <ChevronRightIcon className="w-5 flex-shrink-0 " />
-        </button>
-      )}
     </div>
   )
 }

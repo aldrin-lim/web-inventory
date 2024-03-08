@@ -40,18 +40,45 @@ export const ProductDetailFormValidationSchema = ProductSchema.omit({
   outOfStock: true,
   availability: true,
   totalQuantity: true,
-}).partial({
-  recipe: true,
 })
+  .partial({
+    recipe: true,
+  })
+  .extend({
+    overallCost: z
+      .number({
+        required_error: 'Cost is required',
+        invalid_type_error: 'Cost must be a number',
+        coerce: true,
+      })
+      .positive('Cost must be greater than 0')
+      .optional(),
+  })
 
 export type ViewProductDetailSchema = z.infer<typeof ViewProductDetailSchema>
 export type AddProductDetailSchema = z.infer<typeof AddProductDetailSchema>
 
 export type StockDetail = z.infer<typeof StockDetailSchema>
 
-export const FormikValuesSchema = z.union([
-  AddProductDetailSchema,
-  ViewProductDetailSchema,
-])
+export const FormikValuesSchema = ProductSchema.extend({
+  overallCost: z
+    .number({
+      required_error: 'Cost is required',
+      invalid_type_error: 'Cost must be a number',
+      coerce: true,
+    })
+    .positive('Cost must be greater than 0')
+    .optional(),
+})
 
 export type ProductDetailFormikValue = z.infer<typeof FormikValuesSchema>
+
+export const AddProductValidationSchema = ProductSchema.omit({
+  id: true,
+  activeBatch: true,
+  outOfStock: true,
+  availability: true,
+  totalQuantity: true,
+}).partial({
+  recipe: true,
+})

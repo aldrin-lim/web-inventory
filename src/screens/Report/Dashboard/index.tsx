@@ -10,6 +10,7 @@ import LoadingCover from 'components/LoadingCover'
 import { useState } from 'react'
 import { formatToPeso } from 'util/currency'
 import moment from 'moment'
+import { DatePicker } from '@mui/x-date-pickers'
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -22,12 +23,6 @@ const Dashboard = () => {
   const { isLoading, report } = useGetDashboardReport(dateSelected)
 
   const [view, setView] = useState('weekly')
-
-  console.log(report)
-
-  if (isLoading) {
-    return <LoadingCover />
-  }
 
   const chartData = {
     data: [
@@ -76,6 +71,11 @@ const Dashboard = () => {
         ' ',
       )}
     >
+      {isLoading && (
+        <div className="fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
+          <span className="loading loading-ring loading-lg"></span>
+        </div>
+      )}
       <Toolbar
         items={[
           <ToolbarButton
@@ -90,7 +90,7 @@ const Dashboard = () => {
       <div className="flex flex-col gap-4 p-4">
         <div className="flex flex-row items-center gap-4">
           <h1 className="">Sales Summary:</h1>
-          <input
+          {/* <input
             className="input input-bordered w-full"
             type="date"
             // Date today
@@ -99,7 +99,53 @@ const Dashboard = () => {
               (e) => setDateSelected(new Date(e.target.value))
               // setDateSelected(new Date(e.target.value))
             }
-          />
+          /> */}
+          {view === 'weekly' && (
+            <DatePicker
+              value={moment(dateSelected)}
+              sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
+              slotProps={{
+                textField: {
+                  variant: 'outlined',
+                  color: 'secondary',
+                  className: '',
+                },
+                actionBar: {
+                  actions: ['accept', 'cancel'],
+                },
+              }}
+              onAccept={(date) => {
+                if (date) {
+                  setDateSelected(moment(date).startOf('day').toDate())
+                }
+              }}
+              className={` border-none bg-base-100 outline-none`}
+            />
+          )}
+          {view === 'monthly' && (
+            <DatePicker
+              value={moment(dateSelected)}
+              sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
+              slotProps={{
+                textField: {
+                  variant: 'outlined',
+                  color: 'secondary',
+                  className: '',
+                },
+                actionBar: {
+                  actions: ['accept', 'cancel'],
+                },
+              }}
+              views={['month', 'year']}
+              onAccept={(date) => {
+                // set the date the start of the dat and start of the month
+                if (date) {
+                  setDateSelected(moment(date).startOf('month').toDate())
+                }
+              }}
+              className={` border-none bg-base-100 outline-none`}
+            />
+          )}
         </div>
         <div className="flex w-full flex-row gap-4">
           <div className="flex w-1/2 flex-col gap-1 rounded-lg border border-neutral-300 p-4">

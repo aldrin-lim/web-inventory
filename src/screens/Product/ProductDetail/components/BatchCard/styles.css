@@ -1,0 +1,7 @@
+.ExpirationDatePicker fieldset {
+  @apply !outline-none
+}
+
+.ExpirationDatePicker fieldset {
+  @apply !border-gray-300
+}

@@ -11,6 +11,9 @@ import { AppPath } from 'routes/AppRoutes.types'
 import { Product } from 'types/product.types'
 import { isExpired, isWithinExpiration } from 'util/data'
 import GetStarted from './components/GetStarted'
+import { toNumber } from 'lodash'
+import { unitAbbrevationsToLabel } from 'util/measurement'
+import { formatToPeso } from 'util/currency'
 
 type InventoryProps = {
   showAddProduct?: boolean
@@ -31,15 +34,45 @@ const Inventory = (props: InventoryProps) => {
   const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
 
   const [nameFilter, setNameFilter] = useState('')
+  const [filter, setFilter] = useState('all')
+  const [subFilter, setSubFilter] = useState('all')
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product) =>
-      product.name.toLowerCase().includes(nameFilter.toLowerCase()),
-    )
-  }, [nameFilter, products])
+    const subFilterFn = (product: Product) => {
+      if (subFilter === 'ingredients') {
+        return !product.forSale
+      }
+      if (subFilter === 'products') {
+        return product.forSale
+      }
+      return product
+    }
+
+    if (filter === 'lowStock') {
+      return products
+        .filter(
+          (product) =>
+            toNumber(product.stockWarning) >= product.totalQuantity &&
+            !product.outOfStock,
+        )
+        .filter(subFilterFn)
+    }
+
+    if (filter === 'outOfStock') {
+      return products
+        .filter((product) => product.outOfStock)
+        .filter(subFilterFn)
+    }
+
+    return products
+      .filter((product) =>
+        product.name.toLowerCase().includes(nameFilter.toLowerCase()),
+      )
+      .filter(subFilterFn)
+  }, [filter, products, subFilter, nameFilter])
 
   const numberOfNearExpirationProducts = products.filter((product) =>
-    isWithinExpiration(product.activeBatch.expirationDate),
+    isWithinExpiration(product.activeBatch?.expirationDate ?? ''),
   ).length
 
   // const quantity = useMemo(
@@ -58,11 +91,37 @@ const Inventory = (props: InventoryProps) => {
   // )
 
   const renderQuantity = (product: Product) => {
-    if (isExpired(product.activeBatch.expirationDate)) {
+    const activeBatch = product.activeBatch
+    const lowStock = toNumber(product.stockWarning) >= product.totalQuantity
+    if (!activeBatch) {
+      return <p className="text-xs text-orange-500">No Batches Found</p>
+    }
+
+    if (product.recipe) {
+      return (
+        <p className={`text-xs ${lowStock ? 'text-orange-400' : ''}`}>
+          {product.totalQuantity} pc(s) {lowStock ? 'Low Stock' : ''}
+        </p>
+      )
+    }
+
+    if (isExpired(activeBatch.expirationDate)) {
       return <p className="text-xs text-orange-500">Expired</p>
     }
     if (product.outOfStock === true) {
       return <p className="text-xs text-red-500">Out of stock</p>
+    }
+
+    if (lowStock) {
+      return (
+        <p className={`text-xs ${lowStock ? 'text-orange-400' : ''}`}>
+          {product.totalQuantity}{' '}
+          {unitAbbrevationsToLabel(
+            product.activeBatch?.unitOfMeasurement ?? '',
+          )}{' '}
+          {lowStock ? 'Low Stock' : ''}
+        </p>
+      )
     }
 
     return <p className="text-xs">{product.availability}</p>
@@ -121,13 +180,79 @@ const Inventory = (props: InventoryProps) => {
               onChange={(e) => setNameFilter(e.target.value)}
               placeholder="Search Product by Name"
             />
+
+            <div className="flex flex-col gap-1">
+              {/* Filter */}
+              <p className="text-sm">Stock:</p>
+              <ul className="menu  menu-horizontal menu-xs !m-0 my-2 bg-base-100 p-0 pl-3">
+                <li>
+                  <a
+                    className={filter === 'all' ? 'active' : ''}
+                    onClick={() => setFilter('all')}
+                  >
+                    All
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className={filter === 'lowStock' ? 'active' : ''}
+                    onClick={() => setFilter('lowStock')}
+                  >
+                    Low Stock
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className={filter === 'outOfStock' ? 'active' : ''}
+                    onClick={() => setFilter('outOfStock')}
+                  >
+                    Out of Stock
+                  </a>
+                </li>
+              </ul>
+
+              {/* {Sub Filter} */}
+              <p className="text-sm">Type:</p>
+              <ul className="menu menu-horizontal menu-xs !m-0 my-2 bg-base-100 p-0 pl-3">
+                <li>
+                  <a
+                    className={subFilter === 'all' ? 'active' : ''}
+                    onClick={() => setSubFilter('all')}
+                  >
+                    All
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className={subFilter === 'products' ? 'active' : ''}
+                    onClick={() => setSubFilter('products')}
+                  >
+                    Products
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className={subFilter === 'ingredients' ? 'active' : ''}
+                    onClick={() => setSubFilter('ingredients')}
+                  >
+                    Ingredients
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex w-full flex-row justify-between bg-gray-200 p-2">
+              <p className="uppercase">NAME</p>
+              <p className="uppercase">COST</p>
+            </div>
           </div>
 
-          <div className="flex w-full flex-row justify-between bg-gray-200 p-2">
-            <p className="uppercase">PRODUCT</p>
-            <p className="uppercase">COST</p>
-          </div>
           <ul className="menu w-full border-b p-0 [&_li>*]:rounded-md [&_li>*]:border-b">
+            {filteredProducts.length === 0 && (
+              <div className="flex h-32 items-center justify-center">
+                <p className="text-gray-500">No products found</p>
+              </div>
+            )}
             {filteredProducts.map((product) => (
               <li
                 onClick={() => onProductSelect?.(product)}
@@ -143,17 +268,27 @@ const Inventory = (props: InventoryProps) => {
                         </div>
                       )}
                       {product?.images.length > 0 && (
-                        <img
-                          src={product.images[0]}
-                          className="bg h-9 w-9 rounded-md"
-                        />
+                        <div className="">
+                          {isWithinExpiration(
+                            product.activeBatch?.expirationDate,
+                          ) && (
+                            <div className="absolute bg-warning/80">
+                              <InformationCircleIcon className="w-4 text-white" />
+                            </div>
+                          )}
+
+                          <img
+                            src={product.images[0]}
+                            className="bg h-9 w-9 rounded-md"
+                          />
+                        </div>
                       )}
                       <div className="flex flex-col ">
                         <h1
                           className={[
                             'text-base',
                             isWithinExpiration(
-                              product.activeBatch.expirationDate,
+                              product.activeBatch?.expirationDate,
                             )
                               ? 'text-orange-400'
                               : '',
@@ -164,16 +299,20 @@ const Inventory = (props: InventoryProps) => {
                             maxLength={getTruncateSize(currentBreakpoint)}
                           />
                         </h1>
-                        {renderQuantity(product)}
+                        {renderStockInfo(product)}
                       </div>
                     </div>
                     {product.isBulkCost && (
                       <div className="text-right">
                         <p className="text-base font-medium">
-                          ₱ {product.activeBatch.costPerUnit}{' '}
+                          ₱ {product.activeBatch?.costPerUnit}/{' '}
+                          {unitAbbrevationsToLabel(
+                            product.activeBatch?.unitOfMeasurement ?? '',
+                          )}
                         </p>
                         <p className="text-xs">
-                          / {product.activeBatch.unitOfMeasurement}
+                          Bulk Cost:{' '}
+                          {formatToPeso(product.activeBatch?.cost ?? 0)}
                         </p>
                       </div>
                     )}
@@ -181,8 +320,11 @@ const Inventory = (props: InventoryProps) => {
                     {!product.isBulkCost && (
                       <div className="text-right">
                         <p className="text-base font-medium">
-                          ₱{' '}
-                          {Intl.NumberFormat().format(product.activeBatch.cost)}
+                          {formatToPeso(
+                            product.recipe
+                              ? product.recipe.cost
+                              : product.activeBatch?.cost ?? 0,
+                          )}
                         </p>
                       </div>
                     )}
@@ -199,7 +341,7 @@ const Inventory = (props: InventoryProps) => {
 
 const Skeleton = () => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="mt-4 flex flex-col gap-4">
       <div className="skeleton h-[48px] rounded-md" />
 
       <div className="skeleton h-[40px] rounded-md" />
@@ -235,6 +377,37 @@ const getTruncateSize = (size: ScreenSize) => {
     default:
       return 500
   }
+}
+
+const renderStockInfo = (product: Product) => {
+  const activeBatch = product.activeBatch
+  const measurement = unitAbbrevationsToLabel(
+    activeBatch?.unitOfMeasurement ?? '',
+  )
+  if (!activeBatch) {
+    return <p className={`text-xs text-red-400`}>No Batches Found</p>
+  }
+
+  if (product.outOfStock) {
+    return <p className={`text-xs text-red-400`}>Out of stock</p>
+  }
+
+  if (isExpired(activeBatch.expirationDate)) {
+    return <p className={`text-xs text-orange-400`}>Expired</p>
+  }
+  if (toNumber(product.stockWarning) >= product.totalQuantity) {
+    return (
+      <p className={`text-xs text-orange-400`}>
+        Low ({product.totalQuantity} {measurement} available)
+      </p>
+    )
+  }
+
+  return (
+    <p className={`text-xs`}>
+      {product.totalQuantity} {measurement} available
+    </p>
+  )
 }
 
 export default Inventory

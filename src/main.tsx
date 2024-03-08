@@ -11,6 +11,9 @@ import { ErrorBoundary } from 'react-error-boundary'
 import Error from 'screens/Error/index.tsx'
 import * as Sentry from '@sentry/react'
 import { Analytics } from 'util/analytics.ts'
+
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 Big.DP = 4
 
 Analytics.init()
@@ -34,11 +37,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         }}
       >
         <AuthProvider>
-          <QueryClientProvider client={queryClient}>
-            <Router>
-              <App />
-            </Router>
-          </QueryClientProvider>
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <QueryClientProvider client={queryClient}>
+              <Router>
+                <App />
+              </Router>
+            </QueryClientProvider>
+          </LocalizationProvider>
         </AuthProvider>
       </Auth0Provider>
     </ErrorBoundary>
