@@ -17,11 +17,13 @@ export const ProductBatchSchema = z.object({
     required_error: 'Name is required',
     invalid_type_error: 'Name must be a string',
   }),
-  cost: z.number({
-    coerce: true,
-    required_error: 'Cost is required',
-    invalid_type_error: 'Cost must be a number',
-  }),
+  cost: z
+    .number({
+      coerce: true,
+      required_error: 'Cost is required',
+      invalid_type_error: 'Cost must be a number',
+    })
+    .positive('Cost must be greater than 0'),
   costPerUnit: z
     .number({
       coerce: true,

@@ -205,7 +205,6 @@ const BatchCard = (props: BatchCardProps) => {
                   placeholder="Enter total cost for bulk purchase"
                   onValueChange={(value) => {
                     onChange?.({ ...values, cost: value, costPerUnit })
-                    // setFieldValue('cost', value)
                   }}
                   disabled={disabled}
                   allowNegativeValue={false}
@@ -240,15 +239,14 @@ const BatchCard = (props: BatchCardProps) => {
                   placeholder="₱0"
                   onValueChange={(value) => {
                     onChange?.({ ...values, cost: value, costPerUnit: value })
-                    // setFieldValue('costPerUnit', value)
                   }}
-                  disabled={values.isDeducted}
+                  disabled={disabled}
                   allowNegativeValue={false}
                 />
-                {error?.costPerUnit && (
+                {error?.cost && (
                   <div className="label py-0">
                     <span className="label-text-alt text-xs text-red-400">
-                      {error.costPerUnit}
+                      {error.cost}
                     </span>
                   </div>
                 )}

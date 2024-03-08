@@ -219,23 +219,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
     }
   })
 
-  // const product = useMemo(() => {
-  //   if (!props.product) {
-  //     return undefined
-  //   }
-
-  //   const updatedProduct = props.product as ViewProductDetailSchema
-
-  //   if (updatedProduct.isBulkCost === false && !props.product.recipe) {
-  //     updatedProduct.cost = getActiveBatch(props.product.batches)?.cost ?? 0
-  //   }
-
-  //   if (props.product.recipe) {
-  //     updatedProduct.cost = props.product.recipe.cost
-  //   }
-  //   return updatedProduct
-  // }, [props.product])
-
   const mode: ProductAction = product ? 'edit' : 'add'
 
   const { createProduct, isCreating } = useCreateProduct()
@@ -280,8 +263,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
     setFieldValue,
     values,
     setValues,
-    setFieldError,
-    dirty,
     initialValues: initialFormValues,
   } = useFormik<ProductDetailFormikValue>({
     initialValues: {
@@ -295,13 +276,25 @@ export const ProductDetail = (props: ProductDetailProps) => {
       formValue.price = toNumber(formValue.price)
       formValue.profitPercentage = toNumber(formValue.profitPercentage)
       formValue.profitAmount = toNumber(formValue.profitAmount)
-      formValue.batches = formValue.batches.map((batch) => {
-        return {
-          ...batch,
-          cost: toNumber(formValue.overallCost || batch.cost),
-          costPerUnit: toNumber(batch.costPerUnit),
-        }
-      })
+      if (formValue.isBulkCost) {
+        delete formValue.overallCost
+        formValue.batches = formValue.batches.map((batch) => {
+          return {
+            ...batch,
+            cost: toNumber(batch.cost),
+            costPerUnit: toNumber(batch.costPerUnit),
+          }
+        })
+      } else {
+        formValue.batches = formValue.batches.map((batch) => {
+          return {
+            ...batch,
+            cost: toNumber(formValue.overallCost),
+            costPerUnit: toNumber(batch.costPerUnit),
+          }
+        })
+      }
+
       const validation = await ValidationSchema.safeParseAsync(formValue)
       if (!validation.success) {
         const error = validation.error.issues[0].message
@@ -436,7 +429,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     const newBatch = {
       id: v4(),
       name: `Batch #${padWithZeros(values.batches.length + 1)} `,
-      cost: computedCost,
+      cost: values.isBulkCost ? 0 : computedCost,
       costPerUnit: 0,
       quantity: 1,
       unitOfMeasurement:
@@ -480,8 +473,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
       }
     }
   }, [activeBatch, showMore])
-
-  console.log(errors)
 
   return (
     <>
@@ -602,7 +593,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           )}
 
           {/* Recipe CTA */}
-          {mode === 'add' && !values.recipe && (
+          {mode === 'add' && !values.recipe && values.forSale && (
             <button
               onClick={showRecipeList}
               disabled={isMutating}
@@ -649,6 +640,20 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {mode === 'edit' && !values.forSale && (
+            <div className="form-control flex w-full flex-row gap-2 py-2">
+              <input
+                {...getFieldProps('forSale')}
+                autoComplete="off"
+                type="checkbox"
+                disabled
+                checked={!values.forSale}
+                className="toggle toggle-primary"
+              />
+              <span>For ingredients purposes only</span>
             </div>
           )}
 
