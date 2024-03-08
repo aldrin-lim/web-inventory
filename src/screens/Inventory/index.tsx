@@ -213,10 +213,20 @@ const Inventory = (props: InventoryProps) => {
                         </div>
                       )}
                       {product?.images.length > 0 && (
-                        <img
-                          src={product.images[0]}
-                          className="bg h-9 w-9 rounded-md"
-                        />
+                        <div className="">
+                          {isWithinExpiration(
+                            product.activeBatch?.expirationDate,
+                          ) && (
+                            <div className="absolute bg-warning/80">
+                              <InformationCircleIcon className="w-4 text-white" />
+                            </div>
+                          )}
+
+                          <img
+                            src={product.images[0]}
+                            className="bg h-9 w-9 rounded-md"
+                          />
+                        </div>
                       )}
                       <div className="flex flex-col ">
                         <h1
@@ -241,7 +251,9 @@ const Inventory = (props: InventoryProps) => {
                       <div className="text-right">
                         <p className="text-base font-medium">
                           ₱ {product.activeBatch?.costPerUnit}/{' '}
-                          {product.activeBatch?.unitOfMeasurement}
+                          {unitAbbrevationsToLabel(
+                            product.activeBatch?.unitOfMeasurement ?? '',
+                          )}
                         </p>
                         <p className="text-xs">
                           Bulk Cost:{' '}
