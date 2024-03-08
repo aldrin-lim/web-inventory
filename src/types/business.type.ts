@@ -29,10 +29,12 @@ export const BusinessSchema = z.object({
     .length(6, 'PIN must be 6 characters long'),
   tax: z
     .object({
-      amount: z.number({
-        coerce: true,
-        required_error: 'Tax amount is required',
-      }),
+      amount: z
+        .number({
+          coerce: true,
+          required_error: 'Tax amount is required',
+        })
+        .positive('Tax amount must be greater than 0'),
       type: z.enum(['inclusive', 'exclusive'], {
         required_error: 'Tax type is required',
       }),
