@@ -234,7 +234,7 @@ const Inventory = (props: InventoryProps) => {
                             maxLength={getTruncateSize(currentBreakpoint)}
                           />
                         </h1>
-                        {renderQuantity(product)}
+                        {renderStockInfo(product)}
                       </div>
                     </div>
                     {product.isBulkCost && (
@@ -310,6 +310,37 @@ const getTruncateSize = (size: ScreenSize) => {
     default:
       return 500
   }
+}
+
+const renderStockInfo = (product: Product) => {
+  const activeBatch = product.activeBatch
+  const measurement = unitAbbrevationsToLabel(
+    activeBatch?.unitOfMeasurement ?? '',
+  )
+  if (!activeBatch) {
+    return <p className={`text-xs text-red-400`}>No Batches Found</p>
+  }
+
+  if (product.outOfStock) {
+    return <p className={`text-xs text-red-400`}>Out of stock</p>
+  }
+
+  if (isExpired(activeBatch.expirationDate)) {
+    return <p className={`text-xs text-orange-400`}>Expired</p>
+  }
+  if (toNumber(product.stockWarning) >= product.totalQuantity) {
+    return (
+      <p className={`text-xs text-orange-400`}>
+        Low ({product.totalQuantity} {measurement} available)
+      </p>
+    )
+  }
+
+  return (
+    <p className={`text-xs`}>
+      {product.totalQuantity} {measurement} available
+    </p>
+  )
 }
 
 export default Inventory
