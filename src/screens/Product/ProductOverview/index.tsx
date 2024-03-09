@@ -27,13 +27,9 @@ const ProductOverview = () => {
 
   const { products, isLoading, error } = useAllProducts()
 
-  const outOfStocks = products.filter(
-    (product) => product.outOfStock === true && product.forSale,
-  )
+  const outOfStocks = products.filter((product) => product.outOfStock === true)
 
-  const inStocks = products.filter(
-    (product) => product.outOfStock === false && product.forSale,
-  )
+  const inStocks = products.filter((product) => product.outOfStock === false)
 
   const hasOutOfStockProducts = outOfStocks.length > 0
 
@@ -49,7 +45,10 @@ const ProductOverview = () => {
       return <Skeleton />
     }
 
-    if (products.length === 0) {
+    if (
+      products.length === 0 ||
+      (inStocks.length === 0 && outOfStocks.length === 0)
+    ) {
       return <GetStarted />
     }
 
