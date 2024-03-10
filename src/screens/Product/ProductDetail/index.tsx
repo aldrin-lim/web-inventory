@@ -709,7 +709,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     <div className="flex flex-col">
                       <div className="flex flex-row">
                         <p className="font-bold">
-                          {formatToPeso(computedCost)}
+                          {formatToPeso(
+                            values?.isBulkCost
+                              ? activeBatch.costPerUnit ?? 0
+                              : activeBatch.cost,
+                          )}
                         </p>
                         /
                         <p>
