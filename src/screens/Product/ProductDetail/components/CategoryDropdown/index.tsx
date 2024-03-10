@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Select from 'react-select'
+import CreatableSelect from 'react-select/creatable'
 import { OnChangeValue } from 'react-select'
 
 import './styles.css'
@@ -19,7 +19,6 @@ type CategoryDropdownProps = {
 const initialCategories: CategoryOption[] = [
   { value: 'Beverage', label: 'Beverage' },
   { value: 'Food', label: 'Food' },
-  { value: 'Ingredients', label: 'Ingredients' },
 ]
 
 const CategoryDropdown = (props: CategoryDropdownProps) => {
@@ -39,9 +38,8 @@ const CategoryDropdown = (props: CategoryDropdownProps) => {
   }
 
   return (
-    <Select<CategoryOption, false>
+    <CreatableSelect<CategoryOption, false>
       isClearable
-      isSearchable={false}
       onChange={handleChange}
       options={initialCategories}
       value={selectedCategory}
