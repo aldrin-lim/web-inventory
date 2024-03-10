@@ -83,16 +83,6 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
       onSubmit: async (formValue) => {
         // Check if materials are allowed backorder
         // If one of the matarial has backorder allowed, all materials must be allowed backorder
-        setBackorderError('')
-        const hasBackorder = formValue.materials.some(
-          (material) => material.product.allowBackOrder,
-        )
-        if (hasBackorder) {
-          setBackorderError(
-            'One material is allowed for backorder, all materials must be for allowed backorder.',
-          )
-          return
-        }
 
         if (mode === 'add') {
           await createRecipe(formValue)
