@@ -7,9 +7,12 @@ import AppRoutes from './routes/AppRoutes'
 import { ToastContainer } from 'react-toastify'
 import useUser from 'hooks/useUser'
 import { Analytics } from 'util/analytics'
+import { useNavigate } from 'react-router-dom'
+import { AppPath } from 'routes/AppRoutes.types'
 
 function App() {
   useUser()
+  const navigate = useNavigate()
 
   const { user } = useUser()
 
@@ -20,6 +23,10 @@ function App() {
   useEffect(() => {
     user?.email && Analytics.identify(user.email)
   }, [user])
+
+  useEffect(() => {
+    navigate(AppPath.Root)
+  }, [])
 
   return (
     <div className="App mx-auto flex w-full">
