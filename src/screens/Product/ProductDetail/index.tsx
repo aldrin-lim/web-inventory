@@ -702,7 +702,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     <div className="flex flex-col">
                       <div className="flex flex-row">
                         <p className="font-bold">
-                          ₱ {getActiveBatch(values.batches)?.costPerUnit ?? 0}
+                          ₱{' '}
+                          {formatToPeso(
+                            product?.isBulkCost
+                              ? toNumber(activeBatch.costPerUnit)
+                              : activeBatch.cost,
+                          )}
                         </p>
                         /
                         <p>
@@ -1479,7 +1484,17 @@ export const ProductDetail = (props: ProductDetailProps) => {
               </div>
               <div className="grid grid-cols-12 gap-2">
                 {values.recipe.materials.map((material, index) => {
-                  const { name, totalQuantity } = material.product
+                  const { name } = material.product
+                  let totalQuantity = material.product.totalQuantity
+                  if (
+                    material.product.outOfStock &&
+                    material.product.allowBackOrder
+                  ) {
+                    totalQuantity = material.product.batches.reduce(
+                      (acc, batch) => acc + batch.quantity,
+                      0,
+                    )
+                  }
                   const image = material.product.images?.[0]
                   const productMeasurement =
                     material.product.soldBy === ProductSoldBy.Weight
