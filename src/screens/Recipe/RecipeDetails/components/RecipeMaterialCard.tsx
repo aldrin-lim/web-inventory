@@ -85,8 +85,6 @@ const RecipeMaterialCard = (props: RecipeMaterialCardProps) => {
         ...values,
         cost: newCostPerUnit,
       })
-    } else {
-      throw new Error('No active batch found')
     }
   }, [values.unitOfMeasurement])
 

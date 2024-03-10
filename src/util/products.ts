@@ -18,7 +18,7 @@ export const getActiveBatch = (batches: GetActiveBatchParam) => {
 
   // If no active batch found, get the first batch
   if (!activeBatch) {
-    return null
+    return batches[0]
   }
 
   return activeBatch
