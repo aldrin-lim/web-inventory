@@ -44,7 +44,6 @@ import {
   FormikValuesSchema,
   ProductDetailFormikValue,
 } from './ProductDetail.types'
-import { useCustomRoute } from 'util/route'
 import { toast } from 'react-toastify'
 import { getActiveBatch } from 'util/products'
 import Big from 'big.js'
@@ -59,9 +58,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { CreateProductBodySchema } from 'api/product/createProduct'
 import { PIECES } from 'constants copy/measurement'
 import RecipeList from './screens/RecipeList'
-import { PhotoIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { PhotoIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { formatToPeso } from 'util/currency'
-import { disable } from 'mixpanel-browser'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -422,6 +420,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
       })
       return
     }
+
+    if (Object.keys(errors).length > 0) {
+      toast.error('Please fill up all required fields', {
+        theme: 'colored',
+        autoClose: 1000,
+      })
+      return
+    }
+
     submitForm()
   }
 
@@ -702,16 +709,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     <div className="flex flex-col">
                       <div className="flex flex-row">
                         <p className="font-bold">
-                          ₱{' '}
-                          {formatToPeso(
-                            product?.isBulkCost
-                              ? toNumber(activeBatch.costPerUnit)
-                              : activeBatch.cost,
-                          )}
+                          {formatToPeso(computedCost)}
                         </p>
                         /
                         <p>
-                          {' '}
+                          a{' '}
                           {getActiveBatch(values.batches)?.unitOfMeasurement ??
                             0}
                         </p>
