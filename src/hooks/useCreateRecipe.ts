@@ -30,7 +30,6 @@ const useCreateRecipe = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(['recipes'])
-      await queryClient.invalidateQueries(['products'])
       toast.success('Recipe successfully created! ', {
         autoClose: 500,
         theme: 'colored',
@@ -43,7 +42,6 @@ const useCreateRecipe = () => {
 
     if (!validation.success) {
       const error = validation.error.issues[0].message
-      console.error(error)
       setError(error)
       return
     }
