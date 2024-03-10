@@ -126,7 +126,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     // TODO: Rename isForSale to isIngredient
     const isIngredient = data.forSale === false
     // If ingredient, no need to validate overall cost
-
+    console.log('validator', data)
     if (!isIngredient) {
       const priceValidation = z
         .number({
@@ -134,7 +134,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
           required_error: 'Price is required',
           invalid_type_error: 'Price must be a number',
         })
-        .positive('Price must be greater than 0')
         .safeParse(toNumber(data.price))
       const profitAmountValidation = z
         .number({
@@ -142,7 +141,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
           invalid_type_error: 'Profit Amount must be a number',
           coerce: true,
         })
-        .positive('Profit Amount must be greater than 0')
         .safeParse(toNumber(data.profitAmount))
       const profitPercentageValidation = z
         .number({
@@ -150,7 +148,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
           invalid_type_error: 'Profit Percentage must be a number',
           coerce: true,
         })
-        .positive('Profit Percentage must be greater than 0')
         .safeParse(toNumber(data.profitPercentage))
       if (priceValidation.success === false) {
         ctx.addIssue({
@@ -293,6 +290,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
         })
       }
 
+      if (formValue.recipe) {
+        formValue.batches = formValue.batches.map((batch) => {
+          return {
+            ...batch,
+            cost: toNumber(formValue.recipe?.cost),
+          }
+        })
+      }
+
       const validation = await ValidationSchema.safeParseAsync(formValue)
       if (!validation.success) {
         const error = validation.error.issues[0].message
@@ -331,15 +337,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const onRecipeSelect = async (recipe: Recipe) => {
     navigate(-1)
-    await setValues(initialValues)
-    setFieldValue('recipe', recipe)
-    setFieldValue('name', recipe.name)
-    setFieldValue('cost', recipe.cost)
-    setFieldValue('images', recipe.images)
+    await setValues(defaultValue)
+    await setFieldValue('recipe', recipe)
+    await setFieldValue('name', recipe.name)
+    await setFieldValue('images', recipe.images)
+    await setFieldValue('batches.0.cost', recipe.cost)
   }
 
   const removeRecipe = () => {
-    setValues(initialValues)
+    setValues(defaultValue)
   }
 
   const checkUnsavedChanges = () => {
@@ -498,6 +504,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
     },
     [setFieldValue, values.batches],
   )
+
+  console.log(values)
+  console.log(errors)
 
   return (
     <>
@@ -789,6 +798,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         }
                       })
                       await setFieldValue('batches', updatedBatches)
+                      // TODO: Find out why cost to batches is overwritten to zero
                     }}
                   />
                   {errors.overallCost && (
@@ -826,8 +836,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         className="input input-bordered w-full"
                         placeholder="₱0"
                         inputMode="decimal"
-                        onValueChange={(value) => {
-                          setFieldValue('price', value)
+                        onValueChange={async (value) => {
+                          await setFieldValue('price', value)
                           const newPrice = toNumber(value)
                           const cost = computedCost
                           const newProfitAmount = computeProfitAmount(
@@ -838,11 +848,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
                             newPrice,
                             cost,
                           )
-                          setFieldValue(
+                          await setFieldValue(
                             'profitAmount',
                             toNumber(newProfitAmount),
                           )
-                          setFieldValue(
+                          await setFieldValue(
                             'profitPercentage',
                             toNumber(newProfitPercentage),
                           )
@@ -882,8 +892,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                           'input w-1/2 border-none bg-transparent px-0 text-left focus:outline-none',
                           profitPercentageColor(values.profitPercentage ?? 0),
                         ].join(' ')}
-                        onValueChange={(value) => {
-                          setFieldValue('profitPercentage', value)
+                        onValueChange={async (value) => {
+                          await setFieldValue('profitPercentage', value)
                           const newProfitPercentage = toNumber(value)
                           const cost = computedCost
                           // const newPrice = cost * (1 + newProfitPercentage / 100)
@@ -899,8 +909,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                             cost,
                           )
 
-                          setFieldValue('price', newPrice)
-                          setFieldValue('profitAmount', newProfitAmount)
+                          await setFieldValue('price', newPrice)
+                          await setFieldValue('profitAmount', newProfitAmount)
                         }}
                       />
                       <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
@@ -917,8 +927,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
                         placeholder="₱0"
                         inputMode="decimal"
-                        onValueChange={(value) => {
-                          setFieldValue('profitAmount', value)
+                        onValueChange={async (value) => {
+                          await setFieldValue('profitAmount', value)
                           const newProfitAmount = toNumber(value)
                           const cost = computedCost
 
@@ -931,8 +941,11 @@ export const ProductDetail = (props: ProductDetailProps) => {
                             cost,
                           )
 
-                          setFieldValue('price', newPrice)
-                          setFieldValue('profitPercentage', newProfitPercentage)
+                          await setFieldValue('price', newPrice)
+                          await setFieldValue(
+                            'profitPercentage',
+                            newProfitPercentage,
+                          )
                         }}
                       />
                     </div>
@@ -971,8 +984,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     className="input input-bordered w-full"
                     placeholder="₱0"
                     inputMode="decimal"
-                    onValueChange={(value) => {
-                      setFieldValue('price', value)
+                    onValueChange={async (value) => {
+                      await setFieldValue('price', value)
                       const newPrice = toNumber(value)
                       const cost = computedCost
                       const newProfitAmount = computeProfitAmount(
@@ -983,11 +996,20 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         newPrice,
                         cost,
                       )
-                      setFieldValue('profitAmount', toNumber(newProfitAmount))
-                      setFieldValue(
+                      await setFieldValue(
+                        'profitAmount',
+                        toNumber(newProfitAmount),
+                      )
+                      await setFieldValue(
                         'profitPercentage',
                         toNumber(newProfitPercentage),
                       )
+                      if (values.recipe) {
+                        await setFieldValue(
+                          'batches.0.cost',
+                          values.recipe.cost,
+                        )
+                      }
                     }}
                   />
                   {errors.price && (
@@ -1022,8 +1044,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       'input w-1/2 border-none bg-transparent px-0 text-left focus:outline-none',
                       profitPercentageColor(values.profitPercentage ?? 0),
                     ].join(' ')}
-                    onValueChange={(value) => {
-                      setFieldValue('profitPercentage', value)
+                    onValueChange={async (value) => {
+                      await setFieldValue('profitPercentage', value)
                       const newProfitPercentage = toNumber(value)
                       const cost = computedCost
                       // const newPrice = cost * (1 + newProfitPercentage / 100)
@@ -1039,8 +1061,14 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         cost,
                       )
 
-                      setFieldValue('price', newPrice)
-                      setFieldValue('profitAmount', newProfitAmount)
+                      await setFieldValue('price', newPrice)
+                      await setFieldValue('profitAmount', newProfitAmount)
+                      if (values.recipe) {
+                        await setFieldValue(
+                          'batches.0.cost',
+                          values.recipe.cost,
+                        )
+                      }
                     }}
                   />
                   <p className="border-r-[1.5px] border-gray-300 px-2">%</p>
@@ -1057,8 +1085,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     className={`input w-full border-none bg-transparent px-0 pl-2 focus:outline-none`}
                     placeholder="₱0"
                     inputMode="decimal"
-                    onValueChange={(value) => {
-                      setFieldValue('profitAmount', value)
+                    onValueChange={async (value) => {
+                      await setFieldValue('profitAmount', value)
                       const newProfitAmount = toNumber(value)
                       const cost = computedCost
 
@@ -1071,8 +1099,17 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         cost,
                       )
 
-                      setFieldValue('price', newPrice)
-                      setFieldValue('profitPercentage', newProfitPercentage)
+                      await setFieldValue('price', newPrice)
+                      await setFieldValue(
+                        'profitPercentage',
+                        newProfitPercentage,
+                      )
+                      if (values.recipe) {
+                        await setFieldValue(
+                          'batches.0.cost',
+                          values.recipe.cost,
+                        )
+                      }
                     }}
                   />
                 </div>
