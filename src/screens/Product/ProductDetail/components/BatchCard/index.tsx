@@ -143,7 +143,14 @@ const BatchCard = (props: BatchCardProps) => {
             <QuantityInput
               value={values.quantity}
               onChange={(newValue) => {
-                onChange?.({ ...values, quantity: newValue })
+                const updateCostPerUnit = new Big(values.cost ?? 0)
+                  .div(newValue ?? 0)
+                  .toNumber()
+                onChange?.({
+                  ...values,
+                  quantity: newValue,
+                  costPerUnit: updateCostPerUnit,
+                })
               }}
               onAdd={() => {
                 if (disabled) {
@@ -167,27 +174,6 @@ const BatchCard = (props: BatchCardProps) => {
             )}
           </div>
 
-          {/* {soldBy === 'weight' && (
-          <label className="form-control w-full ">
-            <div className="">
-              <span className="label-text-alt ">Unit of Measurement</span>
-            </div>
-            <MeasurementSelect
-              disabled={disabled}
-              value={{
-                label:
-                  measurementOptions.find(
-                    (option) => option.value === values.unitOfMeasurement,
-                  )?.label || '',
-                value: values.unitOfMeasurement,
-              }}
-              onChange={(value) => {
-                setFieldValue('unitOfMeasurement', value?.value)
-              }}
-            />
-          </label>
-        )} */}
-
           {/* If sold by weight */}
           {isBulkCost && (
             <>
@@ -204,7 +190,14 @@ const BatchCard = (props: BatchCardProps) => {
                   prefix="₱"
                   placeholder="Enter total cost for bulk purchase"
                   onValueChange={(value) => {
-                    onChange?.({ ...values, cost: value, costPerUnit })
+                    const updateCostPerUnit = new Big(value ?? 0)
+                      .div(values.quantity ?? 0)
+                      .toNumber()
+                    onChange?.({
+                      ...values,
+                      cost: value,
+                      costPerUnit: updateCostPerUnit,
+                    })
                   }}
                   disabled={disabled}
                   allowNegativeValue={false}
@@ -238,7 +231,14 @@ const BatchCard = (props: BatchCardProps) => {
                   prefix="₱"
                   placeholder="₱0"
                   onValueChange={(value) => {
-                    onChange?.({ ...values, cost: value, costPerUnit: value })
+                    const updateCostPerUnit = new Big(value ?? 0)
+                      .div(values.quantity ?? 0)
+                      .toNumber()
+                    onChange?.({
+                      ...values,
+                      cost: value,
+                      costPerUnit: updateCostPerUnit,
+                    })
                   }}
                   disabled={disabled}
                   allowNegativeValue={false}

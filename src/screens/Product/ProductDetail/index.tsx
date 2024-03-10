@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Route,
   Routes,
@@ -481,6 +481,24 @@ export const ProductDetail = (props: ProductDetailProps) => {
     }
   }, [activeBatch, showMore])
 
+  const updateBatch = useCallback(
+    async (updatedBatch: z.infer<typeof BatchSchema>) => {
+      await setFieldValue(
+        'batches',
+        values.batches.map((batch) => {
+          if (batch.id === updatedBatch.id) {
+            return updatedBatch
+          }
+          return {
+            ...batch,
+            unitOfMeasurement: updatedBatch.unitOfMeasurement,
+          }
+        }),
+      )
+    },
+    [setFieldValue, values.batches],
+  )
+
   return (
     <>
       <div
@@ -717,7 +735,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                         </p>
                         /
                         <p>
-                          a{' '}
+                          {' '}
                           {getActiveBatch(values.batches)?.unitOfMeasurement ??
                             0}
                         </p>
@@ -1314,21 +1332,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                             await setFieldValue('batches', updatedBatches)
                           }
                         }}
-                        onChange={async (updatedBatch) => {
-                          await setFieldValue(
-                            'batches',
-                            values.batches.map((batch) => {
-                              if (batch.id === updatedBatch.id) {
-                                return updatedBatch
-                              }
-                              return {
-                                ...batch,
-                                unitOfMeasurement:
-                                  updatedBatch.unitOfMeasurement,
-                              }
-                            }),
-                          )
-                        }}
+                        onChange={updateBatch}
                         error={
                           errors.batches &&
                           (errors.batches[
@@ -1388,17 +1392,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                               await setFieldValue('batches', updatedBatches)
                             }
                           }}
-                          onChange={async (updatedBatch) => {
-                            await setFieldValue(
-                              'batches',
-                              values.batches.map((batch) => {
-                                if (batch.id === updatedBatch.id) {
-                                  return updatedBatch
-                                }
-                                return batch
-                              }),
-                            )
-                          }}
+                          onChange={updateBatch}
                           error={
                             errors.batches &&
                             (errors.batches[
@@ -1439,17 +1433,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                           )
                           await setFieldValue('batches', updatedBatches)
                         }}
-                        onChange={async (updatedBatch) => {
-                          await setFieldValue(
-                            'batches',
-                            values.batches.map((batch) => {
-                              if (batch.id === updatedBatch.id) {
-                                return updatedBatch
-                              }
-                              return batch
-                            }),
-                          )
-                        }}
+                        onChange={updateBatch}
                         error={
                           errors.batches &&
                           (errors.batches[
@@ -1600,5 +1584,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     </>
   )
 }
+
+const BatchSchema = ProductBatchSchema.partial({ id: true })
 
 export default ProductDetail
