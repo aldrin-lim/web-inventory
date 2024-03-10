@@ -19,6 +19,7 @@ type CategoryDropdownProps = {
 const initialCategories: CategoryOption[] = [
   { value: 'Beverage', label: 'Beverage' },
   { value: 'Food', label: 'Food' },
+  { value: 'Ingredients', label: 'Ingredients' },
 ]
 
 const CategoryDropdown = (props: CategoryDropdownProps) => {
