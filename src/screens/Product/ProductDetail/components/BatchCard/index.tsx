@@ -3,7 +3,7 @@ import { FormikErrors } from 'formik'
 import CurrencyInput from 'react-currency-input-field'
 import { ProductBatchSchema, ProductSoldBy } from 'types/product.types'
 import { z } from 'zod'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { TrashIcon } from '@heroicons/react/24/solid'
 import Big from 'big.js'
 import { ProductAction } from '../..'
@@ -52,6 +52,12 @@ const BatchCard = (props: BatchCardProps) => {
   } = props
 
   const [showAdjustmentDialog, setShowAdjustmentDialog] = useState(false)
+
+  const [quantity, setQuantity] = useState(batch.quantity)
+
+  useEffect(() => {
+    setQuantity(batch.quantity)
+  }, [batch.quantity])
 
   const values = batch
 
@@ -141,11 +147,12 @@ const BatchCard = (props: BatchCardProps) => {
           <div>
             <p>Quantity</p>
             <QuantityInput
-              value={values.quantity}
+              value={quantity}
               onChange={(newValue) => {
-                const updateCostPerUnit = new Big(values.cost ?? 0)
-                  .div(newValue ?? 0)
-                  .toNumber()
+                const updateCostPerUnit = newValue
+                  ? new Big(values.cost ?? 0).div(newValue ?? 0).toNumber()
+                  : 0
+
                 onChange?.({
                   ...values,
                   quantity: newValue,
@@ -190,9 +197,9 @@ const BatchCard = (props: BatchCardProps) => {
                   prefix="₱"
                   placeholder="Enter total cost for bulk purchase"
                   onValueChange={(value) => {
-                    const updateCostPerUnit = new Big(value ?? 0)
-                      .div(values.quantity ?? 0)
-                      .toNumber()
+                    const updateCostPerUnit = value
+                      ? new Big(value ?? 0).div(values.quantity ?? 0).toNumber()
+                      : 0
                     onChange?.({
                       ...values,
                       cost: value,
