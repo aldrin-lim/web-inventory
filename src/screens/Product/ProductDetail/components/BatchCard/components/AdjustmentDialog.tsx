@@ -89,7 +89,7 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
               onValueChange={(value) => {
                 setFieldValue('quantity', value)
               }}
-              allowNegativeValue={false}
+              allowNegativeValue={true}
             />
             {errors.quantity && (
               <div className="label py-0">
@@ -99,34 +99,6 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
               </div>
             )}
           </label>
-          {/* <label className="form-control w-full ">
-            <div className="form-control-label  ">
-              <span className="label-text-alt text-gray-400">Cost</span>
-            </div>
-            <CurrencyInput
-              disabled={isLoading}
-              onBlur={getFieldProps('cost').onBlur}
-              name={getFieldProps('cost').name}
-              decimalsLimit={4}
-              value={values.cost}
-              type="text"
-              tabIndex={2}
-              prefix="₱"
-              className="input input-bordered w-full"
-              placeholder="Enter total cost for bulk purchase"
-              onValueChange={(value) => {
-                setFieldValue('cost', value)
-              }}
-              allowNegativeValue={false}
-            />
-            {errors.cost && (
-              <div className="label py-0">
-                <span className="label-text-alt text-xs text-red-400">
-                  {errors.cost}
-                </span>
-              </div>
-            )}
-          </label> */}
           <select
             disabled={isLoading}
             tabIndex={3}
