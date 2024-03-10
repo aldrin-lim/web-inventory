@@ -44,7 +44,6 @@ import {
   FormikValuesSchema,
   ProductDetailFormikValue,
 } from './ProductDetail.types'
-import { useCustomRoute } from 'util/route'
 import { toast } from 'react-toastify'
 import { getActiveBatch } from 'util/products'
 import Big from 'big.js'
@@ -57,11 +56,10 @@ import BatchCard from './components/BatchCard'
 import MeasurementSelect from './components/MeasurementSelect'
 import { AnimatePresence, motion } from 'framer-motion'
 import { CreateProductBodySchema } from 'api/product/createProduct'
-import { PIECES } from 'constants copy/measurement'
 import RecipeList from './screens/RecipeList'
-import { PhotoIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { PhotoIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { formatToPeso } from 'util/currency'
-import { disable } from 'mixpanel-browser'
+import { PIECES } from 'constants/measurement'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -128,7 +126,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
     // TODO: Rename isForSale to isIngredient
     const isIngredient = data.forSale === false
     // If ingredient, no need to validate overall cost
-
     if (!isIngredient) {
       const priceValidation = z
         .number({
@@ -197,7 +194,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
     // Validate batches
 
-    if (mode === 'add') {
+    if (mode === 'add' && !data.recipe) {
       data.batches.forEach((batch) => {
         const quantityValidation = z
           .number({
@@ -270,7 +267,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
       overallCost,
     },
     validationSchema: toFormikValidationSchema(ValidationSchema),
-    enableReinitialize: true,
+    enableReinitialize: false,
     validateOnBlur: false,
     onSubmit: async (formValue) => {
       formValue.price = toNumber(formValue.price)
@@ -291,6 +288,15 @@ export const ProductDetail = (props: ProductDetailProps) => {
             ...batch,
             cost: toNumber(formValue.overallCost),
             costPerUnit: toNumber(batch.costPerUnit),
+          }
+        })
+      }
+
+      if (formValue.recipe) {
+        formValue.batches = formValue.batches.map((batch) => {
+          return {
+            ...batch,
+            cost: toNumber(formValue.recipe?.cost),
           }
         })
       }
@@ -333,15 +339,25 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   const onRecipeSelect = async (recipe: Recipe) => {
     navigate(-1)
-    await setValues(initialValues)
-    setFieldValue('recipe', recipe)
-    setFieldValue('name', recipe.name)
-    setFieldValue('cost', recipe.cost)
-    setFieldValue('images', recipe.images)
+    await setValues({
+      ...defaultValue,
+      recipe,
+      name: recipe.name,
+      images: recipe.images,
+      batches: [
+        {
+          ...initialValues.batches[0],
+          cost: recipe.cost,
+          costPerUnit: recipe.cost,
+          unitOfMeasurement: PIECES,
+          quantity: 1,
+        },
+      ],
+    })
   }
 
   const removeRecipe = () => {
-    setValues(initialValues)
+    setValues(defaultValue)
   }
 
   const checkUnsavedChanges = () => {
@@ -666,12 +682,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     {...getFieldProps('forSale')}
                     autoComplete="off"
                     type="checkbox"
-                    onChange={(e) => {
-                      setFieldValue('forSale', !e.target.checked)
+                    onChange={async (e) => {
+                      await setFieldValue('forSale', !e.target.checked)
                       if (e.target.checked === true) {
-                        setFieldValue('price', undefined)
-                        setFieldValue('profitAmount', undefined)
-                        setFieldValue('profitPercentage', undefined)
+                        await setFieldValue('price', undefined)
+                        await setFieldValue('profitAmount', undefined)
+                        await setFieldValue('profitPercentage', undefined)
 
                         // Set all cost to zero
                         const batches = cloneDeep(values.batches)
@@ -681,7 +697,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                             cost: 0,
                           }
                         })
-                        setFieldValue('batches', updatedBatches)
+                        await setFieldValue('batches', updatedBatches)
                       }
                     }}
                     checked={!values.forSale}
