@@ -12,6 +12,7 @@ import moment from 'moment'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useTheme } from '@nivo/core'
 import { AxisTickProps } from '@nivo/axes'
+import { toNumber } from 'lodash'
 
 type CustomTickProps = {
   tick: AxisTickProps<string>
@@ -300,8 +301,32 @@ const Dashboard = () => {
             pointBorderColor={{ from: 'serieColor' }}
             pointLabelYOffset={-12}
             useMesh={true}
+            tooltip={({ point }) => {
+              const label = view === 'weekly' ? 'Day' : 'Month'
+              return (
+                <div
+                  style={{
+                    background: 'white',
+                    padding: '9px 12px',
+                    border: '1px solid #ccc',
+                  }}
+                  className="flex flex-col text-base"
+                >
+                  <div>
+                    {label}: <strong>{String(point?.data?.x)}</strong>
+                  </div>
+                  <div>
+                    {point.serieId}:{' '}
+                    <strong>
+                      {formatToPeso(toNumber(point?.data?.y ?? 0))}
+                    </strong>
+                  </div>
+                </div>
+              )
+            }}
             legends={[
               {
+                toggleSerie: true,
                 anchor: 'top-left',
                 direction: 'row',
                 justify: false,
@@ -312,7 +337,7 @@ const Dashboard = () => {
                 itemWidth: 95,
                 itemHeight: 24,
                 itemOpacity: 0.75,
-                symbolSize: 12,
+                symbolSize: 15,
                 symbolShape: 'circle',
                 symbolBorderColor: 'rgba(0, 0, 0, .5)',
                 effects: [
