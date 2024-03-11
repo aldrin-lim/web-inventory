@@ -249,7 +249,7 @@ const Dashboard = () => {
           <ResponsiveLine
             colors={['#856AD4', '#F1A30B']}
             data={chartData.data}
-            margin={{ top: 30, right: 20, bottom: 30, left: 55 }}
+            margin={{ top: 30, right: 20, bottom: 45, left: 55 }}
             xScale={{ type: 'point' }}
             yScale={{
               type: 'linear',
@@ -276,6 +276,7 @@ const Dashboard = () => {
                   />
                 )
               },
+              legend: `${view === 'weekly' ? 'Day (M/DD)' : 'Month'}`,
             }}
             axisLeft={{
               tickSize: 5,
@@ -289,6 +290,7 @@ const Dashboard = () => {
                   lowercase: true,
                 })}`,
               tickValues: 6,
+              legend: 'Total Sales',
             }}
             enableGridX={false}
             enableGridY={false}
