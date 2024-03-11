@@ -3,18 +3,22 @@ import { AxiosResponse } from 'axios'
 import moment from 'moment'
 import { httpClient } from 'util/http'
 
+interface ChartData {
+  sales: Array<{ x: string; y: number }>
+  expenses: Array<{ x: string; y: number }>
+}
 interface GetSalesReportResult {
-  totalSales: number
-  topSellingItems: Array<{ name: string; quantity: number }>
-  itemsSold: Array<{ name: string; quantity: number; totalAmount: number }>
-  startDate: string
-  dailyData: {
-    sales: Array<{ x: string; y: number }>
-    expenses: Array<{ x: string; y: number }>
+  weeklyTotals: {
+    data: ChartData
+    totalSales: number
+    topSellingItems: Array<{ name: string; quantity: number }>
+    itemsSold: number
   }
-  monthlyData: {
-    sales: Array<{ x: string; y: number }>
-    expenses: Array<{ x: string; y: number }>
+  monthlyTotals: {
+    data: ChartData
+    totalSales: number
+    topSellingItems: Array<{ name: string; quantity: number }>
+    itemsSold: number
   }
 }
 
@@ -27,9 +31,9 @@ const useGetDashboardReport = (date?: Date) => {
       }`
 
       const result = await httpClient
-        .get<unknown, AxiosResponse<GetSalesReportResult>>(url)
+        .get<unknown, AxiosResponse<NonNullable<GetSalesReportResult>>>(url)
         .then((res) => res.data)
-      return result || []
+      return result
     },
     retry: 0,
     refetchOnWindowFocus: false,

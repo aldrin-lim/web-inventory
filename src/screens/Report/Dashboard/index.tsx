@@ -6,11 +6,71 @@ import { useNavigate, useLocation, useResolvedPath } from 'react-router-dom'
 import { ResponsiveLine } from '@nivo/line'
 import millify from 'millify'
 import useGetDashboardReport from 'hooks/useGetDashboardReport'
-import LoadingCover from 'components/LoadingCover'
 import { useState } from 'react'
 import { formatToPeso } from 'util/currency'
 import moment from 'moment'
 import { DatePicker } from '@mui/x-date-pickers'
+import { useTheme } from '@nivo/core'
+import { AxisTickProps } from '@nivo/axes'
+
+type CustomTickProps = {
+  tick: AxisTickProps<string>
+  dateSelected: Date
+  view: string
+}
+
+const getFontWeight = (dateSelected: Date, view: string, tickValue: string) => {
+  if (view === 'weekly') {
+    const isSelectedDate = moment(dateSelected).format('M/D') === tickValue
+    if (isSelectedDate) {
+      return 'bold'
+    }
+    return 'normal'
+  }
+
+  if (view === 'monthly') {
+    const isSelectedDate = moment(dateSelected).format('MMM') === tickValue
+    if (isSelectedDate) {
+      return 'bold'
+    }
+    return 'normal'
+  }
+
+  return 'normal'
+}
+
+const CustomTick = (props: CustomTickProps) => {
+  const { tick, dateSelected, view } = props
+  const theme = useTheme()
+
+  return (
+    <g transform={`translate(${tick.x},${tick.y + 22})`}>
+      <rect
+        x={-14}
+        y={-6}
+        rx={3}
+        ry={3}
+        width={28}
+        height={24}
+        fill="rgba(0, 0, 0, 0)"
+      />
+      <rect x={-12} y={-12} rx={2} ry={2} width={24} height={24} fill="#fff" />
+      <line stroke="rgb(232, 193, 160)" strokeWidth={1.5} y1={-22} y2={-12} />
+      <text
+        textAnchor="middle"
+        dominantBaseline="middle"
+        style={{
+          ...theme.axis.ticks.text,
+          fill: '#333',
+          fontSize: 12,
+          fontWeight: getFontWeight(dateSelected, view, tick.value),
+        }}
+      >
+        {tick.value}
+      </text>
+    </g>
+  )
+}
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -32,13 +92,13 @@ const Dashboard = () => {
         data:
           view === 'weekly'
             ? report
-              ? report.dailyData.sales.map((item) => ({
+              ? report.weeklyTotals.data.sales.map((item) => ({
                   x: item.x,
                   y: item.y,
                 }))
               : []
             : report
-              ? report.monthlyData.sales.map((item) => ({
+              ? report.monthlyTotals.data.sales.map((item) => ({
                   x: item.x,
                   y: item.y,
                 }))
@@ -50,13 +110,13 @@ const Dashboard = () => {
         data:
           view === 'weekly'
             ? report
-              ? report.dailyData.expenses.map((item) => ({
+              ? report.weeklyTotals.data.expenses.map((item) => ({
                   x: item.x,
                   y: item.y,
                 }))
               : []
             : report
-              ? report.monthlyData.expenses.map((item) => ({
+              ? report.monthlyTotals.data.expenses.map((item) => ({
                   x: item.x,
                   y: item.y,
                 }))
@@ -64,6 +124,21 @@ const Dashboard = () => {
       },
     ],
   }
+
+  const totalSales =
+    view === 'weekly'
+      ? report?.weeklyTotals.totalSales
+      : report?.monthlyTotals.totalSales
+
+  const totalItemSold =
+    view === 'weekly'
+      ? report?.weeklyTotals.itemsSold
+      : report?.monthlyTotals.itemsSold
+
+  const topSellingItems =
+    view === 'weekly'
+      ? report?.weeklyTotals.topSellingItems
+      : report?.monthlyTotals.topSellingItems
 
   return (
     <div
@@ -87,7 +162,7 @@ const Dashboard = () => {
           null,
         ]}
       />
-      <div className="flex flex-col gap-4 p-4">
+      <div className="AppContainer bg-prim flex flex-col gap-4 p-4">
         <div className="flex flex-row items-center gap-4">
           <h1 className="">Sales Summary:</h1>
           {/* <input
@@ -151,14 +226,12 @@ const Dashboard = () => {
           <div className="flex w-1/2 flex-col gap-1 rounded-lg border border-neutral-300 p-4">
             <h1 className="text-lg">Total Sales</h1>
             <p className="text-lg text-primary">
-              {formatToPeso(report?.totalSales ?? 0)}
+              {formatToPeso(totalSales ?? 0)}
             </p>
           </div>
           <div className="flex w-1/2 flex-col gap-1 rounded-lg border border-neutral-300 p-4">
-            <h1 className="text-lg">Items Sales</h1>
-            <p className="text-lg text-[#3A9E92]">
-              {report?.itemsSold?.length ?? 0}
-            </p>
+            <h1 className="text-lg">Items Sold</h1>
+            <p className="text-lg text-[#3A9E92]">{totalItemSold ?? 0}</p>
           </div>
         </div>
         <div className="w-full">
@@ -185,7 +258,7 @@ const Dashboard = () => {
               stacked: false,
               reverse: false,
             }}
-            curve="linear"
+            curve="monotoneX"
             axisTop={null}
             axisRight={null}
             axisBottom={{
@@ -194,6 +267,15 @@ const Dashboard = () => {
               tickRotation: 0,
               legendOffset: 36,
               legendPosition: 'middle',
+              renderTick: (tick: AxisTickProps<string>) => {
+                return (
+                  <CustomTick
+                    tick={tick}
+                    dateSelected={dateSelected}
+                    view={view}
+                  />
+                )
+              },
             }}
             axisLeft={{
               tickSize: 5,
@@ -245,7 +327,7 @@ const Dashboard = () => {
           />
         </div>
 
-        {report && report.topSellingItems && (
+        {report && topSellingItems && (
           <div className="flex flex-col gap-4">
             Top 10 Best Seller
             <div className="rounded-lg border border-neutral-300">
@@ -257,7 +339,7 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {report.topSellingItems.map((item, index) => (
+                  {topSellingItems.map((item, index) => (
                     <tr key={index}>
                       <td>{item.name}</td>
                       <td>{item.quantity}</td>
