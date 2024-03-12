@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { themeChange } from 'theme-change'
+import mixpanel, { Dict } from 'mixpanel-browser'
 
 import './App.css'
 import 'react-toastify/dist/ReactToastify.css'
@@ -9,15 +10,18 @@ import useUser from 'hooks/useUser'
 import { Analytics } from 'util/analytics'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
+import useSessionTracking from 'hooks/useSessionTracking'
 
 function App() {
   useUser()
+  useSessionTracking()
   const navigate = useNavigate()
 
   const { user } = useUser()
 
   useEffect(() => {
     themeChange(false)
+    mixpanel.track('App Loaded')
   }, [])
 
   useEffect(() => {
