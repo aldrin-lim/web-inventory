@@ -7,8 +7,6 @@ import './index.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from 'contexts/AuthContext.tsx'
 import Big from 'big.js'
-import Error from 'screens/Error/index.tsx'
-import * as Sentry from '@sentry/react'
 import { Analytics } from 'util/analytics.ts'
 
 import { LocalizationProvider } from '@mui/x-date-pickers'
