@@ -10,18 +10,15 @@ import useUser from 'hooks/useUser'
 import { Analytics } from 'util/analytics'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
-import useSessionTracking from 'hooks/useSessionTracking'
 
 function App() {
   useUser()
-  useSessionTracking()
   const navigate = useNavigate()
 
   const { user } = useUser()
 
   useEffect(() => {
     themeChange(false)
-    mixpanel.track('App Loaded')
   }, [])
 
   useEffect(() => {

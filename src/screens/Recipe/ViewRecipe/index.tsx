@@ -6,6 +6,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import RecipeDetails from '../RecipeDetails'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 import { AppPath } from 'routes/AppRoutes.types'
+import mixpanel from 'mixpanel-browser'
+import { useEffect } from 'react'
 
 const Skeleton = () => {
   const navigate = useNavigate()
@@ -49,6 +51,9 @@ const Skeleton = () => {
 const ViewRecipe = () => {
   const { id } = useParams<{ id: string }>()
 
+  useEffect(() => {
+    mixpanel.track_pageview({ page: 'Edit Recipe' })
+  }, [])
   const { recipe, isLoading } = useGetRecipe(id)
 
   if (isLoading) {

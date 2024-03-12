@@ -15,9 +15,15 @@ import { AppPath } from 'routes/AppRoutes.types'
 
 import logo from '../../../public/logo.svg'
 import { useAuth0 } from '@auth0/auth0-react'
+import { useEffect } from 'react'
+import mixpanel from 'mixpanel-browser'
 const ProductMenu = () => {
   const navigate = useNavigate()
   const { logout } = useAuth0()
+
+  useEffect(() => {
+    mixpanel.track_pageview({ page: 'Home' })
+  }, [])
 
   return (
     <div className="absolute flex w-full flex-col gap-4">

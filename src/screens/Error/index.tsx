@@ -4,9 +4,16 @@ import {
   FaceFrownIcon,
 } from '@heroicons/react/24/outline'
 import { ArrowPathIcon } from '@heroicons/react/24/solid'
+import mixpanel from 'mixpanel-browser'
+import { useEffect } from 'react'
 
 const Error = () => {
   const { logout } = useAuth0()
+
+  useEffect(() => {
+    mixpanel.track_pageview({ page: 'Error Page' })
+  }, [])
+
   const refreshPage = () => {
     // Go back to the original url without the paths
     window.location.href = window.location.origin

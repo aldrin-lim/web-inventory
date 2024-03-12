@@ -12,10 +12,14 @@ import { AppPath } from 'routes/AppRoutes.types'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import { toast } from 'react-toastify'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
+import mixpanel from 'mixpanel-browser'
 
 const Profile = () => {
   const navigate = useNavigate()
   const { user, isLoading: isUserLoading } = useUser()
+  useEffect(() => {
+    mixpanel.track_pageview({ page: 'Profile' })
+  }, [])
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')

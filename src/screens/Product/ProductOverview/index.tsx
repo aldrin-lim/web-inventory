@@ -8,12 +8,13 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 
 import './styles.css'
 import ProductList from './components/ProductList'
-import { ComponentProps } from 'react'
+import { ComponentProps, useEffect } from 'react'
 import GetStarted from './components/GetStarted'
 import { Product } from 'types/product.types'
 import Inventory from 'screens/Inventory'
 import SlidingTransition from 'components/SlidingTransition'
 import { useCustomRoute } from 'util/route'
+import mixpanel from 'mixpanel-browser'
 
 enum ScreenPath {
   List = `list`,
@@ -21,6 +22,10 @@ enum ScreenPath {
 
 const ProductOverview = () => {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    mixpanel.track_pageview({ page: 'All Products' })
+  }, [])
 
   const { currentScreen, isParentScreen, navigateToParent } =
     useCustomRoute(ScreenPath)

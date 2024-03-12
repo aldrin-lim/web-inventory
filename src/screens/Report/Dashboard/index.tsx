@@ -6,13 +6,14 @@ import { useNavigate, useLocation, useResolvedPath } from 'react-router-dom'
 import { ResponsiveLine } from '@nivo/line'
 import millify from 'millify'
 import useGetDashboardReport from 'hooks/useGetDashboardReport'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { formatToPeso } from 'util/currency'
 import moment from 'moment'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useTheme } from '@nivo/core'
 import { AxisTickProps } from '@nivo/axes'
 import { toNumber } from 'lodash'
+import mixpanel from 'mixpanel-browser'
 
 type CustomTickProps = {
   tick: AxisTickProps<string>
@@ -78,6 +79,10 @@ const Dashboard = () => {
   const location = useLocation()
   const resolvePath = useResolvedPath('')
   const isParentScreen = location.pathname === resolvePath.pathname
+
+  useEffect(() => {
+    mixpanel.track_pageview({ page: 'Report Dashboard' })
+  }, [])
 
   const [dateSelected, setDateSelected] = useState(new Date())
 

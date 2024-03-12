@@ -7,10 +7,16 @@ import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import RecipeCard from './components/RecipeCard'
 import GetStarted from './GetStarted'
+import mixpanel from 'mixpanel-browser'
+import { useEffect } from 'react'
 
 const RecipeOverview = () => {
   const navigate = useNavigate()
   const { recipes, isLoading } = useAllRecipes()
+
+  useEffect(() => {
+    mixpanel.track_pageview({ page: 'All Recipes' })
+  }, [])
 
   return (
     <div className="screen">
