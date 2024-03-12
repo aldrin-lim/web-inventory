@@ -82,8 +82,10 @@ export const ProductDetail = (props: ProductDetailProps) => {
   const { product } = props
   const location = useLocation()
 
+  const [activeScreen, setActiveScreen] = useState<Screen | null>(null)
+
   const resolvePath = useResolvedPath('')
-  const isParentScreen = location.pathname === resolvePath.pathname
+  const isParentScreen = activeScreen === null
 
   const defaultValue = useMemo(() => {
     return {
@@ -264,7 +266,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
       overallCost,
     },
     validationSchema: toFormikValidationSchema(ValidationSchema),
-    enableReinitialize: true,
+    enableReinitialize: false,
     validateOnBlur: false,
     onSubmit: async (formValue) => {
       formValue.price = toNumber(formValue.price)
@@ -327,21 +329,25 @@ export const ProductDetail = (props: ProductDetailProps) => {
   })
 
   const showDescription = () => {
-    navigate(Screen.Description)
+    setActiveScreen(Screen.Description)
   }
 
   const showRecipeList = () => {
-    navigate(Screen.SelectRecipe)
+    setActiveScreen(Screen.SelectRecipe)
   }
 
-  const onRecipeSelect = async (recipe: Recipe) => {
-    navigate(-1)
-    await setValues(defaultValue)
-    await setFieldValue('recipe', recipe)
-    await setFieldValue('name', recipe.name)
-    await setFieldValue('images', recipe.images)
-    await setFieldValue('batches.0.cost', recipe.cost)
-  }
+  const onRecipeSelect = useCallback(
+    async (recipe: Recipe) => {
+      setActiveScreen(null)
+      await setValues(defaultValue)
+      await setFieldValue('recipe', recipe)
+      await setFieldValue('name', recipe.name)
+      await setFieldValue('images', recipe.images)
+      await setFieldValue('batches.0.cost', recipe.cost)
+      // console.log('pasok', recipe)
+    },
+    [defaultValue, setFieldValue, setValues],
+  )
 
   const removeRecipe = () => {
     setValues(defaultValue)
@@ -1554,6 +1560,24 @@ export const ProductDetail = (props: ProductDetailProps) => {
       </div>
 
       <AnimatePresence>
+        <SlidingTransition isVisible={activeScreen === Screen.Description}>
+          <Description
+            description={values.description}
+            onBack={() => setActiveScreen(null)}
+            onComplete={(desription) => {
+              setFieldValue('description', desription)
+            }}
+          />
+        </SlidingTransition>
+        <SlidingTransition isVisible={activeScreen === Screen.SelectRecipe}>
+          <RecipeList
+            onBack={() => setActiveScreen(null)}
+            onRecipeSelect={onRecipeSelect}
+          />
+        </SlidingTransition>
+      </AnimatePresence>
+
+      {/* <AnimatePresence>
         <Routes location={location} key={isParentScreen.toString()}>
           <Route
             path={`${Screen.Description}/*`}
@@ -1581,7 +1605,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             }
           />
         </Routes>
-      </AnimatePresence>
+      </AnimatePresence> */}
 
       {/* <SlidingTransition
         direction="right"
