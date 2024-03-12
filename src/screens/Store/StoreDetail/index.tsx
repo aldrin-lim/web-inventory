@@ -97,8 +97,6 @@ const StoreDetail = () => {
     }
   }, [isLoading, user?.businesses])
 
-  console.log(errors)
-
   return (
     <div className="screen pb-6">
       <Toolbar
