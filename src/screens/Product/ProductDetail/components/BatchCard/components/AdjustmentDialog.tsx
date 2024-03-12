@@ -58,7 +58,6 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
           reason: values.reason,
         })
         onClose?.()
-        // console.log('submit')
       },
     })
 

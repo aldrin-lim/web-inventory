@@ -33,3 +33,14 @@ export const useCustomRoute = <T extends Record<string, string>>(paths: T) => {
     navigateToParent,
   }
 }
+
+export function removeLastPath(str: string) {
+  // Trim the trailing slash if it exists
+  const trimmedStr = str.endsWith('/') ? str.slice(0, -1) : str
+  // Split the string into an array of paths
+  const paths = trimmedStr.split('/')
+  // Remove the last path
+  paths.pop()
+  // Join the array back into a string with slashes
+  return paths.join('/')
+}

@@ -64,7 +64,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
       errors.batches as unknown as ProductDetailFormikValue['batches']
     if (isArray(batchErrors)) {
       const costErrors = batchErrors.filter((batch) => batch.cost)
-      console.log(costErrors)
       if (costErrors.length > 0) {
         return costErrors[0].cost
       }
@@ -341,7 +340,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
         <CategoryDropdown
           value={values.category}
           onChange={(option) => {
-            console.log(option)
             setFieldValue('category', option?.value)
           }}
         />

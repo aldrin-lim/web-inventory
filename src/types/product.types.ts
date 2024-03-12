@@ -45,7 +45,7 @@ export const ProductBatchSchema = z.object({
     .nullable(),
 })
 
-const BaseProduct = z.object({
+export const BaseProduct = z.object({
   id: z.string(),
   name: z.string({
     required_error: 'Name is required',

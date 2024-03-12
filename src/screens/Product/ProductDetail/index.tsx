@@ -126,7 +126,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
     // TODO: Rename isForSale to isIngredient
     const isIngredient = data.forSale === false
     // If ingredient, no need to validate overall cost
-    console.log('validator', data)
     if (!isIngredient) {
       const priceValidation = z
         .number({
@@ -504,9 +503,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
     },
     [setFieldValue, values.batches],
   )
-
-  console.log(values)
-  console.log(errors)
 
   return (
     <>

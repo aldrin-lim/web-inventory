@@ -55,7 +55,7 @@ const ProductMenu = () => {
           <li>
             <button
               className="btn btn-ghost w-full justify-start px-1"
-              onClick={() => navigate(AppPath.RecipeOverview)}
+              onClick={() => navigate(AppPath.Recipe)}
             >
               <BookOpenIcon className="h-6 w-6" />
               All Recipes

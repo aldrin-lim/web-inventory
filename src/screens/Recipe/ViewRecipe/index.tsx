@@ -2,15 +2,13 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import useGetRecipe from 'hooks/useGetRecipe'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import RecipeDetails from '../RecipeDetails'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
-import { AppPath } from 'routes/AppRoutes.types'
 import mixpanel from 'mixpanel-browser'
 import { useEffect } from 'react'
 
 const Skeleton = () => {
-  const navigate = useNavigate()
   return (
     <div className="screen">
       <Toolbar
@@ -18,9 +16,7 @@ const Skeleton = () => {
           <ToolbarButton
             key={1}
             icon={<ChevronLeftIcon className="w-6" />}
-            onClick={() => {
-              navigate(AppPath.RecipeOverview)
-            }}
+            onClick={() => {}}
           />,
 
           <ToolbarTitle key="title" title="View Product" />,
