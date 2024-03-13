@@ -787,10 +787,10 @@ export const ProductDetail = (props: ProductDetailProps) => {
               {values.forSale && taxRate && (
                 <div className="form-control flex flex-row gap-2 py-2">
                   <input
-                    // {...getFieldProps('forSale')}
                     checked={showTaxField}
                     onChange={(e) => {
                       setShowTaxField(e.target.checked)
+                      setFieldValue('applyTax', e.target.checked)
                     }}
                     autoComplete="off"
                     type="checkbox"
