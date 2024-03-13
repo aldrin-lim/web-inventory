@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { themeChange } from 'theme-change'
-import mixpanel, { Dict } from 'mixpanel-browser'
 
 import './App.css'
 import 'react-toastify/dist/ReactToastify.css'

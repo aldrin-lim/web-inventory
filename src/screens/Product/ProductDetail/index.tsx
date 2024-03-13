@@ -60,6 +60,7 @@ import { PIECES } from 'constants copy/measurement'
 import RecipeList from './screens/RecipeList'
 import { PhotoIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { formatToPeso } from 'util/currency'
+import useUser from 'hooks/useUser'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -81,10 +82,17 @@ export type ProductAction = 'add' | 'edit'
 export const ProductDetail = (props: ProductDetailProps) => {
   const { product } = props
   const location = useLocation()
+  const { taxRate } = useUser()
 
   const [activeScreen, setActiveScreen] = useState<Screen | null>(null)
+  const [showTaxField, setShowTaxField] = useState(false)
 
-  const resolvePath = useResolvedPath('')
+  useEffect(() => {
+    if (product?.applyTax) {
+      setShowTaxField(true)
+    }
+  }, [product?.applyTax])
+
   const isParentScreen = activeScreen === null
 
   const defaultValue = useMemo(() => {
@@ -510,6 +518,16 @@ export const ProductDetail = (props: ProductDetailProps) => {
     [setFieldValue, values.batches],
   )
 
+  const afterTaxPrice = useMemo(() => {
+    if (values.price && taxRate) {
+      // return values.price * (1 + taxRate / 100)
+      return new Big(values.price)
+        .times(new Big(1).plus(new Big(taxRate).div(100)))
+        .toNumber()
+    }
+    return 0
+  }, [values.price, taxRate])
+
   return (
     <>
       <div
@@ -594,9 +612,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
             />,
           ]}
         />
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
           <label className="form-control w-full ">
-            <div className="form-control-label  ">
+            <div className="">
               <span className="label-text-alt text-gray-400">Product Name</span>
             </div>
             <input
@@ -666,7 +684,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           </button>
           {values.recipe && (
             <div>
-              <div className="mb-2 flex w-full flex-row justify-between rounded-md bg-gray-200 p-2 py-1 text-black ">
+              <div className="flex w-full flex-row justify-between rounded-md bg-gray-200 p-2 py-1 text-black ">
                 <p className="font-bold">Cost:</p>
                 <div className="flex flex-col">
                   <div className="flex flex-row">
@@ -680,13 +698,23 @@ export const ProductDetail = (props: ProductDetailProps) => {
           )}
 
           {mode === 'edit' && !values.forSale && (
-            <div className="form-control flex w-full flex-row gap-2 py-2">
+            <div className="form-control flex w-full flex-row gap-2 ">
               <input
                 {...getFieldProps('forSale')}
                 autoComplete="off"
                 type="checkbox"
                 disabled
                 checked={!values.forSale}
+                onChange={async (e) => {
+                  if (e.target.checked === true) {
+                    setFieldValue('price', undefined)
+                    setFieldValue('profitAmount', undefined)
+                    setFieldValue('profitPercentage', undefined)
+                  } else {
+                    setShowTaxField(false)
+                    setFieldValue('applyTax', false)
+                  }
+                }}
                 className="toggle toggle-primary"
               />
               <span>For ingredients purposes only</span>
@@ -697,7 +725,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
             <>
               {/* For Sale */}
               {mode === 'add' && (
-                <div className="form-control flex w-full flex-row gap-2 py-2">
+                <div className="form-control flex w-full flex-row gap-2 ">
                   <input
                     {...getFieldProps('forSale')}
                     autoComplete="off"
@@ -756,10 +784,26 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 </div>
               )}
 
+              {values.forSale && taxRate && (
+                <div className="form-control flex flex-row gap-2 py-2">
+                  <input
+                    // {...getFieldProps('forSale')}
+                    checked={showTaxField}
+                    onChange={(e) => {
+                      setShowTaxField(e.target.checked)
+                    }}
+                    autoComplete="off"
+                    type="checkbox"
+                    className="toggle toggle-primary"
+                  />
+                  <span>Apply Tax</span>
+                </div>
+              )}
+
               {/* Cost Input */}
               {showCostInput && (
                 <label className="form-control">
-                  <div className="form-control-label  ">
+                  <div className="">
                     <span className="label-text-alt text-gray-400">Cost</span>
                   </div>
                   <CurrencyInput
@@ -820,9 +864,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   <div className="flex w-full flex-row gap-2">
                     {/* Price Input */}
                     <label className="form-control ">
-                      <div className="form-control-label  ">
+                      <div className="">
                         <span className="label-text-alt text-gray-400">
-                          Price
+                          {showTaxField ? 'Price Before Tax' : 'Price'}
                         </span>
                       </div>
                       <CurrencyInput
@@ -872,12 +916,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
                   {/* Profit */}
                   <div className="form-control">
+                    <div className="">
+                      <span className="label-text-alt text-gray-400">
+                        Profit
+                      </span>
+                    </div>
                     <div className="form-control input input-bordered relative flex flex-row items-center">
-                      <div className="form-control-label  ">
-                        <span className="label-text-alt text-gray-400">
-                          Profit
-                        </span>
-                      </div>
                       <CurrencyInput
                         autoComplete="off"
                         decimalsLimit={4}
@@ -959,6 +1003,24 @@ export const ProductDetail = (props: ProductDetailProps) => {
                       </div>
                     )}
                   </div>
+
+                  {/* After Tax */}
+                  {showTaxField && (
+                    <div className="flex w-full flex-row gap-2">
+                      <label className="form-control ">
+                        <div className="  ">
+                          <span className="label-text-alt text-gray-400">
+                            After Tax Price
+                          </span>
+                        </div>
+                        <input
+                          className="input input-bordered"
+                          disabled
+                          value={formatToPeso(afterTaxPrice)}
+                        />
+                      </label>
+                    </div>
+                  )}
                 </>
               )}
             </>
@@ -966,12 +1028,27 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
           {values.recipe && (
             <>
+              <div className="form-control flex flex-row gap-2 py-2">
+                <input
+                  // {...getFieldProps('forSale')}
+                  checked={showTaxField}
+                  onChange={(e) => {
+                    setShowTaxField(e.target.checked)
+                  }}
+                  autoComplete="off"
+                  type="checkbox"
+                  className="toggle toggle-primary"
+                />
+                <span>Apply Tax</span>
+              </div>
               {/* Price*/}
               <div className="flex w-full flex-row gap-2">
                 {/* Price Input */}
                 <label className="form-control ">
-                  <div className="form-control-label  ">
-                    <span className="label-text-alt text-gray-400">Price</span>
+                  <div className="">
+                    <span className="label-text-alt text-gray-400">
+                      {showTaxField ? 'Price After Tax' : 'Price'}
+                    </span>
                   </div>
                   <CurrencyInput
                     autoComplete="off"
@@ -1026,10 +1103,10 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
               {/* Profit */}
               <div className="form-control">
+                <div className="">
+                  <span className="label-text-alt text-gray-400">Profit</span>
+                </div>
                 <div className="form-control input input-bordered relative flex flex-row items-center">
-                  <div className="form-control-label  ">
-                    <span className="label-text-alt text-gray-400">Profit</span>
-                  </div>
                   <CurrencyInput
                     autoComplete="off"
                     decimalsLimit={4}
@@ -1123,6 +1200,24 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   </div>
                 )}
               </div>
+
+              {/* After Tax */}
+              {showTaxField && (
+                <div className="flex w-full flex-row gap-2">
+                  <label className="form-control ">
+                    <div className="">
+                      <span className="label-text-alt text-gray-400">
+                        After Tax Price
+                      </span>
+                    </div>
+                    <input
+                      className="input input-bordered"
+                      disabled
+                      value={formatToPeso(afterTaxPrice)}
+                    />
+                  </label>
+                </div>
+              )}
             </>
           )}
 
@@ -1157,7 +1252,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           />
           {/* Low Stock warning */}
           <label className="form-control w-full ">
-            <div className="form-control-label z-[09] ">
+            <div className="z-[09] ">
               <span className="label-text-alt text-gray-400">
                 Low stock warning level
               </span>
@@ -1576,68 +1671,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
           />
         </SlidingTransition>
       </AnimatePresence>
-
-      {/* <AnimatePresence>
-        <Routes location={location} key={isParentScreen.toString()}>
-          <Route
-            path={`${Screen.Description}/*`}
-            element={
-              <SlidingTransition isVisible={true}>
-                <Description
-                  description={values.description}
-                  onBack={() => navigate(-1)}
-                  onComplete={(desription) => {
-                    setFieldValue('description', desription)
-                  }}
-                />
-              </SlidingTransition>
-            }
-          />
-          <Route
-            path={`${Screen.SelectRecipe}/*`}
-            element={
-              <SlidingTransition isVisible={true}>
-                <RecipeList
-                  onBack={() => navigate(-1)}
-                  onRecipeSelect={onRecipeSelect}
-                />
-              </SlidingTransition>
-            }
-          />
-        </Routes>
-      </AnimatePresence> */}
-
-      {/* <SlidingTransition
-        direction="right"
-        isVisible={currentScreen === ScreenPath.Description}
-        zIndex={11}
-      >
-        <Description
-          description={values.description}
-          onBack={goBackToProductScreen}
-          onComplete={(desription) => {
-            setFieldValue('description', desription)
-          }}
-        />
-      </SlidingTransition> */}
-
-      {/*
-      <SlidingTransition
-        direction="right"
-        isVisible={currentScreen === ScreenPath.SelectRecipe}
-        zIndex={11}
-      >
-        <RecipeList onBack={navigateToParent} onRecipeSelect={onRecipeSelect} />
-      </SlidingTransition>
-      {values.recipe && (
-        <SlidingTransition
-          direction="right"
-          isVisible={currentScreen === ScreenPath.RecipeDetail}
-          zIndex={11}
-        >
-          <RecipeDetails onBack={navigateToParent} recipe={values.recipe} />
-        </SlidingTransition>
-      )} */}
     </>
   )
 }
