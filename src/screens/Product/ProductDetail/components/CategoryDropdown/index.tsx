@@ -44,7 +44,7 @@ const CategoryDropdown = (props: CategoryDropdownProps) => {
       onChange={handleChange}
       options={initialCategories}
       value={selectedCategory}
-      placeholder="Select or create a category (optional)"
+      placeholder="Select a category (optional)"
       className="category-selection"
       classNamePrefix="select"
     />

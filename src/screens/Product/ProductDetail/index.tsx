@@ -684,7 +684,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
           </button>
           {values.recipe && (
             <div>
-              <div className="flex w-full flex-row justify-between rounded-md bg-gray-200 p-2 py-1 text-black ">
+              <div className="flex w-full flex-row justify-between rounded-md bg-gray-200 p-2 py-1  ">
                 <p className="font-bold">Cost:</p>
                 <div className="flex flex-col">
                   <div className="flex flex-row">
@@ -1014,7 +1014,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                           </span>
                         </div>
                         <input
-                          className="input input-bordered"
+                          className="input input-bordered disabled:border-base-content/20 disabled:bg-transparent disabled:font-bold disabled:text-primary"
                           disabled
                           value={formatToPeso(afterTaxPrice)}
                         />

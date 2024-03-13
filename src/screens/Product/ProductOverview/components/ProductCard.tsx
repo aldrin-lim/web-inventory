@@ -32,11 +32,10 @@ const ProductCard = (props: ProductCardProps) => {
           {/* Show image or PhotoIcon based on image load status */}
           <ImageLoader src={image} iconClassName="w-24 text-gray-400" />
         </figure>
-        <div className="card-body flex flex-col gap-0 !py-2 text-left">
-          <h2 className="card-title text-sm">
+        <div className="card-body flex flex-col gap-0 !py-2 text-left ">
+          <h2 className="card-title text-base font-normal ">
             <MiddleTruncatedText text={name} maxLength={18} />
           </h2>
-
           {renderStockInfo(product)}
         </div>
       </div>
