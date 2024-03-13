@@ -22,7 +22,8 @@ function App() {
 
   useEffect(() => {
     // if (import.meta.env.NODE_ENV === 'production') {
-    if (import.meta.env.NODE_ENV === 'production' && user?.email) {
+    console.log('env', import.meta.env.MODE)
+    if (import.meta.env.MODE === 'production' && user?.email) {
       Analytics.identify(user.email)
     }
     // }
