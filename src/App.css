@@ -53,7 +53,7 @@ html, body {
 @layer components {
 
   .input {
-    @apply rounded-md
+    @apply rounded-md px-2
   }
   
   .btn {
