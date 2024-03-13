@@ -14,7 +14,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import ErrorBoundary from 'components/ErrorBoundary.tsx'
 Big.DP = 4
 
-import.meta.env.NODE_ENV === 'production' && Analytics.init()
+Analytics.init()
 
 const queryClient = new QueryClient()
 
