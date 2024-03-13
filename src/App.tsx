@@ -24,6 +24,13 @@ function App() {
     user?.email &&
       import.meta.env.NODE_ENV === 'production' &&
       Analytics.identify(user.email)
+
+    if (import.meta.env.NODE_ENV === 'production') {
+      console.log('production')
+      if (user?.email) {
+        Analytics.identify(user.email)
+      }
+    }
   }, [user])
 
   useEffect(() => {

@@ -12,6 +12,7 @@ const {
 
 export const Analytics = {
   init: () => {
+    console.log('analytics initialized')
     VITE_SENTRY_ENVIRONMENT &&
       VITE_SENTRY_DSN &&
       Sentry.init({
@@ -26,10 +27,12 @@ export const Analytics = {
         track_pageview: true,
         persistence: 'localStorage',
         ignore_dnt: true,
+        api_transport: 'sendBeacon',
       })
     VITE_HOTJAR_ID && hotjar.initialize(parseInt(VITE_HOTJAR_ID), 6)
   },
   identify: (id: string) => {
+    console.log('user identified')
     VITE_MIXPANEL_ID && mixpanel.identify(id)
     VITE_HOTJAR_ID && hotjar.identify(id, {})
     VITE_SENTRY_DSN && Sentry.setUser({ id })
