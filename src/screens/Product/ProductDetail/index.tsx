@@ -797,9 +797,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 <div className="form-control flex flex-row gap-2 py-2">
                   <input
                     checked={showTaxField}
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       setShowTaxField(e.target.checked)
-                      setFieldValue('applyTax', e.target.checked)
+                      await setFieldValue('applyTax', e.target.checked)
                     }}
                     autoComplete="off"
                     type="checkbox"
@@ -1041,8 +1041,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 <input
                   // {...getFieldProps('forSale')}
                   checked={showTaxField}
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     setShowTaxField(e.target.checked)
+                    await setFieldValue('applyTax', e.target.checked)
                   }}
                   autoComplete="off"
                   type="checkbox"
