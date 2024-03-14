@@ -41,8 +41,9 @@ export const Analytics = {
     VITE_MIXPANEL_ID && mixpanel.alias(id)
   },
   track: (name: string, props?: Dict) => {
-    VITE_MIXPANEL_ID && mixpanel.track(name, props)
-    VITE_HOTJAR_ID && hotjar.event(name)
+    if (MODE === 'production') {
+      VITE_MIXPANEL_ID && mixpanel.track(name, props)
+    }
   },
   trackUnhandledError: (error: unknown) => {
     if (VITE_SENTRY_ENVIRONMENT && VITE_SENTRY_DSN) {

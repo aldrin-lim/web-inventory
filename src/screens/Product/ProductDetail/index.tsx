@@ -61,6 +61,7 @@ import RecipeList from './screens/RecipeList'
 import { PhotoIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { formatToPeso } from 'util/currency'
 import useUser from 'hooks/useUser'
+import { Analytics } from 'util/analytics'
 
 type Recipe = z.infer<typeof RecipeSchema>
 
@@ -326,6 +327,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
         })
       } else {
         await createProduct(validation.data as CreateProductBodySchema)
+        Analytics.track('Save Add Product')
         if (location.state?.from) {
           navigate(location.state.from)
           return
@@ -376,6 +378,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
   }
 
   const goBack = () => {
+    Analytics.track('Exit Add Product')
     if (location.state?.from) {
       navigate(location.state.from)
       return
@@ -527,6 +530,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
     }
     return 0
   }, [values.price, taxRate])
+
+  useEffect(() => {
+    if (mode === 'add') {
+      Analytics.track('Start Add Product')
+    }
+  }, [])
 
   return (
     <>
