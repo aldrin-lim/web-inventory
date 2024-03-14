@@ -8,6 +8,7 @@ type DescriptionProps = {
   onBack: () => void
   description?: string
   onComplete: (description: string) => void
+  test?: string
 }
 
 const Description = (props: DescriptionProps) => {
