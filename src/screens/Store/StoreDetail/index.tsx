@@ -246,6 +246,31 @@ const StoreDetail = () => {
             </div>
             {values.tax && (
               <>
+                <div className="">
+                  <label className="label">
+                    <span className="label-text text-xs">Tax Type:</span>
+                  </label>
+                  <div className="join">
+                    <input
+                      {...getFieldProps('tax.type')}
+                      className="btn join-item"
+                      checked={values.tax?.type === 'inclusive'}
+                      type="radio"
+                      name="options"
+                      onChange={() => setFieldValue('tax.type', 'inclusive')}
+                      aria-label="Inclusive"
+                    />
+                    <input
+                      {...getFieldProps('tax.type')}
+                      checked={values.tax?.type === 'exclusive'}
+                      className="btn join-item"
+                      type="radio"
+                      name="options"
+                      onChange={() => setFieldValue('tax.type', 'exclusive')}
+                      aria-label="Exclusive"
+                    />
+                  </div>
+                </div>
                 <div className="join w-full">
                   <CurrencyInput
                     autoComplete="off"

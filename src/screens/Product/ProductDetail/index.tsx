@@ -78,16 +78,16 @@ export type ProductAction = 'add' | 'edit'
 export const ProductDetail = (props: ProductDetailProps) => {
   const { product } = props
   const location = useLocation()
-  const { taxRate } = useUser()
+  const { taxRate, tax } = useUser()
 
   const [activeScreen, setActiveScreen] = useState<Screen | null>(null)
   const [showTaxField, setShowTaxField] = useState(false)
 
   useEffect(() => {
-    if (product?.applyTax) {
+    if (product?.applyTax && tax?.type === 'exclusive') {
       setShowTaxField(true)
     }
-  }, [product?.applyTax])
+  }, [product?.applyTax, tax])
 
   const isParentScreen = activeScreen === null
 
@@ -273,7 +273,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
     validationSchema: toFormikValidationSchema(ValidationSchema),
     enableReinitialize: false,
     validateOnBlur: false,
-    validateOnChange: true,
     onSubmit: async (formValue) => {
       formValue.price = toNumber(formValue.price)
       formValue.profitPercentage = toNumber(formValue.profitPercentage)
@@ -351,7 +350,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
       await setFieldValue('name', recipe.name)
       await setFieldValue('images', recipe.images)
       await setFieldValue('batches.0.cost', recipe.cost)
-      // console.log('pasok', recipe)
     },
     [defaultValue, setFieldValue, setValues],
   )
@@ -535,9 +533,6 @@ export const ProductDetail = (props: ProductDetailProps) => {
       Analytics.track('Start Add Product')
     }
   }, [])
-
-  console.log('values', values)
-  console.log('errors', errors)
 
   return (
     <>
@@ -877,7 +872,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     <label className="form-control ">
                       <div className="">
                         <span className="label-text-alt text-gray-400">
-                          {showTaxField ? 'Price Before Tax' : 'Price'}
+                          {showTaxField && tax?.type === 'exclusive'
+                            ? 'Price Before Tax'
+                            : 'Price'}
                         </span>
                       </div>
                       <CurrencyInput
@@ -1016,12 +1013,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   </div>
 
                   {/* After Tax */}
-                  {showTaxField && (
+                  {showTaxField && tax?.type === 'exclusive' && (
                     <div className="flex w-full flex-row gap-2">
                       <label className="form-control ">
                         <div className="  ">
                           <span className="label-text-alt text-gray-400">
-                            After Tax Price
+                            After Tax Price ({taxRate}%)
                           </span>
                         </div>
                         <input
@@ -1214,12 +1211,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
               </div>
 
               {/* After Tax */}
-              {showTaxField && (
+              {showTaxField && tax?.type === 'exclusive' && (
                 <div className="flex w-full flex-row gap-2">
                   <label className="form-control ">
                     <div className="">
                       <span className="label-text-alt text-gray-400">
-                        After Tax Price
+                        After Tax Price ({taxRate}%)
                       </span>
                     </div>
                     <input
