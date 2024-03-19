@@ -30,8 +30,8 @@ export default mergeConfig(viteConfig, {
         sourcemap: true,
       },
       manifest: {
-        name: 'Qrafter POS',
-        short_name: 'Qrafter POS  ',
+        name: 'Qrafter Admin',
+        short_name: 'Qrafter Admin',
         theme_color: '#856AD4',
         start_url: '/',
         background_color: '#f0e7db',

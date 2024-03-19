@@ -51,7 +51,7 @@ function ReloadPrompt() {
               disabled={isLoading}
               onClick={() => {
                 setIsLoading(true)
-                updateServiceWorker()
+                updateServiceWorker(true)
               }}
               className="btn btn-error w-full text-white"
             >
