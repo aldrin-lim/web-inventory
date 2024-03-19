@@ -32,7 +32,7 @@ export default mergeConfig(viteConfig, {
       manifest: {
         name: 'Qrafter Admin',
         short_name: 'Qrafter Admin',
-        theme_color: '#856AD4',
+        theme_color: '#00B1BC',
         start_url: '/',
         background_color: '#ffffff',
         display: 'standalone',
@@ -69,12 +69,5 @@ export default mergeConfig(viteConfig, {
   define: process.env.NODE_ENV === 'development' ? { global: 'window' } : {},
   build: {
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        entryFileNames: `[name].` + hash + `.js`,
-        chunkFileNames: `[name].` + hash + `.js`,
-        assetFileNames: `[name].` + hash + `.[ext]`,
-      },
-    },
   },
 })
