@@ -36,7 +36,7 @@ const useGetDashboardReport = (date?: Date) => {
       return result
     },
     retry: 0,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   })
 
   return {

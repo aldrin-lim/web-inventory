@@ -7,7 +7,7 @@ const useGetRecipe = (recipeId?: string) => {
     queryFn: () => API.getRecipe(recipeId as string),
     retry: 0,
     enabled: Boolean(recipeId),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   })
 
   return {
