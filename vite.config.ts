@@ -34,7 +34,7 @@ export default mergeConfig(viteConfig, {
         short_name: 'Qrafter Admin',
         theme_color: '#856AD4',
         start_url: '/',
-        background_color: '#f0e7db',
+        background_color: '#ffffff',
         display: 'standalone',
         scope: '/',
         orientation: 'portrait',
