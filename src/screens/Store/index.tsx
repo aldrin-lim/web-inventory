@@ -1,10 +1,10 @@
-import mixpanel from 'mixpanel-browser'
 import { useEffect } from 'react'
 import StoreDetail from './StoreDetail'
+import { Analytics } from 'util/analytics'
 
 const Store = () => {
   useEffect(() => {
-    mixpanel.track_pageview({ page: 'Store Detail' })
+    Analytics.trackPageView('Store Detail')
   }, [])
   return (
     <div className="w-full">

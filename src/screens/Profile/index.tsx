@@ -1,8 +1,5 @@
 import Toolbar from 'components/Layout/components/Toolbar'
-import {
-  ArrowSmallLeftIcon,
-  ChevronLeftIcon,
-} from '@heroicons/react/24/outline'
+import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { useNavigate } from 'react-router-dom'
 import useUser from 'hooks/useUser'
 import { useEffect, useState } from 'react'
@@ -12,13 +9,13 @@ import { AppPath } from 'routes/AppRoutes.types'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import { toast } from 'react-toastify'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import mixpanel from 'mixpanel-browser'
+import { Analytics } from 'util/analytics'
 
 const Profile = () => {
   const navigate = useNavigate()
   const { user, isLoading: isUserLoading } = useUser()
   useEffect(() => {
-    mixpanel.track_pageview({ page: 'Profile' })
+    Analytics.trackPageView('Profile')
   }, [])
 
   const [firstName, setFirstName] = useState('')

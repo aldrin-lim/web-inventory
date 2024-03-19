@@ -4,14 +4,14 @@ import {
   FaceFrownIcon,
 } from '@heroicons/react/24/outline'
 import { ArrowPathIcon } from '@heroicons/react/24/solid'
-import mixpanel from 'mixpanel-browser'
 import { useEffect } from 'react'
+import { Analytics } from 'util/analytics'
 
 const Error = () => {
   const { logout } = useAuth0()
 
   useEffect(() => {
-    mixpanel.track_pageview({ page: 'Error Page' })
+    Analytics.trackPageView('Error Page')
   }, [])
 
   const refreshPage = () => {

@@ -13,7 +13,7 @@ import { DatePicker } from '@mui/x-date-pickers'
 import { useTheme } from '@nivo/core'
 import { AxisTickProps } from '@nivo/axes'
 import { toNumber } from 'lodash'
-import mixpanel from 'mixpanel-browser'
+import { Analytics } from 'util/analytics'
 
 type CustomTickProps = {
   tick: AxisTickProps<string>
@@ -81,7 +81,7 @@ const Dashboard = () => {
   const isParentScreen = location.pathname === resolvePath.pathname
 
   useEffect(() => {
-    mixpanel.track_pageview({ page: 'Report Dashboard' })
+    Analytics.trackPageView('Report Dashboard')
   }, [])
 
   const [dateSelected, setDateSelected] = useState(new Date())

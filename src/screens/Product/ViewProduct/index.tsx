@@ -3,11 +3,11 @@ import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import useGetProduct from 'hooks/useGetProduct'
-import mixpanel from 'mixpanel-browser'
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import ProductDetail from 'screens/Product/ProductDetail'
+import { Analytics } from 'util/analytics'
 
 const Skeleton = () => {
   const navigate = useNavigate()
@@ -41,7 +41,7 @@ const ViewProduct = () => {
   const { id } = useParams<{ id: string }>()
 
   useEffect(() => {
-    mixpanel.track_pageview({ page: 'Edit Product' })
+    Analytics.trackPageView('Edit Product')
   }, [])
 
   const { product, isLoading } = useGetProduct(id)
