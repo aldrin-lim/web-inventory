@@ -54,7 +54,9 @@ export const Analytics = {
     }
   },
   trackPageView: (name: string, props?: Dict) => {
-    VITE_MIXPANEL_ID && mixpanel.track_pageview({ name, ...props })
+    if (MODE === 'production' && VITE_MIXPANEL_ID) {
+      mixpanel.track_pageview({ name, ...props })
+    }
   },
   people: {
     set: (props: Dict) => {

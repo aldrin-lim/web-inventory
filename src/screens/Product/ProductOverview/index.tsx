@@ -14,7 +14,7 @@ import { Product } from 'types/product.types'
 import Inventory from 'screens/Inventory'
 import SlidingTransition from 'components/SlidingTransition'
 import { useCustomRoute } from 'util/route'
-import mixpanel from 'mixpanel-browser'
+import { Analytics } from 'util/analytics'
 
 enum ScreenPath {
   List = `list`,
@@ -24,7 +24,7 @@ const ProductOverview = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    mixpanel.track_pageview({ page: 'All Products' })
+    Analytics.trackPageView('All Products')
   }, [])
 
   const { currentScreen, isParentScreen, navigateToParent } =

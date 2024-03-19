@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
-import mixpanel from 'mixpanel-browser'
 import { v4 } from 'uuid'
+import { Analytics } from 'util/analytics'
 const sessionId = v4()
 const useSessionTracking = () => {
   useEffect(() => {
     // Function to track session start
     const trackSessionStart = () => {
-      mixpanel.track('Session Start', {
+      Analytics.track('Session Start', {
         sessionId,
         timestamp: new Date().toISOString(),
       })
@@ -14,7 +14,7 @@ const useSessionTracking = () => {
 
     // Function to track session end
     const trackSessionEnd = () => {
-      mixpanel.track('Session End', {
+      Analytics.track('Session End', {
         sessionId,
         timestamp: new Date().toISOString(),
       })
@@ -23,12 +23,12 @@ const useSessionTracking = () => {
     // Function to handle visibility change
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
-        mixpanel.track('Session End', {
+        Analytics.track('Session End', {
           sessionId,
           timestamp: new Date().toISOString(),
         })
       } else {
-        mixpanel.track('Session Resumed', {
+        Analytics.track('Session Resumed', {
           sessionId,
           timestamp: new Date().toISOString(),
         })

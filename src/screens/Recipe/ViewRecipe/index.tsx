@@ -5,8 +5,8 @@ import useGetRecipe from 'hooks/useGetRecipe'
 import { useParams } from 'react-router-dom'
 import RecipeDetails from '../RecipeDetails'
 import { ChevronLeftIcon } from '@heroicons/react/24/solid'
-import mixpanel from 'mixpanel-browser'
 import { useEffect } from 'react'
+import { Analytics } from 'util/analytics'
 
 const Skeleton = () => {
   return (
@@ -48,7 +48,7 @@ const ViewRecipe = () => {
   const { id } = useParams<{ id: string }>()
 
   useEffect(() => {
-    mixpanel.track_pageview({ page: 'Edit Recipe' })
+    Analytics.trackPageView('Edit Recipe')
   }, [])
   const { recipe, isLoading } = useGetRecipe(id)
 

@@ -13,11 +13,11 @@ import {
 import { AppPath } from 'routes/AppRoutes.types'
 import RecipeCard from './components/RecipeCard'
 import GetStarted from './GetStarted'
-import mixpanel from 'mixpanel-browser'
 import { useEffect } from 'react'
 import SlidingTransition from 'components/SlidingTransition'
 import AddRecipe from '../AddRecipe'
 import { AnimatePresence } from 'framer-motion'
+import { Analytics } from 'util/analytics'
 
 enum ScreenPath {
   AddRecipe = 'add-recipe',
@@ -33,7 +33,7 @@ const RecipeOverview = () => {
   const isParentScreen = location.pathname === resolvePath.pathname
 
   useEffect(() => {
-    mixpanel.track_pageview({ page: 'All Recipes' })
+    Analytics.trackPageView('All Recipes')
   }, [])
 
   return (

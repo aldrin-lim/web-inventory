@@ -1,10 +1,10 @@
-import mixpanel from 'mixpanel-browser'
 import { useEffect } from 'react'
 import ProductDetail from 'screens/Product/ProductDetail'
+import { Analytics } from 'util/analytics'
 
 const AddProduct = () => {
   useEffect(() => {
-    mixpanel.track_pageview({ page: 'Add Product' })
+    Analytics.trackPageView('Add Product')
   }, [])
   return <ProductDetail />
 }
