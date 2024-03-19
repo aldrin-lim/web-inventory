@@ -12,9 +12,17 @@ import { Analytics } from 'util/analytics.ts'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import ErrorBoundary from 'components/ErrorBoundary.tsx'
+
+import { registerSW } from 'virtual:pwa-register'
+import ReloadPrompt from 'components/ReloadPrompt/index.tsx'
+
 Big.DP = 4
 
 Analytics.init()
+
+const updateSW = registerSW({})
+
+updateSW()
 
 const queryClient = new QueryClient()
 
@@ -39,6 +47,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           </LocalizationProvider>
         </AuthProvider>
       </Auth0Provider>
+      <ReloadPrompt />
     </ErrorBoundary>
   </React.StrictMode>,
 )
