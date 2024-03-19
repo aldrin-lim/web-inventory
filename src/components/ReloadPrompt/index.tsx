@@ -12,11 +12,13 @@ function ReloadPrompt() {
     onRegisteredSW(swUrl, r) {
       console.log(`Service Worker at: ${swUrl}`)
       console.log('SW Registered: ' + r)
-      r &&
+      if (r) {
+        r.update()
         setInterval(() => {
           console.log('Checking for sw update')
           r.update()
         }, 20000 /* 20s for testing purposes */)
+      }
     },
     onRegisterError(error) {
       console.log('SW registration error', error)
