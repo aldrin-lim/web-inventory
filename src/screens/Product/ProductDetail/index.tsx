@@ -1,11 +1,6 @@
+// ProductDetails.tsx
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-} from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
 import {
   ChevronLeftIcon,
@@ -269,6 +264,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     values,
     setValues,
     initialValues: initialFormValues,
+    validateForm,
   } = useFormik<ProductDetailFormikValue>({
     initialValues: {
       ...initialValues,
@@ -277,6 +273,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
     validationSchema: toFormikValidationSchema(ValidationSchema),
     enableReinitialize: false,
     validateOnBlur: false,
+    validateOnChange: true,
     onSubmit: async (formValue) => {
       formValue.price = toNumber(formValue.price)
       formValue.profitPercentage = toNumber(formValue.profitPercentage)
@@ -434,7 +431,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
 
   // Event handlers
 
-  const submitFormikForm = () => {
+  const submitFormikForm = useCallback(async () => {
     if (values.batches.length === 0) {
       toast.error('No batch available for use', {
         autoClose: 1000,
@@ -443,16 +440,18 @@ export const ProductDetail = (props: ProductDetailProps) => {
       return
     }
 
-    if (Object.keys(errors).length > 0) {
-      toast.error('Please fill up all required fields', {
+    const validation = await ValidationSchema.safeParseAsync(values)
+    if (!validation.success) {
+      const error = validation.error.issues[0].message
+      toast.error(error, {
+        autoClose: 500,
         theme: 'colored',
-        autoClose: 1000,
       })
       return
     }
 
     submitForm()
-  }
+  }, [errors, submitForm, values])
 
   const addNewBatch = async () => {
     const newBatch = {
@@ -536,6 +535,9 @@ export const ProductDetail = (props: ProductDetailProps) => {
       Analytics.track('Start Add Product')
     }
   }, [])
+
+  console.log('values', values)
+  console.log('errors', errors)
 
   return (
     <>
@@ -716,12 +718,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
                 checked={!values.forSale}
                 onChange={async (e) => {
                   if (e.target.checked === true) {
-                    setFieldValue('price', undefined)
-                    setFieldValue('profitAmount', undefined)
-                    setFieldValue('profitPercentage', undefined)
+                    await setFieldValue('price', undefined)
+                    await setFieldValue('profitAmount', undefined)
+                    await setFieldValue('profitPercentage', undefined)
                   } else {
-                    setShowTaxField(false)
-                    setFieldValue('applyTax', false)
+                    await setShowTaxField(false)
+                    await setFieldValue('applyTax', false)
                   }
                 }}
                 className="toggle toggle-primary"
@@ -739,12 +741,12 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     {...getFieldProps('forSale')}
                     autoComplete="off"
                     type="checkbox"
-                    onChange={(e) => {
-                      setFieldValue('forSale', !e.target.checked)
+                    onChange={async (e) => {
+                      await setFieldValue('forSale', !e.target.checked)
                       if (e.target.checked === true) {
-                        setFieldValue('price', undefined)
-                        setFieldValue('profitAmount', undefined)
-                        setFieldValue('profitPercentage', undefined)
+                        await setFieldValue('price', undefined)
+                        await setFieldValue('profitAmount', undefined)
+                        await setFieldValue('profitPercentage', undefined)
 
                         // Set all cost to zero
                         const batches = cloneDeep(values.batches)
@@ -754,7 +756,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                             cost: 0,
                           }
                         })
-                        setFieldValue('batches', updatedBatches)
+                        await setFieldValue('batches', updatedBatches)
                       }
                     }}
                     checked={!values.forSale}
@@ -1458,7 +1460,7 @@ export const ProductDetail = (props: ProductDetailProps) => {
                     ) >= 0
                   return (
                     <motion.div
-                      key={batch.id}
+                      key={`y-${batch.id}`}
                       initial={{ backgroundColor: '#856AD4', opacity: 0.5 }}
                       animate={{ background: '#FFF', opacity: 1 }}
                       transition={{ ease: 'easeInOut', duration: 0.4 }}
