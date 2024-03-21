@@ -19,4 +19,5 @@ export enum AppPath {
   Signout = '/signout',
   Reports = '/reports',
   Dashboard = '/reports/dashboard',
+  Expenses = '/expenses',
 }

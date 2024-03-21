@@ -15,6 +15,7 @@ import Store from 'screens/Store'
 import Profile from 'screens/Profile'
 import SignoutScreen from 'components/SignoutScreen'
 import Dashboard from 'screens/Report/Dashboard'
+import Expense from 'screens/Expense'
 
 const AppRoutes = () => (
   <Routes>
@@ -55,6 +56,10 @@ const AppRoutes = () => (
       <Route
         path={AppPath.Dashboard}
         element={<ProtectedRoute element={<Dashboard />} />}
+      />
+      <Route
+        path={`${AppPath.Expenses}/*`}
+        element={<ProtectedRoute element={<Expense />} />}
       />
       <Route
         path={AppPath.Store}

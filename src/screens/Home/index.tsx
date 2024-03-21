@@ -7,6 +7,7 @@ import {
   BuildingStorefrontIcon,
   UserIcon,
   PresentationChartBarIcon,
+  QueueListIcon,
 } from '@heroicons/react/24/outline'
 import Toolbar from 'components/Layout/components/Toolbar'
 
@@ -81,6 +82,16 @@ const ProductMenu = () => {
             >
               <PresentationChartBarIcon className="h-6 w-6" />
               Report
+              <ChevronRightIcon className="ml-auto h-6 w-6 " />
+            </button>
+          </li>
+          <li>
+            <button
+              className="btn btn-ghost w-full justify-start px-1"
+              onClick={() => navigate(AppPath.Expenses)}
+            >
+              <QueueListIcon className="h-6 w-6" />
+              Expenses
               <ChevronRightIcon className="ml-auto h-6 w-6 " />
             </button>
           </li>
