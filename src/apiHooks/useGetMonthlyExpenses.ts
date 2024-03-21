@@ -3,9 +3,9 @@ import { AxiosResponse } from 'axios'
 import { Expense } from 'types/expense.types'
 import { httpClient } from 'util/http'
 
-const useGetMonthlyExpenses = (date?: Date) => {
-  const { data, isFetching, error } = useQuery({
-    queryKey: ['expenses', date],
+const useGetMonthlyExpenses = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['expenses'],
     queryFn: async () => {
       const url = `/expenses`
 
@@ -21,7 +21,7 @@ const useGetMonthlyExpenses = (date?: Date) => {
   return {
     monthlyExpenses: data,
     error,
-    isLoading: isFetching,
+    isLoading,
   }
 }
 

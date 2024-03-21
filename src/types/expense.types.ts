@@ -15,6 +15,7 @@ export enum ExpensesCategories {
 export const ExpenseSchema = z.object({
   id: z.string().uuid().optional(), // Optional because it's auto-generated
   name: z.string(),
+  description: z.string().default(''),
   category: z.nativeEnum(ExpensesCategories),
   amount: z.number().positive(),
   isRecurring: z.boolean(),

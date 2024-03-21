@@ -8,7 +8,7 @@ type PrimaryActionProps = {
   onDelete: () => void
   onSave: () => void
   onClone: () => void
-  mode: 'add' | 'edit'
+  mode?: 'add' | 'edit'
 }
 
 const PrimaryAction = (props: PrimaryActionProps) => {
@@ -19,7 +19,7 @@ const PrimaryAction = (props: PrimaryActionProps) => {
     onCreate,
     onDelete,
     onSave,
-    mode,
+    mode = 'add',
   } = props
   if (mode === 'add') {
     return (

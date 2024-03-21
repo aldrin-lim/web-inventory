@@ -361,7 +361,7 @@ const Dashboard = () => {
 
         {report && topSellingItems && (
           <div className="flex flex-col gap-4">
-            Top 10 Best Seller
+            {view === 'weekly' ? 'Weekly' : 'Monthly'} Top 10 Best Seller:
             <div className="rounded-lg border border-neutral-300">
               <table className="table w-full">
                 <thead>
