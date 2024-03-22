@@ -114,6 +114,10 @@ const AddExpenseDialog: React.FC<AddExpenseDialogProps> = ({
               type="textarea"
               className="textarea textarea-bordered focus:outline-none"
               autoComplete="off"
+              value={values.description}
+              onChange={(e) => {
+                setFieldValue('description', e.target.value)
+              }}
             />
             {errors.description && (
               <div className="label py-0">

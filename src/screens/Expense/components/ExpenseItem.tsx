@@ -44,31 +44,34 @@ const ExpenseItem: React.FC<ExpenseItemProps> = ({
             />
           </div>
         </div>
-        <div className="relative flex w-full flex-[0_0_auto] items-center gap-[8px] self-stretch">
-          <div className="relative flex h-[40px] flex-1 grow items-center justify-around gap-[16px] rounded-[4px] border border-solid border-[#a4a4a4] py-[8px] pl-[8px] pr-0">
-            <CurrencyInput
-              autoComplete="off"
-              decimalsLimit={2}
-              prefix="₱"
-              onBlur={getFieldProps(`expenses.${index}.isRecurring`).onBlur}
-              name={getFieldProps(`expenses.${index}.isRecurring`).name}
-              value={expense.amount}
-              type="text"
-              tabIndex={5}
-              className={`input w-full border-none bg-transparent px-0 pl-2 text-base focus:outline-none`}
-              placeholder="₱0"
-              inputMode="decimal"
-              onValueChange={async (value) => {
-                setFieldValue(`expenses.${index}.amount`, value)
-              }}
-            />
+        <div className="w-full">
+          <div className="relative flex w-full flex-[0_0_auto] items-center gap-[8px] self-stretch">
+            <div className="relative flex h-[40px] flex-1 grow items-center justify-around gap-[16px] rounded-[4px] border border-solid border-[#a4a4a4] py-[8px] pl-[8px] pr-0">
+              <CurrencyInput
+                autoComplete="off"
+                decimalsLimit={2}
+                prefix="₱"
+                onBlur={getFieldProps(`expenses.${index}.isRecurring`).onBlur}
+                name={getFieldProps(`expenses.${index}.isRecurring`).name}
+                value={expense.amount}
+                type="text"
+                tabIndex={5}
+                className={`input w-full border-none bg-transparent px-0 pl-2 text-base focus:outline-none`}
+                placeholder="₱0"
+                inputMode="decimal"
+                onValueChange={async (value) => {
+                  setFieldValue(`expenses.${index}.amount`, value)
+                }}
+              />
+            </div>
+            <button
+              onClick={() => expense?.id && onRemove?.(expense.id)}
+              className="btn btn-ghost"
+            >
+              <TrashIcon className="w-6 text-error" />
+            </button>
           </div>
-          <button
-            onClick={() => expense?.id && onRemove?.(expense.id)}
-            className="btn btn-ghost"
-          >
-            <TrashIcon className="w-6 text-error" />
-          </button>
+          <p className="text-sm text-neutral/50">{expense.description}</p>
         </div>
       </div>
     </>

@@ -74,6 +74,7 @@ type ValidationError = ZodError<{ operations: Operations }>
 const filterExpenseFields = (expense: Expense) => ({
   id: expense.id,
   name: expense.name,
+  description: expense.description,
   category: expense.category,
   amount: expense.amount,
   isRecurring: expense.isRecurring ?? false, // Providing a default value if isRecurring is undefined
