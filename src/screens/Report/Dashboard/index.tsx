@@ -111,7 +111,7 @@ const Dashboard = () => {
               : [],
       },
       {
-        id: 'Expenses',
+        id: 'Cost (COGS)',
         color: 'hsl(36, 70%, 50%)',
         data:
           view === 'weekly'
@@ -169,16 +169,6 @@ const Dashboard = () => {
       <div className="AppContainer bg-prim flex flex-col gap-4 p-4">
         <div className="flex flex-row items-center gap-4">
           <h1 className="">Sales Summary:</h1>
-          {/* <input
-            className="input input-bordered w-full"
-            type="date"
-            // Date today
-            defaultValue={moment(dateSelected).format('YYYY-MM-DD')}
-            onChange={
-              (e) => setDateSelected(new Date(e.target.value))
-              // setDateSelected(new Date(e.target.value))
-            }
-          /> */}
           {view === 'weekly' && (
             <DatePicker
               value={moment(dateSelected)}
@@ -305,7 +295,8 @@ const Dashboard = () => {
             pointLabelYOffset={-12}
             useMesh={true}
             tooltip={({ point }) => {
-              const label = view === 'weekly' ? 'Day' : 'Month'
+              const color =
+                point.serieId === 'Sales' ? 'text-primary' : 'text-[#d99126]'
               return (
                 <div
                   style={{
@@ -315,21 +306,15 @@ const Dashboard = () => {
                   }}
                   className="flex flex-col text-base"
                 >
-                  <div>
-                    {label}: <strong>{String(point?.data?.x)}</strong>
-                  </div>
-                  <div>
-                    {point.serieId}:{' '}
-                    <strong>
-                      {formatToPeso(toNumber(point?.data?.y ?? 0))}
-                    </strong>
+                  <div>{String(point?.data?.x)}</div>
+                  <div className={color}>
+                    {formatToPeso(toNumber(point?.data?.y ?? 0), 2)}
                   </div>
                 </div>
               )
             }}
             legends={[
               {
-                toggleSerie: true,
                 anchor: 'top-left',
                 direction: 'row',
                 justify: false,
