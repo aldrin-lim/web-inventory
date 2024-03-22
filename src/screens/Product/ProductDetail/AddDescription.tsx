@@ -28,11 +28,9 @@ const AddDescription = (props: AddDescriptionProps) => {
   return (
     <div>
       <Toolbar
-        items={[
-          <ToolbarButton key={1} label="Cancel" onClick={goBack} />,
-          <ToolbarTitle key={2} title="Description" />,
-          <ToolbarButton key={3} label="Done" onClick={onSave} />,
-        ]}
+        start={<ToolbarButton label="Cancel" onClick={goBack} />}
+        middle={<ToolbarTitle title="Description" />}
+        end={<ToolbarButton label="Done" onClick={onSave} />}
       />
       <textarea
         onChange={(e) => setDescription(e.target.value)}

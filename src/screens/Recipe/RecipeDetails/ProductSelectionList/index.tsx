@@ -119,11 +119,8 @@ const ProductSelectionList = (props: ProductSelectionListProps) => {
   return (
     <div className="main-screen section">
       <Toolbar
-        items={[
-          <ToolbarButton key="back" label="Back" onClick={props.onClose} />,
-          <ToolbarTitle key="title" title="Inventory" />,
-          <div key={1} />,
-        ]}
+        start={<ToolbarButton label="Back" onClick={props.onClose} />}
+        middle={<ToolbarTitle key="title" title="Inventory" />}
       />
       <div>
         <div className="join w-full border py-0">

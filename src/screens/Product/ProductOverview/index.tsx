@@ -87,20 +87,19 @@ const ProductOverview = () => {
         )}
       >
         <Toolbar
-          items={[
+          start={
             <ToolbarButton
-              key={1}
               icon={<ChevronLeftIcon className="w-6" />}
               onClick={() => navigate(AppPath.Root)}
-            />,
-
-            <ToolbarTitle key="title" title="Products" />,
+            />
+          }
+          middle={<ToolbarTitle title="Products" />}
+          end={
             <ToolbarButton
-              key={2}
               label="Add"
               onClick={() => navigate(AppPath.AddProduct)}
-            />,
-          ]}
+            />
+          }
         />
         {renderContent()}
       </div>

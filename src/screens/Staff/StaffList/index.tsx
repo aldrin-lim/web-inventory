@@ -38,16 +38,15 @@ const StaffList = (props: StaffListProps) => {
   return (
     <div className="section flex h-full min-h-screen w-full flex-col gap-4">
       <Toolbar
-        items={[
+        start={
           <label
-            key="12"
             className="btn btn-square btn-ghost drawer-button -ml-4"
             onClick={() => navigate(AppPath.Settings)}
           >
             <ArrowSmallLeftIcon className="w-6 text-blue-400" />
-          </label>,
-          <ToolbarTitle key={2} title="Staff" />,
-        ]}
+          </label>
+        }
+        middle={<ToolbarTitle title="Staff" />}
       />
       <div className="flex flex-row items-center justify-between ">
         <h1 className="font-bold">Staff List</h1>

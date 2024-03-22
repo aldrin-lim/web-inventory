@@ -68,20 +68,22 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
         }, 200)
       }}
     >
-      <label
+      <button
+        className="btn btn-ghost"
         onClick={() => setOpen((prev) => !prev)}
-        className="btn btn-link px-0 normal-case text-blue-400 no-underline "
       >
-        <EllipsisVerticalIcon className="w-6 text-blue-400" />
-      </label>
+        <label className="btn btn-link -mr-4 px-0 normal-case text-blue-400 no-underline ">
+          <EllipsisVerticalIcon className="w-6 text-blue-400" />
+        </label>
+      </button>
       {open && (
-        <div className="dop menu dropdown-content top-10 flex w-36 flex-col overflow-hidden rounded-md bg-base-100 p-0 shadow">
+        <div className="dop menu dropdown-content top-10 flex w-[150px] flex-col overflow-hidden rounded-md border border-base-300 bg-base-100 p-0 shadow">
           <button
             disabled={props.isLoading}
             onClick={onSave}
             className="btn btn-ghost  flex flex-row justify-start gap-3 rounded-none "
           >
-            <PencilSquareIcon className="w-5" />
+            <PencilSquareIcon className="w-5 text-secondary" />
             <span>Save</span>
 
             {action === 'save' && (
@@ -93,7 +95,7 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
             onClick={onClone}
             className="btn btn-ghost  flex flex-row justify-start gap-3 rounded-none "
           >
-            <DocumentDuplicateIcon className="w-5" />
+            <DocumentDuplicateIcon className="w-5 text-secondary" />
             <span>Clone</span>
             {action === 'clone' && (
               <span className="loading loading-spinner loading-xs"></span>
@@ -104,7 +106,7 @@ const UpdateActionMenu = (props: UpdateActionMenuProps) => {
             onClick={onDelete}
             className="btn btn-ghost  flex flex-row justify-start gap-3 rounded-none "
           >
-            <TrashIcon className="w-5" />
+            <TrashIcon className="w-5 text-secondary" />
             <span>Delete</span>
             {action === 'delete' && (
               <span className="loading loading-spinner loading-xs"></span>

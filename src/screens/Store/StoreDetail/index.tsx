@@ -100,15 +100,14 @@ const StoreDetail = () => {
   return (
     <div className="screen pb-6">
       <Toolbar
-        items={[
+        start={
           <ToolbarButton
-            key={1}
             icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => navigate(AppPath.Root)}
             disabled={isMutating}
-          />,
-          <ToolbarTitle key={2} title="Store Settings" />,
-        ]}
+          />
+        }
+        middle={<ToolbarTitle title="Store Settings" />}
       />
       {isLoading && <Skeleton />}
       {!isLoading && (

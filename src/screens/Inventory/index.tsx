@@ -72,67 +72,14 @@ const Inventory = (props: InventoryProps) => {
   }, [filter, products, subFilter, nameFilter])
 
   const numberOfNearExpirationProducts = products.filter((product) =>
-    isWithinExpiration(product.activeBatch?.expirationDate ?? ''),
+    isWithinExpiration(product.activeBatch?.expirationDate ?? null),
   ).length
-
-  // const quantity = useMemo(
-  //   (product: Product) => {
-  //     // {product.outOfStock === false ? (
-  //     //   <p className="text-xs">{product.availability}</p>
-  //     // ) : (
-  //     //   <p className="text-xs text-red-500">Out of stock</p>
-  //     // )}
-  //     const statuses = []
-  //     if (isExpired(product.activeBatch.expirationDate)) {
-  //      return <p className="text-xs text-orange-500">Expired</p>
-  //     }
-  //   },
-  //   [products],
-  // )
-
-  const renderQuantity = (product: Product) => {
-    const activeBatch = product.activeBatch
-    const lowStock = toNumber(product.stockWarning) >= product.totalQuantity
-    if (!activeBatch) {
-      return <p className="text-xs text-orange-500">No Batches Found</p>
-    }
-
-    if (product.recipe) {
-      return (
-        <p className={`text-xs ${lowStock ? 'text-orange-400' : ''}`}>
-          {product.totalQuantity} pc(s) {lowStock ? 'Low Stock' : ''}
-        </p>
-      )
-    }
-
-    if (isExpired(activeBatch.expirationDate)) {
-      return <p className="text-xs text-orange-500">Expired</p>
-    }
-    if (product.outOfStock === true) {
-      return <p className="text-xs text-red-500">Out of stock</p>
-    }
-
-    if (lowStock) {
-      return (
-        <p className={`text-xs ${lowStock ? 'text-orange-400' : ''}`}>
-          {product.totalQuantity}{' '}
-          {unitAbbrevationsToLabel(
-            product.activeBatch?.unitOfMeasurement ?? '',
-          )}{' '}
-          {lowStock ? 'Low Stock' : ''}
-        </p>
-      )
-    }
-
-    return <p className="text-xs">{product.availability}</p>
-  }
 
   return (
     <div className="screen gap-0 pb-[100px]">
       <Toolbar
-        items={[
+        start={
           <ToolbarButton
-            key={'negative'}
             icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => {
               if (props.onBack) {
@@ -141,17 +88,18 @@ const Inventory = (props: InventoryProps) => {
                 navigate(AppPath.Products)
               }
             }}
-          />,
-
-          <ToolbarTitle key="title" title="Inventory" />,
+          />
+        }
+        middle={<ToolbarTitle key="title" title="Inventory" />}
+        end={
           showAddProduct && (
             <ToolbarButton
               key={'postive'}
               label="postive"
               onClick={() => navigate(AppPath.AddProduct)}
             />
-          ),
-        ]}
+          )
+        }
       />
 
       {isLoading ? <Skeleton /> : null}

@@ -29,18 +29,15 @@ const RecipeList = (props: RecipeListProps) => {
   return (
     <div className="screen gap-0 pb-[100px]">
       <Toolbar
-        items={[
+        start={
           <ToolbarButton
-            key={'negative'}
             icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => {
               onBack()
             }}
-          />,
-
-          <ToolbarTitle key="title" title="Recipes" />,
-          <div key={3} />,
-        ]}
+          />
+        }
+        middle={<ToolbarTitle title="Recipes" />}
       />
 
       {isLoading ? <Skeleton /> : null}

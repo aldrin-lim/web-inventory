@@ -12,16 +12,9 @@ const Skeleton = () => {
   return (
     <div className="screen">
       <Toolbar
-        items={[
-          <ToolbarButton
-            key={1}
-            icon={<ChevronLeftIcon className="w-6" />}
-            onClick={() => {}}
-          />,
-
-          <ToolbarTitle key="title" title="View Product" />,
-          <ToolbarButton key="save" label="Save" disabled />,
-        ]}
+        start={<ToolbarButton icon={<ChevronLeftIcon className="w-6" />} />}
+        middle={<ToolbarTitle title="View Product" />}
+        end={<ToolbarButton label="Save" disabled />}
       />
 
       <div className="flex flex-col gap-4">

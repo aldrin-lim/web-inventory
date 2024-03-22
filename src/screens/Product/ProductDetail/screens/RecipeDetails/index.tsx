@@ -30,17 +30,15 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
   return (
     <div className={['screen pb-9'].join(' ')}>
       <Toolbar
-        items={[
+        start={
           <ToolbarButton
-            key={1}
             icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => {
               onBack()
             }}
-          />,
-          <ToolbarTitle key="title" title="Recipe Details" />,
-          <div key={3} />,
-        ]}
+          />
+        }
+        middle={<ToolbarTitle title="Recipe Details" />}
       />
 
       <div className="flex flex-col gap-2">

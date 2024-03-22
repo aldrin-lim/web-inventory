@@ -253,19 +253,19 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           </div>
         )}
         <Toolbar
-          items={[
+          start={
             <ToolbarButton
-              key={1}
               icon={<ChevronLeftIcon className="w-6" />}
               disabled={isMutating}
               onClick={() => {
                 onBack ? onBack() : navigate(AppPath.Recipe)
               }}
-            />,
-            <ToolbarTitle
-              key="title"
-              title={recipe ? 'View Recipe' : 'Add Recipe'}
-            />,
+            />
+          }
+          middle={
+            <ToolbarTitle title={recipe ? 'View Recipe' : 'Add Recipe'} />
+          }
+          end={
             <PrimaryAction
               disabled={isMutating}
               key="primaryAction"
@@ -292,8 +292,8 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
                   navigate(`${AppPath.Recipe}/${newRecipe.id}`)
                 }
               }}
-            />,
-          ]}
+            />
+          }
         />
 
         <div className="flex flex-col gap-2">

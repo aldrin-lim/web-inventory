@@ -16,22 +16,22 @@ const Description = (props: DescriptionProps) => {
   return (
     <div className="screen">
       <Toolbar
-        items={[
+        start={
           <ToolbarButton
-            key={1}
             onClick={onBack}
             icon={<ChevronLeftIcon className="w-6" />}
-          />,
-          <ToolbarTitle key={2} title="Description" />,
+          />
+        }
+        middle={<ToolbarTitle title="Description" />}
+        end={
           <ToolbarButton
-            key={1}
             onClick={() => {
               onBack()
               onComplete(description ?? '')
             }}
             label="Done"
-          />,
-        ]}
+          />
+        }
       />
       <div>
         <textarea

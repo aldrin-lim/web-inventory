@@ -575,17 +575,20 @@ export const ProductDetail = (props: ProductDetailProps) => {
           </div>
         )}
         <Toolbar
-          items={[
+          start={
             <ToolbarButton
-              key={1}
               icon={<ChevronLeftIcon className="w-6" />}
               onClick={checkUnsavedChanges}
               disabled={isMutating}
-            />,
+            />
+          }
+          middle={
             <ToolbarTitle
               key="title"
               title={product ? 'Edit Product' : 'New Product'}
-            />,
+            />
+          }
+          end={
             <PrimaryAction
               mode={product ? 'edit' : 'add'}
               key="primaryAction"
@@ -615,8 +618,8 @@ export const ProductDetail = (props: ProductDetailProps) => {
                   await cloneProduct({ id: product.id })
                 }
               }}
-            />,
-          ]}
+            />
+          }
         />
         <div className="flex flex-col gap-1">
           <label className="form-control w-full ">

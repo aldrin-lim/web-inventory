@@ -16,13 +16,7 @@ const Settings = () => {
   const { logout } = useAuth0()
   return (
     <div className="section flex h-full flex-grow flex-col gap-4">
-      <Toolbar
-        items={[
-          <div key={0} />,
-          <ToolbarTitle key="title" title="Settings" />,
-          <div key={1} />,
-        ]}
-      />
+      <Toolbar middle={<ToolbarTitle title="Settings" />} />
       <ul className="flex h-full flex-col">
         <li>
           <button

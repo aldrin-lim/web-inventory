@@ -158,15 +158,13 @@ const Dashboard = () => {
         </div>
       )}
       <Toolbar
-        items={[
+        start={
           <ToolbarButton
-            key={'negative'}
             icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => navigate(-1)}
-          />,
-          <ToolbarTitle key="title" title="Dashboard" />,
-          null,
-        ]}
+          />
+        }
+        middle={<ToolbarTitle title="Dashboard" />}
       />
       <div className="AppContainer bg-prim flex flex-col gap-4 p-4">
         <div className="flex flex-row items-center gap-4">

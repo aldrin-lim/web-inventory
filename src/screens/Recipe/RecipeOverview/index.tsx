@@ -42,19 +42,19 @@ const RecipeOverview = () => {
         className={['screen', !isParentScreen ? 'hidden-screen' : ''].join(' ')}
       >
         <Toolbar
-          items={[
+          start={
             <ToolbarButton
-              key={1}
               icon={<ChevronLeftIcon className="w-6" />}
               onClick={() => navigate(AppPath.Root)}
-            />,
-            <ToolbarTitle key={2} title="Recipes" />,
+            />
+          }
+          middle={<ToolbarTitle title="Recipes" />}
+          end={
             <ToolbarButton
-              key={3}
               label="Add"
               onClick={() => navigate(ScreenPath.AddRecipe)}
-            />,
-          ]}
+            />
+          }
         />
         {isLoading && <Skeleton />}
         {!isLoading && recipes?.length === 0 && <GetStarted />}

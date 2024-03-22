@@ -15,15 +15,14 @@ const Skeleton = () => {
   return (
     <div className="screen">
       <Toolbar
-        items={[
+        start={
           <ToolbarButton
-            key={1}
             icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => navigate(AppPath.ProductOverview)}
-          />,
-          <ToolbarTitle key="title" title="View Product" />,
-          <ToolbarButton key="save" label="Save" disabled />,
-        ]}
+          />
+        }
+        middle={<ToolbarTitle key="title" title="View Product" />}
+        end={<ToolbarButton key="save" label="Save" disabled />}
       />
 
       <div className="flex flex-col gap-4">

@@ -49,15 +49,14 @@ const Profile = () => {
   return (
     <div className="screen">
       <Toolbar
-        items={[
+        start={
           <ToolbarButton
-            key={1}
             icon={<ChevronLeftIcon className="w-6" />}
             onClick={() => navigate(AppPath.Root)}
             disabled={isMutating}
-          />,
-          <ToolbarTitle key={2} title="User Profile" />,
-        ]}
+          />
+        }
+        middle={<ToolbarTitle title="User Profile" />}
       />
       <div className="mt-3 flex flex-col gap-2">
         <div className="form-control w-full">

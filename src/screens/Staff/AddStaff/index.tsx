@@ -53,16 +53,15 @@ const AddStaff = (props: AddStaffProps) => {
   return (
     <div className="section flex w-full flex-col gap-2 pt-0">
       <Toolbar
-        items={[
+        start={
           <label
-            key="12"
             className="btn btn-square btn-ghost drawer-button -ml-4"
             onClick={onClose}
           >
             <ArrowSmallLeftIcon className="w-6 text-blue-400" />
-          </label>,
-          <ToolbarTitle key={2} title="Add Staff" />,
-        ]}
+          </label>
+        }
+        middle={<ToolbarTitle title="Add Staff" />}
       />
       <h1>
         <strong>Store Detail</strong>

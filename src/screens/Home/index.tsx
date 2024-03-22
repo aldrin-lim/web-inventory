@@ -31,17 +31,15 @@ const ProductMenu = () => {
   return (
     <div className="absolute flex w-full flex-col gap-4">
       <Toolbar
-        items={[
-          <div key="1" />,
+        middle={
           <div
             key="title"
-            className="mx-auto flex flex-row gap-3 self-center py-3 text-center"
+            className="mx-auto flex flex-row justify-center gap-3 py-3 text-center"
           >
             <img key="logo " className="w-6 self-center" src={logo} />
             <h1 className="font-bold">Qrafter</h1>
-          </div>,
-          null,
-        ]}
+          </div>
+        }
       />
       <div className="flex flex-col gap-4 px-2">
         <ul>
