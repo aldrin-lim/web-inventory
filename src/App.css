@@ -65,7 +65,7 @@ html, body {
   }
   
   .screen {
-    @apply absolute flex w-full flex-col gap-4 min-h-screen
+    @apply absolute flex w-full flex-col gap-4 
   }
 
   .hidden-screen {

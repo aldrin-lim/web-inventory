@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Sign In with Auth0</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+</head>
+  <style>
+    
+    body, html {
+      font-family: "Poppins", sans-serif;
+      height: 100%;
+      background-color: #fff;
+    }
+    
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    textarea:-webkit-autofill,
+    textarea:-webkit-autofill:hover,
+    textarea:-webkit-autofill:focus,
+    select:-webkit-autofill,
+    select:-webkit-autofill:hover,
+    select:-webkit-autofill:focus {
+      border: 1px solid black;
+      -webkit-text-fill-color: black;
+      -webkit-box-shadow: 0 0 0px 1000px black inset;
+      box-shadow: 0 0 0px 1000px #fff inset;
+      transition: background-color 5000s ease-in-out 0s;
+      color: black;
+    }
+  </style>
+<body>
+  <div id="loading-cover" class="z-50 flex h-screen w-screen flex-col items-center justify-center bg-white">
+    <span class="loading loading-ring loading-lg"></span>
+  </div>
+  
+  <!-- ADMIN APP SIGNIN -->
+  <div id="admin" class="login-container w-full h-full justify-center flex-col hidden ">
+    
+    <div class="mx-auto w-full max-w-md p-4 flex flex-col gap-4 my-auto">
+      
+      <div class="w-full mb-8">
+        <img class="h-[48px] mx-auto" src="https://qrafter-public-assets.s3.ap-southeast-1.amazonaws.com/qrafter-login-banner.svg"/>
+      </div>
+      <div class="login-header w-full">
+        
+        <div class="join w-full">
+          <!-- Toggle -->
+          <button
+            id="login-toggle"
+            class="btn btn-outline w-1/2 join-item"
+            checked
+            type="radio"
+            name="options"
+            
+          >Login</button>
+          <button
+            id="signup-toggle"
+            class="btn btn-outline w-1/2  join-item"
+            type="radio"
+            name="options"
+            aria-label="Signup"
+          >Signup</button>
+        </div>
+      </div>
+
+      <button
+          type="button"
+          id="admin-btn-google"
+          class="btn hover:bg-transparent bg-white w-full rounded-md border-neutral/80 text-neutral/80">
+            <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIzOHB4IiBoZWlnaHQ9IjM4cHgiIHZpZXdCb3g9IjAgMCAzOCAzOCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4gICAgICAgIDx0aXRsZT5BcnRib2FyZDwvdGl0bGU+ICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPiAgICA8ZyBpZD0iQXJ0Ym9hcmQiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPiAgICAgICAgPGcgaWQ9ImJ0bl9nb29nbGVfZGFya19ub3JtYWxfaW9zIj4gICAgICAgICAgICA8ZyBpZD0iYnV0dG9uLWJnLWNvcHkiPiAgICAgICAgICAgICAgICA8cmVjdCBpZD0icGF0aC0zIiB4PSIwIiB5PSIwIiB3aWR0aD0iMzgiIGhlaWdodD0iMzgiIHJ4PSIxIj48L3JlY3Q+ICAgICAgICAgICAgPC9nPiAgICAgICAgICAgIDxnIGlkPSJsb2dvX2dvb2dsZWdfNDhkcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAuMDAwMDAwLCAxMC4wMDAwMDApIj4gICAgICAgICAgICAgICAgPHBhdGggZD0iTTE3LjY0LDkuMjA0NTQ1NDUgQzE3LjY0LDguNTY2MzYzNjQgMTcuNTgyNzI3Myw3Ljk1MjcyNzI3IDE3LjQ3NjM2MzYsNy4zNjM2MzYzNiBMOSw3LjM2MzYzNjM2IEw5LDEwLjg0NSBMMTMuODQzNjM2NCwxMC44NDUgQzEzLjYzNSwxMS45NyAxMy4wMDA5MDkxLDEyLjkyMzE4MTggMTIuMDQ3NzI3MywxMy41NjEzNjM2IEwxMi4wNDc3MjczLDE1LjgxOTU0NTUgTDE0Ljk1NjM2MzYsMTUuODE5NTQ1NSBDMTYuNjU4MTgxOCwxNC4yNTI3MjczIDE3LjY0LDExLjk0NTQ1NDUgMTcuNjQsOS4yMDQ1NDU0NSBaIiBpZD0iU2hhcGUiIGZpbGw9IiM0Mjg1RjQiPjwvcGF0aD4gICAgICAgICAgICAgICAgPHBhdGggZD0iTTksMTggQzExLjQzLDE4IDEzLjQ2NzI3MjcsMTcuMTk0MDkwOSAxNC45NTYzNjM2LDE1LjgxOTU0NTUgTDEyLjA0NzcyNzMsMTMuNTYxMzYzNiBDMTEuMjQxODE4MiwxNC4xMDEzNjM2IDEwLjIxMDkwOTEsMTQuNDIwNDU0NSA5LDE0LjQyMDQ1NDUgQzYuNjU1OTA5MDksMTQuNDIwNDU0NSA0LjY3MTgxODE4LDEyLjgzNzI3MjcgMy45NjQwOTA5MSwxMC43MSBMMC45NTcyNzI3MjcsMTAuNzEgTDAuOTU3MjcyNzI3LDEzLjA0MTgxODIgQzIuNDM4MTgxODIsMTUuOTgzMTgxOCA1LjQ4MTgxODE4LDE4IDksMTggWiIgaWQ9IlNoYXBlIiBmaWxsPSIjMzRBODUzIj48L3BhdGg+ICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0zLjk2NDA5MDkxLDEwLjcxIEMzLjc4NDA5MDkxLDEwLjE3IDMuNjgxODE4MTgsOS41OTMxODE4MiAzLjY4MTgxODE4LDkgQzMuNjgxODE4MTgsOC40MDY4MTgxOCAzLjc4NDA5MDkxLDcuODMgMy45NjQwOTA5MSw3LjI5IEwzLjk2NDA5MDkxLDQuOTU4MTgxODIgTDAuOTU3MjcyNzI3LDQuOTU4MTgxODIgQzAuMzQ3NzI3MjczLDYuMTczMTgxODIgMCw3LjU0NzcyNzI3IDAsOSBDMCwxMC40NTIyNzI3IDAuMzQ3NzI3MjczLDExLjgyNjgxODIgMC45NTcyNzI3MjcsMTMuMDQxODE4MiBMMy45NjQwOTA5MSwxMC43MSBaIiBpZD0iU2hhcGUiIGZpbGw9IiNGQkJDMDUiPjwvcGF0aD4gICAgICAgICAgICAgICAgPHBhdGggZD0iTTksMy41Nzk1NDU0NSBDMTAuMzIxMzYzNiwzLjU3OTU0NTQ1IDExLjUwNzcyNzMsNC4wMzM2MzYzNiAxMi40NDA0NTQ1LDQuOTI1NDU0NTUgTDE1LjAyMTgxODIsMi4zNDQwOTA5MSBDMTMuNDYzMTgxOCwwLjg5MTgxODE4MiAxMS40MjU5MDkxLDAgOSwwIEM1LjQ4MTgxODE4LDAgMi40MzgxODE4MiwyLjAxNjgxODE4IDAuOTU3MjcyNzI3LDQuOTU4MTgxODIgTDMuOTY0MDkwOTEsNy4yOSBDNC42NzE4MTgxOCw1LjE2MjcyNzI3IDYuNjU1OTA5MDksMy41Nzk1NDU0NSA5LDMuNTc5NTQ1NDUgWiIgaWQ9IlNoYXBlIiBmaWxsPSIjRUE0MzM1Ij48L3BhdGg+ICAgICAgICAgICAgICAgIDxwb2x5Z29uIGlkPSJTaGFwZSIgcG9pbnRzPSIwIDAgMTggMCAxOCAxOCAwIDE4Ij48L3BvbHlnb24+ICAgICAgICAgICAgPC9nPiAgICAgICAgPC9nPiAgICA8L2c+PC9zdmc+" />
+             <p>Sign In with Google</p>
+        </button>
+
+      <h1 class="text-black/70 text-center">OR</h1>
+      
+      <form onsubmit="return false;" method="post" class="flex flex-col gap-4">
+        <div class="form-group w-full">
+          <input
+            type="email"
+            class="input input-bordered bg-white w-full border-black text-black focus:outline-none focus:border-black"
+            id="admin-email"
+            placeholder="Email">
+        </div>
+        <div class="form-group w-full">
+          <input
+            type="password"
+            class="input te input-bordered bg-white w-full border-black text-black focus:outline-none focus:border-black"
+            id="admin-password"
+            placeholder="Password">
+        </div>
+        <div class="captcha-container form-group"></div>
+        <button
+          type="submit"
+          id="admin-btn-login"
+          class="btn bg-[#3A9E92] text-white border-transparent">
+            Log In
+        </button>
+        <button
+          type="button"
+          id="admin-btn-signup"
+          class="btn bg-[#3A9E92] text-white hidden">
+            Sign Up
+        </button>
+        <hr>
+        <div id="admin-error-message" role="alert" class="alert alert-error py-2 text-white flex-row gap-2 hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span id="admin-error-message-text" class="text-sm flex flex-row gap-2 text-left"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- POS APP SIGIN -->
+  <div id="pos" class="login-container w-full h-full justify-center flex-col bg-[#1d232a] hidden">
+    <div class="mx-auto w-full max-w-md p-4 flex flex-col gap-4 my-auto">
+      <div class="w-full mb-8">
+        <img class="h-[48px] mx-auto" src="https://qrafter-public-assets.s3.ap-southeast-1.amazonaws.com/qrafter-pos-login-banner.svg"/>
+      </div>
+      <div class="login-header">
+        
+        <h1 class="text-white/70  text-xl text-center">Login</h1>
+      </div>
+
+      <button
+          type="button"
+          id="pos-btn-google"
+          class="btn hover:bg-transparent bg-white w-full rounded-md border-neutral/80 text-neutral/80">
+            <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSIzOHB4IiBoZWlnaHQ9IjM4cHgiIHZpZXdCb3g9IjAgMCAzOCAzOCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4gICAgICAgIDx0aXRsZT5BcnRib2FyZDwvdGl0bGU+ICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPiAgICA8ZyBpZD0iQXJ0Ym9hcmQiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPiAgICAgICAgPGcgaWQ9ImJ0bl9nb29nbGVfZGFya19ub3JtYWxfaW9zIj4gICAgICAgICAgICA8ZyBpZD0iYnV0dG9uLWJnLWNvcHkiPiAgICAgICAgICAgICAgICA8cmVjdCBpZD0icGF0aC0zIiB4PSIwIiB5PSIwIiB3aWR0aD0iMzgiIGhlaWdodD0iMzgiIHJ4PSIxIj48L3JlY3Q+ICAgICAgICAgICAgPC9nPiAgICAgICAgICAgIDxnIGlkPSJsb2dvX2dvb2dsZWdfNDhkcCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAuMDAwMDAwLCAxMC4wMDAwMDApIj4gICAgICAgICAgICAgICAgPHBhdGggZD0iTTE3LjY0LDkuMjA0NTQ1NDUgQzE3LjY0LDguNTY2MzYzNjQgMTcuNTgyNzI3Myw3Ljk1MjcyNzI3IDE3LjQ3NjM2MzYsNy4zNjM2MzYzNiBMOSw3LjM2MzYzNjM2IEw5LDEwLjg0NSBMMTMuODQzNjM2NCwxMC44NDUgQzEzLjYzNSwxMS45NyAxMy4wMDA5MDkxLDEyLjkyMzE4MTggMTIuMDQ3NzI3MywxMy41NjEzNjM2IEwxMi4wNDc3MjczLDE1LjgxOTU0NTUgTDE0Ljk1NjM2MzYsMTUuODE5NTQ1NSBDMTYuNjU4MTgxOCwxNC4yNTI3MjczIDE3LjY0LDExLjk0NTQ1NDUgMTcuNjQsOS4yMDQ1NDU0NSBaIiBpZD0iU2hhcGUiIGZpbGw9IiM0Mjg1RjQiPjwvcGF0aD4gICAgICAgICAgICAgICAgPHBhdGggZD0iTTksMTggQzExLjQzLDE4IDEzLjQ2NzI3MjcsMTcuMTk0MDkwOSAxNC45NTYzNjM2LDE1LjgxOTU0NTUgTDEyLjA0NzcyNzMsMTMuNTYxMzYzNiBDMTEuMjQxODE4MiwxNC4xMDEzNjM2IDEwLjIxMDkwOTEsMTQuNDIwNDU0NSA5LDE0LjQyMDQ1NDUgQzYuNjU1OTA5MDksMTQuNDIwNDU0NSA0LjY3MTgxODE4LDEyLjgzNzI3MjcgMy45NjQwOTA5MSwxMC43MSBMMC45NTcyNzI3MjcsMTAuNzEgTDAuOTU3MjcyNzI3LDEzLjA0MTgxODIgQzIuNDM4MTgxODIsMTUuOTgzMTgxOCA1LjQ4MTgxODE4LDE4IDksMTggWiIgaWQ9IlNoYXBlIiBmaWxsPSIjMzRBODUzIj48L3BhdGg+ICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0zLjk2NDA5MDkxLDEwLjcxIEMzLjc4NDA5MDkxLDEwLjE3IDMuNjgxODE4MTgsOS41OTMxODE4MiAzLjY4MTgxODE4LDkgQzMuNjgxODE4MTgsOC40MDY4MTgxOCAzLjc4NDA5MDkxLDcuODMgMy45NjQwOTA5MSw3LjI5IEwzLjk2NDA5MDkxLDQuOTU4MTgxODIgTDAuOTU3MjcyNzI3LDQuOTU4MTgxODIgQzAuMzQ3NzI3MjczLDYuMTczMTgxODIgMCw3LjU0NzcyNzI3IDAsOSBDMCwxMC40NTIyNzI3IDAuMzQ3NzI3MjczLDExLjgyNjgxODIgMC45NTcyNzI3MjcsMTMuMDQxODE4MiBMMy45NjQwOTA5MSwxMC43MSBaIiBpZD0iU2hhcGUiIGZpbGw9IiNGQkJDMDUiPjwvcGF0aD4gICAgICAgICAgICAgICAgPHBhdGggZD0iTTksMy41Nzk1NDU0NSBDMTAuMzIxMzYzNiwzLjU3OTU0NTQ1IDExLjUwNzcyNzMsNC4wMzM2MzYzNiAxMi40NDA0NTQ1LDQuOTI1NDU0NTUgTDE1LjAyMTgxODIsMi4zNDQwOTA5MSBDMTMuNDYzMTgxOCwwLjg5MTgxODE4MiAxMS40MjU5MDkxLDAgOSwwIEM1LjQ4MTgxODE4LDAgMi40MzgxODE4MiwyLjAxNjgxODE4IDAuOTU3MjcyNzI3LDQuOTU4MTgxODIgTDMuOTY0MDkwOTEsNy4yOSBDNC42NzE4MTgxOCw1LjE2MjcyNzI3IDYuNjU1OTA5MDksMy41Nzk1NDU0NSA5LDMuNTc5NTQ1NDUgWiIgaWQ9IlNoYXBlIiBmaWxsPSIjRUE0MzM1Ij48L3BhdGg+ICAgICAgICAgICAgICAgIDxwb2x5Z29uIGlkPSJTaGFwZSIgcG9pbnRzPSIwIDAgMTggMCAxOCAxOCAwIDE4Ij48L3BvbHlnb24+ICAgICAgICAgICAgPC9nPiAgICAgICAgPC9nPiAgICA8L2c+PC9zdmc+" />
+             <p>Sign In with Google</p>
+        </button>
+
+      <h1 class="text-white/70 text-center">OR</h1>
+      
+      <form onsubmit="return false;" method="post" class="flex flex-col gap-4">
+        <div class="form-group w-full">
+          <input
+            type="email"
+            class="input bg-transparent input-bordered  w-full border-white text-white focus:outline-none focus:border-white"
+            id="pos-email"
+            placeholder="Email">
+        </div>
+        <div class="form-group w-full">
+          <input
+            type="password"
+            class="input bg-transparent input-bordered  w-full border-white text-white focus:outline-none focus:border-white"
+            id="pos-password"
+            placeholder="Password">
+        </div>
+        <div class="captcha-container form-group"></div>
+        <button
+          type="submit"
+          id="pos-btn-login"
+          class="btn bg-[#3A9E92] text-white border-transparent">
+            Log In
+        </button>
+        <div id="pos-error-message" role="alert" class="alert alert-error py-2 text-white flex-row gap-2 hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span id="pos-error-message-text" class="text-sm flex flex-row gap-2 text-left"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!--[if IE 8]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/ie8/0.2.5/ie8.js"></script>
+  <![endif]-->
+
+  <!--[if lte IE 9]>
+  <script src="https://cdn.auth0.com/js/polyfills/1.0/base64.min.js"></script>
+  <script src="https://cdn.auth0.com/js/polyfills/1.0/es5-shim.min.js"></script>
+  <![endif]-->
+
+  <script src="https://cdn.auth0.com/js/auth0/9.24/auth0.min.js"></script>
+  <script src="https://cdn.auth0.com/js/polyfills/1.0/object-assign.min.js"></script>
+  <script>
+    window.addEventListener('load', function() {
+
+      const loginToggle = document.getElementById('login-toggle');
+      const signupToggle = document.getElementById('signup-toggle');
+
+      loginToggle.classList.add('!bg-[#333]');
+      loginToggle.classList.add('!text-white');
+      signupToggle.classList.remove('!bg-[#333]');
+      signupToggle.classList.remove('!text-white');
+
+      loginToggle.addEventListener('click', function (){
+        loginToggle.classList.add('!bg-[#333]');
+        loginToggle.classList.add('!text-white');
+        signupToggle.classList.remove('!bg-[#333]');
+        signupToggle.classList.remove('!text-white');
+
+
+        const usernameId = isPos ? 'pos-email' : 'admin-email'
+        const passwordId = isPos ? 'pos-password' : 'admin-password'
+        document.getElementById(usernameId).value = "";
+        document.getElementById(passwordId).value = "";
+
+        document.getElementById('admin-error-message').style.display = 'none';
+
+        document.getElementById('admin-btn-login').classList.remove('hidden')
+        document.getElementById('admin-btn-signup').classList.add('hidden')
+      });
+      signupToggle.addEventListener('click', function (){
+        signupToggle.classList.add('!bg-[#333]');
+        signupToggle.classList.add('!text-white');
+        loginToggle.classList.remove('!bg-[#333]');
+        loginToggle.classList.remove('!text-white');
+
+        const usernameId = isPos ? 'pos-email' : 'admin-email'
+        const passwordId = isPos ? 'pos-password' : 'admin-password'
+        document.getElementById(usernameId).value = "";
+        document.getElementById(passwordId).value = "";
+
+        document.getElementById('admin-error-message').style.display = 'none';
+
+        document.getElementById('admin-btn-signup').classList.remove('hidden')
+        document.getElementById('admin-btn-login').classList.add('hidden')
+      });
+
+      const hint = 'login'
+
+      var config = JSON.parse(
+        decodeURIComponent(escape(window.atob('@@config@@')))
+      );
+      const posContainer = document.getElementById('pos')
+      const adminContainer = document.getElementById('admin')
+      const loadingCover = document.getElementById('loading-cover')
+
+      var isPos = config.dict.signin.title.toLowerCase().includes('pos');
+      
+      if (isPos) {
+        posContainer.style.display = 'flex';
+      } else {
+        adminContainer.style.display = 'flex';
+      }
+
+      loadingCover.style.display = 'none';
+
+
+      var leeway = config.internalOptions.leeway;
+      if (leeway) {
+        var convertedLeeway = parseInt(leeway);
+
+        if (!isNaN(convertedLeeway)) {
+          config.internalOptions.leeway = convertedLeeway;
+        }
+      }
+
+      var params = Object.assign({
+        overrides: {
+          __tenant: config.auth0Tenant,
+          __token_issuer: config.authorizationServer.issuer
+        },
+        domain: config.auth0Domain,
+        clientID: config.clientID,
+        redirectUri: config.callbackURL,
+        responseType: 'code'
+      }, config.internalOptions);
+
+      var triggerCaptcha = null;
+      var webAuth = new auth0.WebAuth(params);
+      var databaseConnection = 'Username-Password-Authentication';
+      var captcha = webAuth.renderCaptcha(
+        document.querySelector('.captcha-container'),
+        null,
+        (error, payload) => {
+          if (payload) {
+            triggerCaptcha = payload.triggerCaptcha;
+          }
+        }
+      );
+
+      function login(e) {
+        e.preventDefault();
+        
+        // Disable button after
+        // Admin
+        if (isPos) {
+          document.getElementById('pos-btn-login').disabled = true
+          document.getElementById('pos-btn-google').disabled = true
+        } else {
+          document.getElementById('admin-btn-login').disabled = true
+          document.getElementById('admin-btn-google').disabled = true
+          document.getElementById('admin-btn-signup').disabled = true
+        }
+
+        var button = this;
+        const usernameId = isPos ? 'pos-email' : 'admin-email'
+        const passwordId = isPos ? 'pos-password' : 'admin-password'
+        var username = document.getElementById(usernameId).value;
+        var password = document.getElementById(passwordId).value;
+        var request = () => {
+          webAuth.login({
+            realm: databaseConnection,
+            username: username,
+            password: password,
+            captcha: captcha.getValue()
+          }, function(err) {
+            console.log('login', err)
+            if (err) displayError(err);
+            // Admin
+            document.getElementById('admin-btn-login').disabled = false
+            document.getElementById('admin-btn-google').disabled = false
+            document.getElementById('admin-btn-signup').disabled = false
+
+            // POS
+            document.getElementById('pos-btn-login').disabled = false
+            document.getElementById('pos-btn-google').disabled = false
+          });
+        };
+        if (triggerCaptcha) {
+          triggerCaptcha(request);
+        } else {
+          request();
+        }
+      }
+
+      function signup() {
+        var button = this;
+        const usernameId = isPos ? 'pos-email' : 'admin-email'
+        const passwordId = isPos ? 'pos-password' : 'admin-password'
+        var email = document.getElementById(usernameId).value;
+        var password = document.getElementById(passwordId).value;
+
+        document.getElementById('admin-btn-google').disabled = true
+        document.getElementById('admin-btn-signup').disabled = true
+        var request = () => {
+          webAuth.redirect.signupAndLogin({
+            connection: databaseConnection,
+            email: email,
+            password: password,
+            captcha: captcha.getValue()
+          }, function(err) {
+            console.log('singup', err)
+            if (err) displayError(err);
+          });
+        };
+        if (triggerCaptcha) {
+          triggerCaptcha(request);
+        } else {
+          request();
+        }
+      }
+
+      function loginWithGoogle() {
+        webAuth.authorize({
+          connection: 'google-oauth2'
+        }, function(err) {
+          console.log('signin with google', err)
+          if (err) displayError(err);
+        });
+      }
+
+      function displayError(err) {
+        captcha.reload();
+        var message = err.description || err.policy || err.original.message;
+        
+        if (isPos) {
+          document.getElementById('pos-error-message').style.display = 'flex';
+          document.getElementById('pos-error-message-text').innerText = message;
+        } else {
+          document.getElementById('admin-error-message').style.display = 'flex';
+          document.getElementById('admin-error-message-text').innerText = message;
+        }
+      }
+
+      const loginButtonId = isPos ? 'pos-btn-login' : 'admin-btn-login'
+      const googleButtonId = isPos ? 'pos-btn-google' : 'admin-btn-google'
+
+      if (!isPos) {
+        document.getElementById('admin-btn-signup').addEventListener('click', signup);
+      }
+
+      document.getElementById(loginButtonId).addEventListener('click', login);
+      document.getElementById(googleButtonId).addEventListener('click', loginWithGoogle);
+    });
+  </script>
+  
+</body>
+</html>
