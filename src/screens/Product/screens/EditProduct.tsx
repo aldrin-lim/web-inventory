@@ -4,28 +4,36 @@ import ToolbarButton from 'components/Layout/components/Toolbar/components/Toolb
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import useGetProduct from 'hooks/useGetProduct'
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams, useResolvedPath } from 'react-router-dom'
-import useProductFormValue, {
-  ProductFormValues,
-} from '../hooks/useProductFormValue'
-import ProductForm, { ProductFormRef } from './ProductForm'
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useParams,
+  useResolvedPath,
+} from 'react-router-dom'
+import { ProductFormValues } from '../hooks/useProductFormValue'
+import ProductForm, { ProductFormRef, ScreenPath } from './ProductForm'
 import { PIECES } from 'constants copy/measurement'
 import useCloneProduct from 'hooks/useCloneProduct'
 import useDeleteProduct from 'hooks/useDeleteProduct'
 import useUpdateProduct from 'hooks/useUpdateProduct'
 import { toNumber } from 'lodash'
 import PrimaryAction from '../ProductDetail/components/ProductDetailPrimaryAction'
+import Description from './ProductForm/Description'
+import RecipeList from './ProductForm/RecipeList'
+import useBoundStore from 'stores/useBoundStore'
 
 const EditProduct = () => {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
-  const setProductInitialValue = useProductFormValue(
-    (state) => state.setInitialValue,
+  const setProductInitialValue = useBoundStore(
+    (state) => state.setProdutctFormInitialValue,
   )
 
-  const initialValue = useProductFormValue((state) => state.initialValue)
-  const formValue = useProductFormValue((state) => state.formValue)
+  const setProductFormValue = useBoundStore(
+    (state) => state.setProductFormValue,
+  )
 
   const { deleteProduct, isDeleting } = useDeleteProduct()
   const { updateProduct, isUpdating } = useUpdateProduct()
@@ -40,13 +48,6 @@ const EditProduct = () => {
 
   const resolvedPath = useResolvedPath('')
   const isParentScreen = location.pathname === resolvedPath.pathname
-
-  const reset = useProductFormValue((state) => state.reset)
-  useEffect(() => {
-    return () => {
-      reset()
-    }
-  }, [])
 
   useEffect(() => {
     if (product && isGettingProduct === false) {
@@ -88,12 +89,10 @@ const EditProduct = () => {
         recipe: product.recipe,
       } as ProductFormValues
       setProductInitialValue(formValue)
+      setProductFormValue(formValue)
       setIsLoading(false)
     }
-  }, [product, isGettingProduct, setProductInitialValue])
-
-  console.log('initialValue', initialValue)
-  console.log('formValue', formValue)
+  }, [product, isGettingProduct, setProductInitialValue, setProductFormValue])
 
   const renderToolbar = () => (
     <Toolbar
@@ -166,7 +165,7 @@ const EditProduct = () => {
 
   if (isLoading) {
     return (
-      <div className="screen">
+      <div className="">
         {renderToolbar()}
         <Skeleton />
       </div>
@@ -174,15 +173,21 @@ const EditProduct = () => {
   }
 
   return (
-    <div className={[isParentScreen ? 'screen' : 'hidden-screen'].join(' ')}>
-      {isMutating && (
-        <div className="loading-cover fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
-          <span className="loading loading-ring loading-lg"></span>
-        </div>
-      )}
-      {renderToolbar()}
-      <ProductForm onSubmit={onSave} ref={productFormRef} />
-    </div>
+    <>
+      <div className={[isParentScreen ? 'screen' : 'hidden'].join(' ')}>
+        {renderToolbar()}
+        <ProductForm onSubmit={onSave} ref={productFormRef} />
+        {isMutating && (
+          <div className="loading-cover fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
+            <span className="loading loading-ring loading-lg"></span>
+          </div>
+        )}
+      </div>
+      <Routes>
+        <Route path={`${ScreenPath.Description}/*`} element={<Description />} />
+        <Route path={`${ScreenPath.SelectRecipe}/*`} element={<RecipeList />} />
+      </Routes>
+    </>
   )
 
   // Now you can use the id variable in your component

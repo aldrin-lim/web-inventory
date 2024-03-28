@@ -46,7 +46,7 @@ function App() {
         closeButton={false}
         closeOnClick
       />
-      <div className="App mx-auto flex h-full w-full bg-base-300 ">
+      <div className=" h-full max-h-max w-full">
         <AppRoutes />
       </div>
     </>

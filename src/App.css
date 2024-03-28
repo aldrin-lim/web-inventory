@@ -6,7 +6,7 @@
 html,
 body,
 #root {
-  @apply h-full;
+  /* @apply h-full; */
 }
 
 *, html {
@@ -71,7 +71,7 @@ html, body {
   }
   
   .screen {
-    @apply absolute flex w-full flex-col h-full
+    @apply  flex w-full flex-col h-full relative
   }
 
   .hidden-screen {

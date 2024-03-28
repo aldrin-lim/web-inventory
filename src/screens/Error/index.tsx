@@ -20,7 +20,7 @@ const Error = () => {
   }
 
   return (
-    <div className="z-50 flex h-full w-screen flex-col items-center justify-center bg-white">
+    <div className="absolute bottom-0 top-0 z-50 flex w-screen flex-col items-center justify-center bg-white">
       <FaceFrownIcon className="mx-auto mb-3 w-20" />
       <h1 className="text-3xl font-bold">Unexpected Error</h1>
 

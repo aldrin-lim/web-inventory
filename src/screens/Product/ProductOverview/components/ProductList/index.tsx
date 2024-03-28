@@ -54,12 +54,6 @@ const ProductList = (props: ProductListProps) => {
           ))}
         </div>
       </div>
-      <button
-        onClick={() => onViewAll?.()}
-        className="btn btn-link h-0 min-h-[20px] px-0 text-cyan-400 no-underline disabled:bg-transparent disabled:text-gray-400"
-      >
-        View all
-      </button>
     </div>
   )
 }

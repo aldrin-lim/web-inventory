@@ -56,6 +56,7 @@ import Description from './Description'
 import RecipeList from './RecipeList'
 import { toast } from 'react-toastify'
 import AdjustmentDialog from 'screens/Product/ProductDetail/components/BatchCard/components/AdjustmentDialog'
+import useBoundStore from 'stores/useBoundStore'
 
 export enum ScreenPath {
   Description = 'set-description',
@@ -72,11 +73,14 @@ type ProductFormProps = {
 
 const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
   const navigate = useNavigate()
-  const setProductFormValue = useProductFormValue((state) => state.setFormValue)
-  const initialValues = useProductFormValue((state) => state.initialValue)
+  const setProductFormValue = useBoundStore(
+    (state) => state.setProductFormValue,
+  )
+  const initialValues = useBoundStore((state) => state.productFormInitialValue)
+  const formValues = useBoundStore((state) => state.productFormValue)
 
   const formik = useFormik<ProductFormValues>({
-    initialValues: initialValues,
+    initialValues: formValues,
     enableReinitialize: true,
     onSubmit: async (values) => {
       props.onSubmit?.(values)
@@ -109,6 +113,8 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
   useEffect(() => {
     setProductFormValue(values)
   }, [setProductFormValue, values])
+
+  console.log('formValues', formValues)
 
   const computedCost = useMemo(() => {
     if (values.recipe) {
@@ -1133,25 +1139,11 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
           {/* End of Produt Form */}
         </div>
 
-        <pre className="text-[10px]">{JSON.stringify(values, null, 2)}</pre>
+        {/* <pre className="text-[10px]">{JSON.stringify(values, null, 2)}</pre> */}
       </FormikProvider>
       <Routes>
-        <Route
-          path={`${ScreenPath.Description}/*`}
-          element={
-            <SlidingTransition isVisible>
-              <Description />
-            </SlidingTransition>
-          }
-        />
-        <Route
-          path={`${ScreenPath.SelectRecipe}/*`}
-          element={
-            <SlidingTransition isVisible>
-              <RecipeList />
-            </SlidingTransition>
-          }
-        />
+        <Route path={`${ScreenPath.Description}/*`} element={<Description />} />
+        <Route path={`${ScreenPath.SelectRecipe}/*`} element={<RecipeList />} />
       </Routes>
     </>
   )

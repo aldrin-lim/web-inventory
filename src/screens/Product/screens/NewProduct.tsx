@@ -2,14 +2,15 @@ import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import { useNavigate, useResolvedPath } from 'react-router-dom'
-import ProductForm, { ProductFormRef } from './ProductForm'
-import { useEffect, useRef } from 'react'
-import useProductFormValue, {
-  ProductFormValues,
-} from '../hooks/useProductFormValue'
+import { Route, Routes, useNavigate, useResolvedPath } from 'react-router-dom'
+import ProductForm, { ProductFormRef, ScreenPath } from './ProductForm'
+import { useRef } from 'react'
+import { ProductFormValues } from '../hooks/useProductFormValue'
 import useCreateProduct from 'hooks/useCreateProduct'
 import { toNumber } from 'util/number'
+import Description from './ProductForm/Description'
+import RecipeList from './ProductForm/RecipeList'
+import useBoundStore from 'stores/useBoundStore'
 
 const NewProduct = () => {
   const navigate = useNavigate()
@@ -20,12 +21,9 @@ const NewProduct = () => {
 
   const { isCreating, createProduct } = useCreateProduct()
 
-  const reset = useProductFormValue((state) => state.reset)
-  useEffect(() => {
-    return () => {
-      reset()
-    }
-  }, [])
+  const formValues = useBoundStore((state) => state.productFormValue)
+
+  console.log('formValues', formValues)
 
   const renderToolbar = () => (
     <Toolbar
@@ -84,15 +82,21 @@ const NewProduct = () => {
   }
 
   return (
-    <div className={[isParentScreen ? 'screen' : 'hidden-screen'].join(' ')}>
-      {isCreating && (
-        <div className="loading-cover fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
-          <span className="loading loading-ring loading-lg"></span>
-        </div>
-      )}
-      {renderToolbar()}
-      <ProductForm onSubmit={onSubmit} ref={productFormRef} />
-    </div>
+    <>
+      <div className={[isParentScreen ? 'screen' : 'hidden'].join(' ')}>
+        {isCreating && (
+          <div className="loading-cover fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
+            <span className="loading loading-ring loading-lg"></span>
+          </div>
+        )}
+        {renderToolbar()}
+        <ProductForm onSubmit={onSubmit} ref={productFormRef} />
+      </div>
+      <Routes>
+        <Route path={`${ScreenPath.Description}/*`} element={<Description />} />
+        <Route path={`${ScreenPath.SelectRecipe}/*`} element={<RecipeList />} />
+      </Routes>
+    </>
   )
 }
 

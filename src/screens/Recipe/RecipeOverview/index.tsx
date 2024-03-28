@@ -1,4 +1,4 @@
-import { ChevronLeftIcon } from '@heroicons/react/24/solid'
+import { Bars3Icon, ChevronLeftIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
@@ -14,14 +14,12 @@ import { AppPath } from 'routes/AppRoutes.types'
 import RecipeCard from './components/RecipeCard'
 import GetStarted from './GetStarted'
 import { useEffect } from 'react'
-import SlidingTransition from 'components/SlidingTransition'
-import AddRecipe from '../AddRecipe'
-import { AnimatePresence } from 'framer-motion'
 import { Analytics } from 'util/analytics'
+import NewRecipe from '../screens/RecipeForm/NewRecipe'
 
 enum ScreenPath {
-  AddRecipe = 'add-recipe',
-  ViewRecipe = ':id',
+  New = 'new',
+  Edit = ':id',
 }
 
 const RecipeOverview = () => {
@@ -43,46 +41,42 @@ const RecipeOverview = () => {
       >
         <Toolbar
           start={
-            <ToolbarButton
-              icon={<ChevronLeftIcon className="w-6" />}
-              onClick={() => navigate(AppPath.Root)}
-            />
+            <label
+              htmlFor="my-drawer"
+              className="btn btn-link px-0 normal-case text-blue-400 no-underline disabled:bg-transparent disabled:text-gray-400"
+            >
+              <Bars3Icon className="w-6" />
+            </label>
           }
           middle={<ToolbarTitle title="Recipes" />}
           end={
             <ToolbarButton
               label="Add"
-              onClick={() => navigate(ScreenPath.AddRecipe)}
+              onClick={() => navigate(ScreenPath.New)}
             />
           }
         />
         {isLoading && <Skeleton />}
         {!isLoading && recipes?.length === 0 && <GetStarted />}
         {!isLoading && (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-4 overflow-x-auto sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-            {recipes &&
-              recipes.map((recipe) => (
-                <RecipeCard
-                  onClick={() => navigate(`${AppPath.Recipe}/${recipe.id}`)}
-                  key={recipe.id}
-                  recipe={recipe}
-                />
-              ))}
+          <div className={[isParentScreen ? 'screen' : 'hidden'].join(' ')}>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4 overflow-x-auto sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {recipes &&
+                recipes.map((recipe) => (
+                  <RecipeCard
+                    onClick={() => navigate(`${AppPath.Recipe}/${recipe.id}`)}
+                    key={recipe.id}
+                    recipe={recipe}
+                  />
+                ))}
+            </div>
           </div>
         )}
       </div>
-      <AnimatePresence>
-        <Routes>
-          <Route
-            path={`${ScreenPath.AddRecipe}/*`}
-            element={
-              <SlidingTransition isVisible>
-                <AddRecipe onBack={() => navigate(resolvePath)} />
-              </SlidingTransition>
-            }
-          />
-        </Routes>
-      </AnimatePresence>
+      <Routes>
+        <Route path={`${ScreenPath.New}/*`} element={<NewRecipe />} />
+        {/* <Route path={`:id/*`} element={<EditProduct />} /> */}
+      </Routes>
     </>
   )
 }

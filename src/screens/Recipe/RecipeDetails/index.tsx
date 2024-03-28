@@ -283,9 +283,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           }
           end={
             <PrimaryAction
-              disabled={isMutating}
               key="primaryAction"
-              mode={mode}
               onCreate={() => {
                 submitForm()
               }}
@@ -598,43 +596,6 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
         </Routes>
       </AnimatePresence>
       {/* Ingredients Screens */}
-      {/* <SlidingTransition
-        direction="bottom"
-        isVisible={activeScreen === ScreenPath.Ingredients}
-        zIndex={10}
-      >
-        <Inventory
-          isLoading={isProductsLoading}
-          products={products
-            .filter((product) => !product.recipe)
-            .filter(
-              (product) =>
-                ![...values.others, ...values.ingredients].find(
-                  (material) => material.product.id === product.id,
-                ),
-            )}
-          onBack={() => navigateToParent()}
-          onProductSelect={(product) => {
-            const activeBatch = getActiveBatch(product.batches)
-            if (!activeBatch) {
-              throw new Error('No active batch found')
-            }
-            const cost = product.isBulkCost
-              ? toNumber(activeBatch.costPerUnit)
-              : toNumber(activeBatch.cost)
-
-            addIngredient({
-              id: v4(),
-              quantity: 0,
-              cost,
-              unitOfMeasurement: activeBatch.unitOfMeasurement,
-              product,
-              type: MaterialType.Ingredient,
-            } as Material)
-            navigateToParent()
-          }}
-        />
-      </SlidingTransition> */}
 
       {/* Others Screens */}
       <SlidingTransition

@@ -18,7 +18,6 @@ import { Analytics } from 'util/analytics'
 import GetStarted from '../ProductOverview/components/GetStarted'
 import ProductList from '../ProductOverview/components/ProductList'
 import Inventory from '../Inventory'
-import SlidingTransition from 'components/SlidingTransition'
 import EditProduct from './EditProduct'
 import NewProduct from './NewProduct'
 
@@ -48,6 +47,14 @@ const ProductOverview = () => {
   const orientation: ComponentProps<typeof ProductList>['orientation'] =
     hasOutOfStockProducts ? 'horizontal' : 'vertical'
 
+  const reset = () => {}
+
+  useEffect(() => {
+    if (isParentScreen) {
+      reset()
+    }
+  }, [isParentScreen, reset])
+
   const viewProduct = (product: Product) => {
     navigate(product.id)
   }
@@ -62,7 +69,7 @@ const ProductOverview = () => {
     }
 
     return (
-      <div className="flex flex-col gap-4">
+      <div className="ProductOverview absolute top-14 flex w-full flex-col gap-4">
         {/* IN STOCKS */}
         <ProductList
           onViewAll={() => navigate(ScreenPath.List)}
@@ -108,30 +115,9 @@ const ProductOverview = () => {
         {renderContent()}
       </div>
       <Routes>
-        <Route
-          path={`${ScreenPath.New}/*`}
-          element={
-            <SlidingTransition isVisible>
-              <NewProduct />
-            </SlidingTransition>
-          }
-        />
-        <Route
-          path={`${ScreenPath.List}/*`}
-          element={
-            <SlidingTransition isVisible>
-              <Inventory />
-            </SlidingTransition>
-          }
-        />
-        <Route
-          path={`:id/*`}
-          element={
-            <SlidingTransition isVisible>
-              <EditProduct />
-            </SlidingTransition>
-          }
-        />
+        <Route path={`${ScreenPath.New}/*`} element={<NewProduct />} />
+        <Route path={`${ScreenPath.List}/*`} element={<Inventory />} />
+        <Route path={`:id/*`} element={<EditProduct />} />
       </Routes>
     </>
   )

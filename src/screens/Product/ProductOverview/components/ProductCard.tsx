@@ -19,11 +19,6 @@ const ProductCard = (props: ProductCardProps) => {
 
   return (
     <div className="relative  justify-self-center">
-      <div className="absolute top-2 z-[9] flex w-full items-center justify-between px-2">
-        <div className="bg-primary/50 p-1 text-sm text-white">
-          {renderPrice(product)}
-        </div>
-      </div>
       <div
         className={`ProductCard card card-compact relative w-[155px] cursor-pointer border border-gray-300  bg-base-100 `}
         onClick={() => onClick?.(product)}
@@ -37,6 +32,11 @@ const ProductCard = (props: ProductCardProps) => {
             <MiddleTruncatedText text={name} maxLength={18} />
           </h2>
           {renderStockInfo(product)}
+        </div>
+      </div>
+      <div className="absolute top-2  flex w-full items-center justify-between px-2">
+        <div className="bg-primary/50 p-1 text-sm text-white">
+          {renderPrice(product)}
         </div>
       </div>
     </div>

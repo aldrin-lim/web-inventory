@@ -12,6 +12,7 @@ import { padWithZeros } from 'util/number'
 import { v4 } from 'uuid'
 import { PIECES } from 'constants copy/measurement'
 import { formatToPeso } from 'util/currency'
+import { produce } from 'immer'
 
 type Recipe = GetAllRecipeResponseSchema[number]
 
@@ -21,9 +22,10 @@ const RecipeList = () => {
 
   const [nameFilter, setNameFilter] = useState('')
 
-  const setFormFieldValue = useProductFormValue(
-    (state) => state.setFormFieldValue,
-  )
+  const setInitialValue = useProductFormValue((state) => state.setInitialValue)
+
+  const productFormValues = useProductFormValue((state) => state.formValue)
+
   const reset = useProductFormValue((state) => state.reset)
 
   const filteredRecipes = useMemo(() => {
@@ -34,25 +36,30 @@ const RecipeList = () => {
 
   const selectRecipe = (recipe: Recipe) => {
     reset()
-    setFormFieldValue('recipe', recipe)
-    setFormFieldValue('name', recipe.name)
-    setFormFieldValue('batches', [
-      {
-        id: v4(),
-        name: `Batch #${padWithZeros(1)}`,
-        cost: recipe.cost,
-        costPerUnit: 0,
-        quantity: 1,
-        unitOfMeasurement: PIECES,
-        isDeducted: false,
-        expirationDate: null,
-      },
-    ])
+    setInitialValue(
+      produce(productFormValues, (draft) => {
+        draft.recipe = recipe
+        draft.name = recipe.name
+        draft.batches = [
+          {
+            id: v4(),
+            name: `Batch #${padWithZeros(1)}`,
+            cost: recipe.cost.toString(),
+            costPerUnit: 0,
+            quantity: '1',
+            unitOfMeasurement: PIECES,
+            isDeducted: false,
+            expirationDate: null,
+          },
+        ]
+      }),
+    )
+
     navigate('../')
   }
 
   return (
-    <div className="screen gap-0 pb-[100px]">
+    <div className="screen ">
       <Toolbar
         start={
           <ToolbarButton

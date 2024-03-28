@@ -30,14 +30,7 @@ const AppRoutes = () => (
         path={`${AppPath.Recipe}/*`}
         element={<ProtectedRoute element={<RecipeOverview />} />}
       />
-      <Route
-        path={`${AppPath.AddRecipe}/*`}
-        element={<ProtectedRoute element={<AddRecipe />} />}
-      />
-      <Route
-        path={`${AppPath.ViewRecipe}/*`}
-        element={<ProtectedRoute element={<ViewRecipe />} />}
-      />
+
       <Route
         path={`${AppPath.Inventory}/*`}
         element={<ProtectedRoute element={<Inventory />} />}

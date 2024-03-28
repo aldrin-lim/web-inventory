@@ -159,11 +159,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div
-      className={['screen pb-9', !isParentScreen ? 'hidden-screen' : ''].join(
-        ' ',
-      )}
-    >
+    <div className="screen">
       {isFetching && (
         <div className="fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
           <span className="loading loading-ring loading-lg"></span>
@@ -180,72 +176,27 @@ const Dashboard = () => {
         }
         middle={<ToolbarTitle title="Dashboard" />}
       />
-      <div className="AppContainer bg-prim flex flex-col gap-4 p-4">
-        <div className="flex flex-row items-center gap-4">
-          <h1 className="">Sales Summary:</h1>
-          {view === 'weekly' && (
-            <DatePicker
-              value={moment(dateSelected)}
-              sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
-              slotProps={{
-                textField: {
-                  variant: 'outlined',
-                  color: 'secondary',
-                  className: '',
-                },
-                actionBar: {
-                  actions: ['accept', 'cancel'],
-                },
-              }}
-              onAccept={(date) => {
-                if (date) {
-                  setDateSelected(moment(date).startOf('day').toDate())
-                }
-              }}
-              className={` border-none bg-base-100 outline-none`}
-            />
-          )}
-          {view === 'monthly' && (
-            <DatePicker
-              value={moment(dateSelected)}
-              sx={{ width: '100%', ':disabled': { backgroundColor: '#000' } }}
-              slotProps={{
-                textField: {
-                  variant: 'outlined',
-                  color: 'secondary',
-                  className: '',
-                },
-                actionBar: {
-                  actions: ['accept', 'cancel'],
-                },
-              }}
-              views={['month', 'year']}
-              onAccept={(date) => {
-                // set the date the start of the dat and start of the month
-                if (date) {
-                  setDateSelected(moment(date).startOf('month').toDate())
-                }
-              }}
-              className={` border-none bg-base-100 outline-none`}
-            />
-          )}
-        </div>
+      <div className="AppContainer bg-prim flex flex-col gap-2 p-4">
+        <h1 className="mb-2 text-lg">
+          {dateSelected && moment(dateSelected).format('MMM D, YYYY')}
+        </h1>
+
         <div className="flex w-full flex-row gap-4">
-          <div className="flex w-1/2 flex-col gap-1 rounded-lg border border-neutral-300 p-4">
-            <h1 className="text-lg">Total Sales</h1>
-            <p className="text-lg text-primary">
+          <div className="flex w-1/2 flex-col rounded-lg border border-neutral-300 p-2">
+            <h1 className="text-sm">Total Sales</h1>
+            <p className="text-base text-primary">
               {formatToPeso(totalSales ?? 0)}
             </p>
           </div>
-          <div className="flex w-1/2 flex-col gap-1 rounded-lg border border-neutral-300 p-4">
-            <h1 className="text-lg">Items Sold</h1>
-            <p className="text-lg text-[#3A9E92]">{totalItemSold ?? 0}</p>
+          <div className="flex w-1/2 flex-col rounded-lg border border-neutral-300 p-2">
+            <h1 className="text-sm">Items Sold</h1>
+            <p className="text-base text-[#3A9E92]">{totalItemSold ?? 0}</p>
           </div>
         </div>
         <div className="w-full">
           {/* View select */}
           <select
-            className="select select-bordered w-full"
+            className="select select-bordered w-full focus:outline-none"
             value={view}
             onChange={(e) => setView(e.target.value)}
           >
@@ -357,7 +308,7 @@ const Dashboard = () => {
         </div>
 
         {report && topSellingItems && (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             {view === 'weekly' ? 'Weekly' : 'Monthly'} Top 10 Best Seller:
             <div className="rounded-lg border border-neutral-300">
               <table className="table w-full">
@@ -374,6 +325,13 @@ const Dashboard = () => {
                       <td>{item.quantity}</td>
                     </tr>
                   ))}
+                  {topSellingItems.length === 0 && (
+                    <tr className="text w-full p-4  text-center">
+                      <td colSpan={2} className="py-8">
+                        Nothing to show
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
