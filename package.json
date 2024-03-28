@@ -28,6 +28,7 @@
     "daisyui": "^4.0.7",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.5",
+    "immer": "^10.0.4",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "match-sorter": "^6.3.1",
@@ -48,8 +49,10 @@
     "theme-change": "^2.5.0",
     "uuid": "^9.0.1",
     "yarn": "^1.22.21",
+    "yup": "^1.4.0",
     "zod": "^3.22.4",
-    "zod-formik-adapter": "^1.2.0"
+    "zod-formik-adapter": "^1.2.0",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^4.36.1",

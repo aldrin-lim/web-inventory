@@ -1,5 +1,5 @@
 const LoadingCover = () => (
-  <div className="z-50 flex h-screen w-screen flex-col items-center justify-center bg-white">
+  <div className="z-50 flex h-full w-screen flex-col flex-wrap items-center justify-center bg-white">
     <span className="loading loading-ring loading-lg"></span>
   </div>
 )

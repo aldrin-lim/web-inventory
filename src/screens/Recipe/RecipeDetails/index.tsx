@@ -1,7 +1,12 @@
 import SlidingTransition from 'components/SlidingTransition'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { z } from 'zod'
-import { ChevronLeftIcon, PlusIcon } from '@heroicons/react/24/solid'
+import {
+  ChevronLeftIcon,
+  InformationCircleIcon,
+  PhotoIcon,
+  PlusIcon,
+} from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
@@ -14,7 +19,13 @@ import {
   toNumber,
 } from 'util/number'
 import { AppPath } from 'routes/AppRoutes.types'
-import { useLocation, useNavigate, useResolvedPath } from 'react-router-dom'
+import {
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useResolvedPath,
+} from 'react-router-dom'
 import Big from 'big.js'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 import useCreateRecipe from 'hooks/useCreateRecipe'
@@ -34,6 +45,11 @@ import {
 } from 'types/product.types'
 import { get } from 'lodash'
 import { removeLastPath } from 'util/route'
+import { AnimatePresence } from 'framer-motion'
+import MiddleTruncateText from 'components/MiddleTruncatedText'
+import { formatToPeso } from 'util/currency'
+import { isWithinExpiration } from 'util/data'
+import { unitAbbrevationsToLabel } from 'util/measurement'
 
 type Material = z.infer<typeof MaterialSchema>
 
@@ -364,7 +380,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             <h1>Ingredients/Materials</h1>
             {values.ingredients.length > 0 && (
               <button
-                onClick={() => setActiveScreen(ScreenPath.Ingredients)}
+                onClick={() => navigate(ScreenPath.Ingredients)}
                 className="btn btn-ghost btn-sm text-blue-400"
               >
                 <PlusIcon className="w-5 " />
@@ -375,7 +391,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
 
           {values.ingredients.length === 0 && (
             <button
-              onClick={() => setActiveScreen(ScreenPath.Ingredients)}
+              onClick={() => navigate(ScreenPath.Ingredients)}
               className="btn btn-square  mt-1 flex h-[100px] w-[100px] flex-col border-2 border-dashed border-gray-300 "
             >
               <PlusIcon className="w-8 text-success" />
@@ -468,8 +484,121 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        <Routes>
+          <Route
+            path={`${ScreenPath.Ingredients}/*`}
+            element={
+              <SlidingTransition isVisible>
+                {products
+                  .filter((product) => !product.recipe)
+                  .filter(
+                    (product) =>
+                      ![...values.others, ...values.ingredients].find(
+                        (material) => material.product.id === product.id,
+                      ),
+                  )
+                  .map((product) => {
+                    return (
+                      <div key={product.id}>
+                        <li
+                          onClick={() => {
+                            addIngredient({
+                              id: v4(),
+                              quantity: 0,
+                              cost: 0,
+                              unitOfMeasurement:
+                                product.activeBatch.unitOfMeasurement,
+                              product,
+                              type: MaterialType.Ingredient,
+                            } as Material)
+                            navigate(-1)
+                          }}
+                          key={product.id}
+                          className="w-full"
+                        >
+                          <a className="flex">
+                            <div className="flex w-full flex-row justify-between gap-4">
+                              <div className="flex flex-row items-center gap-2">
+                                {product?.images.length === 0 && (
+                                  <div className="rounded-md bg-base-300 p-2">
+                                    <PhotoIcon className="w-5  " />
+                                  </div>
+                                )}
+                                {product?.images.length > 0 && (
+                                  <div className="">
+                                    {isWithinExpiration(
+                                      product.activeBatch?.expirationDate,
+                                    ) && (
+                                      <div className="absolute bg-warning/80">
+                                        <InformationCircleIcon className="w-4 text-white" />
+                                      </div>
+                                    )}
+
+                                    <img
+                                      src={product.images[0]}
+                                      className="bg h-9 w-9 rounded-md"
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex flex-col ">
+                                  <h1
+                                    className={[
+                                      'text-base',
+                                      isWithinExpiration(
+                                        product.activeBatch?.expirationDate,
+                                      )
+                                        ? 'text-orange-400'
+                                        : '',
+                                    ].join(' ')}
+                                  >
+                                    {product.name}
+                                  </h1>
+                                </div>
+                              </div>
+                              {product.isBulkCost && (
+                                <div className="text-right">
+                                  <p className="text-base font-medium">
+                                    ₱ {product.activeBatch?.costPerUnit}/{' '}
+                                    {unitAbbrevationsToLabel(
+                                      product.activeBatch?.unitOfMeasurement ??
+                                        '',
+                                    )}
+                                  </p>
+                                  <p className="text-xs">
+                                    Bulk Cost:{' '}
+                                    {formatToPeso(
+                                      product.activeBatch?.cost ?? 0,
+                                    )}
+                                  </p>
+                                </div>
+                              )}
+
+                              {!product.isBulkCost && (
+                                <div className="text-right">
+                                  <p className="text-base font-medium">
+                                    {formatToPeso(
+                                      product.recipe
+                                        ? product.recipe.cost
+                                        : product.activeBatch?.cost ?? 0,
+                                    )}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </a>
+                        </li>
+                      </div>
+                    )
+                  })}
+              </SlidingTransition>
+            }
+          />
+        </Routes>
+      </AnimatePresence>
       {/* Ingredients Screens */}
-      <SlidingTransition
+      {/* <SlidingTransition
         direction="bottom"
         isVisible={activeScreen === ScreenPath.Ingredients}
         zIndex={10}
@@ -505,7 +634,7 @@ const RecipeDetails = (props: RecipeDetailsProps) => {
             navigateToParent()
           }}
         />
-      </SlidingTransition>
+      </SlidingTransition> */}
 
       {/* Others Screens */}
       <SlidingTransition

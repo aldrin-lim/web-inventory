@@ -100,8 +100,8 @@ const SlidingTransition: React.FC<SlidingTransitionProps> = ({
           exit="exit"
           variants={animation}
           transition={{ duration: 0.5 }}
-          className={`framer absolute top-0 min-h-screen w-full bg-base-100 ${
-            animationCompleted ? '' : 'overflow-hidden'
+          className={`framer absolute top-0 flex h-full w-full flex-col bg-base-100 ${
+            animationCompleted ? 'overflow-auto' : 'overflow-hidden'
           }`}
           onAnimationComplete={() => setAnimationCompleted(true)}
           style={{

@@ -1,10 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import Home from 'screens/Home'
 import { AppPath } from './AppRoutes.types'
 import ProtectedRoute from './ProtectedRoutes'
-import ProductOverview from 'screens/Product/ProductOverview'
-import AddProduct from 'screens/Product/AddProduct'
-import ViewProduct from 'screens/Product/ViewProduct'
 import Error from 'screens/Error'
 import RecipeOverview from 'screens/Recipe/RecipeOverview'
 import AddRecipe from 'screens/Recipe/AddRecipe'
@@ -16,27 +12,20 @@ import Profile from 'screens/Profile'
 import SignoutScreen from 'components/SignoutScreen'
 import Dashboard from 'screens/Report/Dashboard'
 import Expense from 'screens/Expense'
+import ProductOverview from 'screens/Product/screens/ProductOverview'
 
 const AppRoutes = () => (
   <Routes>
     <Route path={AppPath.Root} element={<Layout />}>
-      <Route index element={<ProtectedRoute element={<Home />} />} />
+      <Route index element={<ProtectedRoute element={<Dashboard />} />} />
       <Route
-        path={`${AppPath.Products}`}
+        path={`${AppPath.Products}/*`}
         element={<ProtectedRoute element={<ProductOverview />} />}
       />
-      <Route
-        path={`${AppPath.ProductOverview}/*`}
-        element={<ProtectedRoute element={<ProductOverview />} />}
-      />
-      <Route
-        path={`${AppPath.AddProduct}/*`}
-        element={<ProtectedRoute element={<AddProduct />} />}
-      />
-      <Route
+      {/* <Route
         path={`${AppPath.ViewProduct}/*`}
         element={<ProtectedRoute element={<ViewProduct />} />}
-      />
+      /> */}
       <Route
         path={`${AppPath.Recipe}/*`}
         element={<ProtectedRoute element={<RecipeOverview />} />}

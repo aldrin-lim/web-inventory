@@ -9,12 +9,13 @@ import useUser from 'hooks/useUser'
 import { Analytics } from 'util/analytics'
 import { useNavigate } from 'react-router-dom'
 import { AppPath } from 'routes/AppRoutes.types'
+import LoadingCover from 'components/LoadingCover'
 
 function App() {
   useUser()
   const navigate = useNavigate()
 
-  const { user } = useUser()
+  const { user, isLoading } = useUser()
 
   useEffect(() => {
     themeChange(false)
@@ -33,16 +34,22 @@ function App() {
     navigate(AppPath.Root)
   }, [])
 
+  if (isLoading) {
+    return <LoadingCover />
+  }
+
   return (
-    <div className="App mx-auto flex w-full">
+    <>
       <ToastContainer
-        className={'!left-4 !top-2 !mx-auto !w-[90%] !rounded-md text-xs'}
+        className={'!left-4 !top-2 !mx-auto !h-40 !w-[90%] !rounded-md text-xs'}
         toastClassName={'!rounded-md'}
         closeButton={false}
         closeOnClick
       />
-      <AppRoutes />
-    </div>
+      <div className="App mx-auto flex h-full w-full bg-base-300 ">
+        <AppRoutes />
+      </div>
+    </>
   )
 }
 

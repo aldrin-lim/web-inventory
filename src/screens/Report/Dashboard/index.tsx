@@ -14,6 +14,8 @@ import { useTheme } from '@nivo/core'
 import { AxisTickProps } from '@nivo/axes'
 import { toNumber } from 'lodash'
 import { Analytics } from 'util/analytics'
+import { Bars3Icon } from '@heroicons/react/24/solid'
+import LoadingCover from 'components/LoadingCover'
 
 type CustomTickProps = {
   tick: AxisTickProps<string>
@@ -86,7 +88,13 @@ const Dashboard = () => {
 
   const [dateSelected, setDateSelected] = useState(new Date())
 
-  const { isLoading, report } = useGetDashboardReport(dateSelected)
+  const { isFetching, report } = useGetDashboardReport(dateSelected)
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(() => {
+    if (report) {
+      setIsLoading(false)
+    }
+  }, [report])
 
   const [view, setView] = useState('weekly')
 
@@ -146,23 +154,29 @@ const Dashboard = () => {
       ? report?.weeklyTotals.topSellingItems
       : report?.monthlyTotals.topSellingItems
 
+  if (isLoading) {
+    return <LoadingCover />
+  }
+
   return (
     <div
       className={['screen pb-9', !isParentScreen ? 'hidden-screen' : ''].join(
         ' ',
       )}
     >
-      {isLoading && (
+      {isFetching && (
         <div className="fixed z-50 flex h-screen w-screen flex-col items-center justify-center bg-white opacity-70">
           <span className="loading loading-ring loading-lg"></span>
         </div>
       )}
       <Toolbar
         start={
-          <ToolbarButton
-            icon={<ChevronLeftIcon className="w-6" />}
-            onClick={() => navigate(-1)}
-          />
+          <label
+            htmlFor="my-drawer"
+            className="btn btn-link px-0 normal-case text-blue-400 no-underline disabled:bg-transparent disabled:text-gray-400"
+          >
+            <Bars3Icon className="w-6" />
+          </label>
         }
         middle={<ToolbarTitle title="Dashboard" />}
       />

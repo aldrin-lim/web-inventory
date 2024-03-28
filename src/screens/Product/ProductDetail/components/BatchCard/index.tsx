@@ -243,7 +243,7 @@ const BatchCard = (props: BatchCardProps) => {
                       .toNumber()
                     onChange?.({
                       ...values,
-                      cost: value,
+                      cost: value ?? '',
                       costPerUnit: updateCostPerUnit,
                     })
                   }}

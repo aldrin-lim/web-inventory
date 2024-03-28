@@ -69,9 +69,9 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
             httpClient.interceptors.response.use(
               (config) => config,
-              (error) => {
+              async (error) => {
                 if (error.response && error.response.status === 401) {
-                  logout({})
+                  await logout({})
                 }
                 // Optionally handle other error statuses or log errors.
 

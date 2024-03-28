@@ -2,15 +2,14 @@ import { useFormik } from 'formik'
 import useAdjustBatch from 'hooks/useAdjustBatch'
 import { useState } from 'react'
 import CurrencyInput from 'react-currency-input-field'
-import { ProductBatchSchema } from 'types/product.types'
+import { ProductFormValues } from 'screens/Product/hooks/useProductFormValue'
 import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 
-const BatchSchema = ProductBatchSchema.partial({ id: true })
 type AdjustmentDialogProps = {
   onClose?: () => void
   onSave?: () => void
-  batch: z.infer<typeof BatchSchema>
+  batch: ProductFormValues['batches'][number]
   productId: string
 }
 
@@ -62,11 +61,7 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
     })
 
   return (
-    <dialog
-      open={true}
-      id="unsaved-changes-dialog"
-      className="modal bg-black/30"
-    >
+    <dialog open={true} className="modal bg-black/30">
       <div className="modal-box px-4">
         <h3 className="text-lg font-bold">Adjust Batch</h3>
         <div className="mt-4 flex flex-col gap-3">

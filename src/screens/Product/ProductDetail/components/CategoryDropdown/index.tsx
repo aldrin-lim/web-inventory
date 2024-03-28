@@ -40,6 +40,7 @@ const CategoryDropdown = (props: CategoryDropdownProps) => {
 
   return (
     <CreatableSelect<CategoryOption, false>
+      isSearchable={false}
       isClearable
       onChange={handleChange}
       options={initialCategories}

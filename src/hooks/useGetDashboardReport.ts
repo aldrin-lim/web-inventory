@@ -23,7 +23,7 @@ interface GetSalesReportResult {
 }
 
 const useGetDashboardReport = (date?: Date) => {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ['dashboard-report', date ?? 'today'],
     queryFn: async () => {
       const url = `/reports/dashboard?${
@@ -43,6 +43,7 @@ const useGetDashboardReport = (date?: Date) => {
     report: data,
     error,
     isLoading,
+    isFetching,
   }
 }
 

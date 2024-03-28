@@ -46,7 +46,7 @@ const ProductMenu = () => {
           <li>
             <button
               className="btn btn-ghost w-full justify-start px-1 "
-              onClick={() => navigate(AppPath.ProductOverview)}
+              onClick={() => navigate(AppPath.Products)}
             >
               <TagIcon className="h-6 w-6" />
               All Products

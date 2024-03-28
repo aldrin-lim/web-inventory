@@ -2,23 +2,29 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import useProductFormValue from 'screens/Product/hooks/useProductFormValue'
 
-type DescriptionProps = {
-  onBack: () => void
-  description?: string
-  onComplete: (description: string) => void
-}
+const Description = () => {
+  const navigate = useNavigate()
 
-const Description = (props: DescriptionProps) => {
-  const { onBack, onComplete } = props
-  const [description, setDescription] = useState(props.description)
+  const [description, setDescription] = useState('')
+  const setFormFieldValue = useProductFormValue(
+    (state) => state.setFormFieldValue,
+  )
+  const formValue = useProductFormValue((state) => state.formValue)
+
+  useEffect(() => {
+    setDescription(formValue?.description ?? '')
+  }, [formValue])
+
   return (
-    <div className="screen">
+    <div className="screen absolute bg-base-100">
       <Toolbar
         start={
           <ToolbarButton
-            onClick={onBack}
+            onClick={() => navigate('../')}
             icon={<ChevronLeftIcon className="w-6" />}
           />
         }
@@ -26,8 +32,8 @@ const Description = (props: DescriptionProps) => {
         end={
           <ToolbarButton
             onClick={() => {
-              onBack()
-              onComplete(description ?? '')
+              setFormFieldValue('description', description)
+              navigate('../')
             }}
             label="Done"
           />
