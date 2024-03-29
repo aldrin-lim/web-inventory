@@ -42,6 +42,7 @@ const useCreateRecipe = () => {
 
     if (!validation.success) {
       const error = validation.error.issues[0].message
+      console.error('error', error)
       setError(error)
       return
     }

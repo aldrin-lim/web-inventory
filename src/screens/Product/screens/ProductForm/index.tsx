@@ -114,8 +114,6 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
     setProductFormValue(values)
   }, [setProductFormValue, values])
 
-  console.log('formValues', formValues)
-
   const computedCost = useMemo(() => {
     if (values.recipe) {
       return values.recipe.cost

@@ -5,15 +5,19 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import { Route, Routes, useNavigate, useResolvedPath } from 'react-router-dom'
 import { useRef } from 'react'
 import RecipeForm, { RecipeFormRef } from '.'
-import useRecipeFormValue, { RecipeFormValues } from './hooks/useRecipeForm'
+import { RecipeFormValues } from './hooks/useRecipeForm'
 import { v4 } from 'uuid'
 import useCreateRecipe from 'hooks/useCreateRecipe'
 import MaterialList from './MaterialList'
 import useAllProducts from 'hooks/useAllProducts'
 import useBoundStore from 'stores/useBoundStore'
+import { MaterialType } from 'types/product.types'
+import { toNumber } from 'lodash'
+import Big from 'big.js'
 
 enum ScreenPath {
-  SelectProduct = 'select-product',
+  SelectIngredients = 'select-ingredients',
+  SelectOthers = 'select-others',
 }
 
 const NewRecipe = () => {
@@ -60,12 +64,22 @@ const NewRecipe = () => {
   )
 
   const onSubmit = async (values: RecipeFormValues) => {
-    const materials = [...values.ingredients, ...values.others]
+    const materials = [...values.ingredients, ...values.others].map(
+      (material) => ({
+        ...material,
+        quantity: toNumber(material.quantity),
+      }),
+    )
+
+    const totalCost = materials.reduce((acc, material) => {
+      return new Big(acc).plus(new Big(material.cost)).toNumber()
+    }, 0)
+
     const requestBody = {
       id: v4(),
       name: values.name,
       description: '',
-      cost: values.cost,
+      cost: totalCost,
       images: values.images,
       price: 0,
       profitAmount: 0,
@@ -91,15 +105,25 @@ const NewRecipe = () => {
       </div>
       <Routes>
         <Route
-          path={`${ScreenPath.SelectProduct}/*`}
+          path={`${ScreenPath.SelectIngredients}/*`}
           element={
             <MaterialList
+              type={MaterialType.Ingredient}
               isLoading={isLoading}
               products={unselectedMaterials}
             />
           }
         />
-        {/* <Route path={`${ScreenPath.SelectRecipe}/*`} element={<RecipeList />} /> */}
+        <Route
+          path={`${ScreenPath.SelectOthers}/*`}
+          element={
+            <MaterialList
+              type={MaterialType.Other}
+              isLoading={isLoading}
+              products={unselectedMaterials}
+            />
+          }
+        />
       </Routes>
     </>
   )

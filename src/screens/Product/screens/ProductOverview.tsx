@@ -20,6 +20,7 @@ import ProductList from '../ProductOverview/components/ProductList'
 import Inventory from '../Inventory'
 import EditProduct from './EditProduct'
 import NewProduct from './NewProduct'
+import useBoundStore from 'stores/useBoundStore'
 
 enum ScreenPath {
   New = `new`,
@@ -47,8 +48,7 @@ const ProductOverview = () => {
   const orientation: ComponentProps<typeof ProductList>['orientation'] =
     hasOutOfStockProducts ? 'horizontal' : 'vertical'
 
-  const reset = () => {}
-
+  const reset = useBoundStore((state) => state.resetProductForm)
   useEffect(() => {
     if (isParentScreen) {
       reset()

@@ -7,21 +7,29 @@ import MiddleTruncateText from 'components/MiddleTruncatedText'
 import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Product } from 'types/product.types'
+import { MaterialType, Product, ProductBatchSchema } from 'types/product.types'
 import { isExpired, isWithinExpiration } from 'util/data'
 import { toNumber } from 'lodash'
 import { unitAbbrevationsToLabel } from 'util/measurement'
 import { formatToPeso } from 'util/currency'
+import useBoundStore from 'stores/useBoundStore'
+import { v4 } from 'uuid'
+import { z } from 'zod'
 
 type MaterialListProps = {
   products: Product[]
   isLoading: boolean
+  type: MaterialType
 }
 
 const MaterialList = (props: MaterialListProps) => {
-  const { products, isLoading } = props
+  const { products, isLoading, type } = props
   const navigate = useNavigate()
   const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
+
+  const { setRecipeFormValue, recipeFormValue } = useBoundStore(
+    (state) => state,
+  )
 
   const [nameFilter, setNameFilter] = useState('')
   const [filter, setFilter] = useState('all')
@@ -65,7 +73,48 @@ const MaterialList = (props: MaterialListProps) => {
     isWithinExpiration(product.activeBatch?.expirationDate ?? null),
   ).length
 
-  const onProductSelect = (product: Product) => {}
+  const onProductSelect = (product: Product) => {
+    if (type === MaterialType.Ingredient) {
+      const ingredients = recipeFormValue.ingredients
+      const activeBatch = product.activeBatch as NonNullable<
+        z.infer<typeof ProductBatchSchema>
+      >
+      setRecipeFormValue({
+        ...recipeFormValue,
+        ingredients: [
+          ...ingredients,
+          {
+            id: v4(),
+            quantity: 0,
+            cost: 0,
+            unitOfMeasurement: activeBatch.unitOfMeasurement,
+            product,
+            type: MaterialType.Ingredient,
+          },
+        ],
+      })
+    } else {
+      const others = recipeFormValue.others
+      const activeBatch = product.activeBatch as NonNullable<
+        z.infer<typeof ProductBatchSchema>
+      >
+      setRecipeFormValue({
+        ...recipeFormValue,
+        others: [
+          ...others,
+          {
+            id: v4(),
+            quantity: 0,
+            cost: 0,
+            unitOfMeasurement: activeBatch.unitOfMeasurement,
+            product,
+            type: MaterialType.Other,
+          },
+        ],
+      })
+    }
+    navigate('../')
+  }
 
   return (
     <div className="screen">

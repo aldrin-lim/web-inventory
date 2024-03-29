@@ -2,7 +2,6 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
-import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useBoundStore from 'stores/useBoundStore'
@@ -11,17 +10,13 @@ const Description = () => {
   const navigate = useNavigate()
 
   const [description, setDescription] = useState('')
-  const setInitialValue = useBoundStore(
-    (state) => state.setProdutctFormInitialValue,
-  )
-  const formValue = useBoundStore((state) => state.productFormValue)
-  const productFormValues = useBoundStore(
-    (state) => state.productFormInitialValue,
+  const { setProductFormFieldValue, productFormValue } = useBoundStore(
+    (state) => state,
   )
 
   useEffect(() => {
-    setDescription(formValue?.description ?? '')
-  }, [formValue])
+    setDescription(productFormValue?.description ?? '')
+  }, [productFormValue])
 
   return (
     <div className="screen absolute bg-base-100">
@@ -36,11 +31,7 @@ const Description = () => {
         end={
           <ToolbarButton
             onClick={() => {
-              setInitialValue(
-                produce(productFormValues, (draft) => {
-                  draft.description = description
-                }),
-              )
+              setProductFormFieldValue('description', description)
               navigate('../')
             }}
             label="Done"

@@ -195,7 +195,7 @@ const EditProduct = () => {
 
 const Skeleton = () => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <div className="skeleton h-[48px] rounded-md" />
 
       <div className="skeleton h-[40px] rounded-md" />

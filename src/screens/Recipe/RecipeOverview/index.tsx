@@ -16,6 +16,8 @@ import GetStarted from './GetStarted'
 import { useEffect } from 'react'
 import { Analytics } from 'util/analytics'
 import NewRecipe from '../screens/RecipeForm/NewRecipe'
+import useBoundStore from 'stores/useBoundStore'
+import EditRecipe from '../screens/RecipeForm/EditRecipe'
 
 enum ScreenPath {
   New = 'new',
@@ -33,6 +35,13 @@ const RecipeOverview = () => {
   useEffect(() => {
     Analytics.trackPageView('All Recipes')
   }, [])
+
+  const reset = useBoundStore((state) => state.resetRecipeForm)
+  useEffect(() => {
+    if (isParentScreen) {
+      reset()
+    }
+  }, [isParentScreen, reset])
 
   return (
     <>
@@ -75,7 +84,7 @@ const RecipeOverview = () => {
       </div>
       <Routes>
         <Route path={`${ScreenPath.New}/*`} element={<NewRecipe />} />
-        {/* <Route path={`:id/*`} element={<EditProduct />} /> */}
+        <Route path={`:id/*`} element={<EditRecipe />} />
       </Routes>
     </>
   )

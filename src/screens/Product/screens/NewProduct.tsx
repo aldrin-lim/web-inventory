@@ -23,8 +23,6 @@ const NewProduct = () => {
 
   const formValues = useBoundStore((state) => state.productFormValue)
 
-  console.log('formValues', formValues)
-
   const renderToolbar = () => (
     <Toolbar
       start={

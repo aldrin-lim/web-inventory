@@ -6,13 +6,13 @@ import useAllRecipes from 'hooks/useAllRecipes'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import GetStarted from 'screens/Recipe/RecipeOverview/GetStarted'
-import useProductFormValue from '../../hooks/useProductFormValue'
 import { GetAllRecipeResponseSchema } from 'api/recipe/getAllRecipes'
 import { padWithZeros } from 'util/number'
 import { v4 } from 'uuid'
 import { PIECES } from 'constants copy/measurement'
 import { formatToPeso } from 'util/currency'
 import { produce } from 'immer'
+import useBoundStore from 'stores/useBoundStore'
 
 type Recipe = GetAllRecipeResponseSchema[number]
 
@@ -22,11 +22,11 @@ const RecipeList = () => {
 
   const [nameFilter, setNameFilter] = useState('')
 
-  const setInitialValue = useProductFormValue((state) => state.setInitialValue)
+  const { setProductFormValue, productFormValue } = useBoundStore(
+    (state) => state,
+  )
 
-  const productFormValues = useProductFormValue((state) => state.formValue)
-
-  const reset = useProductFormValue((state) => state.reset)
+  const reset = useBoundStore((state) => state.resetProductForm)
 
   const filteredRecipes = useMemo(() => {
     return recipes.filter((recipe) =>
@@ -36,8 +36,8 @@ const RecipeList = () => {
 
   const selectRecipe = (recipe: Recipe) => {
     reset()
-    setInitialValue(
-      produce(productFormValues, (draft) => {
+    setProductFormValue(
+      produce(productFormValue, (draft) => {
         draft.recipe = recipe
         draft.name = recipe.name
         draft.batches = [
