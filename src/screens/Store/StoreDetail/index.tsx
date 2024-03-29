@@ -1,5 +1,6 @@
 import Toolbar from 'components/Layout/components/Toolbar'
 import {
+  Bars3Icon,
   ChevronLeftIcon,
   EyeIcon,
   EyeSlashIcon,
@@ -101,11 +102,12 @@ const StoreDetail = () => {
     <div className="screen pb-6">
       <Toolbar
         start={
-          <ToolbarButton
-            icon={<ChevronLeftIcon className="w-6" />}
-            onClick={() => navigate(AppPath.Root)}
-            disabled={isMutating}
-          />
+          <label
+            htmlFor="my-drawer"
+            className="btn btn-link px-0 normal-case text-blue-400 no-underline disabled:bg-transparent disabled:text-gray-400"
+          >
+            <Bars3Icon className="w-6" />
+          </label>
         }
         middle={<ToolbarTitle title="Store Settings" />}
       />

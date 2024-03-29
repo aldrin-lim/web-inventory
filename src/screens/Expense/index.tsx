@@ -1,4 +1,8 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
+import {
+  Bars3Icon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from '@heroicons/react/24/outline'
 import useGetMonthlyExpenses from 'apiHooks/useGetMonthlyExpenses'
 import Toolbar from 'components/Layout/components/Toolbar'
 import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
@@ -68,10 +72,12 @@ const Expense = () => {
       <div className={activeCategory === null ? 'screen' : 'hidden-screen'}>
         <Toolbar
           start={
-            <ToolbarButton
-              icon={<ChevronLeftIcon className="w-6" />}
-              onClick={() => navigate(AppPath.Root)}
-            />
+            <label
+              htmlFor="my-drawer"
+              className="btn btn-link px-0 normal-case text-blue-400 no-underline disabled:bg-transparent disabled:text-gray-400"
+            >
+              <Bars3Icon className="w-6" />
+            </label>
           }
         />
         <div className="flex flex-col items-center gap-4">
