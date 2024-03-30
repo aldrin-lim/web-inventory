@@ -12,8 +12,6 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import RecipeForm, { RecipeFormRef } from '.'
 import { RecipeFormValues } from './hooks/useRecipeForm'
-import { v4 } from 'uuid'
-import useCreateRecipe from 'hooks/useCreateRecipe'
 import MaterialList from './MaterialList'
 import useAllProducts from 'hooks/useAllProducts'
 import useBoundStore from 'stores/useBoundStore'
@@ -24,7 +22,6 @@ import useCloneRecipe from 'hooks/useCloneRecipe'
 import useDeleteRecipe from 'hooks/useDeleteRecipe'
 import useUpdateRecipe from 'hooks/useUpdateRecipe'
 import useGetRecipe from 'hooks/useGetRecipe'
-import { cloneProduct } from 'api/product'
 import PrimaryAction from 'screens/Product/ProductDetail/components/ProductDetailPrimaryAction'
 
 enum ScreenPath {
@@ -50,6 +47,10 @@ const EditRecipe = () => {
 
   const setRecipeFormValue = useBoundStore((state) => state.setRecipeFormValue)
 
+  const initialFormValue = useBoundStore(
+    (state) => state.recipeFormInitialValue,
+  )
+
   const { isUpdating, updateRecipe } = useUpdateRecipe()
   const { isDeleting, deleteRecipe } = useDeleteRecipe()
   const { isCloning, cloneRecipe } = useCloneRecipe()
@@ -59,30 +60,38 @@ const EditRecipe = () => {
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     if (recipe && isRecipeLoading === false) {
-      const formValue = {
-        id: recipe.id,
-        name: recipe.name,
-        description: recipe.description,
-        cost: recipe.cost,
-        images: recipe.images,
-        price: 0,
-        profitAmount: 0,
-        profitPercentage: 0,
-        profit: 0,
-        quantity: 0,
-        materials: recipe.materials,
-        ingredients: recipe.materials.filter(
-          (material) => material.type === MaterialType.Ingredient,
-        ),
-        others: recipe.materials.filter(
-          (material) => material.type === MaterialType.Other,
-        ),
-      } as RecipeFormValues
-      setRecipeInitialValue(formValue)
-      setRecipeFormValue(formValue)
+      if (initialFormValue.id !== recipe.id) {
+        const formValue = {
+          id: recipe.id,
+          name: recipe.name,
+          description: recipe.description,
+          cost: recipe.cost,
+          images: recipe.images,
+          price: 0,
+          profitAmount: 0,
+          profitPercentage: 0,
+          profit: 0,
+          quantity: 0,
+          materials: recipe.materials,
+          ingredients: recipe.materials.filter(
+            (material) => material.type === MaterialType.Ingredient,
+          ),
+          others: recipe.materials.filter(
+            (material) => material.type === MaterialType.Other,
+          ),
+        } as RecipeFormValues
+        setRecipeInitialValue(formValue)
+        setRecipeFormValue(formValue)
+      }
       setIsLoading(false)
     }
-  }, [recipe, isRecipeLoading, setRecipeInitialValue, setRecipeFormValue])
+  }, [
+    recipe,
+    isRecipeLoading,
+    setRecipeInitialValue,
+    setRecipeFormValue,
+    initialFormValue.id,
+  ])
 
   const unselectedMaterials = products
     .filter((product) => !product.recipe)
@@ -118,7 +127,7 @@ const EditRecipe = () => {
           }}
           onClone={async () => {
             if (recipe) {
-              await cloneProduct({ id: recipe.id })
+              await cloneRecipe({ id: recipe.id })
             }
           }}
         />

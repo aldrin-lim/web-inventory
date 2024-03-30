@@ -5,6 +5,7 @@ import ToolbarTitle from 'components/Layout/components/Toolbar/components/Toolba
 import useGetProduct from 'hooks/useGetProduct'
 import { useEffect, useRef, useState } from 'react'
 import {
+  Navigate,
   Route,
   Routes,
   useNavigate,
@@ -22,6 +23,7 @@ import PrimaryAction from '../ProductDetail/components/ProductDetailPrimaryActio
 import Description from './ProductForm/Description'
 import RecipeList from './ProductForm/RecipeList'
 import useBoundStore from 'stores/useBoundStore'
+import { AppPath } from 'routes/AppRoutes.types'
 
 const EditProduct = () => {
   const navigate = useNavigate()
@@ -35,13 +37,15 @@ const EditProduct = () => {
     (state) => state.setProductFormValue,
   )
 
+  const intialValue = useBoundStore((state) => state.productFormInitialValue)
+
   const { deleteProduct, isDeleting } = useDeleteProduct()
   const { updateProduct, isUpdating } = useUpdateProduct()
   const { cloneProduct, isCloning } = useCloneProduct()
 
   const isMutating = isDeleting || isUpdating || isCloning
 
-  const { product, isLoading: isGettingProduct } = useGetProduct(id)
+  const { product, isLoading: isGettingProduct, error } = useGetProduct(id)
   const [isLoading, setIsLoading] = useState(true)
 
   const productFormRef = useRef<ProductFormRef>(null)
@@ -51,48 +55,57 @@ const EditProduct = () => {
 
   useEffect(() => {
     if (product && isGettingProduct === false) {
-      const currentCost = product.activeBatch?.cost ?? 0
-      const overAllMeasurement =
-        product.activeBatch?.unitOfMeasurement ?? product.isBulkCost
-          ? 'g'
-          : PIECES
-      const formValue = {
-        id: product.id,
-        name: product.name,
-        mode: 'edit',
-        description: product.description,
-        currentCost: currentCost.toString(),
-        overAllMeasurement: overAllMeasurement,
-        price: product.price.toString(),
-        profitAmount: product.profitAmount.toString(),
-        profitPercentage: product.profitPercentage.toString(),
-        images: product.images,
-        category: product.category,
-        isBulkCost: product.isBulkCost,
-        soldBy: product.soldBy,
-        isIngredient: !product.forSale,
-        allowBackOrder: product.allowBackOrder,
-        applyTax: product.applyTax,
-        stockWarning: product.stockWarning,
-        batches: product.batches.map((batch) => {
-          return {
-            id: batch.id,
-            name: batch.name,
-            cost: batch.cost.toString(),
-            costPerUnit: batch.costPerUnit,
-            quantity: batch.quantity.toString(),
-            unitOfMeasurement: batch.unitOfMeasurement,
-            isDeducted: batch.isDeducted,
-            expirationDate: batch.expirationDate,
-          }
-        }),
-        recipe: product.recipe,
-      } as ProductFormValues
-      setProductInitialValue(formValue)
-      setProductFormValue(formValue)
+      if (intialValue.id !== product.id) {
+        const currentCost = product.activeBatch?.cost ?? 0
+        const overAllMeasurement =
+          product.activeBatch?.unitOfMeasurement ?? product.isBulkCost
+            ? 'g'
+            : PIECES
+        const formValue = {
+          id: product.id,
+          name: product.name,
+          mode: 'edit',
+          description: product.description,
+          currentCost: currentCost.toString(),
+          overAllMeasurement: overAllMeasurement,
+          price: product.price.toString(),
+          profitAmount: product.profitAmount.toString(),
+          profitPercentage: product.profitPercentage.toString(),
+          images: product.images,
+          category: product.category,
+          isBulkCost: product.isBulkCost,
+          soldBy: product.soldBy,
+          isIngredient: !product.forSale,
+          allowBackOrder: product.allowBackOrder,
+          applyTax: product.applyTax,
+          stockWarning: product.stockWarning,
+          batches: product.batches.map((batch) => {
+            return {
+              id: batch.id,
+              name: batch.name,
+              cost: batch.cost.toString(),
+              costPerUnit: batch.costPerUnit,
+              quantity: batch.quantity.toString(),
+              unitOfMeasurement: batch.unitOfMeasurement,
+              isDeducted: batch.isDeducted,
+              expirationDate: batch.expirationDate,
+            }
+          }),
+          recipe: product.recipe,
+        } as ProductFormValues
+        setProductInitialValue(formValue)
+        setProductFormValue(formValue)
+      }
+
       setIsLoading(false)
     }
-  }, [product, isGettingProduct, setProductInitialValue, setProductFormValue])
+  }, [
+    product,
+    isGettingProduct,
+    setProductInitialValue,
+    setProductFormValue,
+    intialValue.id,
+  ])
 
   const renderToolbar = () => (
     <Toolbar
@@ -161,6 +174,10 @@ const EditProduct = () => {
 
   if (!id) {
     throw new Error('No product id found (EditProduct)')
+  }
+
+  if (error) {
+    return <Navigate to={AppPath.Error} />
   }
 
   if (isLoading) {
