@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import * as API from 'api/product'
 
-const useAllProducts = () => {
+const useAllProducts = (enabled: boolean = true) => {
   const {
     data,
     isFetching: isLoading,
@@ -11,6 +11,7 @@ const useAllProducts = () => {
     queryFn: () => API.getAllProducts(),
     retry: 0,
     refetchOnWindowFocus: true,
+    enabled,
   })
 
   return {

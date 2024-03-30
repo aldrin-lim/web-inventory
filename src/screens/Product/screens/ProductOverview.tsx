@@ -35,10 +35,10 @@ const ProductOverview = () => {
     Analytics.trackPageView('All Products')
   }, [])
 
-  const { products, isLoading, error } = useAllProducts()
-
   const resolvedPath = useResolvedPath('')
   const isParentScreen = location.pathname === resolvedPath.pathname
+
+  const { products, isLoading, error } = useAllProducts(isParentScreen)
 
   const outOfStocks = products.filter((product) => product.outOfStock === true)
   const inStocks = products.filter((product) => product.outOfStock === false)
