@@ -1,6 +1,5 @@
 import { NewspaperIcon } from '@heroicons/react/24/solid'
 import { useNavigate } from 'react-router-dom'
-import { AppPath } from 'routes/AppRoutes.types'
 
 const GetStarted = () => {
   const navigate = useNavigate()
@@ -11,7 +10,7 @@ const GetStarted = () => {
       <h2 className="text-lg font-bold">Craft your first recipe</h2>
       <p>Craft your awesome recipe. It&apos;s super easy! </p>
       <button
-        onClick={() => navigate(AppPath.AddRecipe)}
+        onClick={() => navigate('new')}
         className="btn btn-success text-white"
         color="green"
       >
