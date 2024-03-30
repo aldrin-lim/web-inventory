@@ -11,7 +11,7 @@ const useAllRecipes = (param?: PaginationOptions) => {
     queryKey: ['recipes', param],
     queryFn: () => API.getAllRecipe(param),
     retry: 0,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   })
 
   return {

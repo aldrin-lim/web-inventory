@@ -10,7 +10,7 @@ const useAllProducts = (enabled: boolean = true) => {
     queryKey: ['products'],
     queryFn: () => API.getAllProducts(),
     retry: 0,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     enabled,
   })
 

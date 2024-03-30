@@ -15,7 +15,7 @@ const useGetMonthlyExpenses = () => {
       return result
     },
     retry: 0,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   })
 
   return {
