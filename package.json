@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --open --port 5174",
-    "build": "vite build",
+    "build": "yarn cache clean && vite build",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest"
