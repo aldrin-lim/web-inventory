@@ -274,6 +274,14 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
             </div>
           )}
 
+          {values.mode === 'edit' && values.recipe && (
+            <div className="flex flex-row gap-2">
+              <button className="btn btn-outline btn-primary btn-xs max-w-xs  self-start rounded-[5px] text-left">
+                Recipe used: {values.recipe.name}
+              </button>
+            </div>
+          )}
+
           {/* Set Description CTA */}
           <Link
             to={ScreenPath.Description}
