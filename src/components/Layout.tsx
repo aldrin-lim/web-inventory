@@ -20,7 +20,7 @@ const Layout = () => {
   const { logout } = useAuth0()
 
   return (
-    <div className="drawer ">
+    <div className="drawer">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content ">
         <Outlet />

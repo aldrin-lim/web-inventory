@@ -52,7 +52,7 @@ function App() {
         closeButton={false}
         closeOnClick
       />
-      <div className=" h-full max-h-max w-full">
+      <div className="h-full max-h-max w-full">
         <AppRoutes />
       </div>
     </>
