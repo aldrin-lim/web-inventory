@@ -1,26 +1,34 @@
-import { Route, Routes, useNavigate } from 'react-router-dom'
+import { Route, Routes, useNavigate, useResolvedPath } from 'react-router-dom'
 import EditProduct from '../screens/EditProduct'
 import { Product } from 'types/product.types'
-import SlidingTransition from 'components/SlidingTransition'
 
 import { Bars3Icon, InformationCircleIcon } from '@heroicons/react/24/outline'
-import { ChevronLeftIcon, PhotoIcon } from '@heroicons/react/24/solid'
+import { PhotoIcon } from '@heroicons/react/24/solid'
 import Toolbar from 'components/Layout/components/Toolbar'
-import ToolbarButton from 'components/Layout/components/Toolbar/components/ToolbarButton'
 import ToolbarTitle from 'components/Layout/components/Toolbar/components/ToolbarTitle'
 import MiddleTruncateText from 'components/MiddleTruncatedText'
 import useMediaQuery, { ScreenSize } from 'hooks/useMediaQuery'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { isExpired, isWithinExpiration } from 'util/data'
 import { toNumber } from 'lodash'
 import { unitAbbrevationsToLabel } from 'util/measurement'
 import { formatToPeso } from 'util/currency'
 import GetStarted from '../ProductOverview/components/GetStarted'
 import useAllProducts from 'hooks/useAllProducts'
+import useBoundStore from 'stores/useBoundStore'
 
 const Inventory = () => {
   const navigate = useNavigate()
-  const { currentBreakpoint } = useMediaQuery({ updateOnResize: true })
+  const { currentBreakpoint } = useMediaQuery()
+
+  const resolvedPath = useResolvedPath('')
+  const isParentScreen = location.pathname === resolvedPath.pathname
+  const reset = useBoundStore((state) => state.resetProductForm)
+  useEffect(() => {
+    if (isParentScreen) {
+      reset()
+    }
+  }, [isParentScreen, reset])
 
   const { products, isLoading } = useAllProducts()
 
@@ -68,7 +76,7 @@ const Inventory = () => {
 
   return (
     <>
-      <div className="screen">
+      <div className={isParentScreen ? 'screen' : 'hidden'}>
         <Toolbar
           start={
             <label
@@ -183,7 +191,7 @@ const Inventory = () => {
                 )}
                 {filteredProducts.map((product) => (
                   <li
-                    onClick={() => onProductSelect?.(product)}
+                    onClick={() => navigate?.(product.id)}
                     key={product.id}
                     className="w-full"
                   >
@@ -266,14 +274,7 @@ const Inventory = () => {
         </div>
       </div>
       <Routes>
-        <Route
-          path={`:id/*`}
-          element={
-            <SlidingTransition isVisible>
-              <EditProduct />
-            </SlidingTransition>
-          }
-        />
+        <Route path={`:id/*`} element={<EditProduct />} />
       </Routes>
     </>
   )

@@ -1209,7 +1209,6 @@ const BatchItem = (props: BatchItemProps) => {
                   type="button"
                   className="btn btn-ghost btn-xs"
                   onClick={() => {
-                    console.log('aaa')
                     setShowAdjustmentDialog(true)
                   }}
                 >
@@ -1224,6 +1223,9 @@ const BatchItem = (props: BatchItemProps) => {
         <Field
           name={`${key}.quantity`}
           validate={(value: string) => {
+            if (disabled === true) {
+              return null
+            }
             if (value === '') {
               return 'Quantity is required'
             }

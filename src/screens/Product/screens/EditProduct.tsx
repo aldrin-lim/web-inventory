@@ -59,7 +59,7 @@ const EditProduct = () => {
         const currentCost = product.activeBatch?.cost ?? 0
         const overAllMeasurement =
           product.activeBatch?.unitOfMeasurement ?? product.isBulkCost
-            ? 'g'
+            ? product.activeBatch?.unitOfMeasurement
             : PIECES
         const formValue = {
           id: product.id,

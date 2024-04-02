@@ -29,6 +29,9 @@ enum ScreenPath {
 }
 
 const ProductOverview = () => {
+  useEffect(() => {
+    console.log('mounted')
+  }, [])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -38,7 +41,7 @@ const ProductOverview = () => {
   const resolvedPath = useResolvedPath('')
   const isParentScreen = location.pathname === resolvedPath.pathname
 
-  const { products, isLoading, error } = useAllProducts(isParentScreen)
+  const { products, isLoading, error } = useAllProducts()
 
   const outOfStocks = products.filter((product) => product.outOfStock === true)
   const inStocks = products.filter((product) => product.outOfStock === false)

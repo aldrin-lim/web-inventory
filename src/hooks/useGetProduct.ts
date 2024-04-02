@@ -10,8 +10,6 @@ const useGetProduct = (productId?: string, enabled: boolean = true) => {
     refetchOnWindowFocus: false,
   })
 
-  console.log('aaa', error)
-
   return {
     product: data,
     error,
