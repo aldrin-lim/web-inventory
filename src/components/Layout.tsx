@@ -5,6 +5,7 @@ import {
   BuildingStorefrontIcon,
   PresentationChartBarIcon,
   QueueListIcon,
+  RectangleGroupIcon,
   TagIcon,
   UserIcon,
   XMarkIcon,
@@ -121,7 +122,18 @@ const Layout = () => {
                   User Profile
                 </label>
               </li>
-
+              <li>
+                <label
+                  htmlFor="my-drawer"
+                  className="btn btn-ghost w-full justify-start px-1"
+                  onClick={() => {
+                    window.open('https://pos.qrafter.io', '_blank')
+                  }}
+                >
+                  <RectangleGroupIcon className="h-6 w-6" />
+                  Go to POS
+                </label>
+              </li>
               <li>
                 <label
                   htmlFor="my-drawer"
