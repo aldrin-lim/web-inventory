@@ -12,10 +12,16 @@ import { AppPath } from 'routes/AppRoutes.types'
 import LoadingCover from 'components/LoadingCover'
 
 function App() {
-  useUser()
+  const { error } = useUser()
   const navigate = useNavigate()
 
   const { user, isLoading } = useUser()
+
+  useEffect(() => {
+    if (error) {
+      navigate(AppPath.Error)
+    }
+  }, [error])
 
   useEffect(() => {
     themeChange(false)
