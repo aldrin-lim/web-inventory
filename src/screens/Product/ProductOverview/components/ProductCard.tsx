@@ -28,7 +28,7 @@ const ProductCard = (props: ProductCardProps) => {
           <ImageLoader src={image} iconClassName="w-24 text-gray-400" />
         </figure>
         <div className="card-body flex flex-col gap-0 !py-2 text-left ">
-          <h2 className="card-title text-base font-normal ">
+          <h2 className={`card-title text-base font-normal`}>
             <MiddleTruncatedText text={name} maxLength={18} />
           </h2>
           {renderStockInfo(product)}
@@ -39,6 +39,13 @@ const ProductCard = (props: ProductCardProps) => {
           {renderPrice(product)}
         </div>
       </div>
+      {product.allowBackOrder && (
+        <div className="absolute top-10  flex w-full items-center justify-between px-2">
+          <div className="bg-green-400/50 p-1 text-xs text-white">
+            ✔ Backorder
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -87,9 +94,7 @@ const renderStockInfo = (product: Product) => {
     if (product.outOfStock) {
       return (
         <div className="flex flex-row gap-1  text-xs">
-          <span
-            className={`overflow-hidden truncate text-ellipsis text-red-400`}
-          >
+          <span className={`overflow-hidden truncate text-ellipsis`}>
             {product.batches.reduce((acc, batch) => acc + batch.quantity, 0)}{' '}
             {measurement}
           </span>
@@ -103,6 +108,7 @@ const renderStockInfo = (product: Product) => {
       <div className="flex flex-row gap-1  text-xs">
         <span className={`overflow-hidden truncate text-ellipsis text-red-400`}>
           Out of stock
+          {isExpired(activeBatch.expirationDate) && ` • Expired`}
         </span>
       </div>
     )

@@ -24,6 +24,7 @@ export default {
           "primary-content": "#ffffff",
           "secondary-content": "#ffffff",
           "accent-content": "#ffffff",
+          "warning-content": "#ffffff",
 
         },
       },

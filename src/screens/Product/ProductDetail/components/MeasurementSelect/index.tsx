@@ -4,19 +4,39 @@ import AutocompleteSelect, {
 } from 'components/AutocompleteSelect'
 
 import './styles.css'
-import { getAllMeasurementUnits } from 'util/measurement'
+import { getAllMeasurementUnits, measurementOptions } from 'util/measurement'
 import { Measure } from 'convert-units'
 import { useMemo } from 'react'
+import { PIECES } from 'constants copy/measurement'
 
 type MeasurementSelectProps = {
   onChange?: AutoCompleteProps['onChange']
   value: OptionsValue
   measurements?: Measure[]
   disabled?: boolean
+  className?: string
+}
+
+export const getMeasurementOptionsValue = (measurement: string) => {
+  if (
+    ['piece', 'pc', 'pcs', 'piece(s)', 'pieces', 'pc(s)'].includes(measurement)
+  ) {
+    return {
+      label: 'pc(s)',
+      value: PIECES,
+    }
+  }
+
+  return {
+    label:
+      measurementOptions.find((option) => option.value === measurement)
+        ?.label || '',
+    value: measurement ?? '',
+  }
 }
 
 const MeasurementSelect = (props: MeasurementSelectProps) => {
-  const { value, onChange, measurements, disabled } = props
+  const { value, onChange, measurements, disabled, className } = props
   // let options = getAllMeasurementUnits(measurements)
 
   // Format of options base from convert-units
@@ -79,6 +99,14 @@ const MeasurementSelect = (props: MeasurementSelectProps) => {
       })
     }
 
+    // If measurment includes pieces
+    if (measurements?.includes('pieces')) {
+      return options.concat({
+        label: 'Piece (pcs)',
+        value: PIECES,
+      })
+    }
+
     return options
   }, [measurements])
 
@@ -88,7 +116,7 @@ const MeasurementSelect = (props: MeasurementSelectProps) => {
       value={value}
       onChange={onChange}
       options={options}
-      className="measurement-selection text-base"
+      className={`measurement-selection text-base ${className}`}
     />
   )
 }

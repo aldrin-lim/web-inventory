@@ -43,8 +43,14 @@ const ProductOverview = () => {
 
   const { products, isLoading, error } = useAllProducts()
 
-  const outOfStocks = products.filter((product) => product.outOfStock === true)
-  const inStocks = products.filter((product) => product.outOfStock === false)
+  const outOfStocks = products.filter(
+    (product) =>
+      product.outOfStock === true && product.allowBackOrder === false,
+  )
+  const inStocks = products.filter(
+    (product) =>
+      product.outOfStock === false || product.allowBackOrder === true,
+  )
 
   const hasOutOfStockProducts = outOfStocks.length > 0
 
@@ -99,6 +105,11 @@ const ProductOverview = () => {
   const addProduct = () => {
     navigate(ScreenPath.New)
   }
+
+  console.log('outOfStocks', outOfStocks)
+  console.log('inStocks', inStocks)
+
+  console.log(products)
 
   return (
     <>

@@ -5,7 +5,7 @@ const GetStarted = () => {
   const navigate = useNavigate()
   const onAddProduct = () => {
     localStorage.setItem('productAdded', 'true')
-    navigate('add')
+    navigate('new')
   }
   return (
     <div className="section flex w-full flex-col items-center justify-center gap-4 text-center">

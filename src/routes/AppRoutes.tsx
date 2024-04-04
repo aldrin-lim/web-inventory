@@ -13,6 +13,7 @@ import SignoutScreen from 'components/SignoutScreen'
 import Dashboard from 'screens/Report/Dashboard'
 import Expense from 'screens/Expense'
 import ProductOverview from 'screens/Product/screens/ProductOverview'
+import Import from 'screens/Import'
 
 const AppRoutes = () => (
   <Routes>
@@ -22,15 +23,10 @@ const AppRoutes = () => (
         path={`${AppPath.Products}/*`}
         element={<ProtectedRoute element={<ProductOverview />} />}
       />
-      {/* <Route
-        path={`${AppPath.ViewProduct}/*`}
-        element={<ProtectedRoute element={<ViewProduct />} />}
-      /> */}
       <Route
         path={`${AppPath.Recipe}/*`}
         element={<ProtectedRoute element={<RecipeOverview />} />}
       />
-
       <Route
         path={`${AppPath.Inventory}/*`}
         element={<ProtectedRoute element={<Inventory />} />}
@@ -51,6 +47,7 @@ const AppRoutes = () => (
         path={AppPath.Profile}
         element={<ProtectedRoute element={<Profile />} />}
       />
+      <Route path={AppPath.Import} element={<Import />} />
     </Route>
     <Route path={AppPath.Signout} element={<SignoutScreen />} />
     <Route path="*" element={<Navigate to={AppPath.Root} />} />

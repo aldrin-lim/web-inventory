@@ -19,6 +19,7 @@ export enum AppPath {
   Reports = '/reports',
   Dashboard = '/reports/dashboard',
   Expenses = '/expenses',
+  Import = '/import',
 
   Products = '/products',
   ProductOverview = '/products/overview',

@@ -5,6 +5,7 @@ import { ProductSoldBy } from 'types/product.types'
 import { z } from 'zod'
 import {
   ChevronRightIcon,
+  ExclamationTriangleIcon,
   InformationCircleIcon,
   PencilIcon,
   PencilSquareIcon,
@@ -57,6 +58,7 @@ import RecipeList from './RecipeList'
 import { toast } from 'react-toastify'
 import AdjustmentDialog from 'screens/Product/ProductDetail/components/BatchCard/components/AdjustmentDialog'
 import useBoundStore from 'stores/useBoundStore'
+import { isExpired } from 'util/data'
 
 export enum ScreenPath {
   Description = 'set-description',
@@ -510,11 +512,11 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
                         cost,
                       )
 
-                      await form.setFieldValue(
+                      form.setFieldValue(
                         'profitAmount',
                         toNumber(newProfitAmount),
                       )
-                      await form.setFieldValue(
+                      form.setFieldValue(
                         'profitPercentage',
                         toNumber(newProfitPercentage),
                       )
@@ -601,7 +603,7 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
                           cost,
                         )
 
-                        await form.setFieldValue('price', newPrice)
+                        form.setFieldValue('price', newPrice)
                         await form.setFieldValue(
                           'profitAmount',
                           newProfitAmount,
@@ -1190,6 +1192,12 @@ const BatchItem = (props: BatchItemProps) => {
         />
       )}
       <div className="mb-2 flex flex-col gap-2 rounded-lg border border-neutral/30 p-2 py-4">
+        {isExpired(batch.expirationDate) && (
+          <div className="alert-sm alert alert-warning flex flex-row justify-start gap-2 rounded-md p-1 text-xs text-warning-content">
+            <ExclamationTriangleIcon className="w-4" />
+            This batch is expired{' '}
+          </div>
+        )}
         {/* Name */}
         <Field name={`${key}.name`}>
           {({ field }: FieldProps) => (
@@ -1223,12 +1231,10 @@ const BatchItem = (props: BatchItemProps) => {
         <Field
           name={`${key}.quantity`}
           validate={(value: string) => {
-            if (disabled === true) {
-              return null
-            }
-            if (value === '') {
-              return 'Quantity is required'
-            }
+            if (value)
+              if (value === '') {
+                return 'Quantity is required'
+              }
             const validation = z
               .number({
                 required_error: 'Quantity is required',
@@ -1409,9 +1415,7 @@ const BatchItem = (props: BatchItemProps) => {
                       actions: ['clear', 'accept', 'cancel'],
                     },
                   }}
-                  value={
-                    values.expirationDate ? moment(values.expirationDate) : null
-                  }
+                  value={field.value ? moment(field.value, 'YYYY-MM-DD') : null}
                   onAccept={(date) => {
                     form.setFieldValue(field.name, date ?? null)
                   }}

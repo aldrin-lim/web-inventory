@@ -1,6 +1,7 @@
 import ArrowLeftOnRectangleIcon from '@heroicons/react/24/outline/ArrowLeftOnRectangleIcon'
 import {
   ArchiveBoxIcon,
+  ArrowUpTrayIcon,
   BookOpenIcon,
   BuildingStorefrontIcon,
   PresentationChartBarIcon,
@@ -100,6 +101,16 @@ const Layout = () => {
                 >
                   <QueueListIcon className="h-6 w-6" />
                   Expenses
+                </label>
+              </li>
+              <li>
+                <label
+                  htmlFor="my-drawer"
+                  className="btn btn-ghost w-full justify-start px-1"
+                  onClick={() => navigate(AppPath.Import)}
+                >
+                  <ArrowUpTrayIcon className="h-6 w-6" />
+                  Import Products
                 </label>
               </li>
               <li>

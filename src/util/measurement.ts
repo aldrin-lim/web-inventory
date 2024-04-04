@@ -27,7 +27,7 @@ export function getAllMeasurementUnits(
 export const measurementOptions = getAllMeasurementUnits()
 
 export const unitAbbrevationsToLabel = (unit: string) => {
-  if (['piece', 'pc', 'pcs', 'piece(s)', 'pieces'].includes(unit)) {
+  if (['piece', 'pc', 'pcs', 'piece(s)', 'pieces', 'pc(s)'].includes(unit)) {
     return 'pc(s)'
   }
 

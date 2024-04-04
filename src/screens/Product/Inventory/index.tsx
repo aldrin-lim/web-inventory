@@ -16,6 +16,7 @@ import { formatToPeso } from 'util/currency'
 import GetStarted from '../ProductOverview/components/GetStarted'
 import useAllProducts from 'hooks/useAllProducts'
 import useBoundStore from 'stores/useBoundStore'
+import NewProduct from '../screens/NewProduct'
 
 const Inventory = () => {
   const navigate = useNavigate()
@@ -274,6 +275,7 @@ const Inventory = () => {
         </div>
       </div>
       <Routes>
+        <Route path={`new/*`} element={<NewProduct />} />
         <Route path={`:id/*`} element={<EditProduct />} />
       </Routes>
     </>
@@ -329,8 +331,24 @@ const renderStockInfo = (product: Product) => {
     return <p className={`text-xs text-red-400`}>No Batches Found</p>
   }
 
+  if (product.allowBackOrder && product.outOfStock) {
+    if (product.outOfStock) {
+      return (
+        <p className={`text-xs`}>
+          {product.batches.reduce((acc, batch) => acc + batch.quantity, 0)}{' '}
+          {measurement}
+        </p>
+      )
+    }
+  }
+
   if (product.outOfStock) {
-    return <p className={`text-xs text-red-400`}>Out of stock</p>
+    return (
+      <span className={`text-xs text-red-400`}>
+        Out of stock
+        {isExpired(activeBatch.expirationDate) && ` • Expired`}
+      </span>
+    )
   }
 
   if (isExpired(activeBatch.expirationDate)) {

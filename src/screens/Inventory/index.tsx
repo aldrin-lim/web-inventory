@@ -53,14 +53,17 @@ const Inventory = (props: InventoryProps) => {
         .filter(
           (product) =>
             toNumber(product.stockWarning) >= product.totalQuantity &&
-            !product.outOfStock,
+            !product.outOfStock &&
+            product.allowBackOrder === false,
         )
         .filter(subFilterFn)
     }
 
     if (filter === 'outOfStock') {
       return products
-        .filter((product) => product.outOfStock)
+        .filter(
+          (product) => product.outOfStock && product.allowBackOrder === false,
+        )
         .filter(subFilterFn)
     }
 
@@ -336,8 +339,24 @@ const renderStockInfo = (product: Product) => {
     return <p className={`text-xs text-red-400`}>No Batches Found</p>
   }
 
+  if (product.allowBackOrder && product.outOfStock) {
+    if (product.outOfStock) {
+      return (
+        <p className={`text-xs`}>
+          {product.batches.reduce((acc, batch) => acc + batch.quantity, 0)}{' '}
+          {measurement}
+        </p>
+      )
+    }
+  }
+
   if (product.outOfStock) {
-    return <p className={`text-xs text-red-400`}>Out of stock</p>
+    return (
+      <span className={`text-xs text-red-400`}>
+        Out of stock
+        {isExpired(activeBatch.expirationDate) && ` • Expired`}
+      </span>
+    )
   }
 
   if (isExpired(activeBatch.expirationDate)) {

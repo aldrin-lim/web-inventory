@@ -1,0 +1,26 @@
+.Import_MeasurementSelect {
+  @apply !px-0
+}
+.Import_MeasurementSelect .select__control {
+  @apply !select-sm !pl-2 !pr-0 relative !top-2
+}
+
+.Import_MeasurementSelect .select__indicators {
+  @apply h-[47px] -top-[9px] relative
+}
+
+.Import_MeasurementSelect .select__indicators .select__indicator {
+  @apply !p-0 !px-2
+}
+
+.Import_MeasurementSelect .select__input {
+  @apply !py-0
+}
+
+.Import_MeasurementSelect .select__value-container {
+ @apply -top-[6px] -left-2
+}
+
+.Import_MeasurementSelect  .select__single-value  {
+  @apply -top-[2px] -left-2 !text-base
+}
