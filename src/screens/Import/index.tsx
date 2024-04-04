@@ -277,6 +277,7 @@ const Import = () => {
                 <a
                   className=" inline-block text-sm text-primary "
                   href="https://qrafter-public-assets.s3.ap-southeast-1.amazonaws.com/qrafter-product-import-template.csv"
+                  download="qrafter-product-import-template.csv"
                 >
                   <span className="underline">Download CSV Template</span>{' '}
                   <ArrowDownOnSquareIcon className="inline  h-4 w-4 text-primary" />
