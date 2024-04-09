@@ -7,7 +7,9 @@ import {
   PresentationChartBarIcon,
   QueueListIcon,
   RectangleGroupIcon,
+  Squares2X2Icon,
   TagIcon,
+  UserCircleIcon,
   UserIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
@@ -26,7 +28,7 @@ const Layout = () => {
       <div className="drawer-content ">
         <Outlet />
       </div>
-      <div className="drawer-side z-30">
+      <div className="drawer-side z-30 min-h-[140dvh] overflow-y-scroll">
         <label
           htmlFor="my-drawer"
           aria-label="close sidebar"
@@ -34,7 +36,7 @@ const Layout = () => {
         ></label>
 
         {/* Menu */}
-        <div className="menu flex h-full min-h-full w-56 flex-col bg-base-200 p-4 pl-0 text-base-content">
+        <div className="menu flex min-h-full w-56 flex-col bg-base-200 p-4 pl-0 text-base-content">
           <div className=" -mr-4 -mt-4  border-b shadow-sm">
             <div
               key="title"
@@ -51,7 +53,7 @@ const Layout = () => {
               </div>
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-4 px-2">
+          <div className="mt-4 flex h-[calc(100dvh-80px)] flex-col gap-4 overflow-y-auto px-2">
             <ul>
               <li>
                 <label
@@ -83,16 +85,29 @@ const Layout = () => {
                   Inventory
                 </label>
               </li>
-              <li>
-                <label
-                  htmlFor="my-drawer"
-                  className="btn btn-ghost w-full justify-start px-1"
-                  onClick={() => navigate(AppPath.Dashboard)}
-                >
-                  <PresentationChartBarIcon className="h-6 w-6" />
-                  Report
-                </label>
-              </li>
+              <div className="collapse collapse-arrow ">
+                <input type="checkbox" className="!min-h-0" />
+                <div className="collapse-title flex !min-h-0  flex-row gap-2 p-1 py-3">
+                  <PresentationChartBarIcon className="h-6 w-6" />{' '}
+                  <span className="font-[600]">Reports</span>
+                </div>
+                <div className="collapse-content">
+                  <div className="flex flex-col gap-1 ">
+                    <label
+                      htmlFor="my-drawer"
+                      className="btn btn-ghost flex !min-h-0 flex-row justify-start gap-2 font-[600]"
+                    >
+                      <Squares2X2Icon className="h-6 w-6" /> Revenue
+                    </label>
+                    <label
+                      htmlFor="my-drawer"
+                      className="btn btn-ghost flex !min-h-0 flex-row justify-start gap-2 font-[600]"
+                    >
+                      <UserCircleIcon className="h-6 w-6" /> Customer
+                    </label>
+                  </div>
+                </div>
+              </div>
               <li>
                 <label
                   htmlFor="my-drawer"
