@@ -95,13 +95,15 @@ const Layout = () => {
                   <div className="flex flex-col gap-1 ">
                     <label
                       htmlFor="my-drawer"
-                      className="btn btn-ghost flex !min-h-0 flex-row justify-start gap-2 font-[600]"
+                      onClick={() => navigate(AppPath.Dashboard)}
+                      className="btn btn-ghost btn-neutral flex !min-h-0 flex-row justify-start gap-2 font-[600]"
                     >
                       <Squares2X2Icon className="h-6 w-6" /> Revenue
                     </label>
                     <label
                       htmlFor="my-drawer"
-                      className="btn btn-ghost flex !min-h-0 flex-row justify-start gap-2 font-[600]"
+                      onClick={() => navigate(AppPath.CutomerReport)}
+                      className="btn btn-ghost  btn-neutral flex !min-h-0 flex-row justify-start gap-2 font-[600]"
                     >
                       <UserCircleIcon className="h-6 w-6" /> Customer
                     </label>

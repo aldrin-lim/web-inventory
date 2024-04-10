@@ -12,6 +12,7 @@ import { toNumber } from 'lodash'
 import { Analytics } from 'util/analytics'
 import { Bars3Icon } from '@heroicons/react/24/solid'
 import LoadingCover from 'components/LoadingCover'
+import useCustomerReports from 'hooks/useCustomerReports'
 
 type CustomTickProps = {
   tick: AxisTickProps<string>
@@ -72,14 +73,14 @@ const CustomTick = (props: CustomTickProps) => {
   )
 }
 
-const Dashboard = () => {
+const CustomerReport = () => {
   useEffect(() => {
-    Analytics.trackPageView('Customer Dashboard')
+    Analytics.trackPageView('Customer Reports')
   }, [])
 
   const [dateSelected, setDateSelected] = useState(new Date())
 
-  const { isFetching, report } = useGetDashboardReport(dateSelected)
+  const { isFetching, report } = useCustomerReports(dateSelected)
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     if (report) {
@@ -92,36 +93,18 @@ const Dashboard = () => {
   const chartData = {
     data: [
       {
-        id: 'Sales',
-        color: 'red',
+        id: 'Customer',
+        color: 'hsl(255, 55%, 62%)',
         data:
           view === 'weekly'
             ? report
-              ? report.weeklyTotals.data.sales.map((item) => ({
+              ? report.weekly.transactions.map((item) => ({
                   x: item.x,
                   y: item.y,
                 }))
               : []
             : report
-              ? report.monthlyTotals.data.sales.map((item) => ({
-                  x: item.x,
-                  y: item.y,
-                }))
-              : [],
-      },
-      {
-        id: 'Cost (COGS)',
-        color: 'hsl(36, 70%, 50%)',
-        data:
-          view === 'weekly'
-            ? report
-              ? report.weeklyTotals.data.expenses.map((item) => ({
-                  x: item.x,
-                  y: item.y,
-                }))
-              : []
-            : report
-              ? report.monthlyTotals.data.expenses.map((item) => ({
+              ? report.monthly.transactions.map((item) => ({
                   x: item.x,
                   y: item.y,
                 }))
@@ -130,20 +113,10 @@ const Dashboard = () => {
     ],
   }
 
-  const totalSales =
+  const topCustomers =
     view === 'weekly'
-      ? report?.weeklyTotals.totalSales
-      : report?.monthlyTotals.totalSales
-
-  const totalItemSold =
-    view === 'weekly'
-      ? report?.weeklyTotals.itemsSold
-      : report?.monthlyTotals.itemsSold
-
-  const topSellingItems =
-    view === 'weekly'
-      ? report?.weeklyTotals.topSellingItems
-      : report?.monthlyTotals.topSellingItems
+      ? report?.weekly.topCustomers
+      : report?.monthly.topCustomers
 
   if (isLoading) {
     return <LoadingCover />
@@ -165,25 +138,13 @@ const Dashboard = () => {
             <Bars3Icon className="w-6" />
           </label>
         }
-        middle={<ToolbarTitle title="Dashboard" />}
+        middle={<ToolbarTitle title="Customer Report" />}
       />
       <div className="AppContainer bg-prim flex flex-col gap-2 p-4">
         <h1 className="mb-2 text-lg">
           {dateSelected && moment(dateSelected).format('MMM D, YYYY')}
         </h1>
 
-        <div className="flex w-full flex-row gap-4">
-          <div className="flex w-1/2 flex-col rounded-lg border border-neutral-300 p-2">
-            <h1 className="text-sm">Total Sales</h1>
-            <p className="text-base text-primary">
-              {formatToPeso(totalSales ?? 0)}
-            </p>
-          </div>
-          <div className="flex w-1/2 flex-col rounded-lg border border-neutral-300 p-2">
-            <h1 className="text-sm">Items Sold</h1>
-            <p className="text-base text-[#3A9E92]">{totalItemSold ?? 0}</p>
-          </div>
-        </div>
         <div className="w-full">
           {/* View select */}
           <select
@@ -212,7 +173,7 @@ const Dashboard = () => {
             axisTop={null}
             axisRight={null}
             axisBottom={{
-              tickSize: 5,
+              tickSize: 1,
               tickPadding: 5,
               tickRotation: 0,
               legendOffset: 36,
@@ -235,12 +196,12 @@ const Dashboard = () => {
               legendOffset: -40,
               legendPosition: 'middle',
               format: (value) =>
-                `₱${millify(value, {
-                  precision: 3,
+                `${millify(value, {
+                  precision: 1,
                   lowercase: true,
                 })}`,
-              tickValues: 6,
-              legend: 'Total Sales',
+              tickValues: 5,
+              legend: '# of Customers',
             }}
             enableGridX={false}
             enableGridY={false}
@@ -264,7 +225,7 @@ const Dashboard = () => {
                 >
                   <div>{String(point?.data?.x)}</div>
                   <div className={color}>
-                    {formatToPeso(toNumber(point?.data?.y ?? 0), 2)}
+                    {(toNumber(point?.data?.y ?? 0), 2)}
                   </div>
                 </div>
               )
@@ -298,25 +259,27 @@ const Dashboard = () => {
           />
         </div>
 
-        {report && topSellingItems && (
+        {report && topCustomers && (
           <div className="flex flex-col gap-2">
-            {view === 'weekly' ? 'Weekly' : 'Monthly'} Top 10 Best Seller:
+            {view === 'weekly' ? 'Weekly' : 'Monthly'} Top Customer:
             <div className="rounded-lg border border-neutral-300">
               <table className="table w-full">
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>Sold</th>
+                    <th>Name</th>
+                    <th>Transactions</th>
+                    <th>Amount</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {topSellingItems.map((item, index) => (
+                  {topCustomers.map((item, index) => (
                     <tr key={index}>
                       <td>{item.name}</td>
-                      <td>{item.quantity}</td>
+                      <td>{item.transactions}</td>
+                      <td>{formatToPeso(item.totalAmount)}</td>
                     </tr>
                   ))}
-                  {topSellingItems.length === 0 && (
+                  {topCustomers.length === 0 && (
                     <tr className="text w-full p-4  text-center">
                       <td colSpan={2} className="py-8">
                         Nothing to show
@@ -333,4 +296,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default CustomerReport

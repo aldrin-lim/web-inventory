@@ -14,6 +14,7 @@ import Dashboard from 'screens/Report/Dashboard'
 import Expense from 'screens/Expense'
 import ProductOverview from 'screens/Product/screens/ProductOverview'
 import Import from 'screens/Import'
+import CustomerReport from 'screens/Report/Customer'
 
 const AppRoutes = () => (
   <Routes>
@@ -31,10 +32,8 @@ const AppRoutes = () => (
         path={`${AppPath.Inventory}/*`}
         element={<ProtectedRoute element={<Inventory />} />}
       />
-      <Route
-        path={AppPath.Dashboard}
-        element={<ProtectedRoute element={<Dashboard />} />}
-      />
+      <Route path={AppPath.Dashboard} element={<Dashboard />} />
+      <Route path={AppPath.CutomerReport} element={<CustomerReport />} />
       <Route
         path={`${AppPath.Expenses}/*`}
         element={<ProtectedRoute element={<Expense />} />}

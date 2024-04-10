@@ -18,6 +18,7 @@ export enum AppPath {
   Signout = '/signout',
   Reports = '/reports',
   Dashboard = '/reports/dashboard',
+  CutomerReport = '/reports/customer',
   Expenses = '/expenses',
   Import = '/import',
 

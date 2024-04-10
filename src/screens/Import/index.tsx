@@ -366,7 +366,7 @@ const Import = () => {
                           const key = `${name}.${index}`
                           return (
                             <div
-                              key={`${data.name}-${data.id}`}
+                              key={`${data.id}`}
                               className={`flex flex-row  justify-center gap-2 [&:has(.form-field-error)]:bg-red-100  ${
                                 errorRows.includes(toNumber(data.id))
                                   ? 'bg-red-100'
