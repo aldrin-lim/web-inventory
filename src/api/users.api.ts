@@ -13,6 +13,7 @@ export const getUser = async (email: string) => {
 export type UpdateUserRequestParam = {
   firstName?: string
   lastName?: string
+  name?: string
 }
 
 export const updateUser = async (param: UpdateUserRequestParam) => {

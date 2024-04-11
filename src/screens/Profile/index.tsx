@@ -18,8 +18,11 @@ const Profile = () => {
     Analytics.trackPageView('Profile')
   }, [])
 
+  // TODO: Remove this
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+
+  const [name, setName] = useState('')
 
   const { mutateAsync, isLoading: isMutating } = useMutation({
     mutationFn: updateUser,
@@ -38,12 +41,11 @@ const Profile = () => {
   })
 
   useEffect(() => {
-    setFirstName(user?.firstName || '')
-    setLastName(user?.lastName || '')
+    setName(user?.name || '')
   }, [user])
 
   const onSaveHandler = async () => {
-    await mutateAsync({ firstName, lastName })
+    await mutateAsync({ name })
   }
 
   return (
@@ -77,7 +79,7 @@ const Profile = () => {
         </div>
         <div className="form-control w-full">
           <label className="label">
-            <span className="label-text text-xs">First name</span>
+            <span className="label-text text-xs">Name</span>
           </label>
           {isUserLoading ? (
             <div className="skeleton h-[48px] w-full" />
@@ -86,24 +88,8 @@ const Profile = () => {
               type="text"
               className="input input-bordered w-full"
               disabled={isMutating}
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-          )}
-        </div>
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text text-xs">Last name</span>
-          </label>
-          {isUserLoading ? (
-            <div className="skeleton h-[48px] w-full" />
-          ) : (
-            <input
-              type="text"
-              disabled={isMutating}
-              className="input input-bordered w-full"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           )}
         </div>
