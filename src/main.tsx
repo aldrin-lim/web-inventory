@@ -28,15 +28,15 @@ const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <Auth0Provider
-        domain={import.meta.env.VITE_AUTH0_DOMAIN}
-        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-        authorizationParams={{
-          redirect_uri: window.location.origin,
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        }}
-      >
+    <Auth0Provider
+      domain={import.meta.env.VITE_AUTH0_DOMAIN}
+      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      }}
+    >
+      <ErrorBoundary>
         <AuthProvider>
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <QueryClientProvider client={queryClient}>
@@ -46,8 +46,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             </QueryClientProvider>
           </LocalizationProvider>
         </AuthProvider>
-      </Auth0Provider>
-      <ReloadPrompt />
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </Auth0Provider>
+    <ReloadPrompt />
   </React.StrictMode>,
 )
