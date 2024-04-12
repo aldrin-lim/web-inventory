@@ -179,7 +179,7 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
             <textarea
               disabled={isLoading}
               tabIndex={4}
-              className="textarea textarea-bordered w-full"
+              className="textarea textarea-bordered w-full text-base"
               placeholder="Enter reason"
               onChange={(e) => {
                 setFieldValue('reason', `others: ${e.target.value}`)
