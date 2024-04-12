@@ -55,47 +55,50 @@ const EditProduct = () => {
 
   useEffect(() => {
     if (product && isGettingProduct === false) {
-      if (intialValue.id !== product.id) {
-        const currentCost = product.activeBatch?.cost ?? 0
-        const overAllMeasurement =
-          product.activeBatch?.unitOfMeasurement ?? product.isBulkCost
-            ? product.activeBatch?.unitOfMeasurement
-            : PIECES
-        const formValue = {
-          id: product.id,
-          name: product.name,
-          mode: 'edit',
-          description: product.description,
-          currentCost: currentCost.toString(),
-          overAllMeasurement: overAllMeasurement,
-          price: product.price.toString(),
-          profitAmount: product.profitAmount.toString(),
-          profitPercentage: product.profitPercentage.toString(),
-          images: product.images,
-          category: product.category,
-          isBulkCost: product.isBulkCost,
-          soldBy: product.soldBy,
-          isIngredient: !product.forSale,
-          allowBackOrder: product.allowBackOrder,
-          applyTax: product.applyTax,
-          stockWarning: product.stockWarning,
-          batches: product.batches.map((batch) => {
-            return {
-              id: batch.id,
-              name: batch.name,
-              cost: batch.cost.toString(),
-              costPerUnit: batch.costPerUnit,
-              quantity: batch.quantity.toString(),
-              unitOfMeasurement: batch.unitOfMeasurement,
-              isDeducted: batch.isDeducted,
-              expirationDate: batch.expirationDate,
-            }
-          }),
-          recipe: product.recipe,
-        } as ProductFormValues
-        setProductInitialValue(formValue)
-        setProductFormValue(formValue)
-      }
+      console.log('passok!!?')
+
+      // if (intialValue.id !== product.id) {
+      console.log('passok?')
+      const currentCost = product.activeBatch?.cost ?? 0
+      const overAllMeasurement =
+        product.activeBatch?.unitOfMeasurement ?? product.isBulkCost
+          ? product.activeBatch?.unitOfMeasurement
+          : PIECES
+      const formValue = {
+        id: product.id,
+        name: product.name,
+        mode: 'edit',
+        description: product.description,
+        currentCost: currentCost.toString(),
+        overAllMeasurement: overAllMeasurement,
+        price: product.price.toString(),
+        profitAmount: product.profitAmount.toString(),
+        profitPercentage: product.profitPercentage.toString(),
+        images: product.images,
+        category: product.category,
+        isBulkCost: product.isBulkCost,
+        soldBy: product.soldBy,
+        isIngredient: !product.forSale,
+        allowBackOrder: product.allowBackOrder,
+        applyTax: product.applyTax,
+        stockWarning: product.stockWarning,
+        batches: product.batches.map((batch) => {
+          return {
+            id: batch.id,
+            name: batch.name,
+            cost: batch.cost.toString(),
+            costPerUnit: batch.costPerUnit,
+            quantity: batch.quantity.toString(),
+            unitOfMeasurement: batch.unitOfMeasurement,
+            isDeducted: batch.isDeducted,
+            expirationDate: batch.expirationDate,
+          }
+        }),
+        recipe: product.recipe,
+      } as ProductFormValues
+      setProductInitialValue(formValue)
+      setProductFormValue(formValue)
+      // }
 
       setIsLoading(false)
     }

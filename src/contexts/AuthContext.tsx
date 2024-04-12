@@ -51,8 +51,6 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     getIdTokenClaims,
   } = useAuth0()
 
-  console.log('auth0User', auth0User)
-
   const [isStateLoading, setIsStateLoading] = useState(true)
 
   useEffect(() => {
@@ -65,8 +63,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
             return
           }
           const token = await getAccessTokenSilently()
-          const claims = await getIdTokenClaims()
-          console.log('claims', claims)
+          await getIdTokenClaims()
           setAccessToken(token)
           setUser(
             auth0User

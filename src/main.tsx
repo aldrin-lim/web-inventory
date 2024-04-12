@@ -20,9 +20,7 @@ Big.DP = 4
 
 Analytics.init()
 
-const updateSW = registerSW({})
-
-updateSW()
+registerSW()
 
 const queryClient = new QueryClient()
 

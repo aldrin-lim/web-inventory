@@ -23,6 +23,7 @@ export default mergeConfig(viteConfig, {
       injectRegister: 'auto',
       devOptions: {
         enabled: process.env.NODE_ENV === 'development',
+        type: 'module',
       },
       includeAssets: ['**/*'],
       workbox: {

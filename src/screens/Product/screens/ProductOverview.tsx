@@ -106,11 +106,6 @@ const ProductOverview = () => {
     navigate(ScreenPath.New)
   }
 
-  console.log('outOfStocks', outOfStocks)
-  console.log('inStocks', inStocks)
-
-  console.log(products)
-
   return (
     <>
       <div className={[isParentScreen ? 'screen' : 'hidden'].join(' ')}>
