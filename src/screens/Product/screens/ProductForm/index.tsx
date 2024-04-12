@@ -186,7 +186,7 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
     <>
       {/* <div className=" w-full bg-black/20"></div> */}
       <FormikProvider value={formik}>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 pb-9">
           {/* Name */}
           <Field
             name="name"
