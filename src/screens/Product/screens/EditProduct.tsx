@@ -55,10 +55,6 @@ const EditProduct = () => {
 
   useEffect(() => {
     if (product && isGettingProduct === false) {
-      console.log('passok!!?')
-
-      // if (intialValue.id !== product.id) {
-      console.log('passok?')
       const currentCost = product.activeBatch?.cost ?? 0
       const overAllMeasurement =
         product.activeBatch?.unitOfMeasurement ?? product.isBulkCost
@@ -98,7 +94,6 @@ const EditProduct = () => {
       } as ProductFormValues
       setProductInitialValue(formValue)
       setProductFormValue(formValue)
-      // }
 
       setIsLoading(false)
     }

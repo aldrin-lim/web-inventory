@@ -7,7 +7,6 @@ import {
   ChevronRightIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
-  PencilIcon,
   PencilSquareIcon,
   PhotoIcon,
   PlusIcon,
@@ -45,13 +44,10 @@ import moment from 'moment'
 import { formatToPeso } from 'util/currency'
 import Big from 'big.js'
 
-import SlidingTransition from 'components/SlidingTransition'
 import CategoryDropdown from 'screens/Product/ProductDetail/components/CategoryDropdown'
 import MeasurementSelect from 'screens/Product/ProductDetail/components/MeasurementSelect'
 import ProductImages from 'screens/Product/ProductDetail/components/ProductImages'
-import useProductFormValue, {
-  ProductFormValues,
-} from 'screens/Product/hooks/useProductFormValue'
+import { ProductFormValues } from 'screens/Product/hooks/useProductFormValue'
 import { measurementOptions, unitAbbrevationsToLabel } from 'util/measurement'
 import Description from './Description'
 import RecipeList from './RecipeList'
@@ -59,6 +55,8 @@ import { toast } from 'react-toastify'
 import AdjustmentDialog from 'screens/Product/ProductDetail/components/BatchCard/components/AdjustmentDialog'
 import useBoundStore from 'stores/useBoundStore'
 import { isExpired } from 'util/data'
+import DeleteBatchDialog from 'screens/Product/ProductDetail/components/BatchCard/components/DeleteBatchDialog'
+import DropdownButton, { DropdownProps } from 'components/DropdownMenu'
 
 export enum ScreenPath {
   Description = 'set-description',
@@ -1171,6 +1169,7 @@ const BatchItem = (props: BatchItemProps) => {
   const key = `${name}[${index}]`
 
   const [showAdjustmentDialog, setShowAdjustmentDialog] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const batch = form.getFieldMeta(`${name}[${index}]`)
     .value as ProductFormValues['batches'][number]
@@ -1182,6 +1181,23 @@ const BatchItem = (props: BatchItemProps) => {
   const costPerUnitStyling =
     (batch.costPerUnit ?? 0) > 0 ? 'text-green-400' : 'text-base-content/50'
 
+  const dropdownMenus: DropdownProps['items'] = [
+    {
+      text: 'Adjust',
+      onClick: () => {
+        setShowAdjustmentDialog(true)
+      },
+      icon: <PencilSquareIcon className="w-5 " />,
+    },
+    {
+      text: 'Delete',
+      onClick: () => {
+        setShowDeleteDialog(true)
+      },
+      icon: <TrashIcon className="w-5 " />,
+    },
+  ]
+
   return (
     <>
       {showAdjustmentDialog && (
@@ -1191,28 +1207,44 @@ const BatchItem = (props: BatchItemProps) => {
           onClose={() => setShowAdjustmentDialog(false)}
         />
       )}
-      <div className="mb-2 flex flex-col gap-2 rounded-lg border border-neutral/30 p-2 py-4">
-        {isExpired(batch.expirationDate) && (
-          <div className="alert-sm alert alert-warning flex flex-row justify-start gap-2 rounded-md p-1 text-xs text-warning-content">
-            <ExclamationTriangleIcon className="w-4" />
-            This batch is expired{' '}
-          </div>
-        )}
-        {/* Name */}
-        <Field name={`${key}.name`}>
-          {({ field }: FieldProps) => (
-            <p className="flex flex-row items-center gap-2 text-sm uppercase tracking-wider">
-              {field.value}
-              {disabled === false && (
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-xs"
-                  onClick={() => remove(index)}
-                >
-                  <TrashIcon className="w-5 text-primary" />
-                </button>
-              )}
-              {disabled === true && (
+      {showDeleteDialog && (
+        <DeleteBatchDialog
+          productId={form.values.id}
+          batch={batch}
+          onClose={() => setShowDeleteDialog(false)}
+        />
+      )}
+      <div className="relative mb-2 flex flex-col gap-2 rounded-lg border border-neutral/30 ">
+        <div className="flex flex-col gap-2 p-2">
+          {isExpired(batch.expirationDate) && (
+            <div className="alert-sm alert alert-warning flex flex-row justify-start gap-2 rounded-md p-1 text-xs text-warning-content">
+              <ExclamationTriangleIcon className="w-4" />
+              This batch is expired{' '}
+            </div>
+          )}
+          {/* Name */}
+          <Field name={`${key}.name`}>
+            {({ field }: FieldProps) => (
+              <p className="relative flex flex-row items-center justify-between gap-2 text-sm uppercase tracking-wider">
+                {field.value}
+                {disabled === false && (
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-xs"
+                    onClick={() => remove(index)}
+                  >
+                    <TrashIcon className="w-5 text-primary" />
+                  </button>
+                )}
+
+                {disabled === true && (
+                  <DropdownButton
+                    buttonClassName={`!text-primary btn-ghost btn-circle btn-sm  w-8 h-8 min-h-min border-0 z-[12]`}
+                    items={dropdownMenus}
+                  />
+                )}
+
+                {/* {disabled === true && (
                 <button
                   type="button"
                   className="btn btn-ghost btn-xs"
@@ -1223,114 +1255,57 @@ const BatchItem = (props: BatchItemProps) => {
                   <PencilSquareIcon className="w-5 text-primary" />
                 </button>
               )}
-            </p>
-          )}
-        </Field>
+              {disabled === true && (
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-xs"
+                  onClick={() => {
+                    setShowDeleteDialog(true)
+                  }}
+                >
+                  <TrashIcon className="w-5 text-primary" />
+                </button>
+              )} */}
+              </p>
+            )}
+          </Field>
 
-        {/* Quantity */}
-        <Field
-          name={`${key}.quantity`}
-          validate={(value: string) => {
-            if (value)
-              if (value === '') {
-                return 'Quantity is required'
-              }
-            const validation = z
-              .number({
-                required_error: 'Quantity is required',
-              })
-              .nonnegative('Quantity must be a positive number')
-              .safeParse(toNumber(value))
-            if (validation.success === false) {
-              console.log(validation.error.issues[0].message)
-              return validation.error.issues[0].message
-            }
-            return null
-          }}
-        >
-          {({
-            field, // { name, value, onChange, onBlur }
-            form,
-            meta,
-          }: FieldProps) => (
-            <label className="form-control">
-              <p>Quantity</p>
-              <CurrencyInput
-                // {...field}
-                autoComplete="off"
-                decimalsLimit={4}
-                type="text"
-                tabIndex={3}
-                className="input input-bordered w-full"
-                placeholder="Enter Batch Quantity"
-                inputMode="decimal"
-                value={field.value}
-                disabled={disabled}
-                onValueChange={async (value) => {
-                  form.setFieldValue(field.name, value ?? '')
-
-                  // Side effect
-                  if (values.isBulkCost) {
-                    form.setFieldValue(
-                      `${key}.costPerUnit`,
-                      computeCostPerUnit(toNumber(batch.cost), toNumber(value)),
-                    )
-                  }
-                }}
-              />
-              {meta.touched && meta.error && (
-                <div className="form-field-error label py-0">
-                  <span className="label-text-alt text-xs text-red-400">
-                    {meta.error}
-                  </span>
-                </div>
-              )}
-            </label>
-          )}
-        </Field>
-
-        {/* Cost / Bulk Cost */}
-        {/* Show only when isForSale  */}
-        {(values.isIngredient || values.isBulkCost) && (
+          {/* Quantity */}
           <Field
-            name={`${key}.cost`}
+            name={`${key}.quantity`}
             validate={(value: string) => {
-              if (values.isIngredient || values.isBulkCost) {
+              if (value)
                 if (value === '') {
-                  return 'Cost is required'
+                  return 'Quantity is required'
                 }
-                const validation = z
-                  .number({
-                    required_error: 'Cost is required',
-                    invalid_type_error: 'Cost must be a number',
-                  })
-                  .nonnegative('Cost must be a positive number')
-                  .safeParse(toNumber(value))
-                if (validation.success === false) {
-                  return validation.error.issues[0].message
-                }
-                return null
+              const validation = z
+                .number({
+                  required_error: 'Quantity is required',
+                })
+                .nonnegative('Quantity must be a positive number')
+                .safeParse(toNumber(value))
+              if (validation.success === false) {
+                console.log(validation.error.issues[0].message)
+                return validation.error.issues[0].message
               }
-
               return null
             }}
           >
-            {({ field, form, meta }: FieldProps) => (
+            {({
+              field, // { name, value, onChange, onBlur }
+              form,
+              meta,
+            }: FieldProps) => (
               <label className="form-control">
-                <p className="">{values.isIngredient ? 'Cost' : 'Bulk Cost'}</p>
-                <p className="label-text-alt text-gray-400">
-                  {values.isBulkCost
-                    ? 'Enter amount spent to purchase this batch'
-                    : 'Enter the cost for each individual item in this batch '}
-                </p>
+                <p>Quantity</p>
                 <CurrencyInput
+                  // {...field}
                   autoComplete="off"
                   decimalsLimit={4}
-                  prefix="₱"
                   type="text"
                   tabIndex={3}
                   className="input input-bordered w-full"
-                  placeholder="₱0"
+                  placeholder="Enter Batch Quantity"
                   inputMode="decimal"
                   value={field.value}
                   disabled={disabled}
@@ -1342,8 +1317,8 @@ const BatchItem = (props: BatchItemProps) => {
                       form.setFieldValue(
                         `${key}.costPerUnit`,
                         computeCostPerUnit(
+                          toNumber(batch.cost),
                           toNumber(value),
-                          toNumber(batch.quantity),
                         ),
                       )
                     }
@@ -1359,79 +1334,155 @@ const BatchItem = (props: BatchItemProps) => {
               </label>
             )}
           </Field>
-        )}
 
-        {form.values && form.values.isBulkCost === true && (
-          <p className={['text-sm', costPerUnitStyling].join(' ')}>
-            {formatToPeso(batch.costPerUnit ?? 0)}/
-            {form.values.overAllMeasurement}
-          </p>
-        )}
+          {/* Cost / Bulk Cost */}
+          {/* Show only when isForSale  */}
+          {(values.isIngredient || values.isBulkCost) && (
+            <Field
+              name={`${key}.cost`}
+              validate={(value: string) => {
+                if (values.isIngredient || values.isBulkCost) {
+                  if (value === '') {
+                    return 'Cost is required'
+                  }
+                  const validation = z
+                    .number({
+                      required_error: 'Cost is required',
+                      invalid_type_error: 'Cost must be a number',
+                    })
+                    .nonnegative('Cost must be a positive number')
+                    .safeParse(toNumber(value))
+                  if (validation.success === false) {
+                    return validation.error.issues[0].message
+                  }
+                  return null
+                }
 
-        {/* Expiration Date*/}
-        <Field
-          name={`${key}.expirationDate`}
-          validate={(value: string) => {
-            const validation = z
-              .date({
-                coerce: true,
-                invalid_type_error: 'Expiration must be a date',
-              })
-              .optional()
-              .safeParse(value)
-            if (validation.success === false) {
-              console.log(validation.error.issues[0].message)
-              return validation.error.issues[0].message
-            }
-            return null
-          }}
-        >
-          {({
-            field, // { name, value, onChange, onBlur }
-            form,
-            meta,
-          }: FieldProps) => (
-            <label className="form-control">
-              <div className="">
-                <span className=" ">Expiration(Optional)</span>
-              </div>
-              <div className={`ExpirationDatePicker flex flex-row gap-1`}>
-                <DatePicker
-                  disabled={disabled}
-                  disablePast
-                  sx={{
-                    width: '100%',
-                    ':disabled': { backgroundColor: '#000' },
-                  }}
-                  slotProps={{
-                    textField: {
-                      variant: 'outlined',
-                      color: 'secondary',
-                      className: '',
-                      placeholder:
-                        disabled === true ? 'N/A' : 'Expiration Date',
-                    },
-                    actionBar: {
-                      actions: ['clear', 'accept', 'cancel'],
-                    },
-                  }}
-                  value={field.value ? moment(field.value, 'YYYY-MM-DD') : null}
-                  onAccept={(date) => {
-                    form.setFieldValue(field.name, date ?? null)
-                  }}
-                  className={`border-none outline-none`}
-                />
-              </div>
-              {meta.touched && meta.error && (
-                <div className="form-field-error label py-0">
-                  <span className="label-text-alt text-xs text-red-400">
-                    {meta.error}
-                  </span>
-                </div>
+                return null
+              }}
+            >
+              {({ field, form, meta }: FieldProps) => (
+                <label className="form-control">
+                  <p className="">
+                    {values.isIngredient ? 'Cost' : 'Bulk Cost'}
+                  </p>
+                  <p className="label-text-alt text-gray-400">
+                    {values.isBulkCost
+                      ? 'Enter amount spent to purchase this batch'
+                      : 'Enter the cost for each individual item in this batch '}
+                  </p>
+                  <CurrencyInput
+                    autoComplete="off"
+                    decimalsLimit={4}
+                    prefix="₱"
+                    type="text"
+                    tabIndex={3}
+                    className="input input-bordered w-full"
+                    placeholder="₱0"
+                    inputMode="decimal"
+                    value={field.value}
+                    disabled={disabled}
+                    onValueChange={async (value) => {
+                      form.setFieldValue(field.name, value ?? '')
+
+                      // Side effect
+                      if (values.isBulkCost) {
+                        form.setFieldValue(
+                          `${key}.costPerUnit`,
+                          computeCostPerUnit(
+                            toNumber(value),
+                            toNumber(batch.quantity),
+                          ),
+                        )
+                      }
+                    }}
+                  />
+                  {meta.touched && meta.error && (
+                    <div className="form-field-error label py-0">
+                      <span className="label-text-alt text-xs text-red-400">
+                        {meta.error}
+                      </span>
+                    </div>
+                  )}
+                </label>
               )}
-            </label>
+            </Field>
           )}
-        </Field>
+
+          {form.values && form.values.isBulkCost === true && (
+            <p className={['text-sm', costPerUnitStyling].join(' ')}>
+              {formatToPeso(batch.costPerUnit ?? 0)}/
+              {form.values.overAllMeasurement}
+            </p>
+          )}
+
+          {/* Expiration Date*/}
+          <Field
+            name={`${key}.expirationDate`}
+            validate={(value: string) => {
+              const validation = z
+                .date({
+                  coerce: true,
+                  invalid_type_error: 'Expiration must be a date',
+                })
+                .optional()
+                .safeParse(value)
+              if (validation.success === false) {
+                console.log(validation.error.issues[0].message)
+                return validation.error.issues[0].message
+              }
+              return null
+            }}
+          >
+            {({
+              field, // { name, value, onChange, onBlur }
+              form,
+              meta,
+            }: FieldProps) => (
+              <label className="form-control">
+                <div className="">
+                  <span className=" ">Expiration(Optional)</span>
+                </div>
+                <div className={`ExpirationDatePicker flex flex-row gap-1`}>
+                  <DatePicker
+                    disabled={disabled}
+                    disablePast
+                    sx={{
+                      width: '100%',
+                      ':disabled': { backgroundColor: '#000' },
+                    }}
+                    slotProps={{
+                      textField: {
+                        variant: 'outlined',
+                        color: 'secondary',
+                        className: '',
+                        placeholder:
+                          disabled === true ? 'N/A' : 'Expiration Date',
+                      },
+                      actionBar: {
+                        actions: ['clear', 'accept', 'cancel'],
+                      },
+                    }}
+                    value={
+                      field.value ? moment(field.value, 'YYYY-MM-DD') : null
+                    }
+                    onAccept={(date) => {
+                      form.setFieldValue(field.name, date ?? null)
+                    }}
+                    className={`border-none outline-none`}
+                  />
+                </div>
+                {meta.touched && meta.error && (
+                  <div className="form-field-error label py-0">
+                    <span className="label-text-alt text-xs text-red-400">
+                      {meta.error}
+                    </span>
+                  </div>
+                )}
+              </label>
+            )}
+          </Field>
+        </div>
       </div>
     </>
   )

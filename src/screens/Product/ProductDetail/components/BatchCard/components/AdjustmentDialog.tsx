@@ -1,5 +1,8 @@
+import { DatePicker } from '@mui/x-date-pickers'
 import { useFormik } from 'formik'
 import useAdjustBatch from 'hooks/useAdjustBatch'
+import { toNumber } from 'lodash'
+import moment from 'moment'
 import { useState } from 'react'
 import CurrencyInput from 'react-currency-input-field'
 import { ProductFormValues } from 'screens/Product/hooks/useProductFormValue'
@@ -15,7 +18,7 @@ type AdjustmentDialogProps = {
 
 const AdjustmentDialog = (props: AdjustmentDialogProps) => {
   const { onClose, batch } = props
-  const { isLoading, adjustBatch } = useAdjustBatch(props.productId)
+  const { isLoading, adjustBatch } = useAdjustBatch()
 
   const [reason, setReason] = useState('')
 
@@ -25,6 +28,7 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
         cost: batch.cost ?? 0,
         quantity: batch.quantity ?? 0,
         reason: '',
+        expirationDate: batch.expirationDate,
       },
       validationSchema: toFormikValidationSchema(
         z.object({
@@ -43,6 +47,7 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
               required_error: 'Reason is required',
             })
             .min(1, 'Reason is required'),
+          expirationDate: z.date({ coerce: true }).optional(),
         }),
       ),
       validateOnChange: false,
@@ -50,9 +55,11 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
       onSubmit: async () => {
         await adjustBatch({
           batchId: batch.id ?? '',
+          productId: props.productId,
           newBatch: {
-            cost: values.cost,
-            quantity: values.quantity,
+            cost: toNumber(values.cost),
+            quantity: toNumber(values.quantity),
+            expirationDate: values.expirationDate,
           },
           reason: values.reason,
         })
@@ -67,8 +74,8 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
         <div className="mt-4 flex flex-col gap-3">
           <h3 className="text-lg ">{batch.name}</h3>
           <label className="form-control w-full ">
-            <div className="form-control-label  ">
-              <span className="label-text-alt text-gray-400">Quantity</span>
+            <div className="  ">
+              <span className="">Quantity</span>
             </div>
             <CurrencyInput
               disabled={isLoading}
@@ -93,26 +100,81 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
               </div>
             )}
           </label>
-          <select
-            disabled={isLoading}
-            tabIndex={3}
-            className="select select-bordered w-full max-w-xs"
-            onChange={(e) => {
-              setReason(e.target.value)
-              if (e.target.value !== 'others') {
-                setFieldValue('reason', e.target.value)
-              } else {
-                setFieldValue('reason', '')
-              }
-            }}
-          >
-            <option value={''} disabled selected>
-              Select Reason
-            </option>
-            <option value={'waste'}>Waste</option>
-            <option value={'restock'}>Restock</option>
-            <option value={'others'}>Others</option>
-          </select>
+          <label className="form-control">
+            <div className="">
+              <span className=" ">Expiration(Optional)</span>
+            </div>
+            <div className={`ExpirationDatePicker flex flex-row gap-1`}>
+              <DatePicker
+                disabled={isLoading}
+                disablePast
+                sx={{
+                  width: '100%',
+                  ':disabled': { backgroundColor: '#000' },
+                }}
+                slotProps={{
+                  textField: {
+                    variant: 'outlined',
+                    color: 'info',
+                    className: '',
+                    placeholder: isLoading === true ? 'N/A' : 'Expiration Date',
+                  },
+                  actionBar: {
+                    actions: ['clear', 'accept', 'cancel'],
+                  },
+                }}
+                value={
+                  values.expirationDate
+                    ? moment(values.expirationDate, 'YYYY-MM-DD')
+                    : null
+                }
+                onAccept={(date) => {
+                  setFieldValue('expirationDate', date ? date.toDate() : null)
+                }}
+                className={`border-none outline-none`}
+              />
+            </div>
+            {errors.expirationDate && (
+              <div className="form-field-error label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  {errors.expirationDate}
+                </span>
+              </div>
+            )}
+          </label>
+          <label className="form-control w-full ">
+            <div className="  ">
+              <span className="">Reason</span>
+            </div>
+            <select
+              disabled={isLoading}
+              tabIndex={3}
+              className="select select-bordered w-full max-w-xs"
+              onChange={(e) => {
+                setReason(e.target.value)
+                if (e.target.value !== 'others') {
+                  setFieldValue('reason', e.target.value)
+                } else {
+                  setFieldValue('reason', '')
+                }
+              }}
+            >
+              <option value={''} disabled selected>
+                Select Reason
+              </option>
+              <option value={'waste'}>Waste</option>
+              <option value={'restock'}>Restock</option>
+              <option value={'others'}>Others</option>
+            </select>
+            {errors.reason && (
+              <div className="label py-0">
+                <span className="label-text-alt text-xs text-red-400">
+                  {errors.reason}
+                </span>
+              </div>
+            )}
+          </label>
+
           {reason === 'others' && (
             <textarea
               disabled={isLoading}
@@ -123,13 +185,6 @@ const AdjustmentDialog = (props: AdjustmentDialogProps) => {
                 setFieldValue('reason', `others: ${e.target.value}`)
               }}
             />
-          )}
-          {errors.reason && (
-            <div className="label py-0">
-              <span className="label-text-alt text-xs text-red-400">
-                {errors.reason}
-              </span>
-            </div>
           )}
         </div>
         <div className="font-sm modal-action">

@@ -5,16 +5,15 @@ import { toast } from 'react-toastify'
 import { httpClient } from 'util/http'
 import { z } from 'zod'
 
-const useAdjustBatch = () => {
+const useDeleteBatch = () => {
   const queryClient = useQueryClient()
   const [error, setError] = useState<unknown>('')
   const { mutateAsync, isLoading: isLoading } = useMutation({
-    mutationFn: async (param: z.infer<typeof AdjustBatchSchema>) => {
-      const { productId, batchId, ...data } = param
-      const url = `/products/${productId}/batches/${batchId}/adjust`
+    mutationFn: async (param: z.infer<typeof DeleteBatchSchema>) => {
+      const url = `/products/${param.productId}/batches/${param.batchId}`
 
       const result = await httpClient
-        .post<unknown, AxiosResponse>(url, data)
+        .delete<unknown, AxiosResponse>(url)
         .then((res) => res.data)
       return result
     },
@@ -30,7 +29,7 @@ const useAdjustBatch = () => {
         autoClose: 500,
         theme: 'colored',
       })
-      setError(error)
+      setError(errorMessage)
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(['products'])
@@ -44,23 +43,15 @@ const useAdjustBatch = () => {
   })
 
   return {
-    adjustBatch: mutateAsync,
+    deleteBatch: mutateAsync,
     error,
     isLoading,
   }
 }
 
-export default useAdjustBatch
+export default useDeleteBatch
 
-const AdjustBatchSchema = z.object({
+const DeleteBatchSchema = z.object({
   batchId: z.string({ required_error: 'Batch ID is required' }),
   productId: z.string({ required_error: 'Product ID is required' }),
-  newBatch: z.object({
-    cost: z.number({ required_error: 'Cost is required' }),
-    quantity: z.number({ required_error: 'Quantity is required' }),
-    expirationDate: z.date({ coerce: true }).nullable().optional(),
-  }),
-  reason: z.string({ required_error: 'Reason is required' }),
-  // Send to waste
-  discard: z.boolean().optional(),
 })
