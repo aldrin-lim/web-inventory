@@ -33,8 +33,8 @@ const useAdjustBatch = (productId: string) => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(['products'])
-      await queryClient.invalidateQueries(['product', productId])
-      await queryClient.refetchQueries(['product', productId])
+      await queryClient.invalidateQueries(['product'])
+      await queryClient.refetchQueries(['product'])
       toast.success('Product successfully cloned! ', {
         autoClose: 500,
         theme: 'colored',
