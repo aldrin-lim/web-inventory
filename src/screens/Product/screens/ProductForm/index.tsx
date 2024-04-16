@@ -210,9 +210,7 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
             }: FieldProps) => (
               <label className="form-control w-full ">
                 <div className="">
-                  <span className="label-text-alt text-gray-400">
-                    Product Name
-                  </span>
+                  <span className="">Product Name</span>
                 </div>
                 <input
                   {...field}
@@ -371,7 +369,7 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
                 {({ field, form, meta }: FieldProps) => (
                   <label className="form-control">
                     <div className="">
-                      <span className="label-text-alt text-gray-400">Cost</span>
+                      <span className="">Cost</span>
                     </div>
                     <CurrencyInput
                       // {...field}
@@ -483,7 +481,7 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
               }: FieldProps) => (
                 <label className="form-control">
                   <div className="">
-                    <span className="label-text-alt text-gray-400">Price</span>
+                    <span className="">Price</span>
                   </div>
                   <CurrencyInput
                     autoComplete="off"
@@ -536,7 +534,7 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
           {values.isIngredient === false && (
             <div className="form-control">
               <div className="">
-                <span className="label-text-alt text-gray-400">Profit</span>
+                <span className="">Profit</span>
               </div>
               <div className="form-control input input-bordered relative flex flex-row items-center">
                 <Field
@@ -705,7 +703,7 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
             {({ field, form }: FieldProps) => (
               <label className="form-control w-full ">
                 <div className=" ">
-                  <span className="label-text-alt text-gray-400">Category</span>
+                  <span className="">Category</span>
                 </div>
                 <CategoryDropdown
                   value={field.value}
@@ -735,209 +733,216 @@ const ProductForm = (props: ProductFormProps, ref: Ref<ProductFormRef>) => {
             />
           </div>
 
-          {/* For Recipe purpose Toggle */}
-          <Field name="allowBackOrder">
-            {({ field }: FieldProps) => (
-              <div className="form-control flex w-full flex-row gap-2 ">
-                <input
-                  {...field}
-                  checked={field.value}
-                  autoComplete="off"
-                  type="checkbox"
-                  className="toggle toggle-primary"
-                />
-                <span>Allow selling when out of stock</span>
-              </div>
-            )}
-          </Field>
-
-          {/* Soldy By */}
-          {!values.recipe && (
-            <>
-              <p>Use/Sell By:</p>
-              <div className="bg-gray-100  p-2">
-                <div className="form-control ">
-                  <label className="label cursor-pointer justify-start gap-4">
-                    <input
-                      autoComplete="off"
-                      type="radio"
-                      className="radio-primary radio"
-                      name="soldBy"
-                      value={ProductSoldBy.Pieces}
-                      checked={values.soldBy === ProductSoldBy.Pieces}
-                      disabled={values.mode === 'edit'}
-                      onChange={(e) => {
-                        setFieldValue('soldBy', e.target.value)
-
-                        // Side effects
-                        if (e.target.checked) {
-                          setFieldValue(
-                            'batches',
-                            values.batches.map((batch) => {
-                              return {
-                                ...batch,
-                                unitOfMeasurement: PIECES,
-                              }
-                            }),
-                          )
-                        }
-                      }}
-                    />
-                    <span className="label-text">Pieces</span>
-                  </label>
+          <div className="my-2 flex flex-col gap-2">
+            <p className="text-base font-bold text-base-content/50">
+              Sell Options
+            </p>
+            {/* For Recipe purpose Toggle */}
+            <Field name="allowBackOrder">
+              {({ field }: FieldProps) => (
+                <div className="form-control flex w-full flex-row gap-2 ">
+                  <input
+                    {...field}
+                    checked={field.value}
+                    autoComplete="off"
+                    type="checkbox"
+                    className="toggle toggle-primary"
+                  />
+                  <span>Allow selling when out of stock</span>
                 </div>
-                <div className="form-control">
-                  <label className="label cursor-pointer justify-start gap-4">
-                    <input
-                      autoComplete="off"
-                      type="radio"
-                      className="radio-primary radio"
-                      name="soldBy"
-                      value={ProductSoldBy.Weight}
-                      checked={values.soldBy === ProductSoldBy.Weight}
-                      disabled={values.mode === 'edit'}
-                      onChange={(e) => {
-                        setFieldValue('soldBy', e.target.value)
+              )}
+            </Field>
+          </div>
 
-                        // Side effects
-                        setFieldValue('overAllMeasurement', 'g')
-                        if (e.target.checked) {
-                          setFieldValue(
-                            'batches',
-                            values.batches.map((batch) => {
-                              return {
-                                ...batch,
-                                unitOfMeasurement: 'g',
-                              }
-                            }),
-                          )
-                        }
-                      }}
-                    />
-                    <span className="label-text">Weight</span>
-                  </label>
-                </div>
-                {/* Unit of measurement */}
-                {values.soldBy === 'weight' && (
-                  <label className="form-control w-full ">
-                    <div className="">
-                      <span className="label-text-alt ">
-                        Unit of Measurement
-                      </span>
-                    </div>
-                    <MeasurementSelect
-                      disabled={values.mode === 'edit'}
-                      value={{
-                        label:
-                          measurementOptions.find(
-                            (option) =>
-                              option.value === values.overAllMeasurement,
-                          )?.label || '',
-                        value: values.overAllMeasurement ?? '',
-                      }}
-                      onChange={(value) => {
-                        if (!value) {
-                          return
-                        }
-                        setFieldValue('overAllMeasurement', value?.value)
-                        setFieldValue(
-                          'batches',
-                          values.batches.map((batch) => {
-                            return {
-                              ...batch,
-                              unitOfMeasurement: value?.value,
-                            }
-                          }),
-                        )
-                      }}
-                    />
-                  </label>
-                )}
-              </div>
-            </>
-          )}
+          <div className="my-2 flex flex-col gap-2">
+            <p className="text-base font-bold text-base-content/50">
+              Measurements
+            </p>
+            {/* Soldy By */}
+            {!values.recipe && (
+              <>
+                <div className="bg-gray-100  p-2">
+                  <div className="form-control ">
+                    <label className="label cursor-pointer justify-start gap-4">
+                      <input
+                        autoComplete="off"
+                        type="radio"
+                        className="radio-primary radio"
+                        name="soldBy"
+                        value={ProductSoldBy.Pieces}
+                        checked={values.soldBy === ProductSoldBy.Pieces}
+                        disabled={values.mode === 'edit'}
+                        onChange={(e) => {
+                          setFieldValue('soldBy', e.target.value)
 
-          {/* Bulk Cost Toggle */}
-          {!values.recipe && (
-            <Field
-              name="isBulkCost"
-              validate={(value: string) => {
-                if (values.isIngredient) {
-                  return
-                }
-                if (!values.isIngredient || !values.isBulkCost) {
-                  if (value === '') {
-                    return 'Profit is required'
-                  }
-                  const validation = z
-                    .number({
-                      required_error: 'Profit is required',
-                      invalid_type_error: 'Profit must be a number',
-                    })
-                    .nonnegative('Profit must be a positive number')
-                    .safeParse(toNumber(value))
-                  if (validation.success === false) {
-                    console.log(validation.error.issues[0].message)
-                    return validation.error.issues[0].message
-                  }
-                  return null
-                }
-
-                return null
-              }}
-            >
-              {({ field, form }: FieldProps) => (
-                <>
-                  <div className="flex w-full flex-row items-center justify-between">
-                    <p className="flex flex-grow flex-row items-center gap-2">
-                      Batches:
-                    </p>
-
-                    <div className="form-control ml-auto flex w-auto flex-row gap-3  ">
-                      <span>Bulk Cost</span>
-                      <div className="flex flex-row gap-2">
-                        <input
-                          {...field}
-                          checked={field.value}
-                          autoComplete="off"
-                          type="checkbox"
-                          className="toggle toggle-primary"
-                          disabled={values.mode === 'edit'}
-                          onChange={(e) => {
-                            form.setFieldValue(field.name, e.target.checked)
-
-                            // Side effects
-                            form.setFieldValue(
+                          // Side effects
+                          if (e.target.checked) {
+                            setFieldValue(
                               'batches',
-                              form.values.batches.map(
-                                (batch: ProductFormValues['batches']) => {
-                                  return {
-                                    ...batch,
-                                    cost: '',
-                                  }
-                                },
-                              ),
+                              values.batches.map((batch) => {
+                                return {
+                                  ...batch,
+                                  unitOfMeasurement: PIECES,
+                                }
+                              }),
                             )
-                          }}
-                        />
+                          }
+                        }}
+                      />
+                      <span className="label-text">Pieces</span>
+                    </label>
+                  </div>
+                  <div className="form-control">
+                    <label className="label cursor-pointer justify-start gap-4">
+                      <input
+                        autoComplete="off"
+                        type="radio"
+                        className="radio-primary radio"
+                        name="soldBy"
+                        value={ProductSoldBy.Weight}
+                        checked={values.soldBy === ProductSoldBy.Weight}
+                        disabled={values.mode === 'edit'}
+                        onChange={(e) => {
+                          setFieldValue('soldBy', e.target.value)
+
+                          // Side effects
+                          setFieldValue('overAllMeasurement', 'g')
+                          if (e.target.checked) {
+                            setFieldValue(
+                              'batches',
+                              values.batches.map((batch) => {
+                                return {
+                                  ...batch,
+                                  unitOfMeasurement: 'g',
+                                }
+                              }),
+                            )
+                          }
+                        }}
+                      />
+                      <span className="label-text">Weight</span>
+                    </label>
+                  </div>
+                  {/* Unit of measurement */}
+                  {values.soldBy === 'weight' && (
+                    <label className="form-control w-full ">
+                      <div className="">
+                        <span className="label-text-alt ">
+                          Unit of Measurement
+                        </span>
+                      </div>
+                      <MeasurementSelect
+                        disabled={values.mode === 'edit'}
+                        value={{
+                          label:
+                            measurementOptions.find(
+                              (option) =>
+                                option.value === values.overAllMeasurement,
+                            )?.label || '',
+                          value: values.overAllMeasurement ?? '',
+                        }}
+                        onChange={(value) => {
+                          if (!value) {
+                            return
+                          }
+                          setFieldValue('overAllMeasurement', value?.value)
+                          setFieldValue(
+                            'batches',
+                            values.batches.map((batch) => {
+                              return {
+                                ...batch,
+                                unitOfMeasurement: value?.value,
+                              }
+                            }),
+                          )
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="my-2 flex flex-col gap-2">
+            <p className="text-base font-bold text-base-content/50">Batches</p>
+            <p className="text-sm">
+              Like individual containers for your stock, each marked with its
+              own arrival date, cost, quantity, and expiration.
+            </p>
+            {/* Bulk Cost Toggle */}
+            {!values.recipe && (
+              <Field
+                name="isBulkCost"
+                validate={(value: string) => {
+                  if (values.isIngredient) {
+                    return
+                  }
+                  if (!values.isIngredient || !values.isBulkCost) {
+                    if (value === '') {
+                      return 'Profit is required'
+                    }
+                    const validation = z
+                      .number({
+                        required_error: 'Profit is required',
+                        invalid_type_error: 'Profit must be a number',
+                      })
+                      .nonnegative('Profit must be a positive number')
+                      .safeParse(toNumber(value))
+                    if (validation.success === false) {
+                      console.log(validation.error.issues[0].message)
+                      return validation.error.issues[0].message
+                    }
+                    return null
+                  }
+
+                  return null
+                }}
+              >
+                {({ field, form }: FieldProps) => (
+                  <>
+                    <div className="mt-2 flex w-full flex-row items-center">
+                      <div className="form-control flex w-auto flex-row gap-3  ">
+                        <div className="flex flex-row gap-2">
+                          <input
+                            {...field}
+                            checked={field.value}
+                            autoComplete="off"
+                            type="checkbox"
+                            className="toggle toggle-primary"
+                            disabled={values.mode === 'edit'}
+                            onChange={(e) => {
+                              form.setFieldValue(field.name, e.target.checked)
+
+                              // Side effects
+                              form.setFieldValue(
+                                'batches',
+                                form.values.batches.map(
+                                  (batch: ProductFormValues['batches']) => {
+                                    return {
+                                      ...batch,
+                                      cost: '',
+                                    }
+                                  },
+                                ),
+                              )
+                            }}
+                          />
+                        </div>
+                        <span>Use Bulk Costing</span>
                         <div
-                          className="tooltip tooltip-left before:max-w-[200px] before:text-left "
+                          className="tooltip tooltip-top before:max-w-[200px] before:text-left "
                           data-tip={bulkCostHint}
                         >
                           <InformationCircleIcon className="bulk-cost-tip w-6 text-neutral" />
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <p className="text-xs">
-                    Batches are like individual containers for your stock, each
-                    marked with its own arrival date, cost, quantity, and
-                    expiration.
-                  </p>
-                </>
-              )}
-            </Field>
-          )}
+                  </>
+                )}
+              </Field>
+            )}
+          </div>
 
           {/* Add Batches*/}
           {!values.recipe && values.mode === 'add' && (
