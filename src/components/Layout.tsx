@@ -58,13 +58,23 @@ const Layout = () => {
               <li>
                 <label
                   htmlFor="my-drawer"
+                  className="btn btn-ghost w-full justify-start px-1"
+                  onClick={() => navigate(AppPath.Products)}
+                >
+                  <ArchiveBoxIcon className="h-6 w-6" />
+                  Inventory
+                </label>
+              </li>
+              {/* <li>
+                <label
+                  htmlFor="my-drawer"
                   className="btn btn-ghost w-full justify-start px-1 "
                   onClick={() => navigate(AppPath.Products)}
                 >
                   <TagIcon className="h-6 w-6" />
                   Products
                 </label>
-              </li>
+              </li> */}
               <li>
                 <label
                   htmlFor="my-drawer"
@@ -72,19 +82,10 @@ const Layout = () => {
                   onClick={() => navigate(AppPath.Recipe)}
                 >
                   <BookOpenIcon className="h-6 w-6" />
-                  Recipes
+                  All Recipes
                 </label>
               </li>
-              <li>
-                <label
-                  htmlFor="my-drawer"
-                  className="btn btn-ghost w-full justify-start px-1"
-                  onClick={() => navigate(AppPath.Inventory)}
-                >
-                  <ArchiveBoxIcon className="h-6 w-6" />
-                  Inventory
-                </label>
-              </li>
+
               <div className="collapse collapse-arrow ">
                 <input type="checkbox" className="!min-h-0" />
                 <div className="collapse-title flex !min-h-0  flex-row gap-2 p-1 py-3">

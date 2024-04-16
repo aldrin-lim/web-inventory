@@ -3,6 +3,7 @@ import { useState } from 'react'
 import DropdownButtonItem from './components/DropdownButtonItem'
 
 export type DropdownProps = {
+  dropdownClassName?: string
   items: Array<{
     icon?: React.ReactNode
     text: string
@@ -14,7 +15,12 @@ export type DropdownProps = {
 }
 
 const DropdownButton = (props: DropdownProps) => {
-  const { items, buttonClassName, disabled = false } = props
+  const {
+    items,
+    buttonClassName,
+    disabled = false,
+    dropdownClassName = '',
+  } = props
   const [open, setOpen] = useState(false)
 
   return (
@@ -23,6 +29,7 @@ const DropdownButton = (props: DropdownProps) => {
       className={[
         'dropdown dropdown-end inline-flex w-auto',
         open ? 'dropdown-open' : '',
+        dropdownClassName,
       ].join(' ')}
       onBlur={() => {
         setTimeout(() => {
